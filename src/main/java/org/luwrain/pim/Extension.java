@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the Luwrain.
 
@@ -14,19 +14,15 @@
    General Public License for more details.
 */
 
-package org.luwrain.extensions.pim;
+package org.luwrain.pim;
 
 import java.sql.*;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.Luwrain;
-//import org.luwrain.core.Shortcut;
-//import org.luwrain.core.Command;
-//import org.luwrain.core.CommandEnvironment;
-//import org.luwrain.core.I18nExtension;
-//import org.luwrain.core.Worker;
-import org.luwrain.core.SharedObject;
+import org.luwrain.core.*;
 import org.luwrain.util.RegistryAutoCheck;
+
+import org.luwrain.pim.news.NewsStoring;
+import org.luwrain.pim.news.NewsStoringSql;
 
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
 {

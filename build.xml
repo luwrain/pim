@@ -20,7 +20,7 @@
     <jar jarfile="jar/luwrain-pim.jar">
       <manifest>
         <section name="org/luwrain">
-          <attribute name="Extensions" value="org.luwrain.extensions.pim.Extension"/>
+          <attribute name="Extensions" value="org.luwrain.pim.Extension"/>
         </section>
       </manifest>
       <fileset dir="./build">

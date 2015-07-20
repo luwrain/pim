@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the Luwrain.
 
@@ -14,15 +14,15 @@
    General Public License for more details.
 */
 
-package org.luwrain.extensions.pim;
+package org.luwrain.pim;
 
 import java.util.Properties;
 import java.net.URL;
 import java.io.IOException;
 
-class RegistryKeys
+public class RegistryKeys
 {
-    private static final String REGISTRY_KEYS_RESOURCE = "org/luwrain/extensions/pim/registry-keys.properties";
+    private static final String REGISTRY_KEYS_RESOURCE = "org/luwrain/pim/registry-keys.properties";
 
     private Properties properties;
 

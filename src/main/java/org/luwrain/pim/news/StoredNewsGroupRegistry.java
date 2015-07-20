@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the Luwrain.
 
@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.extensions.pim;
+package org.luwrain.pim.news;
 
 import org.luwrain.core.Registry;
 

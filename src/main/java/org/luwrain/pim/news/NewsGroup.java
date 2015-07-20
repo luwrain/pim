@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the Luwrain.
 
@@ -14,12 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.extensions.pim;
+package org.luwrain.pim.news;
 
-public class RegistryUpdateException extends Exception
+public class NewsGroup
 {
-    public RegistryUpdateException(String message)
-    {
-	super(message);
-    }
+    public String name ="";
+    public String[] urls = new String[0];
+    public String mediaContentType = "";
+    public int orderIndex = 0;
+    public int expireAfterDays = 30;
 }
