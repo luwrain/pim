@@ -41,6 +41,36 @@ public class RegistryKeys
 	}
     }
 
+    public String contactsType()
+    {
+	return getProperty("contacts.Type");
+    }
+
+    public String contactsDriver()
+    {
+	return getProperty("contacts.Driver");
+    }
+
+    public String contactsUrl()
+    {
+	return getProperty("contacts.URL");
+    }
+
+    public String contactsLogin()
+    {
+	return getProperty("contacts.Login");
+    }
+
+    public String contactsPasswd()
+    {
+	return getProperty("contacts.Passwd");
+    }
+
+    public String contactsGroups()
+    {
+	return getProperty("contacts.Groups");
+    }
+
     public String newsType()
     {
 	return getProperty("news.type");
