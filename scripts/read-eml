@@ -1,0 +1,5 @@
+#!/bin/sh -e
+
+CLASSPATH=~/pim.git/jar/luwrain-pim.jar:~/pim.git/jar/luwrain-pim-tests.jar:~/lib/javamailapi.jar:~/lib/javamail.jar:~/lib/javaxmail.jar
+
+exec java -cp "$CLASSPATH" org.luwrain.pim.email.ReadEmlTool "$@"
