@@ -1,4 +1,5 @@
-package org.luwrain.extensions.pim;
+
+package org.luwrain.pim.email;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

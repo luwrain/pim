@@ -14,25 +14,17 @@
    General Public License for more details.
 */
 
-package org.luwrain.extensions.pim;
+package org.luwrain.pim.email;
 
-import java.util.*;
+import java.sql.SQLException;
 
-import org.luwrain.core.Registry;
+import org.luwrain.pim.email.EmailStoringSql.Condition;
 
-abstract class EmailStoringRegistry implements EmailStoring
+public interface EmailStoring extends Cloneable
 {
-    protected Registry registry;
-
-    public EmailStoringRegistry(Registry registry)
-    {
-    	this.registry = registry;
-    	if (registry == null)
-    		throw new NullPointerException("registry may not be null");
-    }
-
-    @Override public Object clone()
-    {
-    	return null;
-    }
+    public void saveEmailMessage(EmailMessage message) throws SQLException;
+    public StoredEmailMessage[] loadEmailMessages(boolean withRaw,Condition cond) throws SQLException;
+	
+	//Object clone();
+    
 }

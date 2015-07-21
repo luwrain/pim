@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.extensions.pim;
+package org.luwrain.pim.email;
 
 import java.util.*;
 import java.sql.Connection;

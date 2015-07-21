@@ -1,10 +1,11 @@
-package org.luwrain.extensions.pim;
+
+package org.luwrain.pim.email;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 
-import org.luwrain.extensions.pim.EmailStoringSql.Condition;
+import org.luwrain.pim.email.EmailStoringSql.Condition;
 
 import java.io.File;
 import java.io.FileInputStream;
