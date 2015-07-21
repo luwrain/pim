@@ -49,7 +49,15 @@ class EmailStoringSql extends EmailStoringRegistry
 
     public static String SimpleArraySerialize(String[] list)
     { // FIXME: check list contains ';' char or change method to save simple lists of file names and email address
-    	return String.join(";", list);
+	StringBuilder b = new StringBuilder();
+	for(String s: list)
+	{
+	    if (!b.toString().isEmpty())
+		b.append(";");
+	    b.append(s);
+	}
+	return b.toString();
+	//    	return String.join(";", list);
     }
     
     public static String[] SimpleArrayDeSerialize(String str)
