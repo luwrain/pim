@@ -66,9 +66,39 @@ public class RegistryKeys
 	return getProperty("contacts.Passwd");
     }
 
-    public String contactsGroups()
+    public String contactsFolders()
     {
-	return getProperty("contacts.Groups");
+	return getProperty("contacts.Folders");
+    }
+
+    public String mailType()
+    {
+	return getProperty("mail.Type");
+    }
+
+    public String mailDriver()
+    {
+	return getProperty("mail.Driver");
+    }
+
+    public String mailUrl()
+    {
+	return getProperty("mail.URL");
+    }
+
+    public String mailLogin()
+    {
+	return getProperty("mail.Login");
+    }
+
+    public String mailPasswd()
+    {
+	return getProperty("mail.Passwd");
+    }
+
+    public String mailFolders()
+    {
+	return getProperty("mail.Folders");
     }
 
     public String newsType()

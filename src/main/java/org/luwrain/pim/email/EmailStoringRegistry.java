@@ -31,6 +31,16 @@ abstract class EmailStoringRegistry implements EmailStoring
     		throw new NullPointerException("registry may not be null");
     }
 
+    @Override public StoredEmailFolder getFoldersRoot() throws Exception
+    {
+	return null;
+    }
+
+    @Override public StoredEmailFolder[] getChildFolders(StoredEmailFolder folder) throws Exception
+    {
+	return new StoredEmailFolder[0];
+    }
+
     @Override public Object clone()
     {
     	return null;

@@ -22,9 +22,10 @@ import org.luwrain.pim.email.EmailStoringSql.Condition;
 
 public interface EmailStoring extends Cloneable
 {
-    public void saveEmailMessage(EmailMessage message) throws SQLException;
-    public StoredEmailMessage[] loadEmailMessages(boolean withRaw,Condition cond) throws SQLException;
-	
-	//Object clone();
-    
+    StoredEmailFolder getFoldersRoot() throws Exception;
+    StoredEmailFolder[] getChildFolders(StoredEmailFolder folder) throws Exception;
+    void saveEmailMessage(EmailMessage message) throws SQLException;
+    StoredEmailMessage[] loadEmailMessages(boolean withRaw,Condition cond) throws SQLException;
+
+    //Object clone();
 }
