@@ -41,6 +41,31 @@ public class RegistryKeys
 	}
     }
 
+    public String binderType()
+    {
+	return getProperty("binder.Type");
+    }
+
+    public String binderDriver()
+    {
+	return getProperty("binder.Driver");
+    }
+
+    public String binderUrl()
+    {
+	return getProperty("binder.URL");
+    }
+
+    public String binderLogin()
+    {
+	return getProperty("binder.Login");
+    }
+
+    public String binderPasswd()
+    {
+	return getProperty("binder.Passwd");
+    }
+
     public String contactsType()
     {
 	return getProperty("contacts.Type");
