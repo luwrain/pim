@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.email;
+package org.luwrain.pim.mail;
 
 import java.sql.*;
 
@@ -34,7 +34,7 @@ public class Factory
 	    throw new NullPointerException("registry may not be null");
     }
 
-    public EmailStoring createEmailStoring()
+    public MailStoring createMailStoring()
     {
 	RegistryAutoCheck check = new RegistryAutoCheck(registry);
 	final String type = check.stringNotEmpty(registryKeys.mailType(), "");
@@ -48,7 +48,7 @@ public class Factory
 	    return null;
 	try {
 	    Class.forName (driver).newInstance ();
-	    return new EmailStoringSql(registry, DriverManager.getConnection (url, login, passwd));
+	    return new MailStoringSql(registry, DriverManager.getConnection (url, login, passwd));
 	}
 	catch(Exception e)
 	{

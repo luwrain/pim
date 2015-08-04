@@ -14,17 +14,17 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.email;
+package org.luwrain.pim.mail;
 
 import java.util.*;
 import java.sql.*;
 
-class StoredEmailMessageSql extends EmailMessage implements StoredEmailMessage, Comparable
+class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Comparable
 {
     Connection con;
     public long id;
 
-    public StoredEmailMessageSql(Connection con)
+    public StoredMailMessageSql(Connection con)
     {
     	this.con = con;
     	if (con == null) 
@@ -76,7 +76,7 @@ class StoredEmailMessageSql extends EmailMessage implements StoredEmailMessage, 
     @Override public void setTo(String[] to) throws SQLException
 	{
     	PreparedStatement st = con.prepareStatement("UPDATE email_message SET to = ? WHERE id = ?;");
-    	st.setString(1, EmailStoringSql.SimpleArraySerialize(to));
+    	st.setString(1, MailStoringSql.SimpleArraySerialize(to));
     	st.setLong(2, id);
     	st.executeUpdate();
     	this.to = to;
@@ -85,7 +85,7 @@ class StoredEmailMessageSql extends EmailMessage implements StoredEmailMessage, 
 	@Override public void setCc(String[] cc) throws SQLException
     {
     	PreparedStatement st = con.prepareStatement("UPDATE email_message SET cc = ? WHERE id = ?;");
-    	st.setString(1, EmailStoringSql.SimpleArraySerialize(cc));
+    	st.setString(1, MailStoringSql.SimpleArraySerialize(cc));
     	st.setLong(2, id);
     	st.executeUpdate();
     	this.cc = cc;
@@ -94,7 +94,7 @@ class StoredEmailMessageSql extends EmailMessage implements StoredEmailMessage, 
     @Override public void setBcc(String[] bcc) throws SQLException
     {
     	PreparedStatement st = con.prepareStatement("UPDATE email_message SET bcc = ? WHERE id = ?;");
-    	st.setString(1, EmailStoringSql.SimpleArraySerialize(bcc));
+    	st.setString(1, MailStoringSql.SimpleArraySerialize(bcc));
     	st.setLong(2, id);
     	st.executeUpdate();
     	this.bcc = bcc;
@@ -146,30 +146,30 @@ class StoredEmailMessageSql extends EmailMessage implements StoredEmailMessage, 
     	st.executeUpdate();
     	this.mimeContentType = mimeContentType;
 	}
-    @Override public byte[] getRawEmail() throws SQLException
+    @Override public byte[] getRawMail() throws SQLException
     {
-    	if(rawEmail==null)
+    	if(rawMail==null)
     	{
         	PreparedStatement st = con.prepareStatement("SELECT raw FROM email_message WHERE id = ?;");
         	st.setLong(1, this.id);
         	ResultSet rs = st.executeQuery();
-        	if(rs.next()) this.rawEmail=rs.getBytes(1);
+        	if(rs.next()) this.rawMail=rs.getBytes(1);
     	}
-    	return rawEmail;
+    	return rawMail;
    	}
-    @Override public void setRawEmail(byte[] rawEmail) throws SQLException
+    @Override public void setRawMail(byte[] rawMail) throws SQLException
     {
     	PreparedStatement st = con.prepareStatement("UPDATE email_message SET raw = ? WHERE id = ?;");
-    	st.setBytes(1, rawEmail);
+    	st.setBytes(1, rawMail);
     	st.setLong(2, id);
     	st.executeUpdate();
-    	this.rawEmail = rawEmail;
+    	this.rawMail = rawMail;
 	}
 
 	@Override public int compareTo(Object o)
     {
-    	if (o == null || !(o instanceof StoredEmailMessageSql)) return 0;
-    	StoredEmailMessageSql article = (StoredEmailMessageSql)o;
+    	if (o == null || !(o instanceof StoredMailMessageSql)) return 0;
+    	StoredMailMessageSql article = (StoredMailMessageSql)o;
     	if (state != article.state)
     	{
     		if (state > article.state) return -1;

@@ -1,7 +1,7 @@
 
-package org.luwrain.pim.email;
+package org.luwrain.pim.mail;
 
-class EmailFolder
+class MailFolder
 {
     public String title;
     public int orderIndex;

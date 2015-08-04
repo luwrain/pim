@@ -1,7 +1,7 @@
 
-package org.luwrain.pim.email;
+package org.luwrain.pim.mail;
 
-public interface StoredEmailFolder
+public interface StoredMailFolder
 {
     String getTitle() throws Exception;
     void setTitle(String value) throws Exception;

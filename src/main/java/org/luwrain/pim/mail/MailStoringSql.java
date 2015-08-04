@@ -14,20 +14,20 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.email;
+package org.luwrain.pim.mail;
 
 import java.sql.*;
 import java.util.*;
 
 import org.luwrain.core.Registry;
 
-class EmailStoringSql extends EmailStoringRegistry
+class MailStoringSql extends MailStoringRegistry
 {
     private Connection con;
 
     public enum Condition {ALL,UNREAD};
 
-    public EmailStoringSql(Registry registry,Connection con)
+    public MailStoringSql(Registry registry,Connection con)
     {
 	super(registry);
 	this.con = con;
@@ -53,13 +53,13 @@ class EmailStoringSql extends EmailStoringRegistry
     	return str.split(";");
     }
 
-    @Override public void saveMessage(StoredEmailFolder folder, EmailMessage message) throws SQLException
+    @Override public void saveMessage(StoredMailFolder folder, MailMessage message) throws SQLException
     {
 	if (folder == null)
 	    throw new NullPointerException("folder may not be null");
-	if (!(folder instanceof StoredEmailFolderRegistry))
-	    throw new NullPointerException("folder must be an instance of StoredEmailFolderRegistry");
-	final StoredEmailFolderRegistry folderRegistry = (StoredEmailFolderRegistry)folder;
+	if (!(folder instanceof StoredMailFolderRegistry))
+	    throw new NullPointerException("folder must be an instance of StoredMailFolderRegistry");
+	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
     	PreparedStatement st = con.prepareStatement(
 						    "INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message) VALUES (?,?,?,?,?,?,?,?,?,?)",
 						    Statement.RETURN_GENERATED_KEYS);
@@ -82,7 +82,7 @@ class EmailStoringSql extends EmailStoringRegistry
 	System.out.println("1");
 	st.setString(9, message.mimeContentType);
 	System.out.println("1");
-	st.setBytes(10, message.rawEmail);
+	st.setBytes(10, message.rawMail);
 	System.out.println("1");
 	final int updatedCount=st.executeUpdate();
 	if(updatedCount==1)
@@ -95,20 +95,20 @@ class EmailStoringSql extends EmailStoringRegistry
 	}
     }
 
-    @Override public StoredEmailMessage[] loadMessages(StoredEmailFolder folder) throws SQLException
+    @Override public StoredMailMessage[] loadMessages(StoredMailFolder folder) throws SQLException
     {
 	if (folder == null)
 	    throw new NullPointerException("folder may not be null");
-	if (!(folder instanceof StoredEmailFolderRegistry))
-	    throw new IllegalArgumentException("folder must be an instance of StoredEmailFolderRegistry");
-	final StoredEmailFolderRegistry folderRegistry = (StoredEmailFolderRegistry)folder;
+	if (!(folder instanceof StoredMailFolderRegistry))
+	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
+	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
 	PreparedStatement st = con.prepareStatement("SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type FROM mail_message WHERE mail_folder_id=?");
 	st.setLong(1, folderRegistry.id);
     	ResultSet rs = st.executeQuery();
-    	LinkedList<StoredEmailMessage> res = new LinkedList<StoredEmailMessage>();
+    	LinkedList<StoredMailMessage> res = new LinkedList<StoredMailMessage>();
     	while (rs.next())
     	{
-	    final StoredEmailMessageSql message=new StoredEmailMessageSql(con);
+	    final StoredMailMessageSql message=new StoredMailMessageSql(con);
 	    message.id = rs.getLong(1);
 	    message.messageId = rs.getString(2).trim();
 	    message.state = rs.getInt(3);
@@ -120,6 +120,6 @@ class EmailStoringSql extends EmailStoringRegistry
 	    message.mimeContentType = rs.getString(9).trim();
 	    res.add(message);
 	}
-    	return res.toArray(new StoredEmailMessage[res.size()]);
+    	return res.toArray(new StoredMailMessage[res.size()]);
     }
 }

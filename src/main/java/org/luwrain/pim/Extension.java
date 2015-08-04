@@ -33,13 +33,13 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     private String newsLogin = "";
     private String newsPasswd = "";
     private org.luwrain.pim.binder.Factory binderFactory;
-    private org.luwrain.pim.email.Factory mailFactory;
+    private org.luwrain.pim.mail.Factory mailFactory;
 
     @Override public String init(Luwrain luwrain)
     {
 	this.registry = luwrain.getRegistry();
 	binderFactory = new org.luwrain.pim.binder.Factory(registry);
-	mailFactory = new org.luwrain.pim.email.Factory(registry);
+	mailFactory = new org.luwrain.pim.mail.Factory(registry);
 	String res = initDefaultNewsCon();
 	if (res != null)
 	    return res;
@@ -51,7 +51,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     {
 	final NewsStoring n = newsStoring;
 	final org.luwrain.pim.binder.Factory b = binderFactory;
-	final org.luwrain.pim.email.Factory m = mailFactory;
+	final org.luwrain.pim.mail.Factory m = mailFactory;
 
 	return new SharedObject[]{
 	    new SharedObject(){
@@ -77,7 +77,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		}
 	    },
 	    new SharedObject(){
-		private org.luwrain.pim.email.Factory mailFactory = m;
+		private org.luwrain.pim.mail.Factory mailFactory = m;
 		@Override public String getName()
 		{
 		    return "luwrain.pim.mail";

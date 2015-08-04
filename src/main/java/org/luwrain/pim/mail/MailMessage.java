@@ -14,14 +14,23 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.email;
+package org.luwrain.pim.mail;
 
-import org.luwrain.pim.email.EmailStoringSql.Condition;
+import java.util.*;
 
-public interface EmailStoring extends Cloneable
+public class MailMessage
 {
-    StoredEmailFolder getFoldersRoot() throws Exception;
-    StoredEmailFolder[] getFolders(StoredEmailFolder folder) throws Exception;
-    void saveMessage(StoredEmailFolder folder, EmailMessage message) throws Exception;
-    StoredEmailMessage[] loadMessages(StoredEmailFolder folder) throws Exception;
+    public String messageId = "";
+	public String subject = "";
+    public String from = "";
+    public String[] to = new String[0];
+    public String[] cc = new String[0];
+    public String[] bcc = new String[0];
+    public int state = 0;
+    public Date sentDate = new Date();
+    public Date receivedDate = new Date();
+    public String baseContent = "";
+    public String mimeContentType = "";
+    public String[] attachments = new String[0];
+    public byte[] rawMail = new byte[0];
 }

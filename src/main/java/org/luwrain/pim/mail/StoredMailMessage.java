@@ -14,16 +14,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.email;
+package org.luwrain.pim.mail;
 
 import java.util.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.sql.SQLException;
 
-//import javax.mail.Message;
-
-public interface StoredEmailMessage
+public interface StoredMailMessage
 {
     int getState();
     void setState(int state) throws SQLException;
@@ -47,6 +45,6 @@ public interface StoredEmailMessage
     void setBaseContent(String baseContent) throws Exception;
     String getMimeContentType() throws Exception;
     void setMimeContentType(String mimeContentType) throws Exception;
-    byte[] getRawEmail() throws SQLException;
-    void setRawEmail(byte[] rawEmail) throws SQLException;
+    byte[] getRawMail() throws SQLException;
+    void setRawMail(byte[] rawMail) throws SQLException;
 }

@@ -1,11 +1,11 @@
 
-package org.luwrain.pim.email;
+package org.luwrain.pim.mail;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 
-import org.luwrain.pim.email.EmailStoringSql.Condition;
+import org.luwrain.pim.mail.MailStoringSql.Condition;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,12 +26,12 @@ import com.sun.mail.pop3.POP3Message;
 
 import java.sql.*;
 
-public class EmailEssentialJavamail implements EmailEssential
+public class MailEssentialJavamail implements MailEssential
 {
     public Message jmailmsg;
 
     // make MimeMessage from class fields
-    @Override public void PrepareInternalStore(EmailMessage msg) throws Exception
+    @Override public void PrepareInternalStore(MailMessage msg) throws Exception
     {
 	jmailmsg=new MimeMessage(session);
 	jmailmsg.setSubject(msg.subject);
@@ -94,7 +94,7 @@ public class EmailEssentialJavamail implements EmailEssential
     }
 
     // used to fill standart simple mime mail message fields (message can be Mime..., POP3... or IMAP... Message class)
-    public void readJavamailMessageBaseFields(EmailMessage msg) throws Exception
+    public void readJavamailMessageBaseFields(MailMessage msg) throws Exception
     {
 	msg.subject=jmailmsg.getSubject();
 	if(jmailmsg.getFrom()!=null)
@@ -152,7 +152,7 @@ public class EmailEssentialJavamail implements EmailEssential
     }
 
     // used to load addition fields from Message POP3 or IMAP online
-    public void readJavamailMessageOnline(EmailMessage msg) throws Exception
+    public void readJavamailMessageOnline(MailMessage msg) throws Exception
     {
 	if(jmailmsg.getClass()==IMAPMessage.class)
 	{
@@ -167,22 +167,22 @@ public class EmailEssentialJavamail implements EmailEssential
 	throw new Exception("Unknown email Message class "+jmailmsg.getClass().getName()); // TODO: check that it will never happend
     }
 
-    public void readJavamailMessageContent(EmailMessage msg) throws Exception
+    public void readJavamailMessageContent(MailMessage msg) throws Exception
     {
 	File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
 	FileOutputStream fs=new FileOutputStream(temp);
-	SaveEmailToFile(msg,fs);
+	SaveMailToFile(msg,fs);
 	fs.flush();
-	msg.rawEmail=new byte[(int)fs.getChannel().size()]; // TODO: long to int cas, here is limit for 2Gb raw email size, needed to be checked?
+	msg.rawMail=new byte[(int)fs.getChannel().size()]; // TODO: long to int cas, here is limit for 2Gb raw email size, needed to be checked?
 	fs.close();
     }
 
     Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
 
     // used to fill fields via .eml file stream
-    @Override public EmailMessage loadEmailFromFile(FileInputStream fs) throws Exception
+    @Override public MailMessage loadMailFromFile(FileInputStream fs) throws Exception
     {
-	EmailMessage msg=new EmailMessage();
+	MailMessage msg=new MailMessage();
 	jmailmsg=new MimeMessage(session,fs);
 	fs.close();
 	readJavamailMessageBaseFields(msg);
@@ -190,7 +190,7 @@ public class EmailEssentialJavamail implements EmailEssential
     }
 
     // used to save fields to .eml field stream
-    @Override public void SaveEmailToFile(EmailMessage msg,FileOutputStream fs) throws Exception
+    @Override public void SaveMailToFile(MailMessage msg,FileOutputStream fs) throws Exception
     {
 	PrepareInternalStore(msg);
 	jmailmsg.writeTo(fs);

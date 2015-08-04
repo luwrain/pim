@@ -1,9 +1,9 @@
 
-package org.luwrain.pim.email;
+package org.luwrain.pim.mail;
 
 import org.luwrain.core.Registry;
 
-class StoredEmailFolderRegistry implements StoredEmailFolder, Comparable
+class StoredMailFolderRegistry implements StoredMailFolder, Comparable
 {
     private Registry registry;
 
@@ -12,7 +12,7 @@ class StoredEmailFolderRegistry implements StoredEmailFolder, Comparable
     public String title;
     public int orderIndex;
 
-    public StoredEmailFolderRegistry(Registry registry)
+    public StoredMailFolderRegistry(Registry registry)
     {
 	this.registry = registry;
 	if (registry == null)
@@ -46,17 +46,17 @@ class StoredEmailFolderRegistry implements StoredEmailFolder, Comparable
 
     @Override public boolean equals(Object o)
     {
-	if (o == null || !(o instanceof StoredEmailFolderRegistry))
+	if (o == null || !(o instanceof StoredMailFolderRegistry))
 	    return false;
-	final StoredEmailFolderRegistry folder = (StoredEmailFolderRegistry)o;
+	final StoredMailFolderRegistry folder = (StoredMailFolderRegistry)o;
 	return id == folder.id;
     }
 
     @Override public int compareTo(Object o)
     {
-	if (o == null || !(o instanceof StoredEmailFolderRegistry))
+	if (o == null || !(o instanceof StoredMailFolderRegistry))
 	    return 0;
-	final StoredEmailFolderRegistry folder = (StoredEmailFolderRegistry)o;
+	final StoredMailFolderRegistry folder = (StoredMailFolderRegistry)o;
 	if (orderIndex < folder.orderIndex)
 	    return -1;
 	if (orderIndex > folder.orderIndex)
