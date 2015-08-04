@@ -22,17 +22,15 @@ public class EmailMessage
 {
     public String messageId = "";
 	public String subject = "";
-    public String from = null;
-    public String[] to = null;
-    public String[] cc = null;
-    public String[] bcc = null;
-    public Boolean isReaded = null;
-    public Boolean isMarked = null;
+    public String from = "";
+    public String[] to = new String[0];
+    public String[] cc = new String[0];
+    public String[] bcc = new String[0];
+    public int state = 0;
     public Date sentDate = new Date();
     public Date receivedDate = new Date();
     public String baseContent = "";
     public String mimeContentType = "";
-    // list filenames of file attachments, map's key - content id in email or file path on local disk, value - file name (non unique and can be null 
-    public Vector<String> attachments=new Vector<String>();
-    public byte[] rawEmail = null;
+    public String[] attachments = new String[0];
+    public byte[] rawEmail = new byte[0];
 }

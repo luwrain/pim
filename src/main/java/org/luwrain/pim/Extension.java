@@ -32,10 +32,14 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     private String newsUrl = "";
     private String newsLogin = "";
     private String newsPasswd = "";
+    private org.luwrain.pim.binder.Factory binderFactory;
+    private org.luwrain.pim.email.Factory mailFactory;
 
     @Override public String init(Luwrain luwrain)
     {
 	this.registry = luwrain.getRegistry();
+	binderFactory = new org.luwrain.pim.binder.Factory(registry);
+	mailFactory = new org.luwrain.pim.email.Factory(registry);
 	String res = initDefaultNewsCon();
 	if (res != null)
 	    return res;
@@ -45,22 +49,45 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 
     @Override public SharedObject[] getSharedObjects(Luwrain luwrain)
     {
-	if (newsStoring == null)
-	    return new SharedObject[0];
-	SharedObject[] res = new SharedObject[1];
 	final NewsStoring n = newsStoring;
-	res[0] = new SharedObject(){
-				    private NewsStoring newsStoring = n;
-				    @Override public String getName()
-				    {
-					return "luwrain.pim.news";
-				    }
-				    @Override public Object getSharedObject()
-				    {
-					return newsStoring;
-				    }
-				    };
-	return res;
+	final org.luwrain.pim.binder.Factory b = binderFactory;
+	final org.luwrain.pim.email.Factory m = mailFactory;
+
+	return new SharedObject[]{
+	    new SharedObject(){
+		private NewsStoring newsStoring = n;
+		@Override public String getName()
+		{
+		    return "luwrain.pim.news";
+		}
+		@Override public Object getSharedObject()
+		{
+		    return newsStoring;
+		}
+	    },
+	    new SharedObject(){
+		private org.luwrain.pim.binder.Factory binderFactory = b;
+		@Override public String getName()
+		{
+		    return "luwrain.pim.binder";
+		}
+		@Override public Object getSharedObject()
+		{
+		    return binderFactory;
+		}
+	    },
+	    new SharedObject(){
+		private org.luwrain.pim.email.Factory mailFactory = m;
+		@Override public String getName()
+		{
+		    return "luwrain.pim.mail";
+		}
+		@Override public Object getSharedObject()
+		{
+		    return mailFactory;
+		}
+	    },
+	};
     }
 
     private String initDefaultNewsCon()

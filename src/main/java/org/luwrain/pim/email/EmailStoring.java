@@ -16,16 +16,12 @@
 
 package org.luwrain.pim.email;
 
-import java.sql.SQLException;
-
 import org.luwrain.pim.email.EmailStoringSql.Condition;
 
 public interface EmailStoring extends Cloneable
 {
     StoredEmailFolder getFoldersRoot() throws Exception;
-    StoredEmailFolder[] getChildFolders(StoredEmailFolder folder) throws Exception;
-    void saveEmailMessage(EmailMessage message) throws SQLException;
-    StoredEmailMessage[] loadEmailMessages(boolean withRaw,Condition cond) throws SQLException;
-
-    //Object clone();
+    StoredEmailFolder[] getFolders(StoredEmailFolder folder) throws Exception;
+    void saveMessage(StoredEmailFolder folder, EmailMessage message) throws Exception;
+    StoredEmailMessage[] loadMessages(StoredEmailFolder folder) throws Exception;
 }

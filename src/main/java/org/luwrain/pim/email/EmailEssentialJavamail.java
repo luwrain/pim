@@ -64,7 +64,7 @@ public class EmailEssentialJavamail implements EmailEssential
 	if(msg.sentDate!=null)
 	    jmailmsg.setSentDate(msg.sentDate);
 	// attachments and message body
-	if(!msg.attachments.isEmpty())
+	if(msg.attachments != null && msg.attachments.length > 0)
 	{
 	    Multipart mp = new MimeMultipart();
 	    MimeBodyPart part = new MimeBodyPart();
@@ -126,9 +126,11 @@ public class EmailEssentialJavamail implements EmailEssential
 	    msg.bcc=to.toArray(new String[to.size()]);
 	} else 
 	    msg.bcc=null;
-	msg.isReaded=!jmailmsg.getFlags().contains(Flag.SEEN);
+	//	msg.isReaded=!jmailmsg.getFlags().contains(Flag.SEEN);
 	msg.sentDate=jmailmsg.getSentDate();
 	msg.receivedDate=jmailmsg.getReceivedDate();
+	if (msg.receivedDate == null)
+	    msg.receivedDate = new java.util.Date();
 	// message body
 	if(jmailmsg.getContent().getClass()==MimeMultipart.class)
 	{
@@ -178,7 +180,7 @@ public class EmailEssentialJavamail implements EmailEssential
     Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
 
     // used to fill fields via .eml file stream
-    @Override public EmailMessage LoadEmailFromFile(FileInputStream fs) throws Exception
+    @Override public EmailMessage loadEmailFromFile(FileInputStream fs) throws Exception
     {
 	EmailMessage msg=new EmailMessage();
 	jmailmsg=new MimeMessage(session,fs);

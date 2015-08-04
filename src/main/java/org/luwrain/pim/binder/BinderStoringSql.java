@@ -32,6 +32,58 @@ class BinderStoringSql implements BinderStoring
 	    c.notes = rs.getString(5).trim();
 	    res.add(c);
 	}
+
+	//Tags;
+	st = con.createStatement();
+	rs = st.executeQuery("SELECT case_id,value FROM binder_case_tag");
+	TreeMap<Long, LinkedList<String>> treeMap = new TreeMap<Long, LinkedList<String>>();
+	while(rs.next())
+	{
+	    final long caseId = rs.getLong(1);
+	    final String value = rs.getString(2).trim();
+	    if (!treeMap.containsKey(new Long(caseId)))
+	    {
+		LinkedList<String> newList = new LinkedList<String>();
+		newList.add(value);
+		treeMap.put(new Long(caseId), newList);
+	    } else
+		treeMap.get(new Long(caseId)).add(value);
+	}
+	for(StoredCase sc: res)
+	{
+	    final StoredCaseSql c = (StoredCaseSql)sc;
+	    if (!treeMap.containsKey(new Long(c.id)))
+		continue;
+	    final LinkedList<String> tagsList = treeMap.get(new Long(c.id));
+	    c.tags = tagsList.toArray(new String[tagsList.size()]);
+	}
+
+	//UniRefs;
+	st = con.createStatement();
+	rs = st.executeQuery("SELECT case_id,value FROM binder_case_uniref");
+treeMap = new TreeMap<Long, LinkedList<String>>();
+	while(rs.next())
+	{
+	    final long caseId = rs.getLong(1);
+	    final String value = rs.getString(2).trim();
+	    if (!treeMap.containsKey(new Long(caseId)))
+	    {
+		LinkedList<String> newList = new LinkedList<String>();
+		newList.add(value);
+		treeMap.put(new Long(caseId), newList);
+	    } else
+		treeMap.get(new Long(caseId)).add(value);
+	}
+	for(StoredCase sc: res)
+	{
+	    final StoredCaseSql c = (StoredCaseSql)sc;
+	    if (!treeMap.containsKey(new Long(c.id)))
+		continue;
+	    final LinkedList<String> uniRefsList = treeMap.get(new Long(c.id));
+	    c.uniRefs = uniRefsList.toArray(new String[uniRefsList.size()]);
+	}
+
+
 	return res.toArray(new StoredCase[res.size()]);
     }
 

@@ -21,38 +21,32 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.sql.SQLException;
 
-import javax.mail.Message;
+//import javax.mail.Message;
 
 public interface StoredEmailMessage
 {
     int getState();
     void setState(int state) throws SQLException;
-
-    public String getMessageId() throws Exception; 
-	public void setMessageId(String messageId) throws Exception;
-	public String getSubject() throws Exception;
-	public void setSubject(String subject) throws Exception;
-	public String getFrom() throws Exception;
-	public void setFrom(String from) throws Exception;
-	public String[] getTo() throws Exception;
-	public void setTo(String[] to) throws Exception;
-	public String[] getCc() throws Exception;
-	public void setCc(String[] cc) throws Exception;
-	public String[] getBcc() throws Exception;
-	public void setBcc(String[] bcc) throws Exception;
-	public Boolean getIsReaded() throws Exception;
-	public void setIsReaded(Boolean isReaded) throws Exception;
-	public Boolean getIsMarked() throws Exception;
-	public void setIsMarked(Boolean isMarked) throws Exception;
-	public Date getSentDate() throws Exception;
-	public void setSentDate(Date sentDate) throws Exception;
-	public Date getReceivedDate() throws Exception;
-	public void setReceivedDate(Date receivedDate) throws Exception;
-	public String getBaseContent() throws Exception;
-	public void setBaseContent(String baseContent) throws Exception;
-	public String getMimeContentType() throws Exception;
-	public void setMimeContentType(String mimeContentType) throws Exception;
-	
-	public byte[] getRawEmail() throws SQLException;
-	public void setRawEmail(byte[] rawEmail) throws SQLException;
+    String getMessageId() throws Exception; 
+    void setMessageId(String messageId) throws Exception;
+    String getSubject() throws Exception;
+    void setSubject(String subject) throws Exception;
+    String getFrom() throws Exception;
+    void setFrom(String from) throws Exception;
+    String[] getTo() throws Exception;
+    void setTo(String[] to) throws Exception;
+    String[] getCc() throws Exception;
+    void setCc(String[] cc) throws Exception;
+    String[] getBcc() throws Exception;
+    void setBcc(String[] bcc) throws Exception;
+    Date getSentDate() throws Exception;
+    void setSentDate(Date sentDate) throws Exception;
+    Date getReceivedDate() throws Exception;
+    void setReceivedDate(Date receivedDate) throws Exception;
+    String getBaseContent() throws Exception;
+    void setBaseContent(String baseContent) throws Exception;
+    String getMimeContentType() throws Exception;
+    void setMimeContentType(String mimeContentType) throws Exception;
+    byte[] getRawEmail() throws SQLException;
+    void setRawEmail(byte[] rawEmail) throws SQLException;
 }

@@ -17,34 +17,22 @@
 package org.luwrain.pim.email;
 
 import java.sql.*;
-import java.util.Vector;
+import java.util.*;
 
 import org.luwrain.core.Registry;
 
 class EmailStoringSql extends EmailStoringRegistry
 {
     private Connection con;
-    private String url = "";
-    private String login = "";
-    private String passwd = "";
-    
+
     public enum Condition {ALL,UNREAD};
 
-    public EmailStoringSql(Registry registry,Connection con,String url,String login,String passwd)
+    public EmailStoringSql(Registry registry,Connection con)
     {
-		super(registry);
-		this.con = con;
-		this.url = url;
-		this.login = login;
-		this.passwd = passwd;
-		if (con == null)
-			throw new NullPointerException("con may not be null");
-		if (url == null)
-			throw new NullPointerException("url may not be null");
-		if (login == null)
-			throw new NullPointerException("login may not be null");
-		if (passwd == null)
-			throw new NullPointerException("passwd may not be null");
+	super(registry);
+	this.con = con;
+	if (con == null)
+	    throw new NullPointerException("con may not be null");
     }
 
     public static String SimpleArraySerialize(String[] list)
@@ -59,65 +47,79 @@ class EmailStoringSql extends EmailStoringRegistry
 	return b.toString();
 	//    	return String.join(";", list);
     }
-    
+
     public static String[] SimpleArrayDeSerialize(String str)
     {
     	return str.split(";");
     }
 
-    @Override public void saveEmailMessage(EmailMessage message) throws SQLException
+    @Override public void saveMessage(StoredEmailFolder folder, EmailMessage message) throws SQLException
     {
-    	PreparedStatement st = con.prepareStatement("INSERT INTO email_message (id,message_id,subject,from,to,cc,bcc,is_readed,is_marked,sent_date,received_date,body,mime_body,raw) VALUES (null,?,?,?,?,?,?,?,?,?,?,?,?,?);",Statement.RETURN_GENERATED_KEYS);
-		st.setString(1, message.messageId);
-		st.setString(2, message.subject);
-		st.setString(3, message.from);
-		st.setString(4, EmailStoringSql.SimpleArraySerialize(message.to));
-		st.setString(5, EmailStoringSql.SimpleArraySerialize(message.cc));
-		st.setString(6, EmailStoringSql.SimpleArraySerialize(message.bcc));
-		st.setBoolean(7, message.isReaded);
-		st.setBoolean(8, message.isMarked);
-		st.setDate(9, new java.sql.Date(message.sentDate.getTime()));
-		st.setDate(10, new java.sql.Date(message.receivedDate.getTime()));
-		st.setString(11, message.baseContent);
-		st.setString(12, message.mimeContentType);
-		st.setBytes(13, message.rawEmail);
-		int updatedCount=st.executeUpdate();
-		/*
-		if(updatedCount==1)
-		{ // get generated id
-			ResultSet generatedKeys = st.getGeneratedKeys();
-			if (generatedKeys.next()) message.id = generatedKeys.getLong(1);
-		}
-		*/
+	if (folder == null)
+	    throw new NullPointerException("folder may not be null");
+	if (!(folder instanceof StoredEmailFolderRegistry))
+	    throw new NullPointerException("folder must be an instance of StoredEmailFolderRegistry");
+	final StoredEmailFolderRegistry folderRegistry = (StoredEmailFolderRegistry)folder;
+    	PreparedStatement st = con.prepareStatement(
+						    "INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message) VALUES (?,?,?,?,?,?,?,?,?,?)",
+						    Statement.RETURN_GENERATED_KEYS);
+	System.out.println("1");
+	st.setLong(1, folderRegistry.id);
+	System.out.println("1");
+	st.setInt(2, message.state);
+	System.out.println("1");
+	st.setString(3, message.subject);
+	System.out.println("1");
+	st.setString(4, message.from);
+	System.out.println("1");
+	st.setString(5, message.messageId);
+	System.out.println("1");
+	st.setDate(6, new java.sql.Date(message.sentDate.getTime()));
+	System.out.println("1");
+	st.setDate(7, new java.sql.Date(message.receivedDate.getTime()));
+	System.out.println("1");
+	st.setString(8, message.baseContent);
+	System.out.println("1");
+	st.setString(9, message.mimeContentType);
+	System.out.println("1");
+	st.setBytes(10, message.rawEmail);
+	System.out.println("1");
+	final int updatedCount=st.executeUpdate();
+	if(updatedCount==1)
+	{ // get generated id
+	    ResultSet generatedKeys = st.getGeneratedKeys();
+	    long generatedKey = 0;
+	    if (generatedKeys.next()) 
+		generatedKey = generatedKeys.getLong(1);
+	    System.out.println("generatedKey=" + generatedKey);
+	}
     }
-    
-    @Override public StoredEmailMessage[] loadEmailMessages(boolean withRaw,Condition cond) throws SQLException
+
+    @Override public StoredEmailMessage[] loadMessages(StoredEmailFolder folder) throws SQLException
     {
-    	String whereCondStr="";
-    	if(cond==Condition.UNREAD) whereCondStr=" WHERE is_readed = 1";
-    	PreparedStatement st = con.prepareStatement("SELECT id,message_id,subject,from,to,cc,bcc,is_readed,is_marked,sent_date,received_date,body,mime_body"+(withRaw?",raw":"")+whereCondStr+" FROM email_message;");
-    	//st.setLong(1, g.id);
+	if (folder == null)
+	    throw new NullPointerException("folder may not be null");
+	if (!(folder instanceof StoredEmailFolderRegistry))
+	    throw new IllegalArgumentException("folder must be an instance of StoredEmailFolderRegistry");
+	final StoredEmailFolderRegistry folderRegistry = (StoredEmailFolderRegistry)folder;
+	PreparedStatement st = con.prepareStatement("SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type FROM mail_message WHERE mail_folder_id=?");
+	st.setLong(1, folderRegistry.id);
     	ResultSet rs = st.executeQuery();
-    	Vector<StoredEmailMessageSql> messages = new Vector<StoredEmailMessageSql>();
+    	LinkedList<StoredEmailMessage> res = new LinkedList<StoredEmailMessage>();
     	while (rs.next())
     	{
-    		StoredEmailMessageSql message=new StoredEmailMessageSql(con);
-    		message.id=rs.getLong(1);
-    		message.messageId=rs.getString(2);
-    		message.subject=rs.getString(3);
-    		message.from=rs.getString(4);
-    		message.to=EmailStoringSql.SimpleArrayDeSerialize(rs.getString(5));
-    		message.cc=EmailStoringSql.SimpleArrayDeSerialize(rs.getString(6));
-    		message.bcc=EmailStoringSql.SimpleArrayDeSerialize(rs.getString(7));
-    		message.isReaded=rs.getBoolean(8);
-    		message.isMarked=rs.getBoolean(9);
-    		message.sentDate=new java.util.Date(rs.getDate(10).getTime());
-    		message.receivedDate=new java.util.Date(rs.getDate(11).getTime());
-    		message.baseContent=rs.getString(12);
-    		message.mimeContentType=rs.getString(13);
-    		if(withRaw) message.rawEmail=rs.getBytes(14);
-    		
-    	}
-    	return messages.toArray(new StoredEmailMessage[messages.size()]);
+	    final StoredEmailMessageSql message=new StoredEmailMessageSql(con);
+	    message.id = rs.getLong(1);
+	    message.messageId = rs.getString(2).trim();
+	    message.state = rs.getInt(3);
+	    message.subject = rs.getString(4);
+	    message.from = rs.getString(5);
+	    message.sentDate = new java.util.Date(rs.getDate(6).getTime());
+	    message.receivedDate = new java.util.Date(rs.getDate(7).getTime());
+	    message.baseContent = rs.getString(8);
+	    message.mimeContentType = rs.getString(9).trim();
+	    res.add(message);
+	}
+    	return res.toArray(new StoredEmailMessage[res.size()]);
     }
 }

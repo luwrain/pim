@@ -17,26 +17,24 @@
 package org.luwrain.pim.email;
 
 import java.util.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-
-
+import java.sql.*;
 
 class StoredEmailMessageSql extends EmailMessage implements StoredEmailMessage, Comparable
 {
     Connection con;
-    public long id = 0;
-    public int state = 0;
+    public long id;
 
-    @Override public int getState() {return state;}
     public StoredEmailMessageSql(Connection con)
     {
     	this.con = con;
-    	if (con == null) throw new NullPointerException("con may not be null");
+    	if (con == null) 
+	    throw new NullPointerException("con may not be null");
     }
 
+    @Override public int getState()
+    {
+	return state;
+    }
 
     @Override public void setState(int state) throws SQLException
     {
@@ -101,26 +99,13 @@ class StoredEmailMessageSql extends EmailMessage implements StoredEmailMessage, 
     	st.executeUpdate();
     	this.bcc = bcc;
 	}
-    @Override public Boolean getIsReaded() {return isReaded;}
-    @Override public void setIsReaded(Boolean isReaded) throws SQLException
-	{
-		PreparedStatement st = con.prepareStatement("UPDATE email_message SET is_readed = ? WHERE id = ?;");
-		st.setBoolean(1, isReaded);
-		st.setLong(2, id);
-		st.executeUpdate();
-		this.isReaded = isReaded;
+
+    @Override public java.util.Date getSentDate() 
+    {
+	return sentDate;
     }
-    @Override public Boolean getIsMarked() {return isMarked;}
-	@Override public void setIsMarked(Boolean isMarked) throws SQLException
-	{
-		PreparedStatement st = con.prepareStatement("UPDATE email_message SET is_marked = ? WHERE id = ?;");
-		st.setBoolean(1, isMarked);
-		st.setLong(2, id);
-		st.executeUpdate();
-		this.isMarked = isMarked;
-    }
-    @Override public Date getSentDate() {return sentDate;}
-    @Override public void setSentDate(Date sentDate) throws SQLException
+
+    @Override public void setSentDate(java.util.Date sentDate) throws SQLException
 	{
 		PreparedStatement st = con.prepareStatement("UPDATE email_message SET sent_date = ? WHERE id = ?;");
 		st.setDate(1, new java.sql.Date(sentDate.getTime()));
@@ -128,8 +113,13 @@ class StoredEmailMessageSql extends EmailMessage implements StoredEmailMessage, 
 		st.executeUpdate();
 		this.sentDate = sentDate;
     }
-    @Override public Date getReceivedDate() {return receivedDate;}
-    @Override public void setReceivedDate(Date receivedDate) throws SQLException
+
+    @Override public java.util.Date getReceivedDate()
+    {
+	return receivedDate;
+    }
+
+    @Override public void setReceivedDate(java.util.Date receivedDate) throws SQLException
 	{
 		PreparedStatement st = con.prepareStatement("UPDATE email_message SET received_date = ? WHERE id = ?;");
 		st.setDate(1, new java.sql.Date(receivedDate.getTime()));
@@ -137,6 +127,7 @@ class StoredEmailMessageSql extends EmailMessage implements StoredEmailMessage, 
 		st.executeUpdate();
 		this.receivedDate = receivedDate;
     }
+
     @Override public String getBaseContent() {return baseContent;}
     @Override public void setBaseContent(String baseContent) throws SQLException
     {
