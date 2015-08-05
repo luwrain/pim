@@ -229,4 +229,25 @@ class MailStoringSql extends MailStoringRegistry
 	}
     	return res.toArray(new StoredMailMessage[res.size()]);
     }
+
+    @Override public void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder) throws Exception
+    {
+	if (folder == null)
+	    throw new NullPointerException("folder may not be null");
+	if (!(folder instanceof StoredMailFolderRegistry))
+	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
+	if (message == null)
+	    throw new NullPointerException("message may not be null");
+	if (!(message instanceof StoredMailMessageSql))
+	    throw new NullPointerException("message must be an instance of StoredMailMessageSql");
+	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
+	final StoredMailMessageSql messageSql = (StoredMailMessageSql)message;
+	final PreparedStatement st = con.prepareStatement(
+"UPDATE mail_message SET mail_folder_id=? WHERE id=?"
+);
+	st.setLong(1, folderRegistry.id);
+	st.setLong(2, messageSql.id);
+	st.executeUpdate();
+    }
+
 }
