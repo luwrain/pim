@@ -1,4 +1,5 @@
 /*
+   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
    Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
 
    This file is part of the Luwrain.
@@ -22,6 +23,7 @@ public interface MailStoring extends Cloneable
 {
     StoredMailFolder getFoldersRoot() throws Exception;
     StoredMailFolder[] getFolders(StoredMailFolder folder) throws Exception;
+    StoredMailFolder getFolderByUniRef(String uniRef) throws Exception;
     void saveMessage(StoredMailFolder folder, MailMessage message) throws Exception;
     StoredMailMessage[] loadMessages(StoredMailFolder folder) throws Exception;
 }

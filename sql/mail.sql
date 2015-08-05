@@ -11,3 +11,11 @@ CREATE TABLE mail_message (
   mime_content_type varchar(256) NOT NULL,
   raw_message blob NOT NULL
 );
+
+CREATE TABLE mail_message_field  (
+  id identity, 
+  mail_message_id int NOT NULL,
+  field_type int NOT NULL,
+value varchar(512) NOT NULL,
+);
+
