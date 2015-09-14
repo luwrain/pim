@@ -24,6 +24,7 @@ public interface MailStoring extends Cloneable
     StoredMailFolder getFoldersRoot() throws Exception;
     StoredMailFolder[] getFolders(StoredMailFolder folder) throws Exception;
     StoredMailFolder getFolderByUniRef(String uniRef) throws Exception;
+    StoredMailAccount[] loadAccounts() throws Exception;
     void saveMessage(StoredMailFolder folder, MailMessage message) throws Exception;
     StoredMailMessage[] loadMessages(StoredMailFolder folder) throws Exception;
     void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder) throws Exception;

@@ -73,7 +73,7 @@ class MailStoringSql extends MailStoringRegistry
     	return str.split(";");
     }
 
-    @Override public void saveMessage(StoredMailFolder folder, MailMessage message) throws SQLException
+    @Override public void saveMessage(StoredMailFolder folder, MailMessage message) throws Exception
     {
 	if (folder == null)
 	    throw new NullPointerException("folder may not be null");
@@ -85,28 +85,18 @@ class MailStoringSql extends MailStoringRegistry
 						    Statement.RETURN_GENERATED_KEYS);
 	System.out.println("1");
 	st.setLong(1, folderRegistry.id);
-	System.out.println("1");
 	st.setInt(2, message.state);
-	System.out.println("1");
 	st.setString(3, message.subject);
-	System.out.println("1");
 	st.setString(4, message.from);
-	System.out.println("1");
 	st.setString(5, message.messageId);
-	System.out.println("1");
 	st.setDate(6, new java.sql.Date(message.sentDate.getTime()));
-	System.out.println("1");
 	st.setDate(7, new java.sql.Date(message.receivedDate.getTime()));
-	System.out.println("1");
 	st.setString(8, message.baseContent);
-	System.out.println("1");
 	st.setString(9, message.mimeContentType);
-	System.out.println("1");
 	st.setBytes(10, message.rawMail);
-	System.out.println("1");
 	final int updatedCount=st.executeUpdate();
 	if(updatedCount != 1)
-	    return;
+	    throw new Exception("Unable to execute initial INSERT query");
 	final ResultSet generatedKeys = st.getGeneratedKeys();
 	if (!generatedKeys.next()) 
 	    return;

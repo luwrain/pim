@@ -49,7 +49,6 @@ abstract class NewsStoringRegistry implements NewsStoring
 	    if (g != null)
 		groups.add(g);
 	}
-	System.out.println("groups " + groups.size());
 	return groups.toArray(new StoredNewsGroup[groups.size()]);
     }
 

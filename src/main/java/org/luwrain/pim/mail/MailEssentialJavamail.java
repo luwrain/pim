@@ -1,46 +1,25 @@
-/*
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
-
-   This file is part of the Luwrain.
-
-   Luwrain is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   Luwrain is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.mail;
+
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+import java.sql.*;
+
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-
-import org.luwrain.pim.mail.MailStoringSql.Condition;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.Flags.Flag;
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.*;
-
 import com.sun.mail.imap.IMAPMessage;
 import com.sun.mail.pop3.POP3Message;
 
-import java.sql.*;
+import org.luwrain.pim.mail.MailStoringSql.Condition;
 
 public class MailEssentialJavamail implements MailEssential
 {
@@ -170,17 +149,17 @@ public class MailEssentialJavamail implements MailEssential
     // used to load addition fields from Message POP3 or IMAP online
     public void readJavamailMessageOnline(MailMessage msg) throws Exception
     {
-	if(jmailmsg.getClass()==IMAPMessage.class)
+	if(jmailmsg instanceof IMAPMessage)
 	{
 	    IMAPMessage imessage=((IMAPMessage)jmailmsg);
 	    msg.messageId=imessage.getMessageID();
 	} else 
-	    if(jmailmsg.getClass()==POP3Message.class)
+	    if(jmailmsg instanceof POP3Message)
 	    {
 		POP3Message pmessage=((POP3Message)jmailmsg);
 		msg.messageId=pmessage.getMessageID();
-	    }
-	throw new Exception("Unknown email Message class "+jmailmsg.getClass().getName()); // TODO: check that it will never happend
+	    } else
+	throw new Exception("Unknown email Message class "+jmailmsg.getClass().getName());
     }
 
     public void readJavamailMessageContent(MailMessage msg) throws Exception

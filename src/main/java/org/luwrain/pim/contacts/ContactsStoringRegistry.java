@@ -22,7 +22,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	    throw new NullPointerException("registry may not be null");
     }
 
-    @Override public StoredContactsFolder getRootFolder() throws Exception
+    @Override public StoredContactsFolder getFoldersRoot() throws Exception
     {
 	final StoredContactsFolderRegistry[] folders = loadFolders();
 	for(StoredContactsFolderRegistry f: folders)
@@ -39,7 +39,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	final LinkedList<StoredContactsFolder> res = new LinkedList<StoredContactsFolder>();
 	final StoredContactsFolderRegistry[] folders = loadFolders();
 	for(StoredContactsFolderRegistry f: folders)
-	    if (f.parentId == parent.id)
+	    if (f.parentId == parent.id && f.id != f.parentId)
 		res.add(f);
 	return res.toArray(new StoredContactsFolder[res.size()]);
     }
@@ -49,7 +49,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	//FIXME:
     }
 
-    @Override public void deleteSFolder(StoredContactsFolder folder) throws Exception
+    @Override public void deleteFolder(StoredContactsFolder folder) throws Exception
     {
 	//FIXME:
     }
@@ -84,7 +84,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	}
 	final RegistryAutoCheck check = new RegistryAutoCheck(registry, LOG_FACILITY);
 	final String path = RegistryPath.join(registryKeys.contactsFolders(), name);
-	folder.title = check.stringNotEmpty(RegistryPath.join(path, "name"), "");
+	folder.title = check.stringNotEmpty(RegistryPath.join(path, "title"), "");
 	folder.orderIndex = check.intPositive(RegistryPath.join(path, "order-index"), -1);
 	folder.parentId = check.intPositive(RegistryPath.join(path, "parent-id"), -1);
 	if (folder.title.isEmpty() || folder.parentId < 0)

@@ -89,6 +89,33 @@ abstract class MailStoringRegistry implements MailStoring
 	return res;
     }
 
+    @Override public StoredMailAccount[] loadAccounts() throws Exception
+    {
+	final String[] subdirs = registry.getDirectories(registryKeys.mailAccounts());
+	if (subdirs == null || subdirs.length < 1)
+	    return new StoredMailAccount[0];
+	final LinkedList<StoredMailAccountRegistry> accounts = new LinkedList<StoredMailAccountRegistry>();
+	for(String s: subdirs)
+	{
+	    if (s == null || s.isEmpty())
+		continue;
+	    long id = 0;
+	    try {
+		id = Integer.parseInt(s);
+	    }
+	    catch(NumberFormatException e)
+	    {
+		continue;
+	    }
+	    final StoredMailAccountRegistry account = new StoredMailAccountRegistry(registry, id);
+	    if (account.load())
+		accounts.add(account);
+	}
+	final StoredMailAccountRegistry[] res = accounts.toArray(new StoredMailAccountRegistry[accounts.size()]);
+	Arrays.sort(res);
+	return res;
+    }
+
     private StoredMailFolderRegistry readFolder(String name)
     {
 	final StoredMailFolderRegistry folder = new StoredMailFolderRegistry(registry);

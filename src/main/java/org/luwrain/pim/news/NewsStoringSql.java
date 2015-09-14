@@ -19,34 +19,17 @@ package org.luwrain.pim.news;
 import java.sql.*;
 import java.util.*;
 
-import org.luwrain.core.Registry;
+import org.luwrain.core.*;
 
 public class NewsStoringSql extends NewsStoringRegistry
 {
     private Connection con;
-    private String url = "";
-    private String login = "";
-    private String passwd = "";
 
-    public NewsStoringSql(Registry registry,
-			  Connection con,
-			  String url,
-			  String login,
-			  String passwd)
+    public NewsStoringSql(Registry registry, Connection con)
     {
 	super(registry);
 	this.con = con;
-	this.url = url;
-	this.login = login;
-	this.passwd = passwd;
-	if (con == null)
-	    throw new NullPointerException("con may not be null");
-	if (url == null)
-	    throw new NullPointerException("url may not be null");
-	if (login == null)
-	    throw new NullPointerException("login may not be null");
-	if (passwd == null)
-	    throw new NullPointerException("passwd may not be null");
+	NullCheck.notNull(con, "con");
     }
 
     @Override public void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws SQLException
@@ -222,19 +205,5 @@ public class NewsStoringSql extends NewsStoringRegistry
 		res[k] = count;
 	}
 	return res;
-    }
-
-    @Override public Object clone()
-    {
-	Connection newCon = null;
-	try {
-	    newCon = DriverManager.getConnection (url, login, passwd);
-	}
-	catch (SQLException e)
-	{
-	    e.printStackTrace();
-	    return null;
-	}
-	return new NewsStoringSql(registry, newCon, url, login, passwd);
     }
 }
