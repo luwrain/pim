@@ -18,21 +18,23 @@
 package org.luwrain.pim.contacts;
 
 import org.luwrain.core.Registry;
+import org.luwrain.core.NullCheck;
+import org.luwrain.util.RegistryPath;
+import org.luwrain.util.RegistryAutoCheck;
+import org.luwrain.pim.RegistryKeys;
 
-class StoredContactsFolderRegistry implements StoredContactsFolder, Comparable
+class StoredContactsFolderRegistry extends ContactsFolder implements StoredContactsFolder
 {
+    private final RegistryKeys registryKeys = new RegistryKeys();
     private Registry registry;
 
-    public long id;
-    public String title;
-    public int orderIndex;
-    public long parentId; 
+    int id;
+    int parentId; 
 
-    public StoredContactsFolderRegistry(Registry registry)
+    StoredContactsFolderRegistry(Registry registry)
     {
 	this.registry = registry;
-	if (registry == null)
-	    throw new NullPointerException("registry may not be null");
+	NullCheck.notNull(registry, "registry");
     }
 
     @Override public String getTitle() throws Exception
@@ -42,7 +44,10 @@ class StoredContactsFolderRegistry implements StoredContactsFolder, Comparable
 
     @Override public void setTitle(String value) throws Exception
     {
-	//FIXME:
+	NullCheck.notNull(value, "value");
+	if (!registry.setString(RegistryPath.join(getPath(), "title"), value))
+	    updateError("title");
+	title = value;
     }
 
     @Override public int getOrderIndex() throws Exception
@@ -52,12 +57,31 @@ class StoredContactsFolderRegistry implements StoredContactsFolder, Comparable
 
     @Override public void setOrderIndex(int value) throws Exception
     {
-	//FIXME:
+
+	if (!registry.setInteger(RegistryPath.join(getPath(), "order-index"), value))
+	    updateError("order-index");
+	orderIndex = value;
     }
 
-    @Override public String toString()
+    void setParentId(int value) throws Exception
     {
-	return title != null?title:"";
+	if (!registry.setInteger(RegistryPath.join(getPath(), "parent-id"), value))
+	    updateError("parent-id");
+	parentId = value;
+    }
+
+    boolean load()
+    {
+	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
+	final String path = getPath();
+	title = check.stringNotEmpty(RegistryPath.join(path, "title"), "");
+	orderIndex = check.intPositive(RegistryPath.join(path, "order-index"), -1);
+	parentId = check.intPositive(RegistryPath.join(path, "parent-id"), -1);
+	if (title.isEmpty() || parentId < 0)
+	    return false;
+	if (orderIndex < 0)
+	    orderIndex = 0;
+	return true;
     }
 
     @Override public boolean equals(Object o)
@@ -68,15 +92,13 @@ class StoredContactsFolderRegistry implements StoredContactsFolder, Comparable
 	return id == folder.id;
     }
 
-    @Override public int compareTo(Object o)
+    String getPath()
     {
-	if (o == null || !(o instanceof StoredContactsFolderRegistry))
-	    return 0;
-	final StoredContactsFolderRegistry folder = (StoredContactsFolderRegistry)o;
-	if (orderIndex < folder.orderIndex)
-	    return -1;
-	if (orderIndex > folder.orderIndex)
-	    return 1;
-	return 0;
+return RegistryPath.join(registryKeys.contactsFolders(), "" + id);
+    }
+
+    private void updateError(String param) throws Exception
+    {
+	throw new Exception("Unable to update in the registry " + getPath() + "/" + param);
     }
 }

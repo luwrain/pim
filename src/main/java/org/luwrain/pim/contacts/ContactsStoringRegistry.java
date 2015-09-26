@@ -20,16 +20,15 @@ package org.luwrain.pim.contacts;
 import java.util.*;
 
 import org.luwrain.core.Registry;
+import org.luwrain.core.NullCheck;
 import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.util.RegistryPath;
 import org.luwrain.pim.RegistryKeys;
 
 abstract class ContactsStoringRegistry implements ContactsStoring
 {
-    private static final String LOG_FACILITY = "pim.contacts";
-
+    private final RegistryKeys registryKeys = new RegistryKeys();
     private Registry registry;
-    private RegistryKeys registryKeys = new RegistryKeys();
 
     public ContactsStoringRegistry(Registry registry)
     {
@@ -40,7 +39,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 
     @Override public StoredContactsFolder getFoldersRoot() throws Exception
     {
-	final StoredContactsFolderRegistry[] folders = loadFolders();
+	final StoredContactsFolderRegistry[] folders = loadAllFolders();
 	for(StoredContactsFolderRegistry f: folders)
 	    if (f.id == f.parentId)
 		return f;
@@ -53,7 +52,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	    return null;
 	final StoredContactsFolderRegistry parent = (StoredContactsFolderRegistry)folder;
 	final LinkedList<StoredContactsFolder> res = new LinkedList<StoredContactsFolder>();
-	final StoredContactsFolderRegistry[] folders = loadFolders();
+	final StoredContactsFolderRegistry[] folders = loadAllFolders();
 	for(StoredContactsFolderRegistry f: folders)
 	    if (f.parentId == parent.id && f.id != f.parentId)
 		res.add(f);
@@ -62,7 +61,22 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 
     @Override public void saveFolder(StoredContactsFolder addTo, ContactsFolder folder) throws Exception
     {
-	//FIXME:
+	NullCheck.notNull(addTo, "addTo");
+	NullCheck.notNull(folder, "folder");
+	NullCheck.notNull(folder.title, "folder.title");
+	if (folder.title.isEmpty())
+	    throw new IllegalArgumentException("folder.title may not be null");
+	final StoredContactsFolderRegistry parentFolder = (StoredContactsFolderRegistry)addTo;
+	final int newId = newFolderId();
+	final String newPath = RegistryPath.join(registryKeys.contactsFolders(), "" + newId);
+	if (!registry.addDirectory(newPath))
+	    throw new Exception("Unable to add to the registry new directory " + newPath);
+	if (!registry.setString(RegistryPath.join(newPath, "title"), folder.title))
+	    throw new Exception("Unable to add to the registry new string value " + newPath + "/title");
+	if (!registry.setInteger(RegistryPath.join(newPath, "order-index"), folder.orderIndex))
+	    throw new Exception("Unable to add to the registry new integer value " + newPath + "/order-index");
+	if (!registry.setInteger(RegistryPath.join(newPath, "parent-id"), parentFolder.id))
+	    throw new Exception("Unable to add to the registry new integer value " + newPath + "/parent-id");
     }
 
     @Override public void deleteFolder(StoredContactsFolder folder) throws Exception
@@ -70,7 +84,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	//FIXME:
     }
 
-    private StoredContactsFolderRegistry[] loadFolders()
+    private StoredContactsFolderRegistry[] loadAllFolders()
     {
 	final String[] subdirs = registry.getDirectories(registryKeys.contactsFolders());
 	if (subdirs == null || subdirs.length < 1)
@@ -80,33 +94,43 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	{
 	    if (s == null || s.isEmpty())
 		continue;
-	    final StoredContactsFolderRegistry f = readFolder(s);
-	    if (f != null)
+	    int id = 0;
+	    try {
+		id = Integer.parseInt(s);
+	    }
+	    catch (NumberFormatException e)
+	    {
+		e.printStackTrace();
+		continue;
+	    }
+	    final StoredContactsFolderRegistry f = new StoredContactsFolderRegistry(registry);
+	    f.id = id;
+	    if (f.load())
 		folders.add(f);
 	}
 	return folders.toArray(new StoredContactsFolderRegistry[folders.size()]);
     }
 
-    private StoredContactsFolderRegistry readFolder(String name)
+    private int newFolderId()
     {
-	final StoredContactsFolderRegistry folder = new StoredContactsFolderRegistry(registry);
-	try {
-	    folder.id = Integer.parseInt(name.trim());
-	}
-	catch(NumberFormatException e)
+	final String[] values = registry.getDirectories(registryKeys.contactsFolders());
+	int res = 0;
+	for(String s: values)
 	{
-	    e.printStackTrace();
-	    return null;
+	    if (s == null || s.isEmpty())
+		continue;
+	    int value = 0;
+	    try {
+		value = Integer.parseInt(s);
+	    }
+	    catch (NumberFormatException e)
+	    {
+		e.printStackTrace();
+		continue;
+	    }
+	    if (value > res)
+		res = value;
 	}
-	final RegistryAutoCheck check = new RegistryAutoCheck(registry, LOG_FACILITY);
-	final String path = RegistryPath.join(registryKeys.contactsFolders(), name);
-	folder.title = check.stringNotEmpty(RegistryPath.join(path, "title"), "");
-	folder.orderIndex = check.intPositive(RegistryPath.join(path, "order-index"), -1);
-	folder.parentId = check.intPositive(RegistryPath.join(path, "parent-id"), -1);
-	if (folder.title.isEmpty() || folder.parentId < 0)
-	    return null;
-	if (folder.orderIndex < 0)
-	    folder.orderIndex = 0;
-	return folder;
+	return res + 1;
     }
 }

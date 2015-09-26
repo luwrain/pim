@@ -19,6 +19,8 @@ package org.luwrain.pim;
 
 import org.luwrain.core.*;
 
+import org.luwrain.cpanel.pim.MailSection;
+
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
     private Registry registry;
@@ -27,6 +29,8 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     private org.luwrain.pim.news.Factory newsFactory;
     private org.luwrain.pim.contacts.Factory contactsFactory;
     private org.luwrain.pim.binder.Factory binderFactory;
+
+    private MailSection mailSection = null;
 
     @Override public String init(Luwrain luwrain)
     {
@@ -90,5 +94,15 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		    return b;
 		}
 	    }};
+    }
+
+    @Override public org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain)
+    {
+	if (mailSection == null)
+	    mailSection = new MailSection(mailFactory);
+	System.out.println("section");
+	return new org.luwrain.cpanel.Section[]{
+	    mailSection,
+	};
     }
 }

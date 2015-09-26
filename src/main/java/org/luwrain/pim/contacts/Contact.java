@@ -23,4 +23,9 @@ public class Contact extends CommonAttr
 {
     public String title = "";
     public ContactValue[] values = new ContactValue[0];
+
+    @Override public String toString()
+    {
+	return title != null?title:"";
+    }
 }

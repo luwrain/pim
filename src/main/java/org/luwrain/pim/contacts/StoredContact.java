@@ -21,6 +21,8 @@ import org.luwrain.pim.StoredCommonAttr;
 
 public interface StoredContact extends StoredCommonAttr
 {
+    String getTitle() throws Exception;
+    void setTitle(String value) throws Exception;
     ContactValue[] getValues() throws Exception;
     void setValues(ContactValue[] values) throws Exception;
 }

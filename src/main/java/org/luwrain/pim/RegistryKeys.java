@@ -147,6 +147,11 @@ public class RegistryKeys
 	return getProperty("mail.Accounts");
     }
 
+    public String mailRules()
+    {
+	return getProperty("mail.Rules");
+    }
+
     public String newsType()
     {
 	return getProperty("news.type");
