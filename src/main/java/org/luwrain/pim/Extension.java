@@ -100,7 +100,6 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     {
 	if (mailSection == null)
 	    mailSection = new MailSection(mailFactory);
-	System.out.println("section");
 	return new org.luwrain.cpanel.Section[]{
 	    mailSection,
 	};
