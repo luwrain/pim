@@ -47,7 +47,6 @@ class MailRulesSection extends EmptySection
 	}
 	environment.refreshSectionsTree();
 	return true;
-
     }
 
     @Override public String toString()

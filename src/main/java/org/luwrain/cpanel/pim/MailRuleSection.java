@@ -44,6 +44,7 @@ class MailRuleSection extends EmptySection
 	    NullCheck.notNull(rule, "rule");
 	    NullCheck.notNull(environment, "environment");
 	    addEdit("header-regex", "Регулярное выражение для заголовка:", rule.getHeaderRegex(), null, true);
+	    addUniRef("dest-folder-uniref", "Почтовая группа:", rule.getDestFolderUniRef(), null, true);
 	}
 
 	@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -56,6 +57,15 @@ class MailRuleSection extends EmptySection
 		    environment.gotoSectionsTree();
 		}
 	    return super.onKeyboardEvent(event);
+	}
+
+	void save() throws Exception
+	{
+	    rule.setHeaderRegex(getEnteredText("header-regex"));
+	    final UniRefInfo uniRefInfo = getUniRefInfo("dest-folder-uniref");
+	    if (uniRefInfo != null)
+		rule.setDestFolderUniRef(uniRefInfo.toString()); else
+		rule.setDestFolderUniRef("");
 	}
 
 	@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
@@ -106,12 +116,29 @@ class MailRuleSection extends EmptySection
 
     @Override public boolean canCloseSection(Environment environment)
     {
+	if (area == null)
+	    return true;
+	try {
+	    area.save();
+	}
+	catch (Exception e)
+	{
+	    e.printStackTrace();
+	    environment.getLuwrain().message("Во время сохранения введённых параметров произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);//FIXME:
+	}
+	area = null;
 	return true;
     }
 
     @Override public boolean onTreeInsert(Environment environment)
     {
-	return false;
+	if (!MailRulesSection.addNew(storing))
+	{
+	    environment.getLuwrain().message("При добавлении нового правила произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);//FIXME:
+	    return true;
+	}
+	environment.refreshSectionsTree();
+	return true;
     }
 
     @Override public boolean onTreeDelete(Environment environment)
@@ -132,13 +159,13 @@ class MailRuleSection extends EmptySection
 	    return true;
 	}
 	rule = null;
+	area = null;
 	environment.refreshSectionsTree();
 	return true;
     }
 
     @Override public boolean isSectionEnabled()
     {
-	System.out.println("enabled");
 	return rule != null;
     }
 

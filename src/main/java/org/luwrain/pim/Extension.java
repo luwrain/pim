@@ -32,6 +32,8 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 
     private MailSection mailSection = null;
 
+    private org.luwrain.pim.mail.FolderUniRefProc mailFolderUniRefProc;
+
     @Override public String init(Luwrain luwrain)
     {
 	this.registry = luwrain.getRegistry();
@@ -103,5 +105,14 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	return new org.luwrain.cpanel.Section[]{
 	    mailSection,
 	};
+    }
+
+	@Override public UniRefProc[] getUniRefProcs(Luwrain luwrain)
+	{
+	    if (mailFolderUniRefProc == null)
+		mailFolderUniRefProc = new org.luwrain.pim.mail.FolderUniRefProc(luwrain);
+	    return new UniRefProc[]{
+		mailFolderUniRefProc,
+	    };
     }
 }

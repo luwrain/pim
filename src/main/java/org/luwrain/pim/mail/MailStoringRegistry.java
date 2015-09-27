@@ -27,9 +27,6 @@ import org.luwrain.pim.RegistryKeys;
 
 abstract class MailStoringRegistry implements MailStoring
 {
-    static private final String FOLDER_UNIREF_PREFIX = "mailfolder:";
-    private static final String LOG_FACILITY = "pim.email";
-
     private Registry registry;
     private RegistryKeys registryKeys = new RegistryKeys();
 
@@ -62,13 +59,24 @@ abstract class MailStoringRegistry implements MailStoring
 	return res.toArray(new StoredMailFolder[res.size()]);
     }
 
+    @Override public String getFolderUniRef(StoredMailFolder folder) throws Exception
+    {
+	if (folder == null || !(folder instanceof StoredMailFolderRegistry))
+	    return "";
+	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
+	return FolderUniRefProc.PREFIX + ":" + folderRegistry.id;
+    }
+
     @Override public StoredMailFolder getFolderByUniRef(String uniRef)
     {
+	/*
 	if (uniRef == null || uniRef.length() < FOLDER_UNIREF_PREFIX.length() + 1)
 	    return null;
 	if (!uniRef.startsWith(FOLDER_UNIREF_PREFIX))
 	    return null;
 	return readFolder(uniRef.substring(FOLDER_UNIREF_PREFIX.length()));
+	*/
+	return null;
     }
 
     @Override public StoredMailRule[] getRules() throws Exception
@@ -121,25 +129,6 @@ abstract class MailStoringRegistry implements MailStoring
 	final String path = RegistryPath.join(registryKeys.mailRules(), "" + ruleRegistry.id);
 	if (!registry.deleteDirectory(path))
 	    throw new Exception("Unable to delete the registry directory " + path);
-    }
-
-    private StoredMailFolderRegistry[] loadAllFolders()
-    {
-	final String[] subdirs = registry.getDirectories(registryKeys.mailFolders());
-	if (subdirs == null || subdirs.length < 1)
-	    return new StoredMailFolderRegistry[0];
-	final LinkedList<StoredMailFolderRegistry> folders = new LinkedList<StoredMailFolderRegistry>();
-	for(String s: subdirs)
-	{
-	    if (s == null || s.isEmpty())
-		continue;
-	    final StoredMailFolderRegistry f = readFolder(s);
-	    if (f != null)
-		folders.add(f);
-	}
-	final StoredMailFolderRegistry[] res = folders.toArray(new StoredMailFolderRegistry[folders.size()]);
-	Arrays.sort(res);
-	return res;
     }
 
     @Override public StoredMailAccount[] loadAccounts() throws Exception
@@ -214,26 +203,31 @@ abstract class MailStoringRegistry implements MailStoring
 	    throw new Exception("Unable to delete the registry directory " + path);
     }
 
-    private StoredMailFolderRegistry readFolder(String name)
+    private StoredMailFolderRegistry[] loadAllFolders()
     {
-	final StoredMailFolderRegistry folder = new StoredMailFolderRegistry(registry);
-	try {
-	    folder.id = Integer.parseInt(name.trim());
-	}
-	catch(NumberFormatException e)
+	final String[] subdirs = registry.getDirectories(registryKeys.mailFolders());
+	if (subdirs == null || subdirs.length < 1)
+	    return new StoredMailFolderRegistry[0];
+	final LinkedList<StoredMailFolderRegistry> folders = new LinkedList<StoredMailFolderRegistry>();
+	for(String s: subdirs)
 	{
-	    e.printStackTrace();
-	    return null;
+	    if (s == null || s.isEmpty())
+		continue;
+	    int id = 0;
+	    try {
+		id = Integer.parseInt(s);
+	    }
+	    catch (NumberFormatException e)
+	    {
+		e.printStackTrace();
+		continue;
+	    }
+	    final StoredMailFolderRegistry f = new StoredMailFolderRegistry(registry, id);
+	    if (f.load())
+		folders.add(f);
 	}
-	final RegistryAutoCheck check = new RegistryAutoCheck(registry, LOG_FACILITY);
-	final String path = RegistryPath.join(registryKeys.mailFolders(), name);
-	folder.title = check.stringNotEmpty(RegistryPath.join(path, "title"), "");
-	folder.orderIndex = check.intPositive(RegistryPath.join(path, "order-index"), -1);
-	folder.parentId = check.intPositive(RegistryPath.join(path, "parent-id"), -1);
-	if (folder.title.isEmpty() || folder.parentId < 0)
-	    return null;
-	if (folder.orderIndex < 0)
-	    folder.orderIndex = 0;
-	return folder;
+	final StoredMailFolderRegistry[] res = folders.toArray(new StoredMailFolderRegistry[folders.size()]);
+	Arrays.sort(res);
+	return res;
     }
 }

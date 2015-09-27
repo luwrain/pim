@@ -18,21 +18,22 @@
 package org.luwrain.pim.mail;
 
 import org.luwrain.core.Registry;
+import org.luwrain.core.NullCheck;
+import org.luwrain.pim.RegistryKeys;
+import org.luwrain.util.*;
 
-class StoredMailFolderRegistry implements StoredMailFolder, Comparable
+class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder
 {
+    private final RegistryKeys registryKeys = new RegistryKeys();
     private Registry registry;
 
-    public long id;
-    public long parentId;
-    public String title;
-    public int orderIndex;
+    int id;
+    int parentId;
 
-    public StoredMailFolderRegistry(Registry registry)
+    StoredMailFolderRegistry(Registry registry, int id)
     {
 	this.registry = registry;
-	if (registry == null)
-	    throw new NullPointerException("registry may not be null");
+	NullCheck.notNull(registry, "registry");
     }
 
     @Override public String getTitle() throws Exception
@@ -55,11 +56,6 @@ class StoredMailFolderRegistry implements StoredMailFolder, Comparable
 	//FIXME:
     }
 
-    @Override public String toString()
-    {
-	return title != null?title:"";
-    }
-
     @Override public boolean equals(Object o)
     {
 	if (o == null || !(o instanceof StoredMailFolderRegistry))
@@ -68,15 +64,27 @@ class StoredMailFolderRegistry implements StoredMailFolder, Comparable
 	return id == folder.id;
     }
 
-    @Override public int compareTo(Object o)
+    boolean load()
     {
-	if (o == null || !(o instanceof StoredMailFolderRegistry))
-	    return 0;
-	final StoredMailFolderRegistry folder = (StoredMailFolderRegistry)o;
-	if (orderIndex < folder.orderIndex)
-	    return -1;
-	if (orderIndex > folder.orderIndex)
-	    return 1;
-	return 0;
+	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
+	final String path = getPath();
+	title = check.stringNotEmpty(RegistryPath.join(path, "title"), "");
+	orderIndex = check.intPositive(RegistryPath.join(path, "order-index"), -1);
+	parentId = check.intPositive(RegistryPath.join(path, "parent-id"), -1);
+	if (title.isEmpty() || parentId < 0)
+	    return false;
+	if (orderIndex < 0)
+	    orderIndex = 0;
+	return true;
+    }
+
+    private String getPath()
+    {
+	return RegistryPath.join(registryKeys.mailFolders(), "" + id);
+    }
+
+    void updateError(String param) throws Exception
+    {
+	throw new Exception("Unable to update in the registry " + getPath() + "/" + param);
     }
 }

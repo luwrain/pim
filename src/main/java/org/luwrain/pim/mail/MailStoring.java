@@ -23,6 +23,7 @@ public interface MailStoring extends Cloneable
 {
     StoredMailFolder getFoldersRoot() throws Exception;
     StoredMailFolder[] getFolders(StoredMailFolder folder) throws Exception;
+    String getFolderUniRef(StoredMailFolder folder) throws Exception;
     StoredMailFolder getFolderByUniRef(String uniRef) throws Exception;
     StoredMailAccount[] loadAccounts() throws Exception;
     void saveAccount(MailAccount account) throws Exception;
