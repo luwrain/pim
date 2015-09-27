@@ -20,6 +20,7 @@ package org.luwrain.pim.mail;
 import java.util.*;
 
 import org.luwrain.core.Registry;
+import org.luwrain.core.NullCheck;
 import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.util.RegistryPath;
 import org.luwrain.pim.RegistryKeys;
@@ -41,7 +42,7 @@ abstract class MailStoringRegistry implements MailStoring
 
     @Override public StoredMailFolder getFoldersRoot() throws Exception
     {
-	final StoredMailFolderRegistry[] folders = loadFolders();
+	final StoredMailFolderRegistry[] folders = loadAllFolders();
 	for(StoredMailFolderRegistry f: folders)
 	    if (f.id == f.parentId)
 		return f;
@@ -54,7 +55,7 @@ abstract class MailStoringRegistry implements MailStoring
 	    return null;
 	final StoredMailFolderRegistry parent = (StoredMailFolderRegistry)folder;
 	final LinkedList<StoredMailFolder> res = new LinkedList<StoredMailFolder>();
-	final StoredMailFolderRegistry[] folders = loadFolders();
+	final StoredMailFolderRegistry[] folders = loadAllFolders();
 	for(StoredMailFolderRegistry f: folders)
 	    if (f.parentId == parent.id && f.id != f.parentId)
 		res.add(f);
@@ -70,7 +71,59 @@ abstract class MailStoringRegistry implements MailStoring
 	return readFolder(uniRef.substring(FOLDER_UNIREF_PREFIX.length()));
     }
 
-    private StoredMailFolderRegistry[] loadFolders()
+    @Override public StoredMailRule[] getRules() throws Exception
+    {
+	final String[] dirNames = registry.getDirectories(registryKeys.mailRules());
+	if (dirNames == null || dirNames.length < 1)
+	    return new StoredMailRule[0];
+	final LinkedList<StoredMailRuleRegistry> res = new LinkedList<StoredMailRuleRegistry>();
+	for(String s: dirNames)
+	{
+	    if (s == null || s.trim().isEmpty())
+		continue;
+	    int id;
+	    try {
+		id = Integer.parseInt(s);
+	    }
+	    catch(NumberFormatException e)
+	    {
+		e.printStackTrace();
+		continue;
+	    }
+	    final StoredMailRuleRegistry rule = new StoredMailRuleRegistry(registry, id);
+	    if (rule.load())
+		res.add(rule);
+	}
+	return res.toArray(new StoredMailRuleRegistry[res.size()]);
+    }
+
+    @Override public void saveRule(MailRule rule) throws Exception
+    {
+	NullCheck.notNull(rule, "rule");
+	final int newId = org.luwrain.pim.Util.newFolderId(registry, registryKeys.mailRules());
+	final String path = RegistryPath.join(registryKeys.mailRules(), "" + newId);
+	if (!registry.addDirectory(path))
+	    throw new Exception("Unable to create new registry directory " + path);
+	if (!registry.setString(RegistryPath.join(path, "action"), StoredMailRuleRegistry.getActionStr(rule.action)))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "action"));
+	if (!registry.setString(RegistryPath.join(path, "header-regex"), rule.headerRegex))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "header-regex"));
+	if (!registry.setString(RegistryPath.join(path, "dest-folder-uniref"), rule.destFolderUniRef))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "dest-folder-uniref"));
+    }
+
+    @Override public void deleteRule(StoredMailRule rule) throws Exception
+    {
+	NullCheck.notNull(rule, "rule");
+	if (!(rule instanceof StoredMailRuleRegistry))
+	    throw new IllegalArgumentException("rule is not an instance of StoredMailRuleRegistry");
+	final StoredMailRuleRegistry ruleRegistry = (StoredMailRuleRegistry)rule;
+	final String path = RegistryPath.join(registryKeys.mailRules(), "" + ruleRegistry.id);
+	if (!registry.deleteDirectory(path))
+	    throw new Exception("Unable to delete the registry directory " + path);
+    }
+
+    private StoredMailFolderRegistry[] loadAllFolders()
     {
 	final String[] subdirs = registry.getDirectories(registryKeys.mailFolders());
 	if (subdirs == null || subdirs.length < 1)
@@ -99,7 +152,7 @@ abstract class MailStoringRegistry implements MailStoring
 	{
 	    if (s == null || s.isEmpty())
 		continue;
-	    long id = 0;
+	    int id = 0;
 	    try {
 		id = Integer.parseInt(s);
 	    }
@@ -114,6 +167,51 @@ abstract class MailStoringRegistry implements MailStoring
 	final StoredMailAccountRegistry[] res = accounts.toArray(new StoredMailAccountRegistry[accounts.size()]);
 	Arrays.sort(res);
 	return res;
+    }
+
+    @Override public void saveAccount(MailAccount account) throws Exception
+    {
+	NullCheck.notNull(account, "account");
+	final int newId = org.luwrain.pim.Util.newFolderId(registry, registryKeys.mailAccounts());
+	final String path = RegistryPath.join(registryKeys.mailAccounts(), "" + newId);
+	if (!registry.addDirectory(path))
+	    throw new Exception("Unable to create new registry directory " + path);
+	if (!registry.setString(RegistryPath.join(path, "type"), StoredMailAccountRegistry.getTypeStr(account.type)))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "type"));
+	if (!registry.setString(RegistryPath.join(path, "title"), account.title))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "title"));
+	if (!registry.setString(RegistryPath.join(path, "host"), account.host))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "host"));
+	if (!registry.setInteger(RegistryPath.join(path, "port"), account.port))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "hport"));
+	if (!registry.setString(RegistryPath.join(path, "login"), account.login))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "login"));
+	if (!registry.setString(RegistryPath.join(path, "passwd"), account.passwd))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "passwd"));
+	if (!registry.setString(RegistryPath.join(path, "subst-name"), account.substName))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "subst-name"));
+	if (!registry.setString(RegistryPath.join(path, "subst-address"), account.substAddress))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "subst-address"));
+	final boolean ssl = (account.flags & MailAccount.FLAG_SSL) > 0;
+	final boolean tls = (account.flags & MailAccount.FLAG_TLS) > 0;
+	final boolean def = (account.flags & MailAccount.FLAG_DEFAULT) > 0;
+	if (!registry.setBoolean(RegistryPath.join(path, "ssl"), ssl))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "ssl"));
+	if (!registry.setBoolean(RegistryPath.join(path, "tls"), tls))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "tls"));
+	if (!registry.setBoolean(RegistryPath.join(path, "def"), def))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "default"));
+    }
+
+    @Override public void deleteAccount(StoredMailAccount account) throws Exception
+    {
+	NullCheck.notNull(account, "account");
+	if (!(account instanceof StoredMailAccountRegistry))
+	    throw new IllegalArgumentException("account is not an instance of StoredMailRAccountRegistry");
+	final StoredMailAccountRegistry accountRegistry = (StoredMailAccountRegistry)account;
+	final String path = RegistryPath.join(registryKeys.mailAccounts(), "" + accountRegistry.id);
+	if (!registry.deleteDirectory(path))
+	    throw new Exception("Unable to delete the registry directory " + path);
     }
 
     private StoredMailFolderRegistry readFolder(String name)

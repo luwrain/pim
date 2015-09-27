@@ -22,14 +22,13 @@ import org.luwrain.core.NullCheck;
 import org.luwrain.util.*;
 import org.luwrain.pim.RegistryKeys;
 
-class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount, Comparable
+class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 {
-    public Registry registry;
-    public long id;
-
     private final RegistryKeys registryKeys = new RegistryKeys();
+    public Registry registry;
+    public int id;
 
-    StoredMailAccountRegistry(Registry registry, long id)
+    StoredMailAccountRegistry(Registry registry, int id)
     {
 	this.registry = registry;
 	this.id = id;
@@ -43,27 +42,35 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 
     @Override public void setType(int value) throws Exception
     {
-	//FIXME:
+	if (!registry.setString(RegistryPath.join(getPath(), "type"), getTypeStr(value)))
+	    updateError("type");
+	type = value;
     }
 
     @Override public String getTitle() throws Exception
     {
-	return title;
+	return title != null?title:"";
     }
 
     @Override public void setTitle(String value) throws Exception
     {
-	//FIXME:
+	NullCheck.notNull(value, "value");
+	if (!registry.setString(RegistryPath.join(getPath(), "title"), value))
+	    updateError("title");
+	title = value;
     }
 
     @Override public String getHost() throws Exception
     {
-	return host;
+	return host != null?host:"";
     }
 
     @Override public void setHost(String value) throws Exception
     {
-	//FIXME:
+	NullCheck.notNull(value, "value");
+	if (!registry.setString(RegistryPath.join(getPath(), "host"), value))
+	    updateError("host");
+	host = value;
     }
 
     @Override public int getPort() throws Exception
@@ -73,27 +80,35 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 
     @Override public void setPort(int value) throws Exception
     {
-	//FIXME:
+	if (!registry.setInteger(RegistryPath.join(getPath(), "port"), value))
+	    updateError("port");
+	port = value;
     }
 
     @Override public String getLogin() throws Exception
     {
-	return login;
+	return login != null?login:"";
     }
 
     @Override public void setLogin(String value) throws Exception
     {
-	//FIXME:
+	NullCheck.notNull(value, "value");
+	if (!registry.setString(RegistryPath.join(getPath(), "login"), value))
+	    updateError("login");
+	login = value;
     }
 
     @Override public String getPasswd() throws Exception
     {
-	return passwd;
+	return passwd != null?passwd:"";
     }
 
     @Override public void setPasswd(String value) throws Exception
     {
-	//FIXME:
+	NullCheck.notNull(value, "value");
+	if (!registry.setString(RegistryPath.join(getPath(), "passwd"), value))
+	    updateError("passwd");
+	passwd = value;
     }
 
     @Override public int getFlags() throws Exception
@@ -103,33 +118,48 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 
     @Override public void setFlags(int value) throws Exception
     {
-	//FIXME:
+	final boolean ssl = (value & FLAG_SSL) != 0;
+	final boolean tls = (value & FLAG_TLS) != 0;
+	final boolean def = (value & FLAG_DEFAULT) != 0;
+	if (!registry.setBoolean(RegistryPath.join(getPath(), "ssl"), ssl))
+	    updateError("ssl");
+	if (!registry.setBoolean(RegistryPath.join(getPath(), "tls"), tls))
+	    updateError("tls");
+	if (!registry.setBoolean(RegistryPath.join(getPath(), "default"), def))
+	    updateError("default");
+	flags = value;
     }
 
     @Override public String getSubstName() throws Exception
     {
-	return substName;
+	return substName != null?substName:"";
     }
 
     @Override public void setSubstName(String value) throws Exception
     {
-	//FIXME:
+	NullCheck.notNull(value, "value");
+	if (!registry.setString(RegistryPath.join(getPath(), "subst-name"), value))
+	    updateError("subst-name");
+	substName = value;
     }
 
     @Override public String getSubstAddress() throws Exception
     {
-	return substAddress;
+	return substAddress != null?substAddress:"";
     }
 
     @Override public void setSubstAddress(String value) throws Exception
     {
-	//FIXME:
+	NullCheck.notNull(value, "value");
+	if (!registry.setString(RegistryPath.join(getPath(), "subst-address"), value))
+	    updateError("subst-address");
+	substAddress = value;
     }
 
     boolean load()
     {
 	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
-	final String path = RegistryPath.join(registryKeys.mailAccounts(), "" + id);
+	final String path = getPath();
 	final String typeStr = check.stringNotEmpty(RegistryPath.join(path, "type"), "").toLowerCase().trim();
 	title = check.stringNotEmpty(RegistryPath.join(path, "title"), "");
 	host =  check.stringNotEmpty(RegistryPath.join(path, "host"), "");
@@ -143,6 +173,8 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	    flags |= FLAG_SSL;
 	if (check.bool(RegistryPath.join(path, "tls"), false))
 	    flags |= FLAG_TLS;
+	if (check.bool(RegistryPath.join(path, "default"), false))
+	    flags |= FLAG_DEFAULT;
 	switch(typeStr)
 	{
 	case "pop3":
@@ -161,16 +193,26 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	return true;
     }
 
-    @Override public String toString()
+    private String getPath()
     {
-	return title;
+	return RegistryPath.join(registryKeys.mailAccounts(), "" + id);
     }
 
-    @Override public int compareTo(Object o)
+    static String getTypeStr(int code)
     {
-	if (o == null || !(o instanceof StoredMailAccountRegistry))
-	    return 0;
-	final StoredMailAccountRegistry account = (StoredMailAccountRegistry)o;
-	return title.compareTo(account.title);
+	switch(code)
+	{
+	case POP3:
+	    return "pop3";
+	case SMTP:
+	    return "smtp";
+	default:
+	    return "";
+	}
+    }
+
+    void updateError(String param) throws Exception
+    {
+	throw new Exception("Unable to update in the registry " + getPath() + "/" + param);
     }
 }

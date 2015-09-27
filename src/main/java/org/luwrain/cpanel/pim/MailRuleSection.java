@@ -111,7 +111,7 @@ class MailRuleSection extends EmptySection
 
     @Override public boolean onTreeInsert(Environment environment)
     {
-	return truefalse
+	return false;
     }
 
     @Override public boolean onTreeDelete(Environment environment)
@@ -140,6 +140,15 @@ class MailRuleSection extends EmptySection
     {
 	System.out.println("enabled");
 	return rule != null;
+    }
+
+    @Override public boolean equals(Object o)
+    {
+	if (rule == null ||
+	    o == null || !(o instanceof MailRuleSection))
+	    return false;
+	final MailRuleSection sect = (MailRuleSection)o;
+	return rule.equals(sect.rule);
     }
 
     @Override public String toString()

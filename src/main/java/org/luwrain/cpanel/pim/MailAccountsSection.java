@@ -19,9 +19,10 @@ package org.luwrain.cpanel.pim;
 
 import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
+import org.luwrain.popups.Popups;
 import org.luwrain.pim.mail.*;
 
-public class MailAccountsSection extends EmptySection
+class MailAccountsSection extends EmptySection
 {
     private MailAccountSection[] childSections = null;
     private MailStoring storing;
@@ -32,50 +33,29 @@ public class MailAccountsSection extends EmptySection
 	NullCheck.notNull(storing, "storing");
     }
 
-    @Override public int getDesiredRoot()
-    {
-	return BasicSections.NONE;
-    }
-
     @Override public Section[] getChildSections()
     {
 	constructChildSections();
 	return childSections;
     }
 
-    String getSectionName()
-    {
-	return "Учётные записи";
-    }
-
-    @Override public Area getSectionArea(Environment environment)
-    {
-	return null;
-    }
-
-    @Override public boolean canCloseSection(Environment environment)
-    {
-	return true;
-    }
-
     @Override public boolean onTreeInsert(Environment environment)
     {
-	return false;
-    }
-
-    @Override public boolean onTreeDelete(Environment environment)
-    {
-	return false;
-    }
-
-    @Override public boolean isSectionEnabled()
-    {
+	addNew(storing, environment);
 	return true;
+    }
+
+    @Override public void refreshChildSubsections()
+    {
+	if (childSections == null)
+	    return;
+	childSections = null;
+	constructChildSections();
     }
 
     @Override public String toString()
     {
-	return getSectionName();
+	return "Учётные записи";//FIXME:
     }
 
     private void constructChildSections()
@@ -102,6 +82,25 @@ public class MailAccountsSection extends EmptySection
 
     static void addNew(MailStoring storing, Environment environment)
     {
-	Popups.simple(environment.getLuwrain(), "Новая учётная запись", "Введите имя новой учётной записи:", "");
+	final String title = Popups.simple(environment.getLuwrain(), "Новая учётная запись", "Введите имя новой учётной записи:", "");
+	if (title == null)
+	    return;
+	if (title.trim().isEmpty())
+	{
+	    environment.getLuwrain().message("Введённое имя новой учётной записи не может быть пустым", Luwrain.MESSAGE_ERROR);//FIXME:
+	    return;
+	}
+	final MailAccount account = new MailAccount();
+	account.title = title;
+	try {
+	    storing.saveAccount(account);
+	}
+	catch(Exception e)
+	{
+	    e.printStackTrace();
+	    environment.getLuwrain().message("Во время добавления новой учётной записи произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
+	    return;
+	}
+	environment.refreshSectionsTree();
     }
 }

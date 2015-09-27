@@ -237,6 +237,7 @@ class MailAccountSection extends EmptySection
 	    environment.getLuwrain().message("При удалении учётной записи произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
 	    return true;
 	}
+	System.out.println("deleted");
 	account = null;
 	area = null;
 	environment.refreshSectionsTree();
@@ -246,6 +247,15 @@ class MailAccountSection extends EmptySection
     @Override public boolean isSectionEnabled()
     {
 	return account != null;
+    }
+
+    @Override public boolean equals(Object o)
+    {
+	if (account == null ||
+	    o == null || !(o instanceof MailAccountSection))
+	    return false;
+	final MailAccountSection sect = (MailAccountSection)o;
+	return account.equals(sect.account);
     }
 
     @Override public String toString()

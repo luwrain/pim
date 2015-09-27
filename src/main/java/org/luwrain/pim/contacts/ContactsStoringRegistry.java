@@ -111,7 +111,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	return folders.toArray(new StoredContactsFolderRegistry[folders.size()]);
     }
 
-    private int newFolderId()
+    private int newFolderId()//FIXME:
     {
 	final String[] values = registry.getDirectories(registryKeys.contactsFolders());
 	int res = 0;

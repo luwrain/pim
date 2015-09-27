@@ -57,7 +57,6 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 
     @Override public void setOrderIndex(int value) throws Exception
     {
-
 	if (!registry.setInteger(RegistryPath.join(getPath(), "order-index"), value))
 	    updateError("order-index");
 	orderIndex = value;
