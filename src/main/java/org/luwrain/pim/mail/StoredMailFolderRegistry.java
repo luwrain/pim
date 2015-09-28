@@ -33,6 +33,7 @@ class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder
     StoredMailFolderRegistry(Registry registry, int id)
     {
 	this.registry = registry;
+	this.id = id;
 	NullCheck.notNull(registry, "registry");
     }
 

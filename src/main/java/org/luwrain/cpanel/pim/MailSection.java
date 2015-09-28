@@ -23,6 +23,7 @@ import org.luwrain.pim.mail.*;
 
 public class MailSection extends EmptySection
 {
+    private Factory factory;
     private MailStoring storing = null;
     private MailAccountsSection accounts;
     private MailRulesSection rules;
@@ -30,7 +31,7 @@ public class MailSection extends EmptySection
     public MailSection(Factory factory)
     {
 	NullCheck.notNull(factory, "factory");
-	storing = factory.createMailStoring();
+	this.factory = factory;
     }
 
     @Override public int getDesiredRoot()
@@ -40,6 +41,9 @@ public class MailSection extends EmptySection
 
     @Override public Section[] getChildSections()
     {
+	prepareStoring();
+	if (storing == null)
+	    return new Section[0];
 	if (accounts == null)
 	    accounts = new MailAccountsSection(storing);
 	if (rules == null)
@@ -52,6 +56,7 @@ public class MailSection extends EmptySection
 
     @Override public boolean isSectionEnabled()
     {
+	prepareStoring();
 	return storing != null;
     }
 
@@ -66,5 +71,12 @@ public class MailSection extends EmptySection
 	    accounts.refreshChildSubsections();
 	if (rules != null)
 	    rules.refreshChildSubsections();
+    }
+
+    private void prepareStoring()
+    {
+	if (storing != null)
+	    return;
+	storing = factory.createMailStoring();
     }
 }
