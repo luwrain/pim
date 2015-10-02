@@ -100,4 +100,9 @@ class MailRulesSection extends EmptySection
 	    return false;
 	}
     }
+
+    @Override public int getSectionFlags()
+    {
+	return FLAG_HAS_INSERT;
+    }
 }

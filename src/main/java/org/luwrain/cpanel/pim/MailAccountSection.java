@@ -269,4 +269,9 @@ class MailAccountSection extends EmptySection
 	    return "#Mail storing error!#";
 	}
     }
+
+    @Override public int getSectionFlags()
+    {
+	return FLAG_HAS_INSERT | FLAG_HAS_DELETE;
+    }
 }

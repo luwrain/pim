@@ -103,4 +103,9 @@ class MailAccountsSection extends EmptySection
 	}
 	environment.refreshSectionsTree();
     }
+
+    @Override public int getSectionFlags()
+    {
+	return FLAG_HAS_INSERT;
+    }
 }

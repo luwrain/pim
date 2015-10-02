@@ -180,12 +180,15 @@ public class MailEssentialJavamail implements MailEssential
 
     public void readJavamailMessageContent(MailMessage msg) throws Exception
     {
-	File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
+	final File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
+	System.out.println("saving " + temp.getAbsolutePath());
 	FileOutputStream fs=new FileOutputStream(temp);
-	SaveMailToFile(msg,fs);
+	//	SaveMailToFile(msg,fs);
+	jmailmsg.writeTo(fs);
 	fs.flush();
-	msg.rawMail=new byte[(int)fs.getChannel().size()]; // TODO: long to int cas, here is limit for 2Gb raw email size, needed to be checked?
 	fs.close();
+	msg.rawMail = Files.readAllBytes(temp.toPath());
+					 //FIXME:Delete temp;
     }
 
     Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files

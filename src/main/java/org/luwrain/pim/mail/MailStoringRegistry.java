@@ -69,13 +69,22 @@ abstract class MailStoringRegistry implements MailStoring
 
     @Override public StoredMailFolder getFolderByUniRef(String uniRef)
     {
-	/*
-	if (uniRef == null || uniRef.length() < FOLDER_UNIREF_PREFIX.length() + 1)
+	if (uniRef == null || uniRef.length() < FolderUniRefProc.PREFIX.length() + 2)
 	    return null;
-	if (!uniRef.startsWith(FOLDER_UNIREF_PREFIX))
+	if (!uniRef.startsWith(FolderUniRefProc.PREFIX + ":"))
 	    return null;
-	return readFolder(uniRef.substring(FOLDER_UNIREF_PREFIX.length()));
-	*/
+	int id = 0;
+	try {
+	    id = Integer.parseInt(uniRef.substring(FolderUniRefProc.PREFIX.length() + 1));
+	}
+	catch (NumberFormatException e)
+	{
+	    e.printStackTrace();
+	    return null;
+	}
+	final StoredMailFolderRegistry folder = new StoredMailFolderRegistry(registry, id);
+	if (folder.load())
+	    return folder;
 	return null;
     }
 
