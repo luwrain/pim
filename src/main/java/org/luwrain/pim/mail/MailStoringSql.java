@@ -22,7 +22,7 @@ import java.util.*;
 
 import org.luwrain.core.Registry;
 
-class MailStoringSql extends MailStoringRegistry
+public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be public 
 {
     static private final int FIELD_TYPE_TO = 1;
     static private final int FIELD_TYPE_CC = 2;
