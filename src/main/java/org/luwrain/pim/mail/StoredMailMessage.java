@@ -38,6 +38,8 @@ public interface StoredMailMessage
     void setCc(String[] cc) throws Exception;
     String[] getBcc() throws Exception;
     void setBcc(String[] bcc) throws Exception;
+    String[] getAttachments() throws Exception;
+    void setAttachments(String[] value) throws Exception;
     Date getSentDate() throws Exception;
     void setSentDate(Date sentDate) throws Exception;
     Date getReceivedDate() throws Exception;

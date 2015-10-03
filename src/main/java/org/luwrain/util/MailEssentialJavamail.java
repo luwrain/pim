@@ -107,7 +107,6 @@ public class MailEssentialJavamail implements MailEssential
 
     void readMessageBasicFields(MailMessage msg) throws Exception
     {
-	System.out.println("message");
 	msg.subject=jmailmsg.getSubject();
 	if(jmailmsg.getFrom()!=null)
 	    msg.from=jmailmsg.getFrom()[0].toString(); else
@@ -118,7 +117,6 @@ public class MailEssentialJavamail implements MailEssential
 	    for(Address addr:jmailmsg.getRecipients(RecipientType.TO))
 		to.add(addr.toString());
 	    msg.to=to.toArray(new String[to.size()]);
-	    System.out.println(to.size() + " items to");
 	} else
 	    msg.to=null;
 	if(jmailmsg.getRecipients(RecipientType.CC)!=null)
@@ -127,16 +125,14 @@ public class MailEssentialJavamail implements MailEssential
 	    for(Address addr:jmailmsg.getRecipients(RecipientType.CC)) 
 to.add(addr.toString());
 	    msg.cc=to.toArray(new String[to.size()]);
-	    System.out.println(to.size() + " items cc");
 	} else 
 	    msg.cc=null;
 	if(jmailmsg.getRecipients(RecipientType.BCC)!=null)
 	{
-	    Vector<String> to=new Vector<String>();
+	    final LinkedList<String> to=new LinkedList<String>();
 	    for(Address addr:jmailmsg.getRecipients(RecipientType.BCC)) 
 to.add(addr.toString());
 	    msg.bcc=to.toArray(new String[to.size()]);
-	    System.out.println(to.size() + " items bcc");
 	} else 
 	    msg.bcc=null;
 	msg.sentDate=jmailmsg.getSentDate();
@@ -144,24 +140,11 @@ to.add(addr.toString());
 	if (msg.receivedDate == null)
 	    msg.receivedDate = new java.util.Date();
 
-	// message body
-	if(jmailmsg.getContent().getClass()==MimeMultipart.class)
-	{
-	    Multipart content =(Multipart)jmailmsg.getContent();
-	    MimeBodyPart file = (MimeBodyPart) content.getBodyPart(0); // first file of multipart is a message body 
-	    msg.baseContent=file.getContent().toString();
-	    // get attachments
-	    for(int i=1;i<content.getCount();i++)
-	    {
-		file = (MimeBodyPart) content.getBodyPart(i);
-		file.getContentID();
-		file.getFileName();
-	    }
-	} else
-	{
-	    msg.baseContent=jmailmsg.getContent().toString();
-	}
-	msg.mimeContentType=jmailmsg.getContentType();
+	final MimePartCollector collector = new MimePartCollector();
+	collector.run(jmailmsg.getContent(), jmailmsg.getContentType(), "");
+	msg.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
+	msg.baseContent = collector.body.toString();
+	msg.mimeContentType = jmailmsg.getContentType();
     }
 
     void readMessageId(MailMessage msg) throws Exception
@@ -182,7 +165,6 @@ to.add(addr.toString());
     public void readJavamailMessageContent(MailMessage msg) throws Exception
     {
 	final File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
-	System.out.println("saving " + temp.getAbsolutePath());
 	FileOutputStream fs=new FileOutputStream(temp);
 	//	SaveMailToFile(msg,fs);
 	jmailmsg.writeTo(fs);

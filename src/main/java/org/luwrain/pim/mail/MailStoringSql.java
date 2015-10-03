@@ -21,6 +21,7 @@ import java.sql.*;
 import java.util.*;
 
 import org.luwrain.core.Registry;
+import org.luwrain.core.NullCheck;
 
 public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be public 
 {
@@ -31,57 +32,38 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 
     static private class StringValue
     {
-	public long messageId = 0;
-	public LinkedList<String> to = new LinkedList<String>();
-	public LinkedList<String> cc = new LinkedList<String>();
-	public LinkedList<String> bcc = new LinkedList<String>();
-	public LinkedList<String> attachments = new LinkedList<String>();
+	long messageId = 0;
+	final LinkedList<String> to = new LinkedList<String>();
+	final LinkedList<String> cc = new LinkedList<String>();
+	final LinkedList<String> bcc = new LinkedList<String>();
+	final LinkedList<String> attachments = new LinkedList<String>();
 
-	public StringValue(long messageId)
+	StringValue(long messageId)
 	{
 	    this.messageId = messageId;
 	}
-}
+    }
 
     private Connection con;
 
-    public enum Condition {ALL,UNREAD};
+    public enum Condition {
+	ALL,
+	UNREAD
+    };
 
-    public MailStoringSql(Registry registry,Connection con)
+    MailStoringSql(Registry registry,Connection con)
     {
 	super(registry);
 	this.con = con;
-	if (con == null)
-	    throw new NullPointerException("con may not be null");
-    }
-
-    /*
-    public static String SimpleArraySerialize(String[] list)
-    { // FIXME: check list contains ';' char or change method to save simple lists of file names and email address
-	StringBuilder b = new StringBuilder();
-	for(String s: list)
-	{
-	    if (!b.toString().isEmpty())
-		b.append(";");
-	    b.append(s);
-	}
-	return b.toString();
-	//    	return String.join(";", list);
-    }
-    */
-
-
-    public static String[] SimpleArrayDeSerialize(String str)
-    {
-    	return str.split(";");
+	NullCheck.notNull(con, "con");
     }
 
     @Override public void saveMessage(StoredMailFolder folder, MailMessage message) throws Exception
     {
-	if (folder == null)
-	    throw new NullPointerException("folder may not be null");
+	NullCheck.notNull(folder, "folder");
+	NullCheck.notNull(message, "message");
 	if (!(folder instanceof StoredMailFolderRegistry))
-	    throw new NullPointerException("folder must be an instance of StoredMailFolderRegistry");
+	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
 	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
     	PreparedStatement st = con.prepareStatement(
 						    "INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message) VALUES (?,?,?,?,?,?,?,?,?,?)",
@@ -103,7 +85,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	if (!generatedKeys.next()) 
 	    return;
 	final long generatedKey = generatedKeys.getLong(1);
-	//to;
+	//to
 	if (message.to != null)
 	    for(String v: message.to)
 	    {
@@ -115,7 +97,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 		st.setString(3, v);
 		st.executeUpdate();
 	    }
-	//cc;
+	//cc
 	if (message.cc != null)
 	    for(String v: message.cc)
 	    {
@@ -127,7 +109,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 		st.setString(3, v);
 		st.executeUpdate();
 	    }
-	//bcc;
+	//bcc
 	if (message.bcc != null)
 	    for(String v: message.bcc)
 	    {
@@ -139,7 +121,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 		st.setString(3, v);
 		st.executeUpdate();
 	    }
-	//attachment;
+	//attachment
 	if (message.attachments != null)
 	    for(String v: message.attachments)
 	    {
@@ -155,8 +137,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 
     @Override public StoredMailMessage[] loadMessages(StoredMailFolder folder) throws SQLException
     {
-	if (folder == null)
-	    throw new NullPointerException("folder may not be null");
+	NullCheck.notNull(folder, "folder");
 	if (!(folder instanceof StoredMailFolderRegistry))
 	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
 	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
@@ -173,8 +154,8 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	    message.state = rs.getInt(3);
 	    message.subject = rs.getString(4);
 	    message.from = rs.getString(5);
-	    message.sentDate = new java.util.Date(rs.getDate(6).getTime());
-	    message.receivedDate = new java.util.Date(rs.getDate(7).getTime());
+	    message.sentDate = new java.util.Date(rs.getTimestamp(6).getTime());
+	    message.receivedDate = new java.util.Date(rs.getTimestamp(7).getTime());
 	    message.baseContent = rs.getString(8);
 	    message.mimeContentType = rs.getString(9).trim();
 	    message.rawMail = null;

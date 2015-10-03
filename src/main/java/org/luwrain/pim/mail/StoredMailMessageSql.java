@@ -113,14 +113,19 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
 
     @Override public void setBcc(String[] bcc) throws SQLException
     {
-/*
-    	PreparedStatement st = con.prepareStatement("UPDATE email_message SET bcc = ? WHERE id = ?;");
-    	st.setString(1, MailStoringSql.SimpleArraySerialize(bcc));
-    	st.setLong(2, id);
-    	st.executeUpdate();
-    	this.bcc = bcc;
-*/
+	//FIXME:
 	}
+
+    @Override public String[] getAttachments() 
+    {
+	return org.luwrain.util.Strings.notNullArray(attachments);
+    }
+
+    @Override public void setAttachments(String[] value) throws SQLException
+    {
+	//FIXME:
+	}
+
 
     @Override public java.util.Date getSentDate() 
     {
