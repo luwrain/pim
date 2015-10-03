@@ -35,7 +35,7 @@ public class MailUtils
     static public final int TLS = 2;
 
     /** max number messages count to load from big email folders when first loaded (limit for testing)*/
-    static final int LIMIT_MESSAGES_LOAD = 10;
+    static final int LIMIT_MESSAGES_LOAD = 500;
 
     public interface Listener
     {
