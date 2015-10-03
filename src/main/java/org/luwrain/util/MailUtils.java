@@ -35,7 +35,7 @@ public class MailUtils
     static public final int TLS = 2;
 
     /** max number messages count to load from big email folders when first loaded (limit for testing)*/
-    static final int LIMIT_MESSAGES_LOAD = 500;
+    static final int LIMIT_MESSAGES_LOAD = 10;
 
     public interface Listener
     {
@@ -140,8 +140,8 @@ public class MailUtils
 	{
 	    final MailMessage message=new MailMessage();
 	    es.jmailmsg=messages[i];
-	    es.readJavamailMessageOnline(message);
-	    es.readJavamailMessageBaseFields(message);
+	    es.readMessageBasicFields(message);
+	    es.readMessageId(message);
 	    es.readJavamailMessageContent(message);
 	    listener.newMessage(message, i, messages.length);
 	    messages[i].setFlag(Flags.Flag.DELETED, true);

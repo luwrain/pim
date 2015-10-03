@@ -22,12 +22,9 @@ import java.io.FileOutputStream;
 
 import org.luwrain.pim.mail.*;
 
-public interface MailEssential
+interface MailEssential
 {
-    // make MimeMessage from class fields
-    public void PrepareInternalStore(MailMessage msg) throws Exception;
-    // used to fill fields via .eml file stream
-    public MailMessage loadMailFromFile(FileInputStream fs) throws Exception;
-    // used to save fields to .eml field stream
-    public void SaveMailToFile(MailMessage msg,FileOutputStream fs) throws Exception;
+    void PrepareInternalStore(MailMessage msg) throws Exception;
+    MailMessage loadMailFromFile(FileInputStream fs) throws Exception;
+    void SaveMailToFile(MailMessage msg,FileOutputStream fs) throws Exception;
 }

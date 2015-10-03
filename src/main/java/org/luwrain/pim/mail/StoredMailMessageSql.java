@@ -19,17 +19,17 @@ package org.luwrain.pim.mail;
 
 import java.util.*;
 import java.sql.*;
+import org.luwrain.core.NullCheck;
 
 class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Comparable
 {
     Connection con;
-    public long id;
+    long id;
 
-    public StoredMailMessageSql(Connection con)
+    StoredMailMessageSql(Connection con)
     {
     	this.con = con;
-    	if (con == null) 
-	    throw new NullPointerException("con may not be null");
+	NullCheck.notNull(con, "con");
     }
 
     @Override public int getState()
@@ -73,32 +73,53 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
 		st.executeUpdate();
 		this.from = from;
     }
-    @Override public String[] getTo() {return to;}
+
+    @Override public String[] getTo() 
+    {
+	return to;
+}
+
     @Override public void setTo(String[] to) throws SQLException
 	{
+	    /*
     	PreparedStatement st = con.prepareStatement("UPDATE email_message SET to = ? WHERE id = ?;");
     	st.setString(1, MailStoringSql.SimpleArraySerialize(to));
     	st.setLong(2, id);
     	st.executeUpdate();
     	this.to = to;
+	    */
 	}
-	@Override public String[] getCc() {return cc;}
+
+	@Override public String[] getCc() 
+    {
+	return cc;
+    }
+
 	@Override public void setCc(String[] cc) throws SQLException
     {
+	/*
     	PreparedStatement st = con.prepareStatement("UPDATE email_message SET cc = ? WHERE id = ?;");
     	st.setString(1, MailStoringSql.SimpleArraySerialize(cc));
     	st.setLong(2, id);
     	st.executeUpdate();
     	this.cc = cc;
+	*/
 	}
-    @Override public String[] getBcc() {return bcc;}
+
+    @Override public String[] getBcc() 
+    {
+	return bcc;
+    }
+
     @Override public void setBcc(String[] bcc) throws SQLException
     {
+/*
     	PreparedStatement st = con.prepareStatement("UPDATE email_message SET bcc = ? WHERE id = ?;");
     	st.setString(1, MailStoringSql.SimpleArraySerialize(bcc));
     	st.setLong(2, id);
     	st.executeUpdate();
     	this.bcc = bcc;
+*/
 	}
 
     @Override public java.util.Date getSentDate() 
@@ -151,10 +172,11 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
     {
     	if(rawMail==null)
     	{
-        	PreparedStatement st = con.prepareStatement("SELECT raw FROM email_message WHERE id = ?;");
+        	final PreparedStatement st = con.prepareStatement("SELECT raw_message FROM mail_message WHERE id = ?;");
         	st.setLong(1, this.id);
-        	ResultSet rs = st.executeQuery();
-        	if(rs.next()) this.rawMail=rs.getBytes(1);
+        	final ResultSet rs = st.executeQuery();
+        	if(rs.next()) 
+this.rawMail=rs.getBytes(1);
     	}
     	return rawMail;
    	}

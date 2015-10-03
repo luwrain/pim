@@ -55,6 +55,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	    throw new NullPointerException("con may not be null");
     }
 
+    /*
     public static String SimpleArraySerialize(String[] list)
     { // FIXME: check list contains ';' char or change method to save simple lists of file names and email address
 	StringBuilder b = new StringBuilder();
@@ -67,6 +68,8 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	return b.toString();
 	//    	return String.join(";", list);
     }
+    */
+
 
     public static String[] SimpleArrayDeSerialize(String str)
     {
@@ -83,7 +86,6 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
     	PreparedStatement st = con.prepareStatement(
 						    "INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message) VALUES (?,?,?,?,?,?,?,?,?,?)",
 						    Statement.RETURN_GENERATED_KEYS);
-	System.out.println("1");
 	st.setLong(1, folderRegistry.id);
 	st.setInt(2, message.state);
 	st.setString(3, message.subject);
@@ -102,7 +104,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	    return;
 	final long generatedKey = generatedKeys.getLong(1);
 	//to;
-	if (message.cc != null)
+	if (message.to != null)
 	    for(String v: message.to)
 	    {
 		st = con.prepareStatement(
@@ -175,6 +177,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	    message.receivedDate = new java.util.Date(rs.getDate(7).getTime());
 	    message.baseContent = rs.getString(8);
 	    message.mimeContentType = rs.getString(9).trim();
+	    message.rawMail = null;
 	    stringValues.put(new Long(message.id), new StringValue(message.id));
 	    res.add(message);
 	}
@@ -239,5 +242,4 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	st.setLong(2, messageSql.id);
 	st.executeUpdate();
     }
-
 }

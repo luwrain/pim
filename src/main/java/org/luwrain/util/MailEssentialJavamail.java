@@ -105,44 +105,45 @@ public class MailEssentialJavamail implements MailEssential
 	}
     }
 
-    // used to fill standart simple mime mail message fields (message can be Mime..., POP3... or IMAP... Message class)
-    public void readJavamailMessageBaseFields(MailMessage msg) throws Exception
+    void readMessageBasicFields(MailMessage msg) throws Exception
     {
+	System.out.println("message");
 	msg.subject=jmailmsg.getSubject();
 	if(jmailmsg.getFrom()!=null)
-	{
-	    msg.from=jmailmsg.getFrom()[0].toString();
-	    //	    InternetAddress inetAddr = (InternetAddress)jmailmsg.getFrom();
-	    //msg.from = inetAddr.getAddress();
-	} else 
+	    msg.from=jmailmsg.getFrom()[0].toString(); else
 	    msg.from=null;
 	if(jmailmsg.getRecipients(RecipientType.TO)!=null)
 	{
-	    Vector<String> to=new Vector<String>();
+	    final LinkedList<String> to=new LinkedList<String>();
 	    for(Address addr:jmailmsg.getRecipients(RecipientType.TO))
 		to.add(addr.toString());
 	    msg.to=to.toArray(new String[to.size()]);
+	    System.out.println(to.size() + " items to");
 	} else
 	    msg.to=null;
 	if(jmailmsg.getRecipients(RecipientType.CC)!=null)
 	{
-	    Vector<String> to=new Vector<String>();
-	    for(Address addr:jmailmsg.getRecipients(RecipientType.CC)) to.add(addr.toString());
+	    final LinkedList<String> to=new LinkedList<String>();
+	    for(Address addr:jmailmsg.getRecipients(RecipientType.CC)) 
+to.add(addr.toString());
 	    msg.cc=to.toArray(new String[to.size()]);
+	    System.out.println(to.size() + " items cc");
 	} else 
 	    msg.cc=null;
 	if(jmailmsg.getRecipients(RecipientType.BCC)!=null)
 	{
 	    Vector<String> to=new Vector<String>();
-	    for(Address addr:jmailmsg.getRecipients(RecipientType.BCC)) to.add(addr.toString());
+	    for(Address addr:jmailmsg.getRecipients(RecipientType.BCC)) 
+to.add(addr.toString());
 	    msg.bcc=to.toArray(new String[to.size()]);
+	    System.out.println(to.size() + " items bcc");
 	} else 
 	    msg.bcc=null;
-	//	msg.isReaded=!jmailmsg.getFlags().contains(Flag.SEEN);
 	msg.sentDate=jmailmsg.getSentDate();
 	msg.receivedDate=jmailmsg.getReceivedDate();
 	if (msg.receivedDate == null)
 	    msg.receivedDate = new java.util.Date();
+
 	// message body
 	if(jmailmsg.getContent().getClass()==MimeMultipart.class)
 	{
@@ -163,17 +164,16 @@ public class MailEssentialJavamail implements MailEssential
 	msg.mimeContentType=jmailmsg.getContentType();
     }
 
-    // used to load addition fields from Message POP3 or IMAP online
-    public void readJavamailMessageOnline(MailMessage msg) throws Exception
+    void readMessageId(MailMessage msg) throws Exception
     {
 	if(jmailmsg instanceof IMAPMessage)
 	{
-	    IMAPMessage imessage=((IMAPMessage)jmailmsg);
+	    final IMAPMessage imessage=((IMAPMessage)jmailmsg);
 	    msg.messageId=imessage.getMessageID();
 	} else 
 	    if(jmailmsg instanceof POP3Message)
 	    {
-		POP3Message pmessage=((POP3Message)jmailmsg);
+		final POP3Message pmessage=((POP3Message)jmailmsg);
 		msg.messageId=pmessage.getMessageID();
 	    } else
 	throw new Exception("Unknown email Message class "+jmailmsg.getClass().getName());
@@ -200,11 +200,10 @@ public class MailEssentialJavamail implements MailEssential
 	MailMessage msg=new MailMessage();
 	jmailmsg=new MimeMessage(session,fs);
 	fs.close();
-	readJavamailMessageBaseFields(msg);
+	readMessageBasicFields(msg);
 	return msg;
     }
 
-    // used to save fields to .eml field stream
     @Override public void SaveMailToFile(MailMessage msg,FileOutputStream fs) throws Exception
     {
 	PrepareInternalStore(msg);
