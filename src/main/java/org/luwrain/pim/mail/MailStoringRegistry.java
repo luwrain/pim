@@ -212,6 +212,35 @@ abstract class MailStoringRegistry implements MailStoring
 	    throw new Exception("Unable to delete the registry directory " + path);
     }
 
+    @Override public String getAccountUniRef(StoredMailAccount account) throws Exception
+    {
+	if (account == null || !(account instanceof StoredMailFolderRegistry))
+	    return "";
+	final StoredMailAccountRegistry accountRegistry = (StoredMailAccountRegistry)account;
+	return AccountUniRefProc.PREFIX + ":" + accountRegistry.id;
+    }
+
+    @Override public StoredMailAccount getAccountByUniRef(String uniRef)
+    {
+	if (uniRef == null || uniRef.length() < AccountUniRefProc.PREFIX.length() + 2)
+	    return null;
+	if (!uniRef.startsWith(AccountUniRefProc.PREFIX + ":"))
+	    return null;
+	int id = 0;
+	try {
+	    id = Integer.parseInt(uniRef.substring(AccountUniRefProc.PREFIX.length() + 1));
+	}
+	catch (NumberFormatException e)
+	{
+	    e.printStackTrace();
+	    return null;
+	}
+	final StoredMailAccountRegistry account = new StoredMailAccountRegistry(registry, id);
+	if (account.load())
+	    return account;
+	return null;
+    }
+
     private StoredMailFolderRegistry[] loadAllFolders()
     {
 	final String[] subdirs = registry.getDirectories(registryKeys.mailFolders());

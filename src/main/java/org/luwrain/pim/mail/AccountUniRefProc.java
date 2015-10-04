@@ -17,22 +17,7 @@
 
 package org.luwrain.pim.mail;
 
-import java.util.*;
-
-public class MailMessage
+public class AccountUniRefProc
 {
-    public String messageId = "";
-	public String subject = "";
-    public String from = "";
-    public String[] to = new String[0];
-    public String[] cc = new String[0];
-    public String[] bcc = new String[0];
-    public int state = 0;
-    public Date sentDate = new Date();
-    public Date receivedDate = new Date();
-    public String baseContent = "";
-    public String mimeContentType = "";
-    public String[] attachments = new String[0];
-    public byte[] rawMail = new byte[0];
-    public String extInfo = "";
+    static final String PREFIX = "mailaccount";
 }

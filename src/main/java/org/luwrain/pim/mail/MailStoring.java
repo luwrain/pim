@@ -28,6 +28,8 @@ public interface MailStoring extends Cloneable
     StoredMailAccount[] loadAccounts() throws Exception;
     void saveAccount(MailAccount account) throws Exception;
     void deleteAccount(StoredMailAccount account) throws Exception;
+    String getAccountUniRef(StoredMailAccount account) throws Exception;
+    StoredMailAccount getAccountByUniRef(String uniRef) throws Exception;
     StoredMailRule[] getRules() throws Exception;
     void saveRule(MailRule rule) throws Exception;
     void deleteRule(StoredMailRule rule) throws Exception;
