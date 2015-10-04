@@ -9,7 +9,8 @@ CREATE TABLE mail_message (
   received_date timestamp NOT NULL,
   base_content varchar(65536) NOT NULL,
   mime_content_type varchar(256) NOT NULL,
-  raw_message blob NOT NULL
+  raw_message blob NOT NULL,
+  ext_info varchar(256) NOT NULL
 );
 
 CREATE TABLE mail_message_field  (

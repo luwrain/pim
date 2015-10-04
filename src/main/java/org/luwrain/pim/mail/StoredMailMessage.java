@@ -50,4 +50,6 @@ public interface StoredMailMessage
     void setMimeContentType(String mimeContentType) throws Exception;
     byte[] getRawMail() throws SQLException;
     void setRawMail(byte[] rawMail) throws SQLException;
+    String getExtInfo() throws Exception;
+    void setExtInfo(String value) throws Exception;
 }

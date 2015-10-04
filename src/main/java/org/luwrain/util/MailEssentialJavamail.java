@@ -35,46 +35,47 @@ import javax.mail.internet.*;
 import com.sun.mail.imap.IMAPMessage;
 import com.sun.mail.pop3.POP3Message;
 
+import org.luwrain.core.NullCheck;
 import org.luwrain.pim.mail.MailStoringSql.Condition;
 import org.luwrain.pim.mail.*;
 
-public class MailEssentialJavamail implements MailEssential
+public class MailEssentialJavamail
 {
+    private Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
     public Message jmailmsg;
 
-    // make MimeMessage from class fields
-    @Override public void PrepareInternalStore(MailMessage msg) throws Exception
+    private InternetAddress[] prepareInternetAddrs(String[] addrs) throws AddressException
     {
+	NullCheck.notNull(addrs, "addrs");
+	final InternetAddress[] res =new InternetAddress[addrs.length];
+	for(int i = 0;i < addrs.length;++i)
+	    res[i] = new InternetAddress(addrs[i]);
+	return res;
+    }
+
+    public void prepareInternalStore(MailMessage msg) throws Exception
+    {
+	NullCheck.notNull(msg.subject, "msg.subject");
+	if (msg.from == null || msg.from.trim().isEmpty())
+	    throw new IllegalArgumentException("msg.from may not be empty");
+	if (msg.to == null || msg.to.length < 1)
+	    throw new IllegalArgumentException("msg.to may not be empty");
+	if (msg.to[0] == null || msg.to[0].trim().isEmpty())
+	    throw new IllegalArgumentException("msg.to[0] may not be empty");
 	jmailmsg=new MimeMessage(session);
 	jmailmsg.setSubject(msg.subject);
-	if(msg.from!=null)
-	    jmailmsg.setFrom(new InternetAddress(msg.from));
-	if(msg.to!=null&&msg.to.length>0)
-	{
-	    int i=0;
-	    InternetAddress[] addr_to=new InternetAddress[msg.to.length];  
-	    for(String addr:msg.to)
-		addr_to[i++]=new InternetAddress(addr);
-	    jmailmsg.setRecipients(RecipientType.TO, addr_to);
-	}
+	jmailmsg.setFrom(new InternetAddress(msg.from));
+	jmailmsg.setRecipients(RecipientType.TO, prepareInternetAddrs(msg.to));
 	if(msg.cc!=null&&msg.cc.length>0)
-	{
-	    int i=0;
-	    InternetAddress[] addr_cc=new InternetAddress[msg.cc.length];  
-	    for(String addr:msg.cc)
-		addr_cc[i++]=new InternetAddress(addr);
-	    jmailmsg.setRecipients(RecipientType.CC, addr_cc);
-	}
+	    jmailmsg.setRecipients(RecipientType.CC, prepareInternetAddrs(msg.cc));
 	if(msg.bcc!=null&&msg.bcc.length>0)
-	{
-	    int i=0;
-	    InternetAddress[] addr_bcc=new InternetAddress[msg.bcc.length];  
-	    for(String addr:msg.bcc)
-		addr_bcc[i++]=new InternetAddress(addr);
-	    jmailmsg.setRecipients(RecipientType.BCC, addr_bcc);
-	}
+	    jmailmsg.setRecipients(RecipientType.BCC, prepareInternetAddrs(msg.bcc));
+
+	System.out.println("Ready to set date");
 	if(msg.sentDate!=null)
 	    jmailmsg.setSentDate(msg.sentDate);
+
+	System.out.println("Ready to set body and attachments");
 	// attachments and message body
 	if(msg.attachments != null && msg.attachments.length > 0)
 	{
@@ -162,22 +163,31 @@ to.add(addr.toString());
 	throw new Exception("Unknown email Message class "+jmailmsg.getClass().getName());
     }
 
-    public void readJavamailMessageContent(MailMessage msg) throws Exception
+    public void saveRawContent(MailMessage msg) throws Exception
     {
 	final File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
 	FileOutputStream fs=new FileOutputStream(temp);
-	//	SaveMailToFile(msg,fs);
 	jmailmsg.writeTo(fs);
 	fs.flush();
 	fs.close();
 	msg.rawMail = Files.readAllBytes(temp.toPath());
-					 //FIXME:Delete temp;
+	temp.delete();
     }
 
-    Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
+    public byte[] toByteArray() throws Exception 
+    {
+	final File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
+	final FileOutputStream fs=new FileOutputStream(temp);
+	jmailmsg.writeTo(fs);
+	fs.flush();
+	fs.close();
+	final byte[] res = Files.readAllBytes(temp.toPath());
+	temp.delete();
+	return res;
+    }
 
     // used to fill fields via .eml file stream
-    @Override public MailMessage loadMailFromFile(FileInputStream fs) throws Exception
+    public MailMessage loadMailFromFile(FileInputStream fs) throws Exception
     {
 	MailMessage msg=new MailMessage();
 	jmailmsg=new MimeMessage(session,fs);
@@ -186,9 +196,9 @@ to.add(addr.toString());
 	return msg;
     }
 
-    @Override public void SaveMailToFile(MailMessage msg,FileOutputStream fs) throws Exception
+    public void saveMailToFile(MailMessage msg,FileOutputStream fs) throws Exception
     {
-	PrepareInternalStore(msg);
+	prepareInternalStore(msg);
 	jmailmsg.writeTo(fs);
 	fs.flush();
 	fs.close();

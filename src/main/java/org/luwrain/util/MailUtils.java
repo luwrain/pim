@@ -35,7 +35,7 @@ public class MailUtils
     static public final int TLS = 2;
 
     /** max number messages count to load from big email folders when first loaded (limit for testing)*/
-    static final int LIMIT_MESSAGES_LOAD = 500;
+    static final int LIMIT_MESSAGES_LOAD = 5000;
 
     public interface Listener
     {
@@ -142,11 +142,11 @@ public class MailUtils
 	    es.jmailmsg=messages[i];
 	    es.readMessageBasicFields(message);
 	    es.readMessageId(message);
-	    es.readJavamailMessageContent(message);
+	    es.saveRawContent(message);
 	    listener.newMessage(message, i, messages.length);
-	    messages[i].setFlag(Flags.Flag.DELETED, true);
+	    //	    messages[i].setFlag(Flags.Flag.DELETED, true);
 	}
-	folder.close(true);
+	folder.close(false);//FIXME:should be true, messages deleting disabled for debugging;
     }
 
     public void sendMessages(MailMessage[] emails) throws Exception
@@ -156,7 +156,7 @@ public class MailUtils
 	MailEssentialJavamail es=new MailEssentialJavamail();
 	for(MailMessage message: emails)
 	{
-	    es.PrepareInternalStore(message);
+	    es.prepareInternalStore(message);
 	    smtpTransport.sendMessage(es.jmailmsg,es.jmailmsg.getRecipients(RecipientType.TO));
 	}
     }

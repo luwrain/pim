@@ -34,4 +34,5 @@ public class MailMessage
     public String mimeContentType = "";
     public String[] attachments = new String[0];
     public byte[] rawMail = new byte[0];
+    String extInfo = "";
 }

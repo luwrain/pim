@@ -66,7 +66,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
 	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
     	PreparedStatement st = con.prepareStatement(
-						    "INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message) VALUES (?,?,?,?,?,?,?,?,?,?)",
+						    "INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
 						    Statement.RETURN_GENERATED_KEYS);
 	st.setLong(1, folderRegistry.id);
 	st.setInt(2, message.state);
@@ -78,6 +78,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	st.setString(8, message.baseContent);
 	st.setString(9, message.mimeContentType);
 	st.setBytes(10, message.rawMail);
+	st.setString(11, message.extInfo);
 	final int updatedCount=st.executeUpdate();
 	if(updatedCount != 1)
 	    throw new Exception("Unable to execute initial INSERT query");
@@ -142,7 +143,9 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
 	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
 	final TreeMap<Long, StringValue> stringValues = new TreeMap<Long, StringValue>();
-	PreparedStatement st = con.prepareStatement("SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type FROM mail_message WHERE mail_folder_id=?");
+	PreparedStatement st = con.prepareStatement(
+						    "SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type,ext_info FROM mail_message WHERE mail_folder_id=?"
+);
 	st.setLong(1, folderRegistry.id);
     	ResultSet rs = st.executeQuery();
     	final LinkedList<StoredMailMessage> res = new LinkedList<StoredMailMessage>();
@@ -159,6 +162,7 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	    message.baseContent = rs.getString(8);
 	    message.mimeContentType = rs.getString(9).trim();
 	    message.rawMail = null;
+	    message.extInfo = rs.getString(10).trim();
 	    stringValues.put(new Long(message.id), new StringValue(message.id));
 	    res.add(message);
 	}

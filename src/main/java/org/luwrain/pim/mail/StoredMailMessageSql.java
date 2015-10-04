@@ -181,10 +181,11 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
         	st.setLong(1, this.id);
         	final ResultSet rs = st.executeQuery();
         	if(rs.next()) 
-this.rawMail=rs.getBytes(1);
+		    this.rawMail=rs.getBytes(1);
     	}
     	return rawMail;
-   	}
+    }
+
     @Override public void setRawMail(byte[] rawMail) throws SQLException
     {
     	PreparedStatement st = con.prepareStatement("UPDATE email_message SET raw = ? WHERE id = ?;");
@@ -192,7 +193,17 @@ this.rawMail=rs.getBytes(1);
     	st.setLong(2, id);
     	st.executeUpdate();
     	this.rawMail = rawMail;
-	}
+    }
+
+    @Override public String getExtInfo() throws Exception
+    {
+	return extInfo != null?extInfo:"";
+    }
+
+    @Override public void setExtInfo(String value) throws Exception
+    {
+	//FIXME:
+    }
 
 	@Override public int compareTo(Object o)
     {
