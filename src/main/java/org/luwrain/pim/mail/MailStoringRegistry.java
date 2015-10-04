@@ -214,7 +214,7 @@ abstract class MailStoringRegistry implements MailStoring
 
     @Override public String getAccountUniRef(StoredMailAccount account) throws Exception
     {
-	if (account == null || !(account instanceof StoredMailFolderRegistry))
+	if (account == null || !(account instanceof StoredMailAccountRegistry))
 	    return "";
 	final StoredMailAccountRegistry accountRegistry = (StoredMailAccountRegistry)account;
 	return AccountUniRefProc.PREFIX + ":" + accountRegistry.id;

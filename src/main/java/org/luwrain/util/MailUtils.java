@@ -25,6 +25,7 @@ import javax.mail.*;
 import javax.mail.internet.MimeMessage.RecipientType;
 import javax.mail.search.ComparisonTerm;
 import javax.mail.search.ReceivedDateTerm;
+import javax.mail.internet.MimeUtility;
 
 import org.luwrain.core.NullCheck;
 import org.luwrain.pim.mail.*;
@@ -159,5 +160,21 @@ public class MailUtils
 	    es.prepareInternalStore(message);
 	    smtpTransport.sendMessage(es.jmailmsg,es.jmailmsg.getRecipients(RecipientType.TO));
 	}
+    }
+
+    public void sendEncodedMessage(byte[] bytes) throws Exception
+    {
+	if(smtpTransport==null) 
+	    throw new Exception("SMTP connection must be initialised");
+	final MailEssentialJavamail es=new MailEssentialJavamail();
+	es.loadFromStream(new ByteArrayInputStream(bytes));
+	smtpTransport.sendMessage(es.jmailmsg,es.jmailmsg.getRecipients(RecipientType.TO));
+    }
+
+    static public String makeAddress(String name, String addr) throws UnsupportedEncodingException
+    {
+	if (name == null || name.trim().isEmpty())
+	    return addr;
+	return MimeUtility.encodeText(name) + " <" + addr + ">";
     }
 }

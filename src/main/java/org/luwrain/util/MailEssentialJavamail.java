@@ -187,6 +187,7 @@ to.add(addr.toString());
     }
 
     // used to fill fields via .eml file stream
+    /*
     public MailMessage loadMailFromFile(FileInputStream fs) throws Exception
     {
 	MailMessage msg=new MailMessage();
@@ -195,6 +196,14 @@ to.add(addr.toString());
 	readMessageBasicFields(msg);
 	return msg;
     }
+    */
+
+    public void loadFromStream(InputStream fs) throws Exception
+    {
+	jmailmsg=new MimeMessage(session,fs);
+	fs.close();
+    }
+
 
     public void saveMailToFile(MailMessage msg,FileOutputStream fs) throws Exception
     {
