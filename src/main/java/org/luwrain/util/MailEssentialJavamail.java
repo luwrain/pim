@@ -119,7 +119,7 @@ public class MailEssentialJavamail
 		to.add(MimeUtility.decodeText(addr.toString()));
 	    msg.to=to.toArray(new String[to.size()]);
 	} else
-	    msg.to=null;
+	    msg.to = new String[0];
 	if(jmailmsg.getRecipients(RecipientType.CC)!=null)
 	{
 	    final LinkedList<String> to=new LinkedList<String>();
@@ -127,7 +127,7 @@ public class MailEssentialJavamail
 		to.add(MimeUtility.decodeText(addr.toString()));
 	    msg.cc=to.toArray(new String[to.size()]);
 	} else 
-	    msg.cc=null;
+	    msg.cc = new String[0];
 	if(jmailmsg.getRecipients(RecipientType.BCC)!=null)
 	{
 	    final LinkedList<String> to=new LinkedList<String>();
@@ -135,7 +135,7 @@ public class MailEssentialJavamail
 		to.add(MimeUtility.decodeText(addr.toString()));
 	    msg.bcc=to.toArray(new String[to.size()]);
 	} else 
-	    msg.bcc=null;
+	    msg.bcc = new String[0];
 	msg.sentDate=jmailmsg.getSentDate();
 	msg.receivedDate=jmailmsg.getReceivedDate();
 	if (msg.receivedDate == null)
@@ -229,9 +229,11 @@ public class MailEssentialJavamail
     {
 	loadFromStream(new ByteArrayInputStream(bytes));
 	final LinkedList<Address> addrs = new LinkedList<Address>();
+	if (jmailmsg.getRecipients(RecipientType.CC) != null)
 	    for(Address a: jmailmsg.getRecipients(RecipientType.CC)) 
 		if (a != null)
 		    addrs.add(a);
+	if (jmailmsg.getRecipients(RecipientType.TO) != null)
 	    for(Address a: jmailmsg.getRecipients(RecipientType.TO))
 		if (a != null)
 		    addrs.add(a);

@@ -30,7 +30,7 @@ import javax.mail.internet.MimeUtility;
 import org.luwrain.core.NullCheck;
 import org.luwrain.pim.mail.*;
 
-public class MailUtils
+public class MailServerConversations
 {
     static public final int SSL = 1;
     static public final int TLS = 2;

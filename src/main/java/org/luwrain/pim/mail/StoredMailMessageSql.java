@@ -20,6 +20,7 @@ package org.luwrain.pim.mail;
 import java.util.*;
 import java.sql.*;
 import org.luwrain.core.NullCheck;
+import org.luwrain.util.Strings;
 
 class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Comparable
 {
@@ -39,86 +40,65 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
 
     @Override public void setState(int state) throws SQLException
     {
-    	PreparedStatement st = con.prepareStatement("UPDATE email_message SET state = ? WHERE id = ?;");
-    	st.setInt(1, state);
-    	st.setLong(2, id);
-    	st.executeUpdate();
-    	this.state = state;
     }
 
-    @Override public String getMessageId() {return messageId;}
+    @Override public String getMessageId() 
+{
+    return messageId;
+}
+
     @Override public void setMessageId(String messageId) throws SQLException
     {
-    	PreparedStatement st = con.prepareStatement("UPDATE email_message SET message_id = ? WHERE id = ?;");
-    	st.setString(1, messageId);
-    	st.setLong(2, id);
-    	st.executeUpdate();
-    	this.messageId = messageId;
     }
-    @Override public String getSubject() {return subject;}
+
+    @Override public String getSubject() 
+    {
+	return subject != null?subject:"";
+    }
+
     @Override public void setSubject(String subject) throws SQLException
     {
-    	PreparedStatement st = con.prepareStatement("UPDATE email_message SET subject = ? WHERE id = ?;");
-    	st.setString(1, subject);
-    	st.setLong(2, id);
-    	st.executeUpdate();
-    	this.subject = subject;
     }
-    @Override public String getFrom() {return from;}
+
+    @Override public String getFrom() 
+{
+    return from != null?from:"";
+}
+
     @Override public void setFrom(String from) throws SQLException
 	{
-		PreparedStatement st = con.prepareStatement("UPDATE email_message SET from = ? WHERE id = ?;");
-		st.setString(1, from);
-		st.setLong(2, id);
-		st.executeUpdate();
-		this.from = from;
     }
 
     @Override public String[] getTo() 
     {
-	return to;
+	return Strings.notNullArray(to);
 }
 
     @Override public void setTo(String[] to) throws SQLException
 	{
-	    /*
-    	PreparedStatement st = con.prepareStatement("UPDATE email_message SET to = ? WHERE id = ?;");
-    	st.setString(1, MailStoringSql.SimpleArraySerialize(to));
-    	st.setLong(2, id);
-    	st.executeUpdate();
-    	this.to = to;
-	    */
 	}
 
 	@Override public String[] getCc() 
     {
-	return cc;
+	return Strings.notNullArray(cc);
     }
 
 	@Override public void setCc(String[] cc) throws SQLException
     {
-	/*
-    	PreparedStatement st = con.prepareStatement("UPDATE email_message SET cc = ? WHERE id = ?;");
-    	st.setString(1, MailStoringSql.SimpleArraySerialize(cc));
-    	st.setLong(2, id);
-    	st.executeUpdate();
-    	this.cc = cc;
-	*/
 	}
 
     @Override public String[] getBcc() 
     {
-	return bcc;
+	return Strings.notNullArray(bcc);
     }
 
     @Override public void setBcc(String[] bcc) throws SQLException
     {
-	//FIXME:
 	}
 
     @Override public String[] getAttachments() 
     {
-	return org.luwrain.util.Strings.notNullArray(attachments);
+	return Strings.notNullArray(attachments);
     }
 
     @Override public void setAttachments(String[] value) throws SQLException
