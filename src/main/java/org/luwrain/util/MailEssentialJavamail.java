@@ -110,13 +110,13 @@ public class MailEssentialJavamail
     {
 	msg.subject=jmailmsg.getSubject();
 	if(jmailmsg.getFrom()!=null)
-	    msg.from=jmailmsg.getFrom()[0].toString(); else
-	    msg.from=null;
+	    msg.from = MimeUtility.decodeText(jmailmsg.getFrom()[0].toString()); else
+	    msg.from = "";
 	if(jmailmsg.getRecipients(RecipientType.TO)!=null)
 	{
 	    final LinkedList<String> to=new LinkedList<String>();
 	    for(Address addr:jmailmsg.getRecipients(RecipientType.TO))
-		to.add(addr.toString());
+		to.add(MimeUtility.decodeText(addr.toString()));
 	    msg.to=to.toArray(new String[to.size()]);
 	} else
 	    msg.to=null;
@@ -124,7 +124,7 @@ public class MailEssentialJavamail
 	{
 	    final LinkedList<String> to=new LinkedList<String>();
 	    for(Address addr:jmailmsg.getRecipients(RecipientType.CC)) 
-to.add(addr.toString());
+		to.add(MimeUtility.decodeText(addr.toString()));
 	    msg.cc=to.toArray(new String[to.size()]);
 	} else 
 	    msg.cc=null;
@@ -132,7 +132,7 @@ to.add(addr.toString());
 	{
 	    final LinkedList<String> to=new LinkedList<String>();
 	    for(Address addr:jmailmsg.getRecipients(RecipientType.BCC)) 
-to.add(addr.toString());
+		to.add(MimeUtility.decodeText(addr.toString()));
 	    msg.bcc=to.toArray(new String[to.size()]);
 	} else 
 	    msg.bcc=null;
@@ -140,7 +140,6 @@ to.add(addr.toString());
 	msg.receivedDate=jmailmsg.getReceivedDate();
 	if (msg.receivedDate == null)
 	    msg.receivedDate = new java.util.Date();
-
 	final MimePartCollector collector = new MimePartCollector();
 	collector.run(jmailmsg.getContent(), jmailmsg.getContentType(), "");
 	msg.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
@@ -204,12 +203,46 @@ to.add(addr.toString());
 	fs.close();
     }
 
-
     public void saveMailToFile(MailMessage msg,FileOutputStream fs) throws Exception
     {
 	prepareInternalStore(msg);
 	jmailmsg.writeTo(fs);
 	fs.flush();
 	fs.close();
+    }
+
+    public String[] getReplyTo(byte[] bytes, boolean decode) throws Exception
+    {
+	loadFromStream(new ByteArrayInputStream(bytes));
+	final Address[] addr = jmailmsg.getReplyTo();
+	if (addr == null || addr.length < 1)
+	    return new String[0];
+	final LinkedList<String> res = new LinkedList<String>();
+	for(Address a: addr)
+	    if (decode)
+		res.add(MimeUtility.decodeText(a.toString())); else
+		res.add(a.toString());
+	return res.toArray(new String[res.size()]);
+    }
+
+    public String constructWideReplyCcList(byte[] bytes, boolean decode) throws Exception
+    {
+	loadFromStream(new ByteArrayInputStream(bytes));
+	final LinkedList<Address> addrs = new LinkedList<Address>();
+	    for(Address a: jmailmsg.getRecipients(RecipientType.CC)) 
+		if (a != null)
+		    addrs.add(a);
+	    for(Address a: jmailmsg.getRecipients(RecipientType.TO))
+		if (a != null)
+		    addrs.add(a);
+	    final Address addrs2[] = addrs.toArray(new Address[addrs.size()]);
+	    if (addrs2.length < 1)
+		return "";
+	    //	    final LinkedList<String> res = new LinkedList<String>();
+	    final StringBuilder res = new StringBuilder();
+	    res.append(decode?MimeUtility.decodeText(addrs2[0].toString()):addrs2[0].toString());
+	    for(int i = 1;i < addrs2.length;++i)
+		res.append("," + (decode?MimeUtility.decodeText(addrs2[i].toString()):addrs2[i].toString()));
+	    return res.toString();
     }
 }
