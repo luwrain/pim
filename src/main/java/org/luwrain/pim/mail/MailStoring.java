@@ -36,4 +36,5 @@ public interface MailStoring extends Cloneable
     void saveMessage(StoredMailFolder folder, MailMessage message) throws Exception;
     StoredMailMessage[] loadMessages(StoredMailFolder folder) throws Exception;
     void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder) throws Exception;
+    void deleteMessage(StoredMailMessage message) throws Exception;
 }

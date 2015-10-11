@@ -210,21 +210,37 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 
     @Override public void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder) throws Exception
     {
-	if (folder == null)
-	    throw new NullPointerException("folder may not be null");
+	NullCheck.notNull(folder, "folder");
+	NullCheck.notNull(message, "message");
 	if (!(folder instanceof StoredMailFolderRegistry))
 	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
-	if (message == null)
-	    throw new NullPointerException("message may not be null");
 	if (!(message instanceof StoredMailMessageSql))
 	    throw new NullPointerException("message must be an instance of StoredMailMessageSql");
 	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
 	final StoredMailMessageSql messageSql = (StoredMailMessageSql)message;
 	final PreparedStatement st = con.prepareStatement(
-"UPDATE mail_message SET mail_folder_id=? WHERE id=?"
+							  "UPDATE mail_message SET mail_folder_id=? WHERE id=?"
 );
 	st.setLong(1, folderRegistry.id);
 	st.setLong(2, messageSql.id);
+	st.executeUpdate();
+    }
+
+    @Override public void deleteMessage(StoredMailMessage message) throws Exception
+    {
+	NullCheck.notNull(message, "message");
+	if (!(message instanceof StoredMailMessageSql))
+	    throw new IllegalArgumentException("message must be an instance of StoredMailMessageSql");
+	final StoredMailMessageSql messageSql = (StoredMailMessageSql)message;
+	PreparedStatement st = con.prepareStatement(
+						    "DELETE FROM mail_message_field WHERE mail_message_id=?"
+						    );
+	st.setLong(1, messageSql.id);
+	st.executeUpdate();
+	st = con.prepareStatement(
+				  "DELETE FROM mail_message WHERE id=?"
+				  );
+	st.setLong(1, messageSql.id);
 	st.executeUpdate();
     }
 }
