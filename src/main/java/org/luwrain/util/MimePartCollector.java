@@ -22,7 +22,6 @@ import java.io.*;
 import javax.mail.*;
 import javax.mail.internet.*;
 
-
 class MimePartCollector
 {
     final LinkedList<String> attachments = new LinkedList<String>();
@@ -48,7 +47,18 @@ class MimePartCollector
 		return;
 	    }
 	    if (fileName != null && !fileName.trim().isEmpty())
-		attachments.add(MimeUtility.decodeText(fileName)); else
+	    {
+		attachments.add(MimeUtility.decodeText(fileName));
+		onAttachment(MimeUtility.decodeText(fileName), o);
+	    } else
+	    {
 		    attachments.add(contentType);
+		    onAttachment(contentType, o);
+	    }
+    }
+
+    protected void onAttachment(String fileName, Object obj) throws IOException
+    {
+	//	System.out.println(fileName + ":" + obj.getClass().getName());
     }
 }

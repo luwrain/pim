@@ -111,43 +111,57 @@ public class MailServerConversations
      * @param folderName Can be "INBOX" or any other IMAP folder name
      * @param listener The listener object to get information about fetching progress and the messages themselves
      */
-    public void fetchMessages(String folderName, Listener listener) throws Exception
+    public void fetchMessages(String folderName, Listener listener, boolean deleteMessagesOnServer) throws Exception
     {
 	NullCheck.notNull(folderName, "folderName");
 	if (folderName.trim().isEmpty())
 	    throw new IllegalArgumentException("folderName may not be empty");
 	if(folder!=null) 
 	    folder.close(true); // true - remove messages market to remove
-	folder = store.getFolder(folderName);
-	folder.open(Folder.READ_WRITE);
-	final int msgCount = folder.getMessageCount();
-	if (msgCount == 0)
-	{
-	    listener.numberOfNewMessages(0, false);
-	    return;
+	try {
+	    folder = store.getFolder(folderName);
+	    folder.open(Folder.READ_WRITE);
+	    final int msgCount = folder.getMessageCount();
+	    if (msgCount == 0)
+	    {
+		listener.numberOfNewMessages(0, false);
+		return;
+	    }
+	    Message[] messages;
+	    if (msgCount > LIMIT_MESSAGES_LOAD)
+	    {
+		listener.numberOfNewMessages(LIMIT_MESSAGES_LOAD, true);
+		messages = folder.getMessages(1, LIMIT_MESSAGES_LOAD);
+	    } else
+	    {
+		listener.numberOfNewMessages(msgCount, false);
+		messages = folder.getMessages(1, msgCount);
+	    }
+	    if (Thread.currentThread().interrupted())
+		throw new InterruptedException();
+	    final MailEssentialJavamail es=new MailEssentialJavamail(); // FIXME: replace empty EmailEssentialJavamail to instance from luwrain.getSharedObject("luwrain.pim.email");  
+	    for(int i = 0;i < messages.length;++i)
+	    {
+		if (Thread.currentThread().interrupted())
+		    throw new InterruptedException();
+		final MailMessage message=new MailMessage();
+		es.jmailmsg=messages[i];
+		es.readMessageBasicFields(message);
+		es.readMessageId(message);
+		es.saveRawContent(message);
+		listener.newMessage(message, i, messages.length);
+		if (deleteMessagesOnServer)
+		    messages[i].setFlag(Flags.Flag.DELETED, true);
+	    }
+	    folder.close(deleteMessagesOnServer);
+	    folder = null;
 	}
-	Message[] messages;
-	if (msgCount > LIMIT_MESSAGES_LOAD)
+	finally
 	{
-	    listener.numberOfNewMessages(LIMIT_MESSAGES_LOAD, true);
-	    messages = folder.getMessages(1, LIMIT_MESSAGES_LOAD);
-	} else
-	{
-	    listener.numberOfNewMessages(msgCount, false);
-	    messages = folder.getMessages(1, msgCount);
+	    if (folder != null)
+		folder.close(false);
+	    folder = null;
 	}
-	final MailEssentialJavamail es=new MailEssentialJavamail(); // FIXME: replace empty EmailEssentialJavamail to instance from luwrain.getSharedObject("luwrain.pim.email");  
-	for(int i = 0;i < messages.length;++i)
-	{
-	    final MailMessage message=new MailMessage();
-	    es.jmailmsg=messages[i];
-	    es.readMessageBasicFields(message);
-	    es.readMessageId(message);
-	    es.saveRawContent(message);
-	    listener.newMessage(message, i, messages.length);
-	    //	    messages[i].setFlag(Flags.Flag.DELETED, true);
-	}
-	folder.close(false);//FIXME:should be true, messages deleting disabled for debugging;
     }
 
     public void sendMessages(MailMessage[] emails) throws Exception
@@ -157,6 +171,8 @@ public class MailServerConversations
 	MailEssentialJavamail es=new MailEssentialJavamail();
 	for(MailMessage message: emails)
 	{
+	    if (Thread.currentThread().interrupted())
+		throw new InterruptedException();
 	    es.prepareInternalStore(message);
 	    smtpTransport.sendMessage(es.jmailmsg,es.jmailmsg.getRecipients(RecipientType.TO));
 	}

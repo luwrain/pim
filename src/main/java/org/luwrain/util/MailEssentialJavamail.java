@@ -109,6 +109,8 @@ public class MailEssentialJavamail
     void readMessageBasicFields(MailMessage msg) throws Exception
     {
 	msg.subject=jmailmsg.getSubject();
+	if (msg.subject == null)
+	    msg.subject = "";
 	if(jmailmsg.getFrom()!=null)
 	    msg.from = MimeUtility.decodeText(jmailmsg.getFrom()[0].toString()); else
 	    msg.from = "";
@@ -246,5 +248,21 @@ public class MailEssentialJavamail
 	    for(int i = 1;i < addrs2.length;++i)
 		res.append("," + (decode?MimeUtility.decodeText(addrs2[i].toString()):addrs2[i].toString()));
 	    return res.toString();
+    }
+
+    public boolean saveAttachment(byte[] bytes, String fileName,
+File destFile) throws Exception
+    {
+	loadFromStream(new ByteArrayInputStream(bytes));
+	final MailAttachmentSaving saving = new MailAttachmentSaving(fileName, destFile);
+	try {
+	saving.run(jmailmsg.getContent(), jmailmsg.getContentType(), "");
+	return saving.result() == MailAttachmentSaving.SUCCESS;
+	}
+	catch(MessagingException e)
+	{
+	    e.printStackTrace();
+	    return false;
+	}
     }
 }

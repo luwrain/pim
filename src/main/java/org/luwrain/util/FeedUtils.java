@@ -27,17 +27,19 @@ import org.luwrain.pim.news.NewsArticle;
 
 public class FeedUtils
 {
-    static public NewsArticle[] readFeed(URL url) throws IOException, FeedException
+    static public NewsArticle[] readFeed(URL url) throws IOException, FeedException, InterruptedException
     {
 	if (url == null)
 	    throw new NullPointerException("url may not be null");
-	Vector<NewsArticle> articles = new Vector<NewsArticle>();
+	final LinkedList<NewsArticle> articles = new LinkedList<NewsArticle>();
 	XmlReader reader = null;
 	try {
 	    reader = new XmlReader(url);
 	    SyndFeed feed = new SyndFeedInput().build(reader);
 	    for (Iterator i = feed.getEntries().iterator(); i.hasNext();)
 	    {
+		if (Thread.currentThread().interrupted())
+		    throw new InterruptedException();
                 SyndEntry entry = (SyndEntry) i.next();
 		NewsArticle article = new NewsArticle();
 		if (feed.getTitle() != null)
@@ -76,16 +78,13 @@ public class FeedUtils
 		}
 		articles.add(article);
 	    }
+	    if (Thread.currentThread().interrupted())
+		throw new InterruptedException();
 	}
 	finally {
 	    if (reader != null)
 		reader.close();
 	}
-	NewsArticle res[] = new NewsArticle[articles.size()];
-	Iterator<NewsArticle> it = articles.iterator();
-	int k = 0;
-	while (it.hasNext())
-	    res[k++] = it.next();
-	return res;
+	return articles.toArray(new NewsArticle[articles.size()]);
     }
 }
