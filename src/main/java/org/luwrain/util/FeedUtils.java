@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.fetch;
+package org.luwrain.util;
 
 import java.net.URL;
 import java.util.*;
