@@ -111,6 +111,20 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	passwd = value;
     }
 
+    @Override public String getTrustedHosts() throws Exception
+    {
+	return trustedHosts != null?trustedHosts:"";
+    }
+
+    @Override public void setTrustedHosts(String value) throws Exception
+    {
+	NullCheck.notNull(value, "value");
+	if (!registry.setString(RegistryPath.join(getPath(), "trusted-hosts"), value))
+	    updateError("trusted-hosts");
+	trustedHosts = value;
+    }
+
+
     @Override public int getFlags() throws Exception
     {
 	return flags;
@@ -118,14 +132,20 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 
     @Override public void setFlags(int value) throws Exception
     {
+	final boolean enabled = (value & FLAG_ENABLED) != 0;
 	final boolean ssl = (value & FLAG_SSL) != 0;
 	final boolean tls = (value & FLAG_TLS) != 0;
 	final boolean def = (value & FLAG_DEFAULT) != 0;
+	final boolean leaveMessages = (value & FLAG_LEAVE_MESSAGES) != 0;
+	if (!registry.setBoolean(RegistryPath.join(getPath(), "enabled"), enabled))
+	    updateError("enabled");
 	if (!registry.setBoolean(RegistryPath.join(getPath(), "ssl"), ssl))
 	    updateError("ssl");
 	if (!registry.setBoolean(RegistryPath.join(getPath(), "tls"), tls))
 	    updateError("tls");
 	if (!registry.setBoolean(RegistryPath.join(getPath(), "default"), def))
+	    updateError("default");
+	if (!registry.setBoolean(RegistryPath.join(getPath(), "leave-messages"), leaveMessages))
 	    updateError("default");
 	flags = value;
     }
@@ -166,15 +186,20 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	port = check.intPositive(RegistryPath.join(path, "port"), -1);
 	login = check.stringNotEmpty(RegistryPath.join(path, "login"), "");
 	passwd = check.stringNotEmpty(RegistryPath.join(path, "passwd"), "");
+	trustedHosts = check.stringNotEmpty(RegistryPath.join(path, "trusted-hosts"), "");
 	substName = check.stringNotEmpty(RegistryPath.join(path, "subst-name"), "");
 	substAddress = check.stringNotEmpty(RegistryPath.join(path, "subst-address"), "");
 	flags = 0;
+	if (check.bool(RegistryPath.join(path, "enabled"), false))
+	    flags |= FLAG_ENABLED;
 	if (check.bool(RegistryPath.join(path, "ssl"), false))
 	    flags |= FLAG_SSL;
 	if (check.bool(RegistryPath.join(path, "tls"), false))
 	    flags |= FLAG_TLS;
 	if (check.bool(RegistryPath.join(path, "default"), false))
 	    flags |= FLAG_DEFAULT;
+	if (check.bool(RegistryPath.join(path, "leave-messages"), true))
+	    flags |= FLAG_LEAVE_MESSAGES;
 	switch(typeStr)
 	{
 	case "pop3":

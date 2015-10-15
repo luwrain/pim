@@ -31,6 +31,8 @@ public interface StoredMailAccount
     void setLogin(String value) throws Exception;
     String getPasswd() throws Exception;
     void setPasswd(String value) throws Exception;
+    String getTrustedHosts() throws Exception;
+    void setTrustedHosts(String value) throws Exception;
     int getFlags() throws Exception;
     void setFlags(int value) throws Exception;
     String getSubstName() throws Exception;

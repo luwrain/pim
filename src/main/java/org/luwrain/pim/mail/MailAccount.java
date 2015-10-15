@@ -22,9 +22,11 @@ public class MailAccount implements Comparable
     static public final int POP3 = 0;
     static public final int SMTP = 1;
 
-    static public final int FLAG_SSL = 1;
-    static public final int FLAG_TLS = 2;
-    static public final int FLAG_DEFAULT = 4;
+    static public final int FLAG_ENABLED = 1;
+    static public final int FLAG_SSL = 2;
+    static public final int FLAG_TLS = 4;
+    static public final int FLAG_DEFAULT = 8;
+    static public final int FLAG_LEAVE_MESSAGES = 16;
 
     public int type = POP3;
     public String title = "";
@@ -32,6 +34,7 @@ public class MailAccount implements Comparable
     public int port = 1;
     public String login = "";
     public String passwd = "";
+    public String trustedHosts = "*";
     public int flags = 0;
     public String substName = "";
     public String substAddress = "";

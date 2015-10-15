@@ -48,8 +48,9 @@ class MailAccountSection extends EmptySection
 	    NullCheck.notNull(environment, "environment");
 
 	    //FIXME:Translation;
+	    final int flags = account.getFlags();
 	    addEdit("title", "Имя:", account.getTitle(), null, true);
-
+	    addCheckbox("enabled", "Учётная запись включена:", (flags & MailAccount.FLAG_ENABLED) > 0, null, true);
 	    String selected = null;
 	    switch(account.getType())
 	    {
@@ -60,23 +61,20 @@ class MailAccountSection extends EmptySection
 		selected = pop3Title;
 		break;
 	    }
-	    System.out.println("selected " + selected);
 	    addList("type", "Тип сервера:", selected,
 		    new FixedFormListChoosing(environment.getLuwrain(), "Выберите тип сервера почтовой учётной записи", new String[]{
 			    pop3Title, 
 			    smtpTitle,
 			}, Popup.WEAK), null, true);
-
 	    addEdit("host", "Хост:", account.getHost(), null, true);
 	    addEdit("port", "Порт:", "" + account.getPort(), null, true);
 	    addEdit("login", "Логин:", account.getLogin(), null, true);
 	    addEdit("passwd", "Пароль:", account.getPasswd(), null, true);
-
-	    final int flags = account.getFlags();
+	    addEdit("trusted-hosts", "Доверенные серверы самоподписанных сертификатов:", account.getTrustedHosts(), null, true);
 	    addCheckbox("default", "Учётная запись по умолчанию (для исходящей почты):", (flags & MailAccount.FLAG_DEFAULT) > 0, null, true);
+	    addCheckbox("leave-messages", "Оставлять письма на сервере:", (flags & MailAccount.FLAG_LEAVE_MESSAGES) > 0, null, true);
 	    addCheckbox("ssl", "Использовать SSL:", (flags & MailAccount.FLAG_SSL) > 0, null, true);
 	    addCheckbox("tls", "Использовать TLS:", (flags & MailAccount.FLAG_TLS) > 0, null, true);
-
 	    addEdit("subst-name", "Отправлять письма от имени:", account.getSubstName(), null, true);
 	    addEdit("subst-address", "Отправлять письма с адреса:", account.getSubstAddress(), null, true);
 	}
@@ -101,17 +99,16 @@ class MailAccountSection extends EmptySection
 	    account.setTitle(getEnteredText("title"));
 	    account.setLogin(getEnteredText("login"));
 	    account.setPasswd(getEnteredText("passwd"));
+	    account.setTrustedHosts(getEnteredText("trusted-hosts"));
 	    account.setHost(getEnteredText("host"));
 	    account.setPort(port);
 	    account.setSubstName(getEnteredText("subst-name"));
 	    account.setSubstAddress(getEnteredText("subst-address"));
-
 	    final Object selected = getSelectedListItem("type");
 	    if (selected.equals(pop3Title))
 		account.setType(MailAccount.POP3);
 	    if (selected.equals(smtpTitle))
 		account.setType(MailAccount.SMTP);
-
 	    int flags = 0;
 	    if (getCheckboxState("ssl"))
 		flags |= MailAccount.FLAG_SSL;
@@ -119,6 +116,10 @@ class MailAccountSection extends EmptySection
 		flags |= MailAccount.FLAG_TLS;
 	    if (getCheckboxState("default"))
 		flags |= MailAccount.FLAG_DEFAULT;
+	    if (getCheckboxState("enabled"))
+		flags |= MailAccount.FLAG_ENABLED;
+	    if (getCheckboxState("leave-messages"))
+		flags |= MailAccount.FLAG_LEAVE_MESSAGES;
 	    account.setFlags(flags);
 	    return true;
 	}
@@ -141,6 +142,17 @@ class MailAccountSection extends EmptySection
 	    NullCheck.notNull(event, "event");
 	    switch(event.getCode())
 	    {
+	    case EnvironmentEvent.SAVE:
+		try {
+		    if (save())
+			environment.getLuwrain().message("Все параметры сохранены", Luwrain.MESSAGE_OK);
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+		    environment.getLuwrain().message("Во время сохранения параметров произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
+		}
+		return true;
 	    case EnvironmentEvent.CLOSE:
 		environment.close();
 	    default:

@@ -186,19 +186,27 @@ abstract class MailStoringRegistry implements MailStoring
 	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "login"));
 	if (!registry.setString(RegistryPath.join(path, "passwd"), account.passwd))
 	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "passwd"));
+	if (!registry.setString(RegistryPath.join(path, "trusted-hosts"), account.trustedHosts))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "trusted-hosts"));
 	if (!registry.setString(RegistryPath.join(path, "subst-name"), account.substName))
 	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "subst-name"));
 	if (!registry.setString(RegistryPath.join(path, "subst-address"), account.substAddress))
 	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "subst-address"));
+	final boolean enabled = (account.flags & MailAccount.FLAG_ENABLED) > 0;
 	final boolean ssl = (account.flags & MailAccount.FLAG_SSL) > 0;
 	final boolean tls = (account.flags & MailAccount.FLAG_TLS) > 0;
 	final boolean def = (account.flags & MailAccount.FLAG_DEFAULT) > 0;
+	final boolean leaveMessages = (account.flags & MailAccount.FLAG_LEAVE_MESSAGES) > 0;
+	if (!registry.setBoolean(RegistryPath.join(path, "enabled"), enabled))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "enabled"));
 	if (!registry.setBoolean(RegistryPath.join(path, "ssl"), ssl))
 	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "ssl"));
 	if (!registry.setBoolean(RegistryPath.join(path, "tls"), tls))
 	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "tls"));
-	if (!registry.setBoolean(RegistryPath.join(path, "def"), def))
+	if (!registry.setBoolean(RegistryPath.join(path, "default"), def))
 	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "default"));
+	if (!registry.setBoolean(RegistryPath.join(path, "leave-messages"), leaveMessages))
+	    throw new Exception("Unable to set a string value " + RegistryPath.join(path, "leave-messages"));
     }
 
     @Override public void deleteAccount(StoredMailAccount account) throws Exception
