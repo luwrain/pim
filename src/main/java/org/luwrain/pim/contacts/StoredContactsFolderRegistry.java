@@ -62,6 +62,11 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 	orderIndex = value;
     }
 
+    @Override public boolean isRoot()
+    {
+	return id == parentId;
+    }
+
     void setParentId(int value) throws Exception
     {
 	if (!registry.setInteger(RegistryPath.join(getPath(), "parent-id"), value))

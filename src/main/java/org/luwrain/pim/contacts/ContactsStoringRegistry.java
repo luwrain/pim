@@ -81,7 +81,13 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 
     @Override public void deleteFolder(StoredContactsFolder folder) throws Exception
     {
-	//FIXME:
+	NullCheck.notNull(folder, "folder");
+	if (!(folder instanceof StoredContactsFolderRegistry))
+	    throw new IllegalArgumentException("folder is not an instance of StoredContactsFolderRegistry");
+	final StoredContactsFolderRegistry folderRegistry = (StoredContactsFolderRegistry)folder;
+	final String path = RegistryPath.join(registryKeys.contactsFolders(), "" + folderRegistry.id);
+	if (!registry.deleteDirectory(path))
+	    throw new Exception("Unable to delete the registry directory " + path);
     }
 
     private StoredContactsFolderRegistry[] loadAllFolders()

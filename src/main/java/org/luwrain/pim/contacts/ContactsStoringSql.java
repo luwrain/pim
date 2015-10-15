@@ -170,5 +170,19 @@ class ContactsStoringSql extends ContactsStoringRegistry
 
     @Override public void deleteContact(StoredContact contact) throws Exception
     {
+	NullCheck.notNull(contact, "contact");
+	if (!(contact instanceof StoredContactSql))
+	    throw new IllegalArgumentException("contact must be an instance of StoredContactSql");
+	final StoredContactSql contactSql = (StoredContactSql)contact;
+	PreparedStatement st = con.prepareStatement(
+						    "DELETE from contact_value WHERE contact_id=?"
+						    );
+	st.setLong(1, contactSql.id);
+	st.executeUpdate();
+	st = con.prepareStatement(
+				  "DELETE FROM contact WHERE id=?"
+				  );
+	st.setLong(1, contactSql.id);
+	st.executeUpdate();
     }
 }
