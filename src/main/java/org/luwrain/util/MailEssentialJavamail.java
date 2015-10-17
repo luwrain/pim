@@ -70,16 +70,12 @@ public class MailEssentialJavamail
 	    jmailmsg.setRecipients(RecipientType.CC, prepareInternetAddrs(msg.cc));
 	if(msg.bcc!=null&&msg.bcc.length>0)
 	    jmailmsg.setRecipients(RecipientType.BCC, prepareInternetAddrs(msg.bcc));
-
-	System.out.println("Ready to set date");
 	if(msg.sentDate!=null)
 	    jmailmsg.setSentDate(msg.sentDate);
-
-	System.out.println("Ready to set body and attachments");
 	// attachments and message body
 	if(msg.attachments != null && msg.attachments.length > 0)
 	{
-	    Multipart mp = new MimeMultipart();
+	    final Multipart mp = new MimeMultipart();
 	    MimeBodyPart part = new MimeBodyPart();
 	    part.setText(msg.baseContent);
 	    // TODO: need to repair - in multipart message mimeContentType of baseContent was ignored
@@ -88,7 +84,7 @@ public class MailEssentialJavamail
 	    {
 		part = new MimeBodyPart();
 		Path pfn=Paths.get(fn);
-		part.setFileName(pfn.getFileName().toString());
+		part.setFileName(MimeUtility.encodeText(pfn.getFileName().toString()));
 		FileDataSource fds = new FileDataSource(fn);
 		part.setDataHandler(new DataHandler(fds));
 		mp.addBodyPart(part);
@@ -251,13 +247,13 @@ public class MailEssentialJavamail
     }
 
     public boolean saveAttachment(byte[] bytes, String fileName,
-File destFile) throws Exception
+				  File destFile) throws Exception
     {
 	loadFromStream(new ByteArrayInputStream(bytes));
 	final MailAttachmentSaving saving = new MailAttachmentSaving(fileName, destFile);
 	try {
 	    saving.run(jmailmsg.getContent(), jmailmsg.getContentType(), "", "");
-	return saving.result() == MailAttachmentSaving.SUCCESS;
+	    return saving.result() == MailAttachmentSaving.SUCCESS;
 	}
 	catch(MessagingException e)
 	{
