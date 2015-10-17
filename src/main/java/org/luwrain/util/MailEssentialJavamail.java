@@ -102,7 +102,7 @@ public class MailEssentialJavamail
 	}
     }
 
-    void readMessageBasicFields(MailMessage msg) throws Exception
+    void readMessageBasicFields(MailMessage msg, HtmlPreview htmlPreview) throws Exception
     {
 	msg.subject=jmailmsg.getSubject();
 	if (msg.subject == null)
@@ -138,7 +138,7 @@ public class MailEssentialJavamail
 	msg.receivedDate=jmailmsg.getReceivedDate();
 	if (msg.receivedDate == null)
 	    msg.receivedDate = new java.util.Date();
-	final MimePartCollector collector = new MimePartCollector();
+	final MimePartCollector collector = new MimePartCollector(htmlPreview);
 	msg.baseContent = collector.run(jmailmsg.getContent(), jmailmsg.getContentType(), "", "");
 	msg.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
 	//	msg.baseContent = collector.body.toString();

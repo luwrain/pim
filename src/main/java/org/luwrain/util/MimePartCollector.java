@@ -25,7 +25,18 @@ import javax.mail.internet.*;
 class MimePartCollector
 {
     final LinkedList<String> attachments = new LinkedList<String>();
+    private HtmlPreview htmlPreview = null;
     //    final StringBuilder body = new StringBuilder();
+
+    MimePartCollector()
+    {
+	htmlPreview = null;
+    }
+
+    MimePartCollector(HtmlPreview htmlPreview)
+    {
+	this.htmlPreview = htmlPreview;
+    }
 
     String run(Object o, String contentType,
 	     String fileName, String disposition) throws IOException, MessagingException
@@ -77,6 +88,8 @@ class MimePartCollector
 	    return "";
 	}
 
+	if (contentType != null && contentType.toLowerCase().indexOf("html") >= 0)
+	    return htmlPreview.generateHtmlTextPreview(o.toString());
 	return o.toString();
     }
 

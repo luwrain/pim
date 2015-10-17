@@ -111,7 +111,7 @@ public class MailServerConversations
      * @param folderName Can be "INBOX" or any other IMAP folder name
      * @param listener The listener object to get information about fetching progress and the messages themselves
      */
-    public void fetchMessages(String folderName, Listener listener, boolean deleteMessagesOnServer) throws Exception
+    public void fetchMessages(String folderName, Listener listener, boolean deleteMessagesOnServer, HtmlPreview htmlPreview) throws Exception
     {
 	NullCheck.notNull(folderName, "folderName");
 	if (folderName.trim().isEmpty())
@@ -146,7 +146,7 @@ public class MailServerConversations
 		    throw new InterruptedException();
 		final MailMessage message=new MailMessage();
 		es.jmailmsg=messages[i];
-		es.readMessageBasicFields(message);
+		es.readMessageBasicFields(message, htmlPreview);
 		es.readMessageId(message);
 		es.saveRawContent(message);
 		listener.newMessage(message, i, messages.length);
