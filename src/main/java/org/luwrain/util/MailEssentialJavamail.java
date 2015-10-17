@@ -143,9 +143,9 @@ public class MailEssentialJavamail
 	if (msg.receivedDate == null)
 	    msg.receivedDate = new java.util.Date();
 	final MimePartCollector collector = new MimePartCollector();
-	collector.run(jmailmsg.getContent(), jmailmsg.getContentType(), "");
+	msg.baseContent = collector.run(jmailmsg.getContent(), jmailmsg.getContentType(), "", "");
 	msg.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
-	msg.baseContent = collector.body.toString();
+	//	msg.baseContent = collector.body.toString();
 	msg.mimeContentType = jmailmsg.getContentType();
     }
 
@@ -256,7 +256,7 @@ File destFile) throws Exception
 	loadFromStream(new ByteArrayInputStream(bytes));
 	final MailAttachmentSaving saving = new MailAttachmentSaving(fileName, destFile);
 	try {
-	saving.run(jmailmsg.getContent(), jmailmsg.getContentType(), "");
+	    saving.run(jmailmsg.getContent(), jmailmsg.getContentType(), "", "");
 	return saving.result() == MailAttachmentSaving.SUCCESS;
 	}
 	catch(MessagingException e)
