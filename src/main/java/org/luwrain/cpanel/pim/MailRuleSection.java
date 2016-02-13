@@ -73,7 +73,7 @@ class MailRuleSection extends EmptySection
 	    NullCheck.notNull(event, "event");
 	    switch(event.getCode())
 	    {
-	    case EnvironmentEvent.CLOSE:
+	    case CLOSE:
 		environment.close();
 		return true;
 	    default:

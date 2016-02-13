@@ -142,7 +142,7 @@ class MailAccountSection extends EmptySection
 	    NullCheck.notNull(event, "event");
 	    switch(event.getCode())
 	    {
-	    case EnvironmentEvent.SAVE:
+	    case SAVE:
 		try {
 		    if (save())
 			environment.getLuwrain().message("Все параметры сохранены", Luwrain.MESSAGE_OK);
@@ -153,7 +153,7 @@ class MailAccountSection extends EmptySection
 		    environment.getLuwrain().message("Во время сохранения параметров произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
 		}
 		return true;
-	    case EnvironmentEvent.CLOSE:
+	    case CLOSE:
 		environment.close();
 	    default:
 		return super.onEnvironmentEvent(event);
