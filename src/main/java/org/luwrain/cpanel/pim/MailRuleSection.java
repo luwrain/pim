@@ -50,10 +50,10 @@ class MailRuleSection extends EmptySection
 	@Override public boolean onKeyboardEvent(KeyboardEvent event)
 	{
 	    NullCheck.notNull(event, "event");
-	    if (event.isCommand() && !event.isModified())
-		switch(event.getCommand())
+	    if (event.isSpecial() && !event.isModified())
+		switch(event.getSpecial())
 		{
-		case KeyboardEvent.TAB:
+		case TAB:
 		    environment.gotoSectionsTree();
 		}
 	    return super.onKeyboardEvent(event);
