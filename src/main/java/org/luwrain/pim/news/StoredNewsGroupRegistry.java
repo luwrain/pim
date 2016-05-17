@@ -1,39 +1,28 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.news;
 
 import org.luwrain.core.Registry;
+import org.luwrain.core.NullCheck;
+import org.luwrain.pim.*;
 
 class StoredNewsGroupRegistry implements StoredNewsGroup, Comparable
 {
     private Registry registry;
-    public int id = 0;
-    public String name = "";
-    public String[] urls = new String[0];
-    public String mediaContentType = "";
-    public int orderIndex = 0;
-    public int expireAfterDays = 30;
+    private Settings.Group settings;
 
-    public StoredNewsGroupRegistry(Registry registry)
+    int id = 0;
+    String name = "";
+    String[] urls = new String[0];
+    String mediaContentType = "";
+    int orderIndex = 0;
+    int expireAfterDays = 30;
+
+    StoredNewsGroupRegistry(Registry registry, Settings.Group settings)
     {
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notNull(settings, "settings");
 	this.registry = registry;
-	if (registry == null)
-	    throw new NullPointerException("registry may not be null");
+	this.settings = settings;
     }
 
     @Override public String getName()
@@ -41,50 +30,9 @@ class StoredNewsGroupRegistry implements StoredNewsGroup, Comparable
 	return name;
     }
 
-    @Override public void setName(String name) throws Exception
-    {
-	ensureValid();
-	if (name == null || name.trim().isEmpty())
-	    throw new ValidityException("Trying to set empty name of the news group");
-	//FIXME:	RegistryUpdateWrapper.setString(registry, NewsStoringRegistry.GROUPS_PATH + id + "/name", name);
-	this.name = name;
-    }
-
-    @Override public String[] getUrls()
-    {
-	return urls != null?urls:new String[0];
-    }
-
-    @Override public void setUrls(String[] urls) throws Exception
-    {
-	ensureValid();
-	/*
-	if (urls == null)
-	    throw new ValidityException("Trying to set to null the list of URLs of the news group \'" + name + "\' (id=" + id + ")");
-	String[] oldValues = registry.getValues(NewsStoringRegistry.GROUPS_PATH + id);
-	if (oldValues != null)
-	    for(String s: oldValues)
-		if (s.indexOf("url") == 0)
-		    //FIXME:		    RegistryUpdateWrapper.deleteValue(registry, NewsStoringRegistry.GROUPS_PATH + id + "/" + s);
-	for(int i = 0;i < urls.length;++i)
-	    if (!urls[i].trim().isEmpty())
-		RegistryUpdateWrapper.setString(registry, NewsStoringRegistry.GROUPS_PATH + id + "/url" + i, urls[i]);
-	this.urls = urls;
-	*/
-    }
-
     @Override public String getMediaContentType()
     {
-	return mediaContentType != null?mediaContentType:"";
-    }
-
-    @Override public void setMediaContentType(String value) throws Exception
-    {
-	ensureValid();
-	if (value == null)
-	    throw new ValidityException("Trying to set null value to media content type of the news group \'" + name + "\' (id=" + id + ")");
-	//FIXME:	RegistryUpdateWrapper.setString(registry, NewsStoringRegistry.GROUPS_PATH + id + "/media-content-type", value);
-	this.mediaContentType = value;
+	return mediaContentType;
     }
 
     @Override public int getOrderIndex()
@@ -92,34 +40,101 @@ class StoredNewsGroupRegistry implements StoredNewsGroup, Comparable
 	return orderIndex;
     }
 
-    @Override public void setOrderIndex(int index) throws Exception
-    {
-	ensureValid();
-	//FIXME:	RegistryUpdateWrapper.setInteger(registry, NewsStoringRegistry.GROUPS_PATH + id + "/order-index", index);
-	this.orderIndex = index;
-    }
-
     @Override public int getExpireAfterDays()
     {
 	return expireAfterDays;
     }
 
-    @Override public void setExpireAfterDays(int count) throws Exception
+    @Override public String[] getUrls()
     {
-	ensureValid();
-	//FIXME:	RegistryUpdateWrapper.setInteger(registry, NewsStoringRegistry.GROUPS_PATH + id + "/expire-days", count);
-	this.expireAfterDays = count;
+	return urls;
+    }
+
+    @Override public void setName(String name) throws PimException
+    {
+	NullCheck.notNull(name, "name");
+	try {
+	    settings.setName(name);
+	    this.name = name;
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+    @Override public void setMediaContentType(String value) throws PimException
+    {
+	NullCheck.notNull(value, "value");
+	try {
+	    settings.setMediaContentType(value);
+	    this.mediaContentType = value;
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+    @Override public void setOrderIndex(int index) throws PimException
+    {
+	try {
+	    if (index >= 0)
+	    {
+		settings.setOrderIndex(index);
+		this.orderIndex = index;
+	    } else
+	    {
+		settings.setOrderIndex(0);
+		this.orderIndex = 0;
+	    }
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+    @Override public void setExpireAfterDays(int count) throws PimException
+    {
+	try {
+	    if (count >= 0)
+	    {
+		settings.setExpireDays(count);
+		this.expireAfterDays = count;
+	    } else
+	    {
+		settings.setExpireDays(0);
+		this.expireAfterDays = 0;
+	    }
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+    @Override public void setUrls(String[] urls) throws PimException
+    {
+	try {
+	    //FIXME:
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 
     @Override public String toString()
     {
-	return getName();
+	return name;
     }
 
-    private void ensureValid() throws ValidityException
+    @Override public boolean equals(Object o)
     {
-	if (id < 0)
-	    throw new ValidityException("trying to change the state of a news group which is not associated with a storage");
+	if (o == null || !(o instanceof StoredNewsGroupRegistry))
+	    return false;
+	return id == ((StoredNewsGroupRegistry)o).id;
     }
 
     @Override public int compareTo(Object o)

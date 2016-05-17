@@ -1,95 +1,67 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.news;
 
 import java.util.*;
 
 import org.luwrain.core.Registry;
-import org.luwrain.util .RegistryAutoCheck;
-
-import org.luwrain.pim.RegistryKeys;
+import org.luwrain.core.NullCheck;
+import org.luwrain.pim.*;
+import org.luwrain.util .*;
 
 abstract class NewsStoringRegistry implements NewsStoring
 {
+    private final RegistryKeys keys = new RegistryKeys();
     protected Registry registry;
 
     public NewsStoringRegistry(Registry registry)
     {
+	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
-	if (registry == null)
-	    throw new NullPointerException("registry may not be null");
     }
 
-    @Override public StoredNewsGroup[] loadNewsGroups() throws Exception
+    @Override public StoredNewsGroup[] loadGroups() throws PimException
     {
-	RegistryKeys keys = new RegistryKeys();
-	String[] groupsNames = registry.getDirectories(keys.newsGroups());
-	if (groupsNames == null || groupsNames.length < 1)
-	    return new StoredNewsGroup[0];
-	Vector<StoredNewsGroup> groups = new Vector<StoredNewsGroup>();
-	for(String s: groupsNames)
-	{
-	    if (s == null || s.isEmpty())
-		continue;
-	    StoredNewsGroupRegistry g = readNewsGroup(s);
-	    if (g != null)
-		groups.add(g);
-	}
-	return groups.toArray(new StoredNewsGroup[groups.size()]);
-    }
-
-    private StoredNewsGroupRegistry readNewsGroup(String name)
-    {
-	if (name == null)
-	    throw new NullPointerException("name may not be null");
-	if (name.isEmpty())
-	    throw new IllegalArgumentException("name may not be empty");
-	StoredNewsGroupRegistry g = new StoredNewsGroupRegistry(registry);
 	try {
-	    g.id = Integer.parseInt(name.trim());
+	    final String[] groupsNames = registry.getDirectories(keys.newsGroups());
+	    final LinkedList<StoredNewsGroup> groups = new LinkedList<StoredNewsGroup>();
+	    for(String s: groupsNames)
+	    {
+		if (s == null || s.isEmpty())
+		    continue;
+		final StoredNewsGroupRegistry g = readNewsGroup(RegistryPath.join(keys.newsGroups(), s), s);
+		if (g != null)
+		    groups.add(g);
+	    }
+	    return groups.toArray(new StoredNewsGroup[groups.size()]);
 	}
-	catch(NumberFormatException e)
+	catch(Exception e)
 	{
-	    e.printStackTrace();
-	    return null;
+	    throw new PimException(e.getMessage(), e);
 	}
-	RegistryKeys keys = new RegistryKeys();
-	RegistryAutoCheck check = new RegistryAutoCheck(registry);
-	final String path = keys.newsGroups() + "/" + name;
-	g.name = check.stringNotEmpty(path + "/name", "");
+    }
+
+    private StoredNewsGroupRegistry readNewsGroup(String path, String name)
+    {
+	final Settings.Group settings = Settings.createGroup(registry, path);
+	final StoredNewsGroupRegistry g = new StoredNewsGroupRegistry(registry, settings);
+	    g.id = Integer.parseInt(name.trim());
+	    g.name = settings.getName("");
+	g.expireAfterDays = settings.getExpireDays(0);
+	g.orderIndex = settings.getOrderIndex(0);
+	g.mediaContentType = settings.getMediaContentType("");
 	if (g.name.isEmpty())
 	    return null;
-	g.expireAfterDays = check.intPositive(path + "/expire-days", -1);
 	if (g.expireAfterDays < 0)
 	    g.expireAfterDays = 0;
-	g.orderIndex = check.intPositive(path + "/order-index", -1);
 	if (g.orderIndex < 0)
 	    g.orderIndex = 0;
-	g.mediaContentType = check.stringAny(path + "media-content-type", "");
-	String[] values = registry.getValues(path);
-	if (values == null)
-	    return null;
-	Vector<String> urls = new Vector<String>();
+
+
+	final String[] values = registry.getValues(path);
+	final LinkedList<String> urls = new LinkedList<String>();
 	for(String s: values)
 	{
-	    if (s == null || s.indexOf("url") < 0)
-		continue;
-	    if (registry.getTypeOf(path + "/" + s) != Registry.STRING)
+	    if (s.indexOf("url") < 0 || registry.getTypeOf(path + "/" + s) != Registry.STRING)
 		continue;
 	    final String value = registry.getString(path + "/" + s);
 	    if (!value.trim().isEmpty())
@@ -97,6 +69,12 @@ abstract class NewsStoringRegistry implements NewsStoring
 	}
 	g.urls = urls.toArray(new String[urls.size()]);
 	return g;
+    }
+
+    @Override public long getGroupId(StoredNewsGroup group) throws PimException
+    {
+	NullCheck.notNull(group, "group");
+	return ((StoredNewsGroupRegistry)group).id;
     }
 
     @Override public Object clone()

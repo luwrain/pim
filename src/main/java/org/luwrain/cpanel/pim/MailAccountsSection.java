@@ -17,6 +17,8 @@
 
 package org.luwrain.cpanel.pim;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.popups.Popups;
@@ -33,18 +35,13 @@ class MailAccountsSection extends EmptySection
 	NullCheck.notNull(storing, "storing");
     }
 
-    @Override public Section[] getChildSections()
-    {
-	constructChildSections();
-	return childSections;
-    }
-
     @Override public boolean onTreeInsert(Environment environment)
     {
 	addNew(storing, environment);
 	return true;
     }
 
+    /*
     @Override public void refreshChildSubsections()
     {
 	if (childSections == null)
@@ -52,6 +49,7 @@ class MailAccountsSection extends EmptySection
 	childSections = null;
 	constructChildSections();
     }
+    */
 
     @Override public String toString()
     {
@@ -104,8 +102,8 @@ class MailAccountsSection extends EmptySection
 	environment.refreshSectionsTree();
     }
 
-    @Override public int getSectionFlags()
+    @Override public Set<Section.Flags> getSectionFlags()
     {
-	return FLAG_HAS_INSERT;
+	return EnumSet.of(Flags.HAS_INSERT, Flags.HAS_DELETE);
     }
 }

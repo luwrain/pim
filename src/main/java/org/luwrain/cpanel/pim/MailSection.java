@@ -23,22 +23,18 @@ import org.luwrain.pim.mail.*;
 
 public class MailSection extends EmptySection
 {
-    private Factory factory;
+    private org.luwrain.pim.mail.Factory factory;
     private MailStoring storing = null;
     private MailAccountsSection accounts;
     private MailRulesSection rules;
 
-    public MailSection(Factory factory)
+    public MailSection(org.luwrain.pim.mail.Factory factory)
     {
 	NullCheck.notNull(factory, "factory");
 	this.factory = factory;
     }
 
-    @Override public int getDesiredRoot()
-    {
-	return BasicSections.APPLICATIONS;
-    }
-
+    /*
     @Override public Section[] getChildSections()
     {
 	prepareStoring();
@@ -53,6 +49,7 @@ public class MailSection extends EmptySection
 	    rules,
 	};
     }
+    */
 
     @Override public boolean isSectionEnabled()
     {
@@ -65,6 +62,7 @@ public class MailSection extends EmptySection
 	return "Почта";
     }
 
+    /*
     @Override public void refreshChildSubsections()
     {
 	if (accounts != null)
@@ -72,6 +70,7 @@ public class MailSection extends EmptySection
 	if (rules != null)
 	    rules.refreshChildSubsections();
     }
+    */
 
     private void prepareStoring()
     {

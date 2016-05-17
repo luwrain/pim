@@ -1,19 +1,3 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.news;
 
@@ -21,8 +5,9 @@ import java.sql.*;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.pim.*;
 
-public class NewsStoringSql extends NewsStoringRegistry
+class NewsStoringSql extends NewsStoringRegistry
 {
     private Connection con;
 
@@ -33,8 +18,9 @@ public class NewsStoringSql extends NewsStoringRegistry
 	NullCheck.notNull(con, "con");
     }
 
-    @Override public void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws SQLException
+    @Override public void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws PimException
     {
+	try {
 	if (newsGroup == null)
 	    throw new NullPointerException("newsGrroup may not be null");
 	if (!(newsGroup instanceof StoredNewsGroupRegistry))
@@ -56,10 +42,16 @@ public class NewsStoringSql extends NewsStoringRegistry
 	st.setDate(13, new java.sql.Date(article.updatedDate.getTime()));
 	st.setString(14, article.content);
 	st.executeUpdate();
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    @Override public     StoredNewsArticle[] loadNewsArticlesOfGroup(StoredNewsGroup newsGroup) throws SQLException
+    @Override public     StoredNewsArticle[] loadNewsArticlesOfGroup(StoredNewsGroup newsGroup) throws PimException
     {
+	try {
 	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
 	PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content FROM news_article WHERE news_group_id = ?;");
 	st.setLong(1, g.id);
@@ -86,10 +78,16 @@ public class NewsStoringSql extends NewsStoringRegistry
 	    articles.add(a);
 	}
 	return articles.toArray(new StoredNewsArticle[articles.size()]);
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    @Override public     StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws SQLException
+    @Override public     StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws PimException
     {
+	try {
 	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
 	PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content FROM news_article WHERE news_group_id = ? AND state <> 1;");
 	st.setLong(1, g.id);
@@ -116,10 +114,16 @@ public class NewsStoringSql extends NewsStoringRegistry
 	    articles.add(a);
 	}
 	return articles.toArray(new StoredNewsArticle[articles.size()]);
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    @Override public int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws SQLException
+    @Override public int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws PimException
     {
+	try {
 	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
 	PreparedStatement st = con.prepareStatement("SELECT count(*) FROM news_article WHERE news_group_id = ? AND uri = ?;");
 	st.setLong(1, g.id);
@@ -128,10 +132,16 @@ public class NewsStoringSql extends NewsStoringRegistry
 	if (!rs.next())
 	    return 0;
 	return rs.getInt(1);
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    @Override public int countNewArticleInGroup(StoredNewsGroup group) throws Exception
+    @Override public int countNewArticleInGroup(StoredNewsGroup group) throws PimException
     {
+	try {
 	if (group == null)
 	    return 0;
 	if (!(group instanceof StoredNewsGroupRegistry))
@@ -144,10 +154,16 @@ public class NewsStoringSql extends NewsStoringRegistry
 	if (!rs.next())
 	    return 0;
 	return rs.getInt(1);
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    @Override public int[] countNewArticlesInGroups(StoredNewsGroup[] groups) throws Exception
+    @Override public int[] countNewArticlesInGroups(StoredNewsGroup[] groups) throws PimException
     {
+	try {
 	if (groups == null)
 	    throw new NullPointerException("groups may not be null");
 	StoredNewsGroupRegistry[] g = new StoredNewsGroupRegistry[groups.length];
@@ -175,10 +191,16 @@ public class NewsStoringSql extends NewsStoringRegistry
 		res[k] = count;
 	}
 	return res;
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    @Override public int[] countMarkedArticlesInGroups(StoredNewsGroup[] groups) throws Exception
+    @Override public int[] countMarkedArticlesInGroups(StoredNewsGroup[] groups) throws PimException
     {
+	try {
 	if (groups == null)
 	    throw new NullPointerException("groups may not be null");
 	StoredNewsGroupRegistry[] g = new StoredNewsGroupRegistry[groups.length];
@@ -206,5 +228,10 @@ public class NewsStoringSql extends NewsStoringRegistry
 		res[k] = count;
 	}
 	return res;
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e.getMessage(), e);
+	}
     }
 }

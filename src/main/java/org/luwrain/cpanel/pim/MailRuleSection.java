@@ -17,6 +17,8 @@
 
 package org.luwrain.cpanel.pim;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
@@ -26,70 +28,9 @@ import org.luwrain.pim.mail.*;
 
 class MailRuleSection extends EmptySection
 {
-    static private class Area extends FormArea
-    {
-	private Environment environment;
-	private MailStoring storing;
-	private StoredMailRule rule;
-
-	Area(Environment environment,
-	     MailStoring storing, 
-	     StoredMailRule rule) throws Exception
-	{
-	    super(new DefaultControlEnvironment(environment.getLuwrain()));
-	    this.storing = storing;
-	    this.rule = rule;
-	    this.environment = environment;
-	    NullCheck.notNull(storing, "storing");
-	    NullCheck.notNull(rule, "rule");
-	    NullCheck.notNull(environment, "environment");
-	    addEdit("header-regex", "Регулярное выражение для заголовка:", rule.getHeaderRegex(), null, true);
-	    addUniRef("dest-folder-uniref", "Почтовая группа:", rule.getDestFolderUniRef(), null, true);
-	}
-
-	@Override public boolean onKeyboardEvent(KeyboardEvent event)
-	{
-	    NullCheck.notNull(event, "event");
-	    if (event.isSpecial() && !event.isModified())
-		switch(event.getSpecial())
-		{
-		case TAB:
-		    environment.gotoSectionsTree();
-		}
-	    return super.onKeyboardEvent(event);
-	}
-
-	void save() throws Exception
-	{
-	    rule.setHeaderRegex(getEnteredText("header-regex"));
-	    final UniRefInfo uniRefInfo = getUniRefInfo("dest-folder-uniref");
-	    if (uniRefInfo != null)
-		rule.setDestFolderUniRef(uniRefInfo.toString()); else
-		rule.setDestFolderUniRef("");
-	}
-
-	@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
-	{
-	    NullCheck.notNull(event, "event");
-	    switch(event.getCode())
-	    {
-	    case CLOSE:
-		environment.close();
-		return true;
-	    default:
-		return super.onEnvironmentEvent(event);
-	    }
-	}
-
-	@Override public String getAreaName()
-	{
-	    return "Настройка правила фильтрации";//FIXME:
-    }
-    }
-
     private MailStoring storing;
     private StoredMailRule rule;
-    private Area area = null;
+    private MailRuleArea area;
 
     MailRuleSection(MailStoring storing, StoredMailRule rule)
     {
@@ -99,11 +40,11 @@ class MailRuleSection extends EmptySection
 	NullCheck.notNull(rule, "rule");
     }
 
-    @Override public Area getSectionArea(Environment environment)
+    @Override public SectionArea getSectionArea(Environment environment)
     {
 	try {
 	    if (area == null)
-		area = new Area(environment, storing, rule);
+		area = new MailRuleArea(environment, storing, rule);
 	}
 	catch (Exception e)
 	{
@@ -190,8 +131,8 @@ class MailRuleSection extends EmptySection
 	}
     }
 
-    @Override public int getSectionFlags()
+    @Override public Set<Section.Flags> getSectionFlags()
     {
-	return FLAG_HAS_INSERT | FLAG_HAS_DELETE;
+	return EnumSet.of(Flags.HAS_INSERT, Flags.HAS_DELETE);
     }
 }
