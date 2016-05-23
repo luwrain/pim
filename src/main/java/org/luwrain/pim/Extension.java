@@ -30,8 +30,6 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     private org.luwrain.pim.contacts.Factory contactsFactory;
     private org.luwrain.pim.binder.Factory binderFactory;
 
-    private MailSection mailSection = null;
-
     private org.luwrain.pim.mail.FolderUniRefProc mailFolderUniRefProc;
 
     @Override public String init(Luwrain luwrain)
@@ -98,12 +96,11 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	    }};
     }
 
-    @Override public org.luwrain.cpanel.Section[] getControlPanelSections(Luwrain luwrain)
+    @Override public org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain)
     {
-	if (mailSection == null)
-	    mailSection = new MailSection(mailFactory);
-	return new org.luwrain.cpanel.Section[]{
-	    mailSection,
+	NullCheck.notNull(luwrain, "luwrain");
+	return new org.luwrain.cpanel.Factory[]{
+	    new org.luwrain.settings.news.Factory(luwrain),
 	};
     }
 
