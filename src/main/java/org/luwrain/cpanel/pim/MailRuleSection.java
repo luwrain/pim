@@ -86,7 +86,7 @@ class MailRuleSection extends EmptySection
     {
 	final YesNoPopup popup = new YesNoPopup(environment.getLuwrain(),
 						"Удаление правила фильтрации", "Вы действительно хотите удалить выделенное правило фильтрации?",//FIXME:
-						false, 0);
+						false, Popups.DEFAULT_POPUP_FLAGS);
 	environment.getLuwrain().popup(popup);
 	if (popup.closing.cancelled() || !popup.result())
 	    return true;

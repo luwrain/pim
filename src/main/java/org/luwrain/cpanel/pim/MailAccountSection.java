@@ -91,7 +91,7 @@ class MailAccountSection extends EmptySection
 	}
 	final YesNoPopup popup = new YesNoPopup(environment.getLuwrain(),
 						"Удаление учётной записи", "Вы действительно хотите удалить учётную запись" + (!title.isEmpty()?" \"" + title + "\"?":"?"),//FIXME:
-						false, 0);
+						false, Popups.DEFAULT_POPUP_FLAGS);
 	environment.getLuwrain().popup(popup);
 	if (popup.closing.cancelled() || !popup.result())
 	    return true;
