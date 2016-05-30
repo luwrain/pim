@@ -2,31 +2,31 @@
 package org.luwrain.pim.news;
 
 import java.util.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
+import java.sql.*;
+
+import org.luwrain.pim.*;
 
 class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 {
     Connection con;
-    public long id = 0;
-    public long groupId = 0;
+    long id = 0;
+long groupId = 0;
 
-    public int state = 0;
-    public String sourceUrl = "";
-    public String sourceTitle = "";
-    public String uri = "";
-    public String title = "";
-    public String extTitle = "";
-    public String url = "";
-    public String descr = "";
-    public String author = "";
-    public String categories = "";
-    public java.util.Date publishedDate = new java.util.Date();
-    public java.util.Date updatedDate = new java.util.Date();
-    public String content = "";
+int state = 0;
+String sourceUrl = "";
+String sourceTitle = "";
+String uri = "";
+String title = "";
+String extTitle = "";
+String url = "";
+String descr = "";
+String author = "";
+String categories = "";
+java.util.Date publishedDate = new java.util.Date();
+java.util.Date updatedDate = new java.util.Date();
+String content = "";
 
-    public StoredNewsArticleSql(Connection con)
+    StoredNewsArticleSql(Connection con)
     {
 	this.con = con;
 	if (con == null)
@@ -38,13 +38,19 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return state;
     }
 
-    @Override public   void setState(int state) throws SQLException
+    @Override public   void setState(int state) throws PimException
     {
-	PreparedStatement st = con.prepareStatement("UPDATE news_article SET state = ? WHERE id = ?;");
-	st.setInt(1, state);
-	st.setLong(2, id);
-	st.executeUpdate();
-	this.state = state;
+	try {
+	    PreparedStatement st = con.prepareStatement("UPDATE news_article SET state = ? WHERE id = ?;");
+	    st.setInt(1, state);
+	    st.setLong(2, id);
+	    st.executeUpdate();
+	    this.state = state;
+	}
+	catch(SQLException e)
+	{
+	    throw new PimException(e);
+	}
     }
 
     @Override public   String getSourceUrl()
@@ -52,7 +58,7 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return sourceUrl;
     }
 
-    @Override public   void setSourceUrl(String sourceUrl) throws SQLException
+    @Override public   void setSourceUrl(String sourceUrl) throws PimException
     {
 	//FIXME:
     }
@@ -62,7 +68,7 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return sourceTitle;
     }
 
-    @Override public   void setSourceTitle(String sourceTitle) throws SQLException
+    @Override public   void setSourceTitle(String sourceTitle) throws PimException
     {
 	//FIXME:
     }
@@ -72,7 +78,7 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return uri;
     }
 
-    @Override public   void setUri(String uri) throws SQLException
+    @Override public   void setUri(String uri) throws PimException
     {
 	//FIXME:
     }
@@ -82,7 +88,7 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return title;
     }
 
-    @Override public   void setTitle(String title) throws SQLException
+    @Override public   void setTitle(String title) throws PimException
     {
 	//FIXME:
     }
@@ -92,7 +98,7 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return extTitle;
     }
 
-    @Override public   void setExtTitle(String extTitle) throws SQLException
+    @Override public   void setExtTitle(String extTitle) throws PimException
     {
 	//FIXME:
     }
@@ -102,7 +108,7 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return url;
     }
 
-    @Override public   void setUrl(String url) throws SQLException
+    @Override public   void setUrl(String url) throws PimException
     {
 	//FIXME:
     }
@@ -112,7 +118,7 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return descr;
     }
 
-    @Override public   void setDescr(String descr) throws SQLException
+    @Override public   void setDescr(String descr) throws PimException
     {
 	//FIXME:
     }
@@ -122,7 +128,7 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return author;
     }
 
-    @Override public   void setAuthor(String authro) throws SQLException
+    @Override public   void setAuthor(String authro) throws PimException
     {
 	//FIXME:
     }
@@ -132,27 +138,27 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return categories;
     }
 
-    @Override public   void setCategories(String categories) throws SQLException
+    @Override public   void setCategories(String categories) throws PimException
     {
 	//FIXME:
     }
 
-    @Override public   Date getPublishedDate()
+    @Override public   java.util.Date getPublishedDate()
     {
 	return publishedDate;
     }
 
-    @Override public   void setPublishedDate(Date publishedDate) throws SQLException
+    @Override public   void setPublishedDate(java.util.Date publishedDate) throws PimException
     {
 	//FIXME:
     }
 
-    @Override public   Date getUpdatedDate()
+    @Override public   java.util.Date getUpdatedDate()
     {
 	return updatedDate;
     }
 
-    @Override public   void setUpdatedDate(Date updatedDate) throws SQLException
+    @Override public   void setUpdatedDate(java.util.Date updatedDate) throws PimException
     {
 	//FIXME:
     }
@@ -162,7 +168,7 @@ class StoredNewsArticleSql implements StoredNewsArticle, Comparable
 	return content;
     }
 
-    @Override public   void setContent(String content) throws SQLException
+    @Override public   void setContent(String content) throws PimException
     {
 	//FIXME:
     }

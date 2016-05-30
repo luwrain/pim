@@ -36,6 +36,7 @@ import com.sun.mail.imap.IMAPMessage;
 import com.sun.mail.pop3.POP3Message;
 
 import org.luwrain.core.NullCheck;
+import org.luwrain.pim.*;
 import org.luwrain.pim.mail.MailStoringSql.Condition;
 import org.luwrain.pim.mail.*;
 
@@ -195,11 +196,17 @@ public class MailEssentialJavamail
     }
     */
 
-    public void loadFromStream(InputStream fs) throws Exception
+    public void loadFromStream(InputStream fs) throws PimException
     {
-	jmailmsg=new MimeMessage(session,fs);
-	fs.close();
-    }
+	try {
+	    jmailmsg=new MimeMessage(session,fs);
+	    fs.close();
+	}
+	catch(MessagingException | IOException e)
+	{
+	    throw new PimException(e);
+	}
+	}
 
     public void saveMailToFile(MailMessage msg,FileOutputStream fs) throws Exception
     {
@@ -209,32 +216,41 @@ public class MailEssentialJavamail
 	fs.close();
     }
 
-    public String[] getReplyTo(byte[] bytes, boolean decode) throws Exception
+    public String[] getReplyTo(byte[] bytes, boolean decode) throws PimException
     {
-	loadFromStream(new ByteArrayInputStream(bytes));
-	final Address[] addr = jmailmsg.getReplyTo();
-	if (addr == null || addr.length < 1)
-	    return new String[0];
-	final LinkedList<String> res = new LinkedList<String>();
-	for(Address a: addr)
-	    if (decode)
-		res.add(MimeUtility.decodeText(a.toString())); else
-		res.add(a.toString());
-	return res.toArray(new String[res.size()]);
-    }
+	NullCheck.notNull(bytes, "bytes");
+	try {
+	    loadFromStream(new ByteArrayInputStream(bytes));
+	    final Address[] addr = jmailmsg.getReplyTo();
+	    if (addr == null || addr.length < 1)
+		return new String[0];
+	    final LinkedList<String> res = new LinkedList<String>();
+	    for(Address a: addr)
+		if (decode)
+		    res.add(MimeUtility.decodeText(a.toString())); else
+		    res.add(a.toString());
+	    return res.toArray(new String[res.size()]);
+	}
+	catch(MessagingException | UnsupportedEncodingException e)
+	{
+	    throw new PimException(e);
+	}
+	}
 
-    public String constructWideReplyCcList(byte[] bytes, boolean decode) throws Exception
+    public String constructWideReplyCcList(byte[] bytes, boolean decode) throws PimException
     {
-	loadFromStream(new ByteArrayInputStream(bytes));
-	final LinkedList<Address> addrs = new LinkedList<Address>();
-	if (jmailmsg.getRecipients(RecipientType.CC) != null)
-	    for(Address a: jmailmsg.getRecipients(RecipientType.CC)) 
-		if (a != null)
-		    addrs.add(a);
-	if (jmailmsg.getRecipients(RecipientType.TO) != null)
-	    for(Address a: jmailmsg.getRecipients(RecipientType.TO))
-		if (a != null)
-		    addrs.add(a);
+	NullCheck.notNull(bytes, "bytes");
+	try {
+	    loadFromStream(new ByteArrayInputStream(bytes));
+	    final LinkedList<Address> addrs = new LinkedList<Address>();
+	    if (jmailmsg.getRecipients(RecipientType.CC) != null)
+		for(Address a: jmailmsg.getRecipients(RecipientType.CC)) 
+		    if (a != null)
+			addrs.add(a);
+	    if (jmailmsg.getRecipients(RecipientType.TO) != null)
+		for(Address a: jmailmsg.getRecipients(RecipientType.TO))
+		    if (a != null)
+			addrs.add(a);
 	    final Address addrs2[] = addrs.toArray(new Address[addrs.size()]);
 	    if (addrs2.length < 1)
 		return "";
@@ -244,7 +260,12 @@ public class MailEssentialJavamail
 	    for(int i = 1;i < addrs2.length;++i)
 		res.append("," + (decode?MimeUtility.decodeText(addrs2[i].toString()):addrs2[i].toString()));
 	    return res.toString();
-    }
+	}
+	catch(MessagingException | UnsupportedEncodingException e)
+	{
+	    throw new PimException(e);
+	}
+	}
 
     public boolean saveAttachment(byte[] bytes, String fileName,
 				  File destFile) throws Exception

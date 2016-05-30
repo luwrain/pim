@@ -18,38 +18,38 @@
 package org.luwrain.pim.mail;
 
 import java.util.*;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.sql.SQLException;
+import java.io.*;
+
+import org.luwrain.pim.*;
 
 public interface StoredMailMessage
 {
     int getState();
-    void setState(int state) throws SQLException;
-    String getMessageId() throws Exception; 
-    void setMessageId(String messageId) throws Exception;
-    String getSubject() throws Exception;
-    void setSubject(String subject) throws Exception;
-    String getFrom() throws Exception;
-    void setFrom(String from) throws Exception;
-    String[] getTo() throws Exception;
-    void setTo(String[] to) throws Exception;
-    String[] getCc() throws Exception;
-    void setCc(String[] cc) throws Exception;
-    String[] getBcc() throws Exception;
-    void setBcc(String[] bcc) throws Exception;
-    String[] getAttachments() throws Exception;
-    void setAttachments(String[] value) throws Exception;
-    Date getSentDate() throws Exception;
-    void setSentDate(Date sentDate) throws Exception;
-    Date getReceivedDate() throws Exception;
-    void setReceivedDate(Date receivedDate) throws Exception;
-    String getBaseContent() throws Exception;
-    void setBaseContent(String baseContent) throws Exception;
-    String getMimeContentType() throws Exception;
-    void setMimeContentType(String mimeContentType) throws Exception;
-    byte[] getRawMail() throws SQLException;
-    void setRawMail(byte[] rawMail) throws SQLException;
-    String getExtInfo() throws Exception;
-    void setExtInfo(String value) throws Exception;
+    void setState(int state) throws PimException;
+    String getMessageId() throws PimException; 
+    void setMessageId(String messageId) throws PimException;
+    String getSubject() throws PimException;
+    void setSubject(String subject) throws PimException;
+    String getFrom() throws PimException;
+    void setFrom(String from) throws PimException;
+    String[] getTo() throws PimException;
+    void setTo(String[] to) throws PimException;
+    String[] getCc() throws PimException;
+    void setCc(String[] cc) throws PimException;
+    String[] getBcc() throws PimException;
+    void setBcc(String[] bcc) throws PimException;
+    String[] getAttachments() throws PimException;
+    void setAttachments(String[] value) throws PimException;
+    Date getSentDate() throws PimException;
+    void setSentDate(Date sentDate) throws PimException;
+    Date getReceivedDate() throws PimException;
+    void setReceivedDate(Date receivedDate) throws PimException;
+    String getBaseContent() throws PimException;
+    void setBaseContent(String baseContent) throws PimException;
+    String getMimeContentType() throws PimException;
+    void setMimeContentType(String mimeContentType) throws PimException;
+    byte[] getRawMail() throws PimException;
+    void setRawMail(byte[] rawMail) throws PimException;
+    String getExtInfo() throws PimException;
+    void setExtInfo(String value) throws PimException;
 }

@@ -17,24 +17,25 @@
 
 package org.luwrain.pim.mail;
 
+import org.luwrain.pim.*;
 import org.luwrain.pim.mail.MailStoringSql.Condition;
 
 public interface MailStoring extends Cloneable
 {
-    StoredMailFolder getFoldersRoot() throws Exception;
-    StoredMailFolder[] getFolders(StoredMailFolder folder) throws Exception;
-    String getFolderUniRef(StoredMailFolder folder) throws Exception;
-    StoredMailFolder getFolderByUniRef(String uniRef) throws Exception;
-    StoredMailAccount[] loadAccounts() throws Exception;
-    void saveAccount(MailAccount account) throws Exception;
-    void deleteAccount(StoredMailAccount account) throws Exception;
-    String getAccountUniRef(StoredMailAccount account) throws Exception;
-    StoredMailAccount getAccountByUniRef(String uniRef) throws Exception;
-    StoredMailRule[] getRules() throws Exception;
-    void saveRule(MailRule rule) throws Exception;
-    void deleteRule(StoredMailRule rule) throws Exception;
-    void saveMessage(StoredMailFolder folder, MailMessage message) throws Exception;
-    StoredMailMessage[] loadMessages(StoredMailFolder folder) throws Exception;
-    void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder) throws Exception;
-    void deleteMessage(StoredMailMessage message) throws Exception;
+    StoredMailFolder getFoldersRoot() throws PimException;
+    StoredMailFolder[] getFolders(StoredMailFolder folder) throws PimException;
+    String getFolderUniRef(StoredMailFolder folder) throws PimException;
+    StoredMailFolder getFolderByUniRef(String uniRef) throws PimException;
+    StoredMailAccount[] loadAccounts() throws PimException;
+    void saveAccount(MailAccount account) throws PimException;
+    void deleteAccount(StoredMailAccount account) throws PimException;
+    String getAccountUniRef(StoredMailAccount account) throws PimException;
+    StoredMailAccount getAccountByUniRef(String uniRef) throws PimException;
+    StoredMailRule[] getRules() throws PimException;
+    void saveRule(MailRule rule) throws PimException;
+    void deleteRule(StoredMailRule rule) throws PimException;
+    void saveMessage(StoredMailFolder folder, MailMessage message) throws PimException;
+    StoredMailMessage[] loadMessages(StoredMailFolder folder) throws PimException;
+    void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder) throws PimException;
+    void deleteMessage(StoredMailMessage message) throws PimException;
 }

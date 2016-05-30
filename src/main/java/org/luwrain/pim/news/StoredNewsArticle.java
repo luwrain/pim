@@ -2,34 +2,35 @@
 package org.luwrain.pim.news;
 
 import java.util.*;
-import java.sql.SQLException;
+
+import org.luwrain.pim.*;
 
 public interface StoredNewsArticle
 {
     int getState();
-    void setState(int state) throws SQLException;
+    void setState(int state) throws PimException;
     String getSourceUrl();
-    void setSourceUrl(String sourceUrl) throws SQLException;
+    void setSourceUrl(String sourceUrl) throws PimException;
     String getSourceTitle();
-    void setSourceTitle(String sourceTitle) throws SQLException;
+    void setSourceTitle(String sourceTitle) throws PimException;
     String getUri();
-    void setUri(String uri) throws SQLException;
+    void setUri(String uri) throws PimException;
     String getTitle();
-    void setTitle(String title) throws SQLException;
+    void setTitle(String title) throws PimException;
     String getExtTitle();
-    void setExtTitle(String extTitle) throws SQLException;
+    void setExtTitle(String extTitle) throws PimException;
     String getUrl();
-    void setUrl(String url) throws SQLException;
+    void setUrl(String url) throws PimException;
     String getDescr();
-    void setDescr(String descr) throws SQLException;
+    void setDescr(String descr) throws PimException;
     String getAuthor();
-    void setAuthor(String authro) throws SQLException;
+    void setAuthor(String authro) throws PimException;
     String getCategories();
-    void setCategories(String categories) throws SQLException;
+    void setCategories(String categories) throws PimException;
     Date getPublishedDate();
-    void setPublishedDate(Date publishedDate) throws SQLException;
+    void setPublishedDate(Date publishedDate) throws PimException;
     Date getUpdatedDate();
-    void setUpdatedDate(Date updatedDate) throws SQLException;
+    void setUpdatedDate(Date updatedDate) throws PimException;
     String getContent();
-    void setContent(String content) throws SQLException;
+    void setContent(String content) throws PimException;
 }

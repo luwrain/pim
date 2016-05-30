@@ -22,6 +22,7 @@ import java.util.*;
 
 import org.luwrain.core.Registry;
 import org.luwrain.core.NullCheck;
+import org.luwrain.pim.*;
 
 public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be public 
 {
@@ -58,89 +59,92 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	NullCheck.notNull(con, "con");
     }
 
-    @Override public void saveMessage(StoredMailFolder folder, MailMessage message) throws Exception
+    @Override public void saveMessage(StoredMailFolder folder, MailMessage message) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
-	if (!(folder instanceof StoredMailFolderRegistry))
-	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
-	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
-    	PreparedStatement st = con.prepareStatement(
-						    "INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-						    Statement.RETURN_GENERATED_KEYS);
-	st.setLong(1, folderRegistry.id);
-	st.setInt(2, message.state);
-	st.setString(3, message.subject);
-	st.setString(4, message.from);
-	st.setString(5, message.messageId);
-	st.setDate(6, new java.sql.Date(message.sentDate.getTime()));
-	st.setDate(7, new java.sql.Date(message.receivedDate.getTime()));
-	st.setString(8, message.baseContent);
-	st.setString(9, message.mimeContentType);
-	st.setBytes(10, message.rawMail);
-	st.setString(11, message.extInfo);
-	final int updatedCount=st.executeUpdate();
-	if(updatedCount != 1)
-	    throw new Exception("Unable to execute initial INSERT query");
-	final ResultSet generatedKeys = st.getGeneratedKeys();
-	if (!generatedKeys.next()) 
-	    return;
-	final long generatedKey = generatedKeys.getLong(1);
-	//to
-	if (message.to != null)
-	    for(String v: message.to)
-	    {
-		st = con.prepareStatement(
-					  "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-					  );
-		st.setLong(1, generatedKey);
-		st.setInt(2, FIELD_TYPE_TO);
-		st.setString(3, v);
-		st.executeUpdate();
-	    }
-	//cc
-	if (message.cc != null)
-	    for(String v: message.cc)
-	    {
-		st = con.prepareStatement(
-					  "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-					  );
-		st.setLong(1, generatedKey);
-		st.setInt(2, FIELD_TYPE_CC);
-		st.setString(3, v);
-		st.executeUpdate();
-	    }
-	//bcc
-	if (message.bcc != null)
-	    for(String v: message.bcc)
-	    {
-		st = con.prepareStatement(
-					  "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-					  );
-		st.setLong(1, generatedKey);
-		st.setInt(2, FIELD_TYPE_BCC);
-		st.setString(3, v);
-		st.executeUpdate();
-	    }
-	//attachment
-	if (message.attachments != null)
-	    for(String v: message.attachments)
-	    {
-		st = con.prepareStatement(
-					  "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-					  );
-		st.setLong(1, generatedKey);
-		st.setInt(2, FIELD_TYPE_ATTACHMENT);
-		st.setString(3, v);
-		st.executeUpdate();
-	    }
-    }
+	try {
+	    final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
+	    PreparedStatement st = con.prepareStatement(
+							"INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+							Statement.RETURN_GENERATED_KEYS);
+	    st.setLong(1, folderRegistry.id);
+	    st.setInt(2, message.state);
+	    st.setString(3, message.subject);
+	    st.setString(4, message.from);
+	    st.setString(5, message.messageId);
+	    st.setDate(6, new java.sql.Date(message.sentDate.getTime()));
+	    st.setDate(7, new java.sql.Date(message.receivedDate.getTime()));
+	    st.setString(8, message.baseContent);
+	    st.setString(9, message.mimeContentType);
+	    st.setBytes(10, message.rawMail);
+	    st.setString(11, message.extInfo);
+	    final int updatedCount=st.executeUpdate();
+	    if(updatedCount != 1)
+		throw new PimException("Unable to execute initial INSERT query");
+	    final ResultSet generatedKeys = st.getGeneratedKeys();
+	    if (!generatedKeys.next()) 
+		return;
+	    final long generatedKey = generatedKeys.getLong(1);
+	    //to
+	    if (message.to != null)
+		for(String v: message.to)
+		{
+		    st = con.prepareStatement(
+					      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+					      );
+		    st.setLong(1, generatedKey);
+		    st.setInt(2, FIELD_TYPE_TO);
+		    st.setString(3, v);
+		    st.executeUpdate();
+		}
+	    //cc
+	    if (message.cc != null)
+		for(String v: message.cc)
+		{
+		    st = con.prepareStatement(
+					      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+					      );
+		    st.setLong(1, generatedKey);
+		    st.setInt(2, FIELD_TYPE_CC);
+		    st.setString(3, v);
+		    st.executeUpdate();
+		}
+	    //bcc
+	    if (message.bcc != null)
+		for(String v: message.bcc)
+		{
+		    st = con.prepareStatement(
+					      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+					      );
+		    st.setLong(1, generatedKey);
+		    st.setInt(2, FIELD_TYPE_BCC);
+		    st.setString(3, v);
+		    st.executeUpdate();
+		}
+	    //attachment
+	    if (message.attachments != null)
+		for(String v: message.attachments)
+		{
+		    st = con.prepareStatement(
+					      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+					      );
+		    st.setLong(1, generatedKey);
+		    st.setInt(2, FIELD_TYPE_ATTACHMENT);
+		    st.setString(3, v);
+		    st.executeUpdate();
+		}
+	}
+	catch(SQLException e)
+	{
+	    throw new PimException(e);
+	}
+	}
 
-    @Override public StoredMailMessage[] loadMessages(StoredMailFolder folder) throws SQLException
+    @Override public StoredMailMessage[] loadMessages(StoredMailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
-	if (!(folder instanceof StoredMailFolderRegistry))
-	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
+	try {
 	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
 	final TreeMap<Long, StringValue> stringValues = new TreeMap<Long, StringValue>();
 	PreparedStatement st = con.prepareStatement(
@@ -206,16 +210,18 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	    m.attachments = s.attachments.toArray(new String[s.attachments.size()]);
 	}
     	return res.toArray(new StoredMailMessage[res.size()]);
+	}
+	catch(SQLException e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    @Override public void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder) throws Exception
+    @Override public void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
-	if (!(folder instanceof StoredMailFolderRegistry))
-	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
-	if (!(message instanceof StoredMailMessageSql))
-	    throw new NullPointerException("message must be an instance of StoredMailMessageSql");
+	try {
 	final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
 	final StoredMailMessageSql messageSql = (StoredMailMessageSql)message;
 	final PreparedStatement st = con.prepareStatement(
@@ -224,13 +230,17 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 	st.setLong(1, folderRegistry.id);
 	st.setLong(2, messageSql.id);
 	st.executeUpdate();
+	}
+	catch(SQLException e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    @Override public void deleteMessage(StoredMailMessage message) throws Exception
+    @Override public void deleteMessage(StoredMailMessage message) throws PimException
     {
 	NullCheck.notNull(message, "message");
-	if (!(message instanceof StoredMailMessageSql))
-	    throw new IllegalArgumentException("message must be an instance of StoredMailMessageSql");
+	try {
 	final StoredMailMessageSql messageSql = (StoredMailMessageSql)message;
 	PreparedStatement st = con.prepareStatement(
 						    "DELETE FROM mail_message_field WHERE mail_message_id=?"
@@ -242,5 +252,10 @@ public class MailStoringSql extends MailStoringRegistry //FIXME:Should not be pu
 				  );
 	st.setLong(1, messageSql.id);
 	st.executeUpdate();
+	}
+	catch(SQLException e)
+	{
+	    throw new PimException(e);
+	}
     }
 }
