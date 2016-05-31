@@ -1,15 +1,15 @@
 
-package org.luwrain.settings.news;
+package org.luwrain.settings.mail;
 
 import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
 
-class NewsGroupElement implements Element
+class AccountElement implements Element
 {
     private Element parent;
     private long id;
 
-    NewsGroupElement(Element parent, long id)
+    AccountElement(Element parent, long id)
     {
 	NullCheck.notNull(parent, "parent");
 	this.parent = parent;
@@ -23,9 +23,9 @@ class NewsGroupElement implements Element
 
     @Override public boolean equals(Object o)
     {
-	if (o == null || !(o instanceof NewsGroupElement))
+	if (o == null || !(o instanceof AccountElement))
 	    return false;
-	return id == ((NewsGroupElement)o).id;
+	return id == ((AccountElement)o).id;
     }
 
     @Override public int hashCode()

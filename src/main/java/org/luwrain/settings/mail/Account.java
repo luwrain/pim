@@ -1,5 +1,5 @@
 
-package org.luwrain.cpanel.pim;
+package org.luwrain.settings.mail;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;

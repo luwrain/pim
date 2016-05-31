@@ -25,6 +25,11 @@ class StoredNewsGroupRegistry implements StoredNewsGroup, Comparable
 	this.settings = settings;
     }
 
+    @Override public long getId()
+    {
+	return id;
+}
+
     @Override public String getName()
     {
 	return name;

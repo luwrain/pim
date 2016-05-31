@@ -19,8 +19,6 @@ package org.luwrain.pim;
 
 import org.luwrain.core.*;
 
-import org.luwrain.cpanel.pim.MailSection;
-
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
     private Registry registry;
@@ -101,6 +99,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	NullCheck.notNull(luwrain, "luwrain");
 	return new org.luwrain.cpanel.Factory[]{
 	    new org.luwrain.settings.news.Factory(luwrain),
+	    new org.luwrain.settings.mail.Factory(luwrain),
 	};
     }
 

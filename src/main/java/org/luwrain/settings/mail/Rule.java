@@ -1,5 +1,5 @@
 
-package org.luwrain.cpanel.pim;
+package org.luwrain.settings.mail;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
@@ -7,13 +7,13 @@ import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.mail.*;
 
-class MailRuleArea extends FormArea implements SectionArea
+class Rule extends FormArea implements SectionArea
 {
     private Environment environment;
     private MailStoring storing;
     private StoredMailRule rule;
 
-    MailRuleArea(Environment environment,
+    Rule(Environment environment,
 	 MailStoring storing, 
 	 StoredMailRule rule) throws Exception
     {

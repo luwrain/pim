@@ -38,5 +38,4 @@ class MailFolder implements Comparable
 	    return 1;
 	return 0;
     }
-
 }

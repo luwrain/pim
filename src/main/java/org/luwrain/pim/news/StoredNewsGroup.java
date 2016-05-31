@@ -5,6 +5,7 @@ import org.luwrain.pim.*;
 
 public interface StoredNewsGroup
 {
+    long getId();
     String getName();
     void setName(String name) throws PimException;
     String[] getUrls();

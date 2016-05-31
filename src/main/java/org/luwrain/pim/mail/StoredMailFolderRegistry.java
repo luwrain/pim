@@ -19,7 +19,7 @@ package org.luwrain.pim.mail;
 
 import org.luwrain.core.Registry;
 import org.luwrain.core.NullCheck;
-import org.luwrain.pim.RegistryKeys;
+import org.luwrain.pim.*;
 import org.luwrain.util.*;
 
 class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder
@@ -29,7 +29,6 @@ class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder
 
     int id;
     int parentId;
-
     StoredMailFolderRegistry(Registry registry, int id)
     {
 	this.registry = registry;
@@ -37,22 +36,22 @@ class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder
 	NullCheck.notNull(registry, "registry");
     }
 
-    @Override public String getTitle() throws Exception
+    @Override public String getTitle() throws PimException
     {
 	return title != null?title:"";
     }
 
-    @Override public void setTitle(String value) throws Exception
+    @Override public void setTitle(String value) throws PimException
     {
 	//FIXME:
     }
 
-    @Override public int getOrderIndex() throws Exception
+    @Override public int getOrderIndex() throws PimException
     {
 	return orderIndex;
     }
 
-    @Override public void setOrderIndex(int value) throws Exception
+    @Override public void setOrderIndex(int value) throws PimException
     {
 	//FIXME:
     }
