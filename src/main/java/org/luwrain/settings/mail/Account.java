@@ -4,29 +4,31 @@ package org.luwrain.settings.mail;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
+import org.luwrain.popups.Popups;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.mail.*;
+
 
 class MailAccountArea extends FormArea implements SectionArea
 {
     final String smtpTitle = "SMTP";//FIXME:
     final String pop3Title = "POP3";//FIXME:
 
-    private Environment environment;
+    private ControlPanel controlPanel;
     private MailStoring storing;
     private StoredMailAccount account;
 
-    MailAccountArea(Environment environment,
+    MailAccountArea(ControlPanel controlPanel,
 		    MailStoring storing, 
 		    StoredMailAccount account) throws Exception
     {
-	super(new DefaultControlEnvironment(environment.getLuwrain()));
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
 	this.storing = storing;
 	this.account = account;
-	this.environment = environment;
+	this.controlPanel = controlPanel;
 	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(account, "account");
-	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(controlPanel, "controlPanel");
 
 	//FIXME:Translation;
 	final int flags = account.getFlags();
@@ -43,10 +45,10 @@ class MailAccountArea extends FormArea implements SectionArea
 	    break;
 	}
 	addList("type", "Тип сервера:", selected,
-		new FixedFormListChoosing(environment.getLuwrain(), "Выберите тип сервера почтовой учётной записи", new String[]{
+		new FixedFormListChoosing(controlPanel.getCoreInterface(), "Выберите тип сервера почтовой учётной записи", new String[]{
 			pop3Title, 
 			smtpTitle,
-		    }, Popup.WEAK), null, true);
+		    }, Popups.DEFAULT_POPUP_FLAGS), null, true);
 	addEdit("host", "Хост:", account.getHost(), null, true);
 	addEdit("port", "Порт:", "" + account.getPort(), null, true);
 	addEdit("login", "Логин:", account.getLogin(), null, true);
@@ -69,12 +71,12 @@ class MailAccountArea extends FormArea implements SectionArea
 	}
 	catch(NumberFormatException e)
 	{
-	    environment.getLuwrain().message("Введённое значение порта не является допустимым числом", Luwrain.MESSAGE_ERROR);
+	    controlPanel.getCoreInterface().message("Введённое значение порта не является допустимым числом", Luwrain.MESSAGE_ERROR);
 	    return false;
 	}
 	if (port <= 0)
 	{
-	    environment.getLuwrain().message("Введённое значение порта должно быть больше нуля", Luwrain.MESSAGE_ERROR);
+	    controlPanel.getCoreInterface().message("Введённое значение порта должно быть больше нуля", Luwrain.MESSAGE_ERROR);
 	    return false;
 	}
 	account.setTitle(getEnteredText("title"));
@@ -112,7 +114,7 @@ class MailAccountArea extends FormArea implements SectionArea
 	    switch(event.getSpecial())
 	    {
 	    case TAB:
-		environment.gotoSectionsTree();
+		controlPanel.gotoSectionsTree();
 		return true;
 	    }
 	return super.onKeyboardEvent(event);
@@ -126,16 +128,16 @@ class MailAccountArea extends FormArea implements SectionArea
 	case SAVE:
 	    try {
 		if (save())
-		    environment.getLuwrain().message("Все параметры сохранены", Luwrain.MESSAGE_OK);
+		    controlPanel.getCoreInterface().message("Все параметры сохранены", Luwrain.MESSAGE_OK);
 	    }
 	    catch(Exception e)
 	    {
 		e.printStackTrace();
-		environment.getLuwrain().message("Во время сохранения параметров произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
+		controlPanel.getCoreInterface().message("Во время сохранения параметров произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
 	    }
 	    return true;
 	case CLOSE:
-	    environment.close();
+	    controlPanel.close();
 	default:
 	    return super.onEnvironmentEvent(event);
 	}

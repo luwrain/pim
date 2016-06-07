@@ -9,21 +9,21 @@ import org.luwrain.pim.mail.*;
 
 class Rule extends FormArea implements SectionArea
 {
-    private Environment environment;
+    private ControlPanel controlPanel;
     private MailStoring storing;
     private StoredMailRule rule;
 
-    Rule(Environment environment,
+    Rule(ControlPanel controlPanel,
 	 MailStoring storing, 
 	 StoredMailRule rule) throws Exception
     {
-	super(new DefaultControlEnvironment(environment.getLuwrain()));
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
 	this.storing = storing;
 	this.rule = rule;
-	this.environment = environment;
+	this.controlPanel = controlPanel;
 	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(rule, "rule");
-	NullCheck.notNull(environment, "environment");
+	NullCheck.notNull(controlPanel, "controlPanel");
 	addEdit("header-regex", "Регулярное выражение для заголовка:", rule.getHeaderRegex(), null, true);
 	addUniRef("dest-folder-uniref", "Почтовая группа:", rule.getDestFolderUniRef(), null, true);
     }
@@ -35,7 +35,7 @@ class Rule extends FormArea implements SectionArea
 	    switch(event.getSpecial())
 	    {
 	    case TAB:
-		environment.gotoSectionsTree();
+		controlPanel.gotoSectionsTree();
 	    }
 	return super.onKeyboardEvent(event);
     }
@@ -55,7 +55,7 @@ class Rule extends FormArea implements SectionArea
 	switch(event.getCode())
 	{
 	case CLOSE:
-	    environment.close();
+	    controlPanel.close();
 	    return true;
 	default:
 	    return super.onEnvironmentEvent(event);

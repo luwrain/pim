@@ -67,7 +67,7 @@ storingElement = new SimpleElement(newsElement, this.getClass().getName() + ":St
 	if (el instanceof GroupElement)
 	{
 	    final GroupElement groupElement = (GroupElement)el;
-	    return new SimpleSection(el, groupElement.getGroup().getName());
+	    return new SimpleSection(el, groupElement.getGroup().getName(), (env)->GroupArea.create(env, storing, groupElement.getGroup()));
 	}
 	return null;
     }
