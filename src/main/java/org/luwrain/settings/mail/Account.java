@@ -110,48 +110,21 @@ class MailAccountArea extends FormArea implements SectionArea
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
-	if (event.isSpecial() && !event.isModified())
-	    switch(event.getSpecial())
-	    {
-	    case TAB:
-		controlPanel.gotoSectionsTree();
-		return true;
-	    }
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
 	return super.onKeyboardEvent(event);
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	switch(event.getCode())
-	{
-	case SAVE:
-	    try {
-		if (save())
-		    controlPanel.getCoreInterface().message("Все параметры сохранены", Luwrain.MESSAGE_OK);
-	    }
-	    catch(Exception e)
-	    {
-		e.printStackTrace();
-		controlPanel.getCoreInterface().message("Во время сохранения параметров произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
-	    }
+	if (controlPanel.onEnvironmentEvent(event))
 	    return true;
-	case CLOSE:
-	    controlPanel.close();
-	default:
-	    return super.onEnvironmentEvent(event);
-	}
+	return super.onEnvironmentEvent(event);
     }
 
-    @Override public String getAreaName()
+    @Override public boolean saveSectionData()
     {
-	try {
-	    return "Настройка учётной записи \"" + account.getTitle() + "\"";
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	    return "Настройка учётной записи";
-	}
+	return true;
     }
 }

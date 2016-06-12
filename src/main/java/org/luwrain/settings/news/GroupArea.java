@@ -34,18 +34,22 @@ class GroupArea extends FormArea implements SectionArea
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
 	return super.onKeyboardEvent(event);
     }
 
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	    return super.onEnvironmentEvent(event);
+	if (controlPanel.onEnvironmentEvent(event))
+	    return true;
+	return super.onEnvironmentEvent(event);
     }
 
-    @Override public String getAreaName()
+    @Override public boolean saveSectionData()
     {
-	return "Настройка группы новостей \"" + group.getName() + "\"";
+	return true;
     }
 
     static GroupArea create(ControlPanel controlPanel,

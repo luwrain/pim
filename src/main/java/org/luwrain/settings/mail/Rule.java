@@ -28,18 +28,6 @@ class Rule extends FormArea implements SectionArea
 	addUniRef("dest-folder-uniref", "Почтовая группа:", rule.getDestFolderUniRef(), null, true);
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
-    {
-	NullCheck.notNull(event, "event");
-	if (event.isSpecial() && !event.isModified())
-	    switch(event.getSpecial())
-	    {
-	    case TAB:
-		controlPanel.gotoSectionsTree();
-	    }
-	return super.onKeyboardEvent(event);
-    }
-
     void save() throws Exception
     {
 	rule.setHeaderRegex(getEnteredText("header-regex"));
@@ -49,21 +37,24 @@ class Rule extends FormArea implements SectionArea
 	    rule.setDestFolderUniRef("");
     }
 
+    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (controlPanel.onKeyboardEvent(event))
+	    return true;
+	return super.onKeyboardEvent(event);
+    }
+
     @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
-	switch(event.getCode())
-	{
-	case CLOSE:
-	    controlPanel.close();
+	if (controlPanel.onEnvironmentEvent(event))
 	    return true;
-	default:
-	    return super.onEnvironmentEvent(event);
-	}
+	return super.onEnvironmentEvent(event);
     }
 
-    @Override public String getAreaName()
+    @Override public boolean saveSectionData()
     {
-	return "Настройка правила фильтрации";//FIXME:
+	return true;
     }
 }
