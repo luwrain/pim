@@ -22,7 +22,6 @@ import java.util.*;
 import org.luwrain.core.Registry;
 import org.luwrain.core.NullCheck;
 import org.luwrain.util.RegistryAutoCheck;
-import org.luwrain.util.RegistryPath;
 import org.luwrain.pim.RegistryKeys;
 
 abstract class ContactsStoringRegistry implements ContactsStoring
@@ -68,14 +67,14 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	    throw new IllegalArgumentException("folder.title may not be null");
 	final StoredContactsFolderRegistry parentFolder = (StoredContactsFolderRegistry)addTo;
 	final int newId = newFolderId();
-	final String newPath = RegistryPath.join(registryKeys.contactsFolders(), "" + newId);
+	final String newPath = Registry.join(registryKeys.contactsFolders(), "" + newId);
 	if (!registry.addDirectory(newPath))
 	    throw new Exception("Unable to add to the registry new directory " + newPath);
-	if (!registry.setString(RegistryPath.join(newPath, "title"), folder.title))
+	if (!registry.setString(Registry.join(newPath, "title"), folder.title))
 	    throw new Exception("Unable to add to the registry new string value " + newPath + "/title");
-	if (!registry.setInteger(RegistryPath.join(newPath, "order-index"), folder.orderIndex))
+	if (!registry.setInteger(Registry.join(newPath, "order-index"), folder.orderIndex))
 	    throw new Exception("Unable to add to the registry new integer value " + newPath + "/order-index");
-	if (!registry.setInteger(RegistryPath.join(newPath, "parent-id"), parentFolder.id))
+	if (!registry.setInteger(Registry.join(newPath, "parent-id"), parentFolder.id))
 	    throw new Exception("Unable to add to the registry new integer value " + newPath + "/parent-id");
     }
 
@@ -85,7 +84,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	if (!(folder instanceof StoredContactsFolderRegistry))
 	    throw new IllegalArgumentException("folder is not an instance of StoredContactsFolderRegistry");
 	final StoredContactsFolderRegistry folderRegistry = (StoredContactsFolderRegistry)folder;
-	final String path = RegistryPath.join(registryKeys.contactsFolders(), "" + folderRegistry.id);
+	final String path = Registry.join(registryKeys.contactsFolders(), "" + folderRegistry.id);
 	if (!registry.deleteDirectory(path))
 	    throw new Exception("Unable to delete the registry directory " + path);
     }

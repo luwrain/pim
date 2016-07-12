@@ -28,7 +28,7 @@ abstract class NewsStoringRegistry implements NewsStoring
 	    {
 		if (s == null || s.isEmpty())
 		    continue;
-		final StoredNewsGroupRegistry g = readNewsGroup(RegistryPath.join(keys.newsGroups(), s), s);
+		final StoredNewsGroupRegistry g = readNewsGroup(Registry.join(keys.newsGroups(), s), s);
 		if (g != null)
 		    groups.add(g);
 	    }

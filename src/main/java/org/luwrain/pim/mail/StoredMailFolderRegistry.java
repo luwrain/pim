@@ -68,9 +68,9 @@ class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder
     {
 	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
 	final String path = getPath();
-	title = check.stringNotEmpty(RegistryPath.join(path, "title"), "");
-	orderIndex = check.intPositive(RegistryPath.join(path, "order-index"), -1);
-	parentId = check.intPositive(RegistryPath.join(path, "parent-id"), -1);
+	title = check.stringNotEmpty(Registry.join(path, "title"), "");
+	orderIndex = check.intPositive(Registry.join(path, "order-index"), -1);
+	parentId = check.intPositive(Registry.join(path, "parent-id"), -1);
 	if (title.isEmpty() || parentId < 0)
 	    return false;
 	if (orderIndex < 0)
@@ -80,7 +80,7 @@ class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder
 
     private String getPath()
     {
-	return RegistryPath.join(registryKeys.mailFolders(), "" + id);
+	return Registry.join(registryKeys.mailFolders(), "" + id);
     }
 
     void updateError(String param) throws Exception

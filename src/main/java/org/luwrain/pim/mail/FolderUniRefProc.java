@@ -55,8 +55,8 @@ public class FolderUniRefProc implements UniRefProc
 	}
 	final Registry registry = luwrain.getRegistry();
 	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
-	final String dirPath = RegistryPath.join(registryKeys.mailFolders(), "" + id);
-	final String path = RegistryPath.join(dirPath, "title");
+	final String dirPath = Registry.join(registryKeys.mailFolders(), "" + id);
+	final String path = Registry.join(dirPath, "title");
     final String title = check.stringAny(path, "");
     return new UniRefInfo(uniRef, "Почтовая группа", folderName(title));
 }

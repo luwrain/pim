@@ -19,7 +19,6 @@ package org.luwrain.pim.contacts;
 
 import org.luwrain.core.Registry;
 import org.luwrain.core.NullCheck;
-import org.luwrain.util.RegistryPath;
 import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.pim.RegistryKeys;
 
@@ -45,7 +44,7 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
     @Override public void setTitle(String value) throws Exception
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(RegistryPath.join(getPath(), "title"), value))
+	if (!registry.setString(Registry.join(getPath(), "title"), value))
 	    updateError("title");
 	title = value;
     }
@@ -57,7 +56,7 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 
     @Override public void setOrderIndex(int value) throws Exception
     {
-	if (!registry.setInteger(RegistryPath.join(getPath(), "order-index"), value))
+	if (!registry.setInteger(Registry.join(getPath(), "order-index"), value))
 	    updateError("order-index");
 	orderIndex = value;
     }
@@ -69,7 +68,7 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 
     void setParentId(int value) throws Exception
     {
-	if (!registry.setInteger(RegistryPath.join(getPath(), "parent-id"), value))
+	if (!registry.setInteger(Registry.join(getPath(), "parent-id"), value))
 	    updateError("parent-id");
 	parentId = value;
     }
@@ -78,9 +77,9 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
     {
 	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
 	final String path = getPath();
-	title = check.stringNotEmpty(RegistryPath.join(path, "title"), "");
-	orderIndex = check.intPositive(RegistryPath.join(path, "order-index"), -1);
-	parentId = check.intPositive(RegistryPath.join(path, "parent-id"), -1);
+	title = check.stringNotEmpty(Registry.join(path, "title"), "");
+	orderIndex = check.intPositive(Registry.join(path, "order-index"), -1);
+	parentId = check.intPositive(Registry.join(path, "parent-id"), -1);
 	if (title.isEmpty() || parentId < 0)
 	    return false;
 	if (orderIndex < 0)
@@ -98,7 +97,7 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 
     String getPath()
     {
-return RegistryPath.join(registryKeys.contactsFolders(), "" + id);
+return Registry.join(registryKeys.contactsFolders(), "" + id);
     }
 
     private void updateError(String param) throws Exception

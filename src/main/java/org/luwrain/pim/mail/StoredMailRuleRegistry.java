@@ -43,7 +43,7 @@ class StoredMailRuleRegistry extends MailRule implements StoredMailRule
     @Override public void setAction(int value) throws Exception
     {
 	final String valueStr = getActionStr(value);
-	if (!registry.setString(RegistryPath.join(getPath(), "action"), valueStr))
+	if (!registry.setString(Registry.join(getPath(), "action"), valueStr))
 	    updateError("action");
 	action = value;
     }
@@ -56,7 +56,7 @@ class StoredMailRuleRegistry extends MailRule implements StoredMailRule
     @Override public void setHeaderRegex(String value) throws Exception
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(RegistryPath.join(getPath(), "header-regex"), value))
+	if (!registry.setString(Registry.join(getPath(), "header-regex"), value))
 	    updateError("header-regex");
 	headerRegex = value;
     }
@@ -69,7 +69,7 @@ class StoredMailRuleRegistry extends MailRule implements StoredMailRule
     @Override public void setDestFolderUniRef(String value) throws Exception
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(RegistryPath.join(getPath(), "dest-folder-uniref"), value))
+	if (!registry.setString(Registry.join(getPath(), "dest-folder-uniref"), value))
 	    updateError("dest-folder-uniref");
 	destFolderUniRef = value;
     }
@@ -78,9 +78,9 @@ class StoredMailRuleRegistry extends MailRule implements StoredMailRule
     {
 	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
 	final String path = getPath();
-	final String actionStr = check.stringNotEmpty(RegistryPath.join(path, "action"), "").toLowerCase().trim();
-	headerRegex = check.stringAny(RegistryPath.join(path, "header-regex"), "");
-	destFolderUniRef=  check.stringAny(RegistryPath.join(path, "dest-folder-uniref"), "");
+	final String actionStr = check.stringNotEmpty(Registry.join(path, "action"), "").toLowerCase().trim();
+	headerRegex = check.stringAny(Registry.join(path, "header-regex"), "");
+	destFolderUniRef=  check.stringAny(Registry.join(path, "dest-folder-uniref"), "");
 	switch(actionStr)
 	{
 	case "move-to-folder":
@@ -94,7 +94,7 @@ class StoredMailRuleRegistry extends MailRule implements StoredMailRule
 
     private String getPath()
     {
-	return RegistryPath.join(registryKeys.mailRules(), "" + id);
+	return Registry.join(registryKeys.mailRules(), "" + id);
     }
 
     static String getActionStr(int code)
