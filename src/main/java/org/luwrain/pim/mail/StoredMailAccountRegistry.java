@@ -17,42 +17,46 @@
 
 package org.luwrain.pim.mail;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.util.*;
-import org.luwrain.pim.RegistryKeys;
+import org.luwrain.pim.*;
 
 class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 {
-    private final RegistryKeys registryKeys = new RegistryKeys();
+    private final org.luwrain.pim.RegistryKeys registryKeys = new org.luwrain.pim.RegistryKeys();
     public Registry registry;
     public int id;
 
     StoredMailAccountRegistry(Registry registry, int id)
     {
+	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = id;
-	NullCheck.notNull(registry, "registry");
     }
 
-    @Override public int getType() throws Exception
+    @Override public int getId()
+    {
+	return id;
+    }
+
+    @Override public int getType() throws PimException
     {
 	return type;
     }
 
-    @Override public void setType(int value) throws Exception
+    @Override public void setType(int value) throws PimException
     {
 	if (!registry.setString(Registry.join(getPath(), "type"), getTypeStr(value)))
 	    updateError("type");
 	type = value;
     }
 
-    @Override public String getTitle() throws Exception
+    @Override public String getTitle() throws PimException
     {
 	return title != null?title:"";
     }
 
-    @Override public void setTitle(String value) throws Exception
+    @Override public void setTitle(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
 	if (!registry.setString(Registry.join(getPath(), "title"), value))
@@ -60,12 +64,12 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	title = value;
     }
 
-    @Override public String getHost() throws Exception
+    @Override public String getHost() throws PimException
     {
 	return host != null?host:"";
     }
 
-    @Override public void setHost(String value) throws Exception
+    @Override public void setHost(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
 	if (!registry.setString(Registry.join(getPath(), "host"), value))
@@ -73,24 +77,24 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	host = value;
     }
 
-    @Override public int getPort() throws Exception
+    @Override public int getPort() throws PimException
     {
 	return port;
     }
 
-    @Override public void setPort(int value) throws Exception
+    @Override public void setPort(int value) throws PimException
     {
 	if (!registry.setInteger(Registry.join(getPath(), "port"), value))
 	    updateError("port");
 	port = value;
     }
 
-    @Override public String getLogin() throws Exception
+    @Override public String getLogin() throws PimException
     {
 	return login != null?login:"";
     }
 
-    @Override public void setLogin(String value) throws Exception
+    @Override public void setLogin(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
 	if (!registry.setString(Registry.join(getPath(), "login"), value))
@@ -98,12 +102,12 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	login = value;
     }
 
-    @Override public String getPasswd() throws Exception
+    @Override public String getPasswd() throws PimException
     {
 	return passwd != null?passwd:"";
     }
 
-    @Override public void setPasswd(String value) throws Exception
+    @Override public void setPasswd(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
 	if (!registry.setString(Registry.join(getPath(), "passwd"), value))
@@ -111,12 +115,12 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	passwd = value;
     }
 
-    @Override public String getTrustedHosts() throws Exception
+    @Override public String getTrustedHosts() throws PimException
     {
 	return trustedHosts != null?trustedHosts:"";
     }
 
-    @Override public void setTrustedHosts(String value) throws Exception
+    @Override public void setTrustedHosts(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
 	if (!registry.setString(Registry.join(getPath(), "trusted-hosts"), value))
@@ -124,13 +128,12 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	trustedHosts = value;
     }
 
-
-    @Override public int getFlags() throws Exception
+    @Override public int getFlags() throws PimException
     {
 	return flags;
     } 
 
-    @Override public void setFlags(int value) throws Exception
+    @Override public void setFlags(int value) throws PimException
     {
 	final boolean enabled = (value & FLAG_ENABLED) != 0;
 	final boolean ssl = (value & FLAG_SSL) != 0;
@@ -150,12 +153,12 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	flags = value;
     }
 
-    @Override public String getSubstName() throws Exception
+    @Override public String getSubstName() throws PimException
     {
 	return substName != null?substName:"";
     }
 
-    @Override public void setSubstName(String value) throws Exception
+    @Override public void setSubstName(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
 	if (!registry.setString(Registry.join(getPath(), "subst-name"), value))
@@ -163,12 +166,12 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	substName = value;
     }
 
-    @Override public String getSubstAddress() throws Exception
+    @Override public String getSubstAddress() throws PimException
     {
 	return substAddress != null?substAddress:"";
     }
 
-    @Override public void setSubstAddress(String value) throws Exception
+    @Override public void setSubstAddress(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
 	if (!registry.setString(Registry.join(getPath(), "subst-address"), value))
@@ -236,8 +239,8 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	}
     }
 
-    void updateError(String param) throws Exception
+    void updateError(String param) throws PimException
     {
-	throw new Exception("Unable to update in the registry " + getPath() + "/" + param);
+	throw new PimException("Unable to update in the registry " + getPath() + "/" + param);
     }
 }

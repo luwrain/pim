@@ -4,6 +4,7 @@ package org.luwrain.settings.mail;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
 
 import org.luwrain.pim.mail.*;
@@ -11,7 +12,7 @@ import org.luwrain.pim.*;
 
 public class Factory implements org.luwrain.cpanel.Factory
 {
-    static private final String STRINGS_NAME = "luwrain.settings.mail";
+
 
     private Luwrain luwrain;
     private Strings strings;
@@ -22,24 +23,16 @@ public class Factory implements org.luwrain.cpanel.Factory
     private SimpleElement rulesElement = null;
     private SimpleElement groupsElement = null;
 
-
     public Factory(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	final Object o = luwrain.i18n().getStrings(STRINGS_NAME);
-	if (o != null && (o instanceof Strings))
-	{
-	    strings = (Strings)o;
-	}
-	    mailElement = new SimpleElement(StandardElements.APPLICATIONS, this.getClass().getName());
-	    accountsElement = new SimpleElement(mailElement, this.getClass().getName() + ":Accounts");
-	    groupsElement = new SimpleElement(mailElement, this.getClass().getName() + ":Groups");
-	    rulesElement = new SimpleElement(mailElement, this.getClass().getName() + ":Rules");
     }
 
     @Override public Element[] getElements()
     {
+	if (!init())
+	    return new Element[0];
 	return new Element[]{
 	    mailElement,
 	    groupsElement,
@@ -50,25 +43,98 @@ public class Factory implements org.luwrain.cpanel.Factory
 
     @Override public Element[] getOnDemandElements(Element parent)
     {
+	NullCheck.notNull(parent, "parent");
+	if (!initStoring())
 	return new Element[0];
+	if (parent.equals(accountsElement))
+	{
+	try {
+	    final StoredMailAccount[] accounts = storing.loadAccounts();
+	    System.out.println("loaded " + accounts.length + " accounts");
+	    final Element[] res = new Element[accounts.length];
+	    for(int i = 0;i < accounts.length;++i)
+		res[i] = new AccountElement(parent, accounts[i].getId(), accounts[i].getTitle());
+	    return res;
+	}
+	catch(PimException e)
+	{
+	    luwrain.crash(e);
+	}
+	}
+
+	return new Element[0];
+
     }
 
     @Override public Section createSection(Element el)
     {
 	NullCheck.notNull(el, "el");
 	if (el.equals(mailElement))
-	    return new SimpleSection(mailElement, "Электронная почта");
-
+	    return new SimpleSection(mailElement, strings.mailSection());
 	if (el.equals(accountsElement))
-	    return new SimpleSection(accountsElement, "Учётные записи");
+	    return new SimpleSection(accountsElement, strings.accountsSection(), null,
+				     new Action[]{new Action("add-mail-account", strings.addMailAccount())}, 
+				     (controlPanel, event)->onAccountsActionEvent(controlPanel, event));
 	if (el.equals(groupsElement))
-	    return new SimpleSection(groupsElement, "Группы");
+	    return new SimpleSection(groupsElement, strings.groupsSection());
 	if (el.equals(rulesElement))
-	    return new SimpleSection(rulesElement, "Правила");
+	    return new SimpleSection(rulesElement, strings.rulesSection());
+
+	if (el instanceof AccountElement)
+	    return new SimpleSection(el, ((AccountElement)el).title(), (controlPanel)->Account.create(controlPanel, storing, ((AccountElement)el).id()));
 	return null;
     }
 
+    private boolean onAccountsActionEvent(ControlPanel controlPanel, ActionEvent event)
+    {
+	NullCheck.notNull(controlPanel, "controlPanel");
+	NullCheck.notNull(event, "event");
+	if (!initStoring())
+	{
+	    luwrain.message(strings.noStoring(), Luwrain.MESSAGE_ERROR);
+	    return true;
+	}
+	try {
+	    storing.saveAccount(new MailAccount());
+	    return true;
+	}
+	catch(PimException e)
+	{
+	    luwrain.crash(e);
+	    return false;
+	}
+    }
+
+    private boolean init()
+    {
+	if (strings == null)
+	{
+	    final Object o = luwrain.i18n().getStrings(Strings.NAME);
+	    if (o != null && (o instanceof Strings))
+		strings = (Strings)o; else
+		return false;
+	}
+	if (mailElement == null)
+	    mailElement = new SimpleElement(StandardElements.APPLICATIONS, this.getClass().getName());
+	if (accountsElement == null)
+	    accountsElement = new SimpleElement(mailElement, this.getClass().getName() + ":Accounts");
+	if (groupsElement == null)
+	    groupsElement = new SimpleElement(mailElement, this.getClass().getName() + ":Groups");
+	if (rulesElement == null)
+	    rulesElement = new SimpleElement(mailElement, this.getClass().getName() + ":Rules");
+	return true;
+    }
+
+    private boolean initStoring()
+    {
+	final Object obj = luwrain.getSharedObject("luwrain.pim.mail");
+	if (obj == null || !(obj instanceof org.luwrain.pim.mail.Factory))
+	    return false;
+	storing = ((org.luwrain.pim.mail.Factory)obj).createMailStoring();
+	return storing != null;
+	}
 }
+
 
     /*
     private void constructChildSections()

@@ -17,26 +17,29 @@
 
 package org.luwrain.pim.mail;
 
+import org.luwrain.pim.*;
+
 public interface StoredMailAccount
 {
-    int getType() throws Exception;
-    void setType(int value) throws Exception;
-    String getTitle() throws Exception;
-    void setTitle(String value) throws Exception;
-    String getHost() throws Exception;
-    void setHost(String value) throws Exception;
-    int getPort() throws Exception;
-    void setPort(int value) throws Exception;
-    String getLogin() throws Exception;
-    void setLogin(String value) throws Exception;
-    String getPasswd() throws Exception;
-    void setPasswd(String value) throws Exception;
-    String getTrustedHosts() throws Exception;
-    void setTrustedHosts(String value) throws Exception;
-    int getFlags() throws Exception;
-    void setFlags(int value) throws Exception;
-    String getSubstName() throws Exception;
-    void setSubstName(String value) throws Exception;
-    String getSubstAddress() throws Exception;
-    void setSubstAddress(String value) throws Exception;
+    int getId() throws PimException;
+    int getType() throws PimException;
+    void setType(int value) throws PimException;
+    String getTitle() throws PimException;
+    void setTitle(String value) throws PimException;
+    String getHost() throws PimException;
+    void setHost(String value) throws PimException;
+    int getPort() throws PimException;
+    void setPort(int value) throws PimException;
+    String getLogin() throws PimException;
+    void setLogin(String value) throws PimException;
+    String getPasswd() throws PimException;
+    void setPasswd(String value) throws PimException;
+    String getTrustedHosts() throws PimException;
+    void setTrustedHosts(String value) throws PimException;
+    int getFlags() throws PimException;
+    void setFlags(int value) throws PimException;
+    String getSubstName() throws PimException;
+    void setSubstName(String value) throws PimException;
+    String getSubstAddress() throws PimException;
+    void setSubstAddress(String value) throws PimException;
 }

@@ -27,6 +27,7 @@ public interface MailStoring extends Cloneable
     String getFolderUniRef(StoredMailFolder folder) throws PimException;
     StoredMailFolder getFolderByUniRef(String uniRef) throws PimException;
     StoredMailAccount[] loadAccounts() throws PimException;
+    StoredMailAccount loadAccountById(long id) throws PimException;
     void saveAccount(MailAccount account) throws PimException;
     void deleteAccount(StoredMailAccount account) throws PimException;
     String getAccountUniRef(StoredMailAccount account) throws PimException;

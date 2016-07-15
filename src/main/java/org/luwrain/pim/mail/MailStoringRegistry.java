@@ -19,8 +19,7 @@ package org.luwrain.pim.mail;
 
 import java.util.*;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.pim.*;
 import org.luwrain.pim.RegistryKeys;
@@ -142,13 +141,10 @@ abstract class MailStoringRegistry implements MailStoring
 
     @Override public StoredMailAccount[] loadAccounts() throws PimException
     {
-	final String[] subdirs = registry.getDirectories(registryKeys.mailAccounts());
-	if (subdirs == null || subdirs.length < 1)
-	    return new StoredMailAccount[0];
 	final LinkedList<StoredMailAccountRegistry> accounts = new LinkedList<StoredMailAccountRegistry>();
-	for(String s: subdirs)
+	for(String s: registry.getDirectories(registryKeys.mailAccounts()))
 	{
-	    if (s == null || s.isEmpty())
+	    if (s.isEmpty())
 		continue;
 	    int id = 0;
 	    try {
@@ -156,6 +152,7 @@ abstract class MailStoringRegistry implements MailStoring
 	    }
 	    catch(NumberFormatException e)
 	    {
+		Log.warning("pim", "invalid mail account registry directory:" + s);
 		continue;
 	    }
 	    final StoredMailAccountRegistry account = new StoredMailAccountRegistry(registry, id);
@@ -165,6 +162,12 @@ abstract class MailStoringRegistry implements MailStoring
 	final StoredMailAccountRegistry[] res = accounts.toArray(new StoredMailAccountRegistry[accounts.size()]);
 	Arrays.sort(res);
 	return res;
+    }
+
+    @Override public StoredMailAccount loadAccountById(long id) throws PimException
+    {
+	final StoredMailAccountRegistry account = new StoredMailAccountRegistry(registry, (int)id);//FIXME:
+	    return account.load()?account:null;
     }
 
     @Override public void saveAccount(MailAccount account) throws PimException

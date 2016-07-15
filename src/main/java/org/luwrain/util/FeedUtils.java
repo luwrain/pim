@@ -32,7 +32,7 @@ public class FeedUtils
 			//FIXME:		    article.sourceTitle = MlTagStrip.run(feed.getTitle());
 			article.sourceTitle = feed.getTitle();
 		    if (entry.getTitle() != null)
-			article.title = /*MlTagStrip.run(*/entry.getTitle();
+			article.title = entry.getTitle().replaceAll(" ", " ");
 		    if (entry.getUri() != null)
 			article.uri = entry.getUri();
 		    if (entry.getLink() != null)

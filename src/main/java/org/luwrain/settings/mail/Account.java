@@ -6,34 +6,41 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.Popups;
 import org.luwrain.cpanel.*;
+import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-
-class MailAccountArea extends FormArea implements SectionArea
+class Account extends FormArea implements SectionArea
 {
     final String smtpTitle = "SMTP";//FIXME:
     final String pop3Title = "POP3";//FIXME:
 
     private ControlPanel controlPanel;
+    private Luwrain luwrain;
     private MailStoring storing;
     private StoredMailAccount account;
+    private Strings strings;
 
-    MailAccountArea(ControlPanel controlPanel,
-		    MailStoring storing, 
-		    StoredMailAccount account) throws Exception
+    Account(ControlPanel controlPanel, Strings strings,
+		    MailStoring storing, StoredMailAccount account) throws PimException
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
-	this.storing = storing;
-	this.account = account;
-	this.controlPanel = controlPanel;
+	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), strings.accountFormName());
+	NullCheck.notNull(controlPanel, "controlPanel");
+	NullCheck.notNull(strings, "strings");
 	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(account, "account");
-	NullCheck.notNull(controlPanel, "controlPanel");
+	this.storing = storing;
+	this.strings = strings;
+	this.account = account;
+	this.controlPanel = controlPanel;
+	this.luwrain = controlPanel.getCoreInterface();
+	fillForm();
+    }
 
-	//FIXME:Translation;
+    private void fillForm() throws PimException
+    {
 	final int flags = account.getFlags();
-	addEdit("title", "Имя:", account.getTitle(), null, true);
-	addCheckbox("enabled", "Учётная запись включена:", (flags & MailAccount.FLAG_ENABLED) > 0, null, true);
+	addEdit("title", strings.accountFormTitle(), account.getTitle(), null, true);
+	addCheckbox("enabled", strings.accountFormEnabled(), (flags & MailAccount.FLAG_ENABLED) > 0, null, true);
 	String selected = null;
 	switch(account.getType())
 	{
@@ -44,26 +51,22 @@ class MailAccountArea extends FormArea implements SectionArea
 	    selected = pop3Title;
 	    break;
 	}
-	addList("type", "Тип сервера:", selected,
-		new FixedFormListChoosing(controlPanel.getCoreInterface(), "Выберите тип сервера почтовой учётной записи", new String[]{
-			pop3Title, 
-			smtpTitle,
-		    }, Popups.DEFAULT_POPUP_FLAGS), null, true);
-	addEdit("host", "Хост:", account.getHost(), null, true);
-	addEdit("port", "Порт:", "" + account.getPort(), null, true);
-	addEdit("login", "Логин:", account.getLogin(), null, true);
-	addEdit("passwd", "Пароль:", account.getPasswd(), null, true);
-	addEdit("trusted-hosts", "Доверенные серверы самоподписанных сертификатов:", account.getTrustedHosts(), null, true);
-	addCheckbox("default", "Учётная запись по умолчанию (для исходящей почты):", (flags & MailAccount.FLAG_DEFAULT) > 0, null, true);
-	addCheckbox("leave-messages", "Оставлять письма на сервере:", (flags & MailAccount.FLAG_LEAVE_MESSAGES) > 0, null, true);
-	addCheckbox("ssl", "Использовать SSL:", (flags & MailAccount.FLAG_SSL) > 0, null, true);
-	addCheckbox("tls", "Использовать TLS:", (flags & MailAccount.FLAG_TLS) > 0, null, true);
-	addEdit("subst-name", "Отправлять письма от имени:", account.getSubstName(), null, true);
-	addEdit("subst-address", "Отправлять письма с адреса:", account.getSubstAddress(), null, true);
+	addList("type", strings.accountFormServerType(), selected,
+		new FixedFormListChoosing(luwrain, strings.accountFormTypeSelectionPopupName(), new String[]{pop3Title, smtpTitle}, Popups.DEFAULT_POPUP_FLAGS), null, true);
+	addEdit("host", strings.accountFormHost(), account.getHost(), null, true);
+	addEdit("port", strings.accountFormPort(), "" + account.getPort());
+	addEdit("login", strings.accountFormLogin(), account.getLogin());
+	addEdit("passwd", strings.accountFormPasswd(), account.getPasswd());
+	addEdit("trusted-hosts", strings.accountFormTrustedHosts(), account.getTrustedHosts(), null, true);
+	addCheckbox("default", strings.accountFormDefaultOutgoing(), (flags & MailAccount.FLAG_DEFAULT) > 0, null, true);
+	addCheckbox("leave-messages", strings.accountFormLeaveMessageOnServer(), (flags & MailAccount.FLAG_LEAVE_MESSAGES) > 0, null, true);
+	addCheckbox("ssl", strings.accountFormUseSsl(), (flags & MailAccount.FLAG_SSL) > 0, null, true);
+	addCheckbox("tls", strings.accountFormUseTls(), (flags & MailAccount.FLAG_TLS) > 0, null, true);
+	addEdit("subst-name", strings.accountForMessagesAuthorName(), account.getSubstName());
+	addEdit("subst-address", strings.accountFormMessagesAuthorAddress(), account.getSubstAddress(), null, true);
     }
 
-    //Returns false if there are errors which the user is able to fix;
-    boolean save() throws Exception
+    @Override public boolean saveSectionData()
     {
 	int port;
 	try {
@@ -71,12 +74,12 @@ class MailAccountArea extends FormArea implements SectionArea
 	}
 	catch(NumberFormatException e)
 	{
-	    controlPanel.getCoreInterface().message("Введённое значение порта не является допустимым числом", Luwrain.MESSAGE_ERROR);
+	    luwrain.message(strings.portNotNumber(), Luwrain.MESSAGE_ERROR);
 	    return false;
 	}
 	if (port <= 0)
 	{
-	    controlPanel.getCoreInterface().message("Введённое значение порта должно быть больше нуля", Luwrain.MESSAGE_ERROR);
+	    luwrain.message(strings.portMustBeGreaterZero(), Luwrain.MESSAGE_ERROR);
 	    return false;
 	}
 	account.setTitle(getEnteredText("title"));
@@ -123,8 +126,20 @@ class MailAccountArea extends FormArea implements SectionArea
 	return super.onEnvironmentEvent(event);
     }
 
-    @Override public boolean saveSectionData()
+    static Account create(ControlPanel controlPanel, MailStoring storing,
+			  long id)
     {
-	return true;
+	NullCheck.notNull(controlPanel, "controlPanel");
+	NullCheck.notNull(storing, "storing");
+	final Luwrain luwrain = controlPanel.getCoreInterface();
+	final Strings strings = (Strings)luwrain.i18n().getStrings(Strings.NAME);
+	try {
+	    return new Account(controlPanel, strings, storing, storing.loadAccountById(id));
+	}
+	catch(PimException e)
+	{
+	    luwrain.crash(e);
+	    return null;
+	}
     }
 }
