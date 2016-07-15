@@ -3,14 +3,12 @@ package org.luwrain.pim.news;
 
 import java.util.*;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.util .*;
 
 abstract class NewsStoringRegistry implements NewsStoring
 {
-    private final RegistryKeys keys = new RegistryKeys();
+protected final org.luwrain.pim.RegistryKeys keys = new org.luwrain.pim.RegistryKeys();
     protected Registry registry;
 
     public NewsStoringRegistry(Registry registry)
@@ -21,61 +19,58 @@ abstract class NewsStoringRegistry implements NewsStoring
 
     @Override public StoredNewsGroup[] loadGroups() throws PimException
     {
-	try {
-	    final String[] groupsNames = registry.getDirectories(keys.newsGroups());
 	    final LinkedList<StoredNewsGroup> groups = new LinkedList<StoredNewsGroup>();
-	    for(String s: groupsNames)
+	    for(String s: registry.getDirectories(keys.newsGroups()))
 	    {
-		if (s == null || s.isEmpty())
+		if (s.isEmpty())
 		    continue;
-		final StoredNewsGroupRegistry g = readNewsGroup(Registry.join(keys.newsGroups(), s), s);
-		if (g != null)
+		long id;
+		try {
+		    id = Integer.parseInt(s);
+		}
+		catch(NumberFormatException e)
+		{
+		    Log.warning("pim", "news group with bad registry directory:" + s);
+		    continue;
+		}
+		final StoredNewsGroupRegistry g = new StoredNewsGroupRegistry(registry, id);
+		g.load();
 		    groups.add(g);
 	    }
-	    return groups.toArray(new StoredNewsGroup[groups.size()]);
-	}
-	catch(Exception e)
-	{
-	    throw new PimException(e.getMessage(), e);
-	}
+final StoredNewsGroup[] res = groups.toArray(new StoredNewsGroup[groups.size()]);
+Arrays.sort(res);
+return res;
     }
 
-    private StoredNewsGroupRegistry readNewsGroup(String path, String name)
+    @Override public StoredNewsGroup loadGroupById(long id) throws PimException
     {
-	final Settings.Group settings = Settings.createGroup(registry, path);
-	final StoredNewsGroupRegistry g = new StoredNewsGroupRegistry(registry, settings);
-	    g.id = Integer.parseInt(name.trim());
-	    g.name = settings.getName("");
-	g.expireAfterDays = settings.getExpireDays(0);
-	g.orderIndex = settings.getOrderIndex(0);
-	g.mediaContentType = settings.getMediaContentType("");
-	if (g.name.isEmpty())
-	    return null;
-	if (g.expireAfterDays < 0)
-	    g.expireAfterDays = 0;
-	if (g.orderIndex < 0)
-	    g.orderIndex = 0;
-
-
-	final String[] values = registry.getValues(path);
-	final LinkedList<String> urls = new LinkedList<String>();
-	for(String s: values)
-	{
-	    if (s.indexOf("url") < 0 || registry.getTypeOf(path + "/" + s) != Registry.STRING)
-		continue;
-	    final String value = registry.getString(path + "/" + s);
-	    if (!value.trim().isEmpty())
-		urls.add(value);
-	}
-	g.urls = urls.toArray(new String[urls.size()]);
-	return g;
+	final StoredNewsGroupRegistry group = new StoredNewsGroupRegistry(registry, id);
+	group.load();
+	return group;
     }
 
-    @Override public long getGroupId(StoredNewsGroup group) throws PimException
+    @Override public void saveGroup(NewsGroup group) throws PimException
     {
 	NullCheck.notNull(group, "group");
-	return ((StoredNewsGroupRegistry)group).id;
+	final int id = Registry.nextFreeNum(registry, keys.newsGroups());
+	final String path = Registry.join(keys.newsGroups(), "" + id);
+	registry.addDirectory(path);
+	final Settings.Group settings = Settings.createGroup(registry, path);
+	settings.setName(group.name);
+	settings.setOrderIndex(group.orderIndex);
+	settings.setExpireDays(group.expireAfterDays);
+	settings.setMediaContentType(group.mediaContentType);
     }
+
+    @Override public void deleteGroup(StoredNewsGroup group) throws PimException
+    {
+	if (!(group instanceof StoredNewsGroupRegistry))
+	    return;
+	final StoredNewsGroupRegistry groupReg = (StoredNewsGroupRegistry)group;
+	groupReg.delete();
+    }
+
+
 
     @Override public Object clone()
     {

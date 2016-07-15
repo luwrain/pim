@@ -8,16 +8,16 @@ import org.luwrain.pim.news.*;
 class GroupElement implements Element
 {
     private Element parent;
-    private StoredNewsGroup group;
     private long id;
+    private String title;
 
-    GroupElement(Element parent, StoredNewsGroup group)
+    GroupElement(Element parent, long id, String title)
     {
 	NullCheck.notNull(parent, "parent");
-	NullCheck.notNull(group, "group");
+	NullCheck.notNull(title, "title");
 	this.parent = parent;
-	this.group = group;
-	this.id = group.getId();
+	this.id = id;
+	this.title = title;
     }
 
     @Override public Element getParentElement()
@@ -37,5 +37,6 @@ class GroupElement implements Element
 	return (int)id;
     }
 
-    StoredNewsGroup getGroup() { return group; }
+    long id() {return id;}
+    String title() {return title;}
 }

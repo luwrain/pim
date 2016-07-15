@@ -21,7 +21,7 @@ class Account extends FormArea implements SectionArea
     private Strings strings;
 
     Account(ControlPanel controlPanel, Strings strings,
-		    MailStoring storing, StoredMailAccount account) throws PimException
+	    MailStoring storing, StoredMailAccount account) throws PimException
     {
 	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), strings.accountFormName());
 	NullCheck.notNull(controlPanel, "controlPanel");
@@ -82,32 +82,39 @@ class Account extends FormArea implements SectionArea
 	    luwrain.message(strings.portMustBeGreaterZero(), Luwrain.MESSAGE_ERROR);
 	    return false;
 	}
-	account.setTitle(getEnteredText("title"));
-	account.setLogin(getEnteredText("login"));
-	account.setPasswd(getEnteredText("passwd"));
-	account.setTrustedHosts(getEnteredText("trusted-hosts"));
-	account.setHost(getEnteredText("host"));
-	account.setPort(port);
-	account.setSubstName(getEnteredText("subst-name"));
-	account.setSubstAddress(getEnteredText("subst-address"));
-	final Object selected = getSelectedListItem("type");
-	if (selected.equals(pop3Title))
-	    account.setType(MailAccount.POP3);
-	if (selected.equals(smtpTitle))
-	    account.setType(MailAccount.SMTP);
-	int flags = 0;
-	if (getCheckboxState("ssl"))
-	    flags |= MailAccount.FLAG_SSL;
-	if (getCheckboxState("tls"))
-	    flags |= MailAccount.FLAG_TLS;
-	if (getCheckboxState("default"))
-	    flags |= MailAccount.FLAG_DEFAULT;
-	if (getCheckboxState("enabled"))
-	    flags |= MailAccount.FLAG_ENABLED;
-	if (getCheckboxState("leave-messages"))
-	    flags |= MailAccount.FLAG_LEAVE_MESSAGES;
-	account.setFlags(flags);
-	return true;
+	try {
+	    account.setTitle(getEnteredText("title"));
+	    account.setLogin(getEnteredText("login"));
+	    account.setPasswd(getEnteredText("passwd"));
+	    account.setTrustedHosts(getEnteredText("trusted-hosts"));
+	    account.setHost(getEnteredText("host"));
+	    account.setPort(port);
+	    account.setSubstName(getEnteredText("subst-name"));
+	    account.setSubstAddress(getEnteredText("subst-address"));
+	    final Object selected = getSelectedListItem("type");
+	    if (selected.equals(pop3Title))
+		account.setType(MailAccount.POP3);
+	    if (selected.equals(smtpTitle))
+		account.setType(MailAccount.SMTP);
+	    int flags = 0;
+	    if (getCheckboxState("ssl"))
+		flags |= MailAccount.FLAG_SSL;
+	    if (getCheckboxState("tls"))
+		flags |= MailAccount.FLAG_TLS;
+	    if (getCheckboxState("default"))
+		flags |= MailAccount.FLAG_DEFAULT;
+	    if (getCheckboxState("enabled"))
+		flags |= MailAccount.FLAG_ENABLED;
+	    if (getCheckboxState("leave-messages"))
+		flags |= MailAccount.FLAG_LEAVE_MESSAGES;
+	    account.setFlags(flags);
+	    return true;
+	}
+	catch(PimException e)
+	{
+	    luwrain.crash(e);
+	    return false;
+	}
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
