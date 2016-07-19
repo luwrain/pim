@@ -52,7 +52,7 @@ class Account extends FormArea implements SectionArea
 	    break;
 	}
 	addList("type", strings.accountFormServerType(), selected,
-		new FixedFormListChoosing(luwrain, strings.accountFormTypeSelectionPopupName(), new String[]{pop3Title, smtpTitle}, Popups.DEFAULT_POPUP_FLAGS), null, true);
+		new FormUtils.FixedListChoosing(luwrain, strings.accountFormTypeSelectionPopupName(), new String[]{pop3Title, smtpTitle}, Popups.DEFAULT_POPUP_FLAGS), null, true);
 	addEdit("host", strings.accountFormHost(), account.getHost(), null, true);
 	addEdit("port", strings.accountFormPort(), "" + account.getPort());
 	addEdit("login", strings.accountFormLogin(), account.getLogin());
