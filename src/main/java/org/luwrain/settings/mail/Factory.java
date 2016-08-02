@@ -105,21 +105,22 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    return true;
 	}
 
+	//adding
 	if (ActionEvent.isAction(event, "add-mail-account"))
 	{
-	try {
-	    final MailAccount account = new MailAccount();
-	    account.title = "Новая";
-	    account.flags = MailAccount.FLAG_ENABLED;
-	    storing.saveAccount(account);
-	    controlPanel.refreshSectionsTree();
-	    return true;
-	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
-	    return false;
-	}
+	    try {
+		final MailAccount account = new MailAccount();
+		account.title = "Новая";
+		account.flags = MailAccount.FLAG_ENABLED;
+		storing.saveAccount(account);
+		controlPanel.refreshSectionsTree();
+		return true;
+	    }
+	    catch(PimException e)
+	    {
+		luwrain.crash(e);
+		return false;
+	    }
 	}
 
 	//deleting
@@ -127,22 +128,22 @@ public class Factory implements org.luwrain.cpanel.Factory
 	{
 	    if (id < 0)
 		return false;
-	try {
-	    final StoredMailAccount account = storing.loadAccountById(id);
-	    if (account == null)
-		return false;
-	    if (Popups.confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + account.getTitle() + "\"?"))
-	    {
-		storing.deleteAccount(account);
-	    controlPanel.refreshSectionsTree();
+	    try {
+		final StoredMailAccount account = storing.loadAccountById(id);
+		if (account == null)
+		    return false;
+		if (Popups.confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + account.getTitle() + "\"?"))
+		{
+		    storing.deleteAccount(account);
+		    controlPanel.refreshSectionsTree();
+		}
+		return true;
 	    }
-	    return true;
-	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
-	    return false;
-	}
+	    catch(PimException e)
+	    {
+		luwrain.crash(e);
+		return false;
+	    }
 	}
 
 	//yandex
@@ -157,46 +158,40 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    final String passwd = Popups.simple(luwrain, "Добавление учётной записи Яндекс.Почты", "Введите пароль для доступа к учётной записи " + title.trim() + "@yandex.ru:", "");
 	    if (passwd == null)
 		return true;
+	    try {
+		final MailAccount account = new MailAccount();
+		account.title = title.trim() + "@yandex.ru (входящая почта)";
+		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_LEAVE_MESSAGES | MailAccount.FLAG_SSL;
+		account.type = MailAccount.POP3;
+		account.host = "pop3.yandex.ru";
+		account.port = 995;
+		account.login = title.trim() + "@yandex.ru";
+		account.passwd = passwd;
+		account.substAddress = "";
+		account.substName = "";
+		storing.saveAccount(account);
 
-	try {
-final MailAccount account = new MailAccount();
-account.title = title.trim() + "@yandex.ru (входящая почта)";
-	    account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_LEAVE_MESSAGES | MailAccount.FLAG_SSL;
-	    account.type = MailAccount.POP3;
-	    account.host = "pop3.yandex.ru";
-	    account.port = 995;
-	    account.login = title.trim() + "@yandex.ru";
-	    account.passwd = passwd;
-	    account.substAddress = "";
-	    account.substName = "";
-	    storing.saveAccount(account);
+		account.type = MailAccount.SMTP;
+		account.title = title.trim() + "@yandex.ru (исходящая почта)";
+		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_DEFAULT | MailAccount.FLAG_TLS;
+		account.host = "smtp.yandex.ru";
+		account.port = 587;
+		account.substAddress = account.login;
+		account.substName = fullName;
+		storing.saveAccount(account);
 
-	    account.type = MailAccount.SMTP;
-account.title = title.trim() + "@yandex.ru (исходящая почта)";
-	    account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_DEFAULT | MailAccount.FLAG_TLS;
-	    account.host = "smtp.yandex.ru";
-	    account.port = 587;
-	    account.substAddress = account.login;
-	    account.substName = fullName;
-	    storing.saveAccount(account);
-
-
-	    controlPanel.refreshSectionsTree();
-	    return true;
+		controlPanel.refreshSectionsTree();
+		return true;
+	    }
+	    catch(PimException e)
+	    {
+		luwrain.crash(e);
+		return false;
+	    }
 	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
-	    return false;
-	}
-	}
-
-
-
-
 	return false;
     }
-
+    
     private boolean init()
     {
 	if (strings == null)
