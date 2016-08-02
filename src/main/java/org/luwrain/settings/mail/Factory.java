@@ -5,8 +5,8 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.popups.Popups;
 import org.luwrain.cpanel.*;
-
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.*;
 
@@ -71,21 +71,31 @@ public class Factory implements org.luwrain.cpanel.Factory
 	NullCheck.notNull(el, "el");
 	if (el.equals(mailElement))
 	    return new SimpleSection(mailElement, strings.mailSection());
+
 	if (el.equals(accountsElement))
 	    return new SimpleSection(accountsElement, strings.accountsSection(), null,
-				     new Action[]{new Action("add-mail-account", strings.addMailAccount())}, 
-				     (controlPanel, event)->onAccountsActionEvent(controlPanel, event));
+				     new Action[]{
+					 new Action("add-mail-account", strings.addMailAccount(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
+					 new Action("add-mail-account-yandex", "Добавить учётную запись для Яндекс.Почты"),
+				     }, (controlPanel, event)->onAccountsActionEvent(controlPanel, event, -1));
+
 	if (el.equals(groupsElement))
 	    return new SimpleSection(groupsElement, strings.groupsSection());
 	if (el.equals(rulesElement))
 	    return new SimpleSection(rulesElement, strings.rulesSection());
 
 	if (el instanceof AccountElement)
-	    return new SimpleSection(el, ((AccountElement)el).title(), (controlPanel)->Account.create(controlPanel, storing, ((AccountElement)el).id()));
+	    return new SimpleSection(el, ((AccountElement)el).title(), (controlPanel)->Account.create(controlPanel, storing, ((AccountElement)el).id()),
+				     new Action[]{
+					 new Action("add-mail-account", strings.addMailAccount(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
+					 new Action("add-mail-account-yandex", "Добавить учётную запись для Яндекс.Почты"),
+					 new Action("delete-mail-account", "Удалить учётную запись", new KeyboardEvent(KeyboardEvent.Special.DELETE)),
+				     }, (controlPanel, event)->onAccountsActionEvent(controlPanel, event, ((AccountElement)el).id()));
+
 	return null;
     }
 
-    private boolean onAccountsActionEvent(ControlPanel controlPanel, ActionEvent event)
+    private boolean onAccountsActionEvent(ControlPanel controlPanel, ActionEvent event, long id)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(event, "event");
@@ -94,8 +104,15 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    luwrain.message(strings.noStoring(), Luwrain.MESSAGE_ERROR);
 	    return true;
 	}
+
+	if (ActionEvent.isAction(event, "add-mail-account"))
+	{
 	try {
-	    storing.saveAccount(new MailAccount());
+	    final MailAccount account = new MailAccount();
+	    account.title = "Новая";
+	    account.flags = MailAccount.FLAG_ENABLED;
+	    storing.saveAccount(account);
+	    controlPanel.refreshSectionsTree();
 	    return true;
 	}
 	catch(PimException e)
@@ -103,6 +120,81 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    luwrain.crash(e);
 	    return false;
 	}
+	}
+
+	//deleting
+	if (ActionEvent.isAction(event, "delete-mail-account"))
+	{
+	    if (id < 0)
+		return false;
+	try {
+	    final StoredMailAccount account = storing.loadAccountById(id);
+	    if (account == null)
+		return false;
+	    if (Popups.confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + account.getTitle() + "\"?"))
+	    {
+		storing.deleteAccount(account);
+	    controlPanel.refreshSectionsTree();
+	    }
+	    return true;
+	}
+	catch(PimException e)
+	{
+	    luwrain.crash(e);
+	    return false;
+	}
+	}
+
+	//yandex
+	if (ActionEvent.isAction(event, "add-mail-account-yandex"))
+	{
+	    final String title = Popups.simple(luwrain, "Добавление учётной записи Яндекс.Почты", "Как вы зарегистрированы в Яндекс.Почте (без строки \"@yandex.ru\"):", "");
+	    if (title == null)
+		return true;
+	    final String fullName = Popups.simple(luwrain, "Добавление учётной записи Яндекс.Почты", "Введите ваше полное имя:", "");
+	    if (fullName == null)
+		return true;
+	    final String passwd = Popups.simple(luwrain, "Добавление учётной записи Яндекс.Почты", "Введите пароль для доступа к учётной записи " + title.trim() + "@yandex.ru:", "");
+	    if (passwd == null)
+		return true;
+
+	try {
+final MailAccount account = new MailAccount();
+account.title = title.trim() + "@yandex.ru (входящая почта)";
+	    account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_LEAVE_MESSAGES | MailAccount.FLAG_SSL;
+	    account.type = MailAccount.POP3;
+	    account.host = "pop3.yandex.ru";
+	    account.port = 995;
+	    account.login = title.trim() + "@yandex.ru";
+	    account.passwd = passwd;
+	    account.substAddress = "";
+	    account.substName = "";
+	    storing.saveAccount(account);
+
+	    account.type = MailAccount.SMTP;
+account.title = title.trim() + "@yandex.ru (исходящая почта)";
+	    account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_DEFAULT | MailAccount.FLAG_TLS;
+	    account.host = "smtp.yandex.ru";
+	    account.port = 587;
+	    account.substAddress = account.login;
+	    account.substName = fullName;
+	    storing.saveAccount(account);
+
+
+	    controlPanel.refreshSectionsTree();
+	    return true;
+	}
+	catch(PimException e)
+	{
+	    luwrain.crash(e);
+	    return false;
+	}
+	}
+
+
+
+
+	return false;
     }
 
     private boolean init()

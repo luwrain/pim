@@ -173,43 +173,30 @@ abstract class MailStoringRegistry implements MailStoring
     @Override public void saveAccount(MailAccount account) throws PimException
     {
 	NullCheck.notNull(account, "account");
-	final int newId = org.luwrain.pim.Util.newFolderId(registry, registryKeys.mailAccounts());
+	final int newId = Registry.nextFreeNum(registry, registryKeys.mailAccounts());
 	final String path = Registry.join(registryKeys.mailAccounts(), "" + newId);
 	if (!registry.addDirectory(path))
 	    throw new PimException("Unable to create new registry directory " + path);
-	if (!registry.setString(Registry.join(path, "type"), StoredMailAccountRegistry.getTypeStr(account.type)))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "type"));
-	if (!registry.setString(Registry.join(path, "title"), account.title))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "title"));
-	if (!registry.setString(Registry.join(path, "host"), account.host))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "host"));
-	if (!registry.setInteger(Registry.join(path, "port"), account.port))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "hport"));
-	if (!registry.setString(Registry.join(path, "login"), account.login))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "login"));
-	if (!registry.setString(Registry.join(path, "passwd"), account.passwd))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "passwd"));
-	if (!registry.setString(Registry.join(path, "trusted-hosts"), account.trustedHosts))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "trusted-hosts"));
-	if (!registry.setString(Registry.join(path, "subst-name"), account.substName))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "subst-name"));
-	if (!registry.setString(Registry.join(path, "subst-address"), account.substAddress))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "subst-address"));
 	final boolean enabled = (account.flags & MailAccount.FLAG_ENABLED) > 0;
 	final boolean ssl = (account.flags & MailAccount.FLAG_SSL) > 0;
 	final boolean tls = (account.flags & MailAccount.FLAG_TLS) > 0;
 	final boolean def = (account.flags & MailAccount.FLAG_DEFAULT) > 0;
 	final boolean leaveMessages = (account.flags & MailAccount.FLAG_LEAVE_MESSAGES) > 0;
-	if (!registry.setBoolean(Registry.join(path, "enabled"), enabled))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "enabled"));
-	if (!registry.setBoolean(Registry.join(path, "ssl"), ssl))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "ssl"));
-	if (!registry.setBoolean(Registry.join(path, "tls"), tls))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "tls"));
-	if (!registry.setBoolean(Registry.join(path, "default"), def))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "default"));
-	if (!registry.setBoolean(Registry.join(path, "leave-messages"), leaveMessages))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "leave-messages"));
+	final Settings.Account s = Settings.createAccount(registry, path);
+	s.setType(StoredMailAccountRegistry.getTypeStr(account.type));
+	s.setTitle(account.title);
+	s.setHost(account.host);
+	s.setPort(account.port);
+	s.setLogin(account.login);
+	s.setPasswd(account.passwd);
+	s.setTrustedHosts(account.trustedHosts);
+	s.setSubstName(account.substName);
+	s.setSubstAddress(account.substAddress);
+	s.setEnabled(enabled);
+	s.setSsl(ssl);
+	s.setTls(tls);
+	s.setDefault(def);
+	s.setLeaveMessages(leaveMessages);
     }
 
     @Override public void deleteAccount(StoredMailAccount account) throws PimException
