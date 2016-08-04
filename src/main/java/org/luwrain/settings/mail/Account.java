@@ -16,6 +16,8 @@
 
 package org.luwrain.settings.mail;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
@@ -53,16 +55,16 @@ class Account extends FormArea implements SectionArea
 
     private void fillForm() throws PimException
     {
-	final int flags = account.getFlags();
+	final Set<MailAccount.Flags> flags = account.getFlags();
 	addEdit("title", strings.accountFormTitle(), account.getTitle(), null, true);
-	addCheckbox("enabled", strings.accountFormEnabled(), (flags & MailAccount.FLAG_ENABLED) > 0, null, true);
+	addCheckbox("enabled", strings.accountFormEnabled(), flags.contains(MailAccount.Flags.ENABLED), null, true);
 	String selected = null;
 	switch(account.getType())
 	{
-	case MailAccount.SMTP:
+	case SMTP:
 	    selected = smtpTitle;
 	    break;
-	case MailAccount.POP3:
+	case POP3:
 	    selected = pop3Title;
 	    break;
 	}
@@ -73,10 +75,10 @@ class Account extends FormArea implements SectionArea
 	addEdit("login", strings.accountFormLogin(), account.getLogin());
 	addEdit("passwd", strings.accountFormPasswd(), account.getPasswd());
 	addEdit("trusted-hosts", strings.accountFormTrustedHosts(), account.getTrustedHosts(), null, true);
-	addCheckbox("default", strings.accountFormDefaultOutgoing(), (flags & MailAccount.FLAG_DEFAULT) > 0, null, true);
-	addCheckbox("leave-messages", strings.accountFormLeaveMessageOnServer(), (flags & MailAccount.FLAG_LEAVE_MESSAGES) > 0, null, true);
-	addCheckbox("ssl", strings.accountFormUseSsl(), (flags & MailAccount.FLAG_SSL) > 0, null, true);
-	addCheckbox("tls", strings.accountFormUseTls(), (flags & MailAccount.FLAG_TLS) > 0, null, true);
+	addCheckbox("default", strings.accountFormDefaultOutgoing(), flags.contains(MailAccount.Flags.DEFAULT), null, true);
+	addCheckbox("leave-messages", strings.accountFormLeaveMessageOnServer(), flags.contains(MailAccount.Flags.LEAVE_MESSAGES), null, true);
+	addCheckbox("ssl", strings.accountFormUseSsl(), flags.contains(MailAccount.Flags.SSL), null, true);
+	addCheckbox("tls", strings.accountFormUseTls(), flags.contains(MailAccount.Flags.TLS), null, true);
 	addEdit("subst-name", strings.accountForMessagesAuthorName(), account.getSubstName());
 	addEdit("subst-address", strings.accountFormMessagesAuthorAddress(), account.getSubstAddress(), null, true);
     }
@@ -108,20 +110,20 @@ class Account extends FormArea implements SectionArea
 	    account.setSubstAddress(getEnteredText("subst-address"));
 	    final Object selected = getSelectedListItem("type");
 	    if (selected.equals(pop3Title))
-		account.setType(MailAccount.POP3);
+		account.setType(MailAccount.Type.POP3);
 	    if (selected.equals(smtpTitle))
-		account.setType(MailAccount.SMTP);
-	    int flags = 0;
+		account.setType(MailAccount.Type.SMTP);
+	    final Set<MailAccount.Flags> flags = EnumSet.noneOf(MailAccount.Flags.class);
 	    if (getCheckboxState("ssl"))
-		flags |= MailAccount.FLAG_SSL;
+		flags.add(MailAccount.Flags.SSL);
 	    if (getCheckboxState("tls"))
-		flags |= MailAccount.FLAG_TLS;
+		flags.add(MailAccount.Flags.TLS);
 	    if (getCheckboxState("default"))
-		flags |= MailAccount.FLAG_DEFAULT;
+		flags.add(MailAccount.Flags.DEFAULT);
 	    if (getCheckboxState("enabled"))
-		flags |= MailAccount.FLAG_ENABLED;
+		flags.add(MailAccount.Flags.ENABLED);
 	    if (getCheckboxState("leave-messages"))
-		flags |= MailAccount.FLAG_LEAVE_MESSAGES;
+		flags.add(MailAccount.Flags.LEAVE_MESSAGES);
 	    account.setFlags(flags);
 	    return true;
 	}

@@ -31,6 +31,7 @@ import org.luwrain.core.NullCheck;
 import org.luwrain.pim.mail.*;
 
 import org.luwrain.util.*;
+import org.luwrain.pim.PimException;
 
 public class MailServerConversations
 {
@@ -46,20 +47,32 @@ public class MailServerConversations
 	boolean newMessage(MailMessage message, int num, int total);
     }
 
-    final Properties props=new Properties();
-    Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
-    Store store;
-    Session smtpSession;
-    Transport smtpTransport;
-    Folder folder;
+    private final Properties props=new Properties();
+    private Session session=Session.getDefaultInstance(new Properties(), null);
+    private Store store;
+    private Session smtpSession;
+    private Transport smtpTransport;
+    //    private Folder folder;
 
-    public void initPop3(String host,
-			 int port,
-			 String login,
-			 String passwd,
-			 int flags,
-			 TreeMap<String,String> extraProps) throws Exception
+    /**
+     * Prepares properties, session and store objects for operations through
+     * POP3 protocol.
+     *
+     * @param host The host to connect to
+     * @param port port Port number to use for connection
+     * @param login The login to be used for authorizing
+     * @param passwd The password to be used for authorizing
+     * @param flags The flags to be used for filling the properties (SSL, TLS, etc)
+     * @param extraProps The extra properties to be used for connection
+     */
+    public void initPop3(String host, int port,
+			 String login, String passwd,
+			 int flags, TreeMap<String,String> extraProps) throws PimException
     {
+	NullCheck.notEmpty(host, "host");
+	NullCheck.notNull(login, "login");
+	NullCheck.notNull(passwd, "passwd");
+	NullCheck.notNull(extraProps, "extraProps");
 	final boolean ssl = (flags & SSL) != 0;
 	final boolean tls = (flags & TLS) > 0;
 	props.clear();
@@ -73,31 +86,44 @@ public class MailServerConversations
 	props.put("mail.pop3.starttls.enable", tls?"true":"false");
 	for(Map.Entry<String,String> p: extraProps.entrySet())
 	    props.put(p.getKey(), p.getValue());
-	session = Session.getInstance(props,null);
-	//	session.setDebug(true);
-	store = session.getStore();
-	store.connect(host, login, passwd);
+	try {
+	    session = Session.getInstance(props,null);
+	    store = session.getStore();
+	    store.connect(host, login, passwd);
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
     }
 
     public void initSmtp(HashMap<String,String> settings,String host,
-		  String login,
-		  String password) throws Exception
+		  String login, String passwd) throws PimException
     {
+	NullCheck.notEmpty(host, "host");
+	NullCheck.notNull(login, "login");
+	NullCheck.notNull(passwd, "passwd");
 	props.clear();
 	for(Map.Entry<String,String> p:settings.entrySet())
 	    props.put(p.getKey(), p.getValue());
 	final String l = login;
-	final String p = password;
-	smtpSession = Session.getInstance(props,
-					  new Authenticator(){
-					      protected PasswordAuthentication getPasswordAuthentication()
-					      {
-						  return new PasswordAuthentication(l, p);
-					      }
-					  });
-	smtpTransport=smtpSession.getTransport("smtp");
-	smtpTransport.connect();
-    }
+	final String p = passwd;
+	try {
+	    smtpSession = Session.getInstance(props,
+					      new Authenticator(){
+						  protected PasswordAuthentication getPasswordAuthentication()
+						  {
+						      return new PasswordAuthentication(l, p);
+						  }
+					      });
+	    smtpTransport=smtpSession.getTransport("smtp");
+	    smtpTransport.connect();
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
+	}
 
     public String[] getFolderNames() throws Exception
     {
@@ -113,63 +139,64 @@ public class MailServerConversations
      * @param folderName Can be "INBOX" or any other IMAP folder name
      * @param listener The listener object to get information about fetching progress and the messages themselves
      */
-    public void fetchMessages(String folderName, Listener listener, boolean deleteMessagesOnServer, HtmlPreview htmlPreview) throws Exception
+    public void fetchMessages(String folderName, Listener listener,
+			      boolean deleteMessagesOnServer, HtmlPreview htmlPreview) throws PimException, IOException, InterruptedException
     {
-	NullCheck.notNull(folderName, "folderName");
-	if (folderName.trim().isEmpty())
-	    throw new IllegalArgumentException("folderName may not be empty");
-	if(folder!=null) 
-	    folder.close(true); // true - remove messages market to remove
+	NullCheck.notEmpty(folderName, "folderName");
+	NullCheck.notNull(listener, "listener");
 	try {
-	    folder = store.getFolder(folderName);
-	    folder.open(Folder.READ_WRITE);
-	    final int msgCount = folder.getMessageCount();
-	    if (msgCount == 0)
-	    {
-		listener.numberOfNewMessages(0, false);
-		return;
-	    }
-	    Message[] messages;
-	    if (msgCount > LIMIT_MESSAGES_LOAD)
-	    {
-		listener.numberOfNewMessages(LIMIT_MESSAGES_LOAD, true);
-		messages = folder.getMessages(1, LIMIT_MESSAGES_LOAD);
-	    } else
-	    {
-		listener.numberOfNewMessages(msgCount, false);
-		messages = folder.getMessages(1, msgCount);
-	    }
-	    if (Thread.currentThread().interrupted())
-		throw new InterruptedException();
-	    final MailUtils util = new MailUtils();
-	    for(int i = 0;i < messages.length;++i)
-	    {
+	    Folder folder = null;
+	    try {
+		folder = store.getFolder(folderName);
+		folder.open(Folder.READ_WRITE);
+		final int msgCount = folder.getMessageCount();
+		if (msgCount == 0)
+		{
+		    listener.numberOfNewMessages(0, false);
+		    return;
+		}
+		Message[] messages;
+		if (msgCount > LIMIT_MESSAGES_LOAD)
+		{
+		    listener.numberOfNewMessages(LIMIT_MESSAGES_LOAD, true);
+		    messages = folder.getMessages(1, LIMIT_MESSAGES_LOAD);
+		} else
+		{
+		    listener.numberOfNewMessages(msgCount, false);
+		    messages = folder.getMessages(1, msgCount);
+		}
 		if (Thread.currentThread().interrupted())
 		    throw new InterruptedException();
-		final MailMessage message=new MailMessage();
-		util.jmailmsg=messages[i];
-		util.fillBasicFields(message, htmlPreview);
-message.messageId = util.getMessageId();
-		message.rawMail = util.toByteArray();
-		listener.newMessage(message, i, messages.length);
-		if (deleteMessagesOnServer)
-		    messages[i].setFlag(Flags.Flag.DELETED, true);
+		final MailUtils util = new MailUtils();
+		for(int i = 0;i < messages.length;++i)
+		{
+		    if (Thread.currentThread().interrupted())
+			throw new InterruptedException();
+		    final MailMessage message=new MailMessage();
+		    util.jmailmsg=messages[i];
+		    util.fillBasicFields(message, htmlPreview);
+		    message.messageId = util.getMessageId();
+		    message.rawMail = util.toByteArray();
+		    listener.newMessage(message, i, messages.length);
+		    if (deleteMessagesOnServer)
+			messages[i].setFlag(Flags.Flag.DELETED, true);
+		}
 	    }
-	    folder.close(deleteMessagesOnServer);
-	    folder = null;
+	    finally {
+		if (folder != null)
+		    folder.close(false);
+	    }
 	}
-	finally
+	catch(MessagingException | UnsupportedEncodingException e)
 	{
-	    if (folder != null)
-		folder.close(false);
-	    folder = null;
+	    throw new PimException(e);
 	}
     }
 
     public void sendMessages(MailMessage[] emails) throws Exception
     {
-	if(smtpTransport==null) 
-	    throw new Exception("SMTP connection must be initialised");
+	NullCheck.notNullItems(emails, "emails");
+	NullCheck.notNull(smtpTransport, "smtpTransport");
 	final MailUtils util = new MailUtils();
 	for(MailMessage message: emails)
 	{
@@ -182,8 +209,7 @@ message.messageId = util.getMessageId();
 
     public void sendEncodedMessage(byte[] bytes) throws Exception
     {
-	if(smtpTransport==null) 
-	    throw new Exception("SMTP connection must be initialised");
+	NullCheck.notNull(smtpTransport, "smtpTransport");
 	final MailUtils util=new MailUtils();
 	util.load(new ByteArrayInputStream(bytes));
 	smtpTransport.sendMessage(util.jmailmsg, util.jmailmsg.getRecipients(RecipientType.TO));

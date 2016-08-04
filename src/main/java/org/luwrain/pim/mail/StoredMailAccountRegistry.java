@@ -17,63 +17,65 @@
 
 package org.luwrain.pim.mail;
 
+import java.util.*;
+
 import org.luwrain.core.*;
-import org.luwrain.util.*;
+//import org.luwrain.util.*;
 import org.luwrain.pim.*;
 
 class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 {
     private final org.luwrain.pim.RegistryKeys registryKeys = new org.luwrain.pim.RegistryKeys();
-    public Registry registry;
-    public int id;
+private Registry registry;
+    private Settings.Account settings;
+    private int id;
 
     StoredMailAccountRegistry(Registry registry, int id)
     {
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = id;
+	this.settings = Settings.createAccount(registry, Registry.join(registryKeys.mailAccounts(), "" + id));
     }
 
-    @Override public int getId()
+    @Override public long getId()
     {
 	return id;
     }
 
-    @Override public int getType() throws PimException
+    @Override public Type getType() throws PimException
     {
 	return type;
     }
 
-    @Override public void setType(int value) throws PimException
+    @Override public void setType(Type value) throws PimException
     {
-	if (!registry.setString(Registry.join(getPath(), "type"), getTypeStr(value)))
-	    updateError("type");
+	NullCheck.notNull(value, "value");
+	settings.setType(getTypeStr(value));
 	type = value;
     }
 
     @Override public String getTitle() throws PimException
     {
-	return title != null?title:"";
+	return title;
     }
 
     @Override public void setTitle(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "title"), value))
-	    updateError("title");
+	settings.setTitle(value);
 	title = value;
     }
 
     @Override public String getHost() throws PimException
     {
-	return host != null?host:"";
+	return host;
     }
 
     @Override public void setHost(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "host"), value))
-	    updateError("host");
+	settings.setHost(value);
 	host = value;
     }
 
@@ -84,151 +86,139 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 
     @Override public void setPort(int value) throws PimException
     {
-	if (!registry.setInteger(Registry.join(getPath(), "port"), value))
-	    updateError("port");
+	settings.setPort(value);
 	port = value;
     }
 
     @Override public String getLogin() throws PimException
     {
-	return login != null?login:"";
+	return login;
     }
 
     @Override public void setLogin(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "login"), value))
-	    updateError("login");
+	settings.setLogin(value);
 	login = value;
     }
 
     @Override public String getPasswd() throws PimException
     {
-	return passwd != null?passwd:"";
+	return passwd;
     }
 
     @Override public void setPasswd(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "passwd"), value))
-	    updateError("passwd");
+	settings.setPasswd(value);
 	passwd = value;
     }
 
     @Override public String getTrustedHosts() throws PimException
     {
-	return trustedHosts != null?trustedHosts:"";
+	return trustedHosts;
     }
 
     @Override public void setTrustedHosts(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "trusted-hosts"), value))
-	    updateError("trusted-hosts");
+	settings.setTrustedHosts(value);
 	trustedHosts = value;
     }
 
-    @Override public int getFlags() throws PimException
+    @Override public Set<Flags> getFlags() throws PimException
     {
 	return flags;
     } 
 
-    @Override public void setFlags(int value) throws PimException
+    @Override public void setFlags(Set<Flags> value) throws PimException
     {
-	final boolean enabled = (value & FLAG_ENABLED) != 0;
-	final boolean ssl = (value & FLAG_SSL) != 0;
-	final boolean tls = (value & FLAG_TLS) != 0;
-	final boolean def = (value & FLAG_DEFAULT) != 0;
-	final boolean leaveMessages = (value & FLAG_LEAVE_MESSAGES) != 0;
-	if (!registry.setBoolean(Registry.join(getPath(), "enabled"), enabled))
-	    updateError("enabled");
-	if (!registry.setBoolean(Registry.join(getPath(), "ssl"), ssl))
-	    updateError("ssl");
-	if (!registry.setBoolean(Registry.join(getPath(), "tls"), tls))
-	    updateError("tls");
-	if (!registry.setBoolean(Registry.join(getPath(), "default"), def))
-	    updateError("default");
-	if (!registry.setBoolean(Registry.join(getPath(), "leave-messages"), leaveMessages))
-	    updateError("default");
+	NullCheck.notNull(value, "value");
+	final boolean enabled = value.contains(Flags.ENABLED);
+	final boolean ssl =  value.contains(Flags.SSL);
+	final boolean tls =  value.contains(Flags.TLS);
+	final boolean def =  value.contains(Flags.DEFAULT);
+	final boolean leaveMessages =  value.contains(Flags.LEAVE_MESSAGES);
+	settings.setEnabled(enabled);
+	settings.setSsl(ssl);
+	settings.setTls(tls);
+	settings.setDefault(def);
+	settings.setLeaveMessages(leaveMessages);
 	flags = value;
     }
 
     @Override public String getSubstName() throws PimException
     {
-	return substName != null?substName:"";
+	return substName;
     }
 
     @Override public void setSubstName(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "subst-name"), value))
-	    updateError("subst-name");
+	settings.setSubstName(value);
 	substName = value;
     }
 
     @Override public String getSubstAddress() throws PimException
     {
-	return substAddress != null?substAddress:"";
+	return substAddress;
     }
 
     @Override public void setSubstAddress(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "subst-address"), value))
-	    updateError("subst-address");
+	settings.setSubstAddress(value);
 	substAddress = value;
     }
 
     boolean load()
     {
-	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
-	final String path = getPath();
-	final String typeStr = check.stringNotEmpty(Registry.join(path, "type"), "").toLowerCase().trim();
-	title = check.stringNotEmpty(Registry.join(path, "title"), "");
-	host =  check.stringNotEmpty(Registry.join(path, "host"), "");
-	port = check.intPositive(Registry.join(path, "port"), -1);
-	login = check.stringNotEmpty(Registry.join(path, "login"), "");
-	passwd = check.stringNotEmpty(Registry.join(path, "passwd"), "");
-	trustedHosts = check.stringNotEmpty(Registry.join(path, "trusted-hosts"), "");
-	substName = check.stringNotEmpty(Registry.join(path, "subst-name"), "");
-	substAddress = check.stringNotEmpty(Registry.join(path, "subst-address"), "");
-	flags = 0;
-	if (check.bool(Registry.join(path, "enabled"), false))
-	    flags |= FLAG_ENABLED;
-	if (check.bool(Registry.join(path, "ssl"), false))
-	    flags |= FLAG_SSL;
-	if (check.bool(Registry.join(path, "tls"), false))
-	    flags |= FLAG_TLS;
-	if (check.bool(Registry.join(path, "default"), false))
-	    flags |= FLAG_DEFAULT;
-	if (check.bool(Registry.join(path, "leave-messages"), true))
-	    flags |= FLAG_LEAVE_MESSAGES;
+	final String typeStr = settings.getType("").trim().toLowerCase();
+	title = settings.getTitle("");
+	host = settings.getHost("").trim();
+	port = settings.getPort(port);
+	login = settings.getLogin("");
+	passwd = settings.getPasswd("");
+	trustedHosts = settings.getTrustedHosts("");
+	substName = settings.getSubstName("");
+	substAddress = settings.getSubstAddress("");
+	final LinkedList<Flags> f = new LinkedList<Flags>();
+	if (settings.getEnabled(true))
+	    f.add(Flags.ENABLED);
+	if (settings.getSsl(false))
+	    f.add(Flags.SSL);
+	if (settings.getTls(false))
+	    f.add(Flags.TLS);
+	if (settings.getDefault(true))
+	    f.add(Flags.DEFAULT);
+	if (settings.getLeaveMessages(true))
+	    f.add(Flags.LEAVE_MESSAGES);
+	flags = EnumSet.copyOf(f);
 	switch(typeStr)
 	{
 	case "pop3":
-	    type = POP3;
+	    type = Type.POP3;
 	    break;
 	case "smtp":
-	    type = SMTP;
+	    type = Type.SMTP;
 	    break;
 	default:
 	    return false;
 	}
-	if (title.isEmpty())
-	    return false;
-	if (port < 0)
-	    port = 0;
 	return true;
     }
 
+    /*
     private String getPath()
     {
 	return Registry.join(registryKeys.mailAccounts(), "" + id);
     }
+    */
 
-    static String getTypeStr(int code)
+    static String getTypeStr(Type type)
     {
-	switch(code)
+	NullCheck.notNull(type, "type");
+	switch(type)
 	{
 	case POP3:
 	    return "pop3";
@@ -239,8 +229,10 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 	}
     }
 
+    /*
     void updateError(String param) throws PimException
     {
 	throw new PimException("Unable to update in the registry " + getPath() + "/" + param);
     }
+    */
 }

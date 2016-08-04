@@ -177,11 +177,11 @@ abstract class MailStoringRegistry implements MailStoring
 	final String path = Registry.join(registryKeys.mailAccounts(), "" + newId);
 	if (!registry.addDirectory(path))
 	    throw new PimException("Unable to create new registry directory " + path);
-	final boolean enabled = (account.flags & MailAccount.FLAG_ENABLED) > 0;
-	final boolean ssl = (account.flags & MailAccount.FLAG_SSL) > 0;
-	final boolean tls = (account.flags & MailAccount.FLAG_TLS) > 0;
-	final boolean def = (account.flags & MailAccount.FLAG_DEFAULT) > 0;
-	final boolean leaveMessages = (account.flags & MailAccount.FLAG_LEAVE_MESSAGES) > 0;
+	final boolean enabled = account.flags.contains(MailAccount.Flags.ENABLED);
+	final boolean ssl = account.flags.contains(MailAccount.Flags.SSL);
+	final boolean tls = account.flags.contains(MailAccount.Flags.TLS);
+	final boolean def = account.flags.contains(MailAccount.Flags.DEFAULT);
+	final boolean leaveMessages = account.flags.contains(MailAccount.Flags.LEAVE_MESSAGES);
 	final Settings.Account s = Settings.createAccount(registry, path);
 	s.setType(StoredMailAccountRegistry.getTypeStr(account.type));
 	s.setTitle(account.title);
@@ -205,7 +205,7 @@ abstract class MailStoringRegistry implements MailStoring
 	if (!(account instanceof StoredMailAccountRegistry))
 	    throw new IllegalArgumentException("account is not an instance of StoredMailRAccountRegistry");
 	final StoredMailAccountRegistry accountRegistry = (StoredMailAccountRegistry)account;
-	final String path = Registry.join(registryKeys.mailAccounts(), "" + accountRegistry.id);
+	final String path = Registry.join(registryKeys.mailAccounts(), "" + accountRegistry.getId());
 	if (!registry.deleteDirectory(path))
 	    throw new PimException("Unable to delete the registry directory " + path);
     }
@@ -215,7 +215,7 @@ abstract class MailStoringRegistry implements MailStoring
 	if (account == null || !(account instanceof StoredMailAccountRegistry))
 	    return "";
 	final StoredMailAccountRegistry accountRegistry = (StoredMailAccountRegistry)account;
-	return AccountUniRefProc.PREFIX + ":" + accountRegistry.id;
+	return AccountUniRefProc.PREFIX + ":" + accountRegistry.getId();
     }
 
     @Override public StoredMailAccount getAccountByUniRef(String uniRef)

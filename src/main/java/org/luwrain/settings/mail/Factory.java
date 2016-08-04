@@ -123,7 +123,7 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    try {
 		final MailAccount account = new MailAccount();
 		account.title = "Новая";
-		account.flags = MailAccount.FLAG_ENABLED;
+		account.flags = EnumSet.of(MailAccount.Flags.ENABLED);
 		storing.saveAccount(account);
 		controlPanel.refreshSectionsTree();
 		return true;
@@ -173,8 +173,8 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    try {
 		final MailAccount account = new MailAccount();
 		account.title = title.trim() + "@yandex.ru (" + strings.incomingMailSuffix() + ")";
-		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_LEAVE_MESSAGES | MailAccount.FLAG_SSL;
-		account.type = MailAccount.POP3;
+		account.flags = EnumSet.of(MailAccount.Flags.ENABLED, MailAccount.Flags.LEAVE_MESSAGES, MailAccount.Flags.SSL);
+		account.type = MailAccount.Type.POP3;
 		account.host = "pop3.yandex.ru";
 		account.port = 995;
 		account.login = title.trim() + "@yandex.ru";
@@ -183,9 +183,9 @@ public class Factory implements org.luwrain.cpanel.Factory
 		account.substName = "";
 		storing.saveAccount(account);
 
-		account.type = MailAccount.SMTP;
+		account.type = MailAccount.Type.SMTP;
 		account.title = title.trim() + "@yandex.ru (" + strings.outgoingMailSuffix() + ")";
-		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_DEFAULT | MailAccount.FLAG_TLS;
+		account.flags = EnumSet.of(MailAccount.Flags.ENABLED, MailAccount.Flags.DEFAULT, MailAccount.Flags.TLS);
 		account.host = "smtp.yandex.ru";
 		account.port = 587;
 		account.substAddress = account.login;
@@ -217,8 +217,8 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    try {
 		final MailAccount account = new MailAccount();
 		account.title = title.trim() + "@gmail.com(" + strings.incomingMailSuffix() + ")";
-		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_LEAVE_MESSAGES | MailAccount.FLAG_SSL;
-		account.type = MailAccount.POP3;
+		account.flags = EnumSet.of(MailAccount.Flags.ENABLED, MailAccount.Flags.LEAVE_MESSAGES, MailAccount.Flags.SSL);
+		account.type = MailAccount.Type.POP3;
 		account.host = "pop.gmail.com";
 		account.port = 995;
 		account.login = title.trim() + "@gmail.com";
@@ -227,9 +227,9 @@ public class Factory implements org.luwrain.cpanel.Factory
 		account.substName = "";
 		storing.saveAccount(account);
 
-		account.type = MailAccount.SMTP;
+		account.type = MailAccount.Type.SMTP;
 		account.title = title.trim() + "@gmail.com (" + strings.outgoingMailSuffix() + ")";
-		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_DEFAULT | MailAccount.FLAG_TLS;
+		account.flags = EnumSet.of(MailAccount.Flags.ENABLED, MailAccount.Flags.DEFAULT, MailAccount.Flags.TLS);
 		account.host = "smtp.gmail.com";
 		account.port = 587;
 		account.substAddress = account.login;

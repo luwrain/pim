@@ -17,25 +17,21 @@
 
 package org.luwrain.pim.mail;
 
+import java.util.*;
+
 public class MailAccount implements Comparable
 {
-    static public final int POP3 = 0;
-    static public final int SMTP = 1;
+    public enum Type {POP3, SMTP};
+    public enum Flags {ENABLED, SSL, TLS, DEFAULT, LEAVE_MESSAGES};
 
-    static public final int FLAG_ENABLED = 1;
-    static public final int FLAG_SSL = 2;
-    static public final int FLAG_TLS = 4;
-    static public final int FLAG_DEFAULT = 8;
-    static public final int FLAG_LEAVE_MESSAGES = 16;
-
-    public int type = POP3;
+    public Type type = Type.POP3;
     public String title = "";
     public String host = "";
-    public int port = 1;
+    public int port = 995;
     public String login = "";
     public String passwd = "";
     public String trustedHosts = "*";
-    public int flags = 0;
+    public Set<Flags> flags = EnumSet.noneOf(Flags.class);
     public String substName = "";
     public String substAddress = "";
 
@@ -43,16 +39,14 @@ public class MailAccount implements Comparable
     {
 	if (o == null || !(o instanceof MailAccount))
 	    return 0;
-	final MailAccount account = (MailAccount)o;
-	return title.compareTo(account.title);
+	return title.compareTo(((MailAccount)o).title);
     }
 
     @Override public boolean equals(Object o)
     {
 	if (o == null || !(o instanceof MailAccount))
 	    return false;
-	final MailAccount account = (MailAccount)o;
-	return title.equals(account.title);
+	return title.equals(((MailAccount)o).title);
     }
 
     @Override public String toString()    

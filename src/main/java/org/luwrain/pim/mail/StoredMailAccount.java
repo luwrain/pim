@@ -17,13 +17,29 @@
 
 package org.luwrain.pim.mail;
 
-import org.luwrain.pim.*;
+import java.util.*;
 
+import org.luwrain.pim.PimException;
+
+/**
+ * Provides access to the mail account stored in PIM storage. Using the
+ * instance of this interface always implies association with some object
+ * which already exists in storage, and all operations to modify the data
+ * always result in modification in the corresponding stored object. The
+ * exact way of storing, as it is accepted in LUWRAIN PIM, is obscured
+ * from the user and developer, though the most popular way, of cource,
+ * is SQL. 
+ * <p>
+ * This interface saves the information about accounts both for incoming
+ * and outgoing mail. 
+ *
+ * @see MailAccount
+ */
 public interface StoredMailAccount
 {
-    int getId() throws PimException;
-    int getType() throws PimException;
-    void setType(int value) throws PimException;
+    long getId() throws PimException;
+    MailAccount.Type getType() throws PimException;
+    void setType(MailAccount.Type value) throws PimException;
     String getTitle() throws PimException;
     void setTitle(String value) throws PimException;
     String getHost() throws PimException;
@@ -36,8 +52,8 @@ public interface StoredMailAccount
     void setPasswd(String value) throws PimException;
     String getTrustedHosts() throws PimException;
     void setTrustedHosts(String value) throws PimException;
-    int getFlags() throws PimException;
-    void setFlags(int value) throws PimException;
+    Set<MailAccount.Flags> getFlags() throws PimException;
+    void setFlags(Set<MailAccount.Flags> value) throws PimException;
     String getSubstName() throws PimException;
     void setSubstName(String value) throws PimException;
     String getSubstAddress() throws PimException;
