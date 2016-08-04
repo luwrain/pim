@@ -146,9 +146,9 @@ public class MailServerConversations
 		    throw new InterruptedException();
 		final MailMessage message=new MailMessage();
 		es.jmailmsg=messages[i];
-		es.readMessageBasicFields(message, htmlPreview);
-		es.readMessageId(message);
-		es.saveRawContent(message);
+		es.fillBasicFields(message, htmlPreview);
+message.messageId = es.getMessageId();
+		message.rawMail = es.toByteArray();
 		listener.newMessage(message, i, messages.length);
 		if (deleteMessagesOnServer)
 		    messages[i].setFlag(Flags.Flag.DELETED, true);
@@ -173,7 +173,7 @@ public class MailServerConversations
 	{
 	    if (Thread.currentThread().interrupted())
 		throw new InterruptedException();
-	    es.prepareInternalStore(message);
+	    es.load(message);
 	    smtpTransport.sendMessage(es.jmailmsg,es.jmailmsg.getRecipients(RecipientType.TO));
 	}
     }
@@ -183,7 +183,7 @@ public class MailServerConversations
 	if(smtpTransport==null) 
 	    throw new Exception("SMTP connection must be initialised");
 	final MailEssentialJavamail es=new MailEssentialJavamail();
-	es.loadFromStream(new ByteArrayInputStream(bytes));
+	es.load(new ByteArrayInputStream(bytes));
 	smtpTransport.sendMessage(es.jmailmsg,es.jmailmsg.getRecipients(RecipientType.TO));
     }
 
