@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of the LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.settings.mail;
 
@@ -5,40 +20,39 @@ public interface Strings
 {
     static final String NAME = "luwrain.settings.mail";
 
-    String mailSection();
-    String accountsSection();
-    String rulesSection();
-    String groupsSection();
-    String addMailAccount();
-    String noStoring();
-    String accountFormName();
-    String accountFormTitle();
-    String accountFormEnabled();
-    String accountFormServerType();
-    String accountFormTypeSelectionPopupName();
-    String accountFormHost();
-    String accountFormPort();
-    String accountFormLogin();
-    String accountFormPasswd();
-    String accountFormTrustedHosts();
     String accountFormDefaultOutgoing();
+    String accountFormEnabled();
+    String accountForMessagesAuthorName();
+    String accountFormHost();
     String accountFormLeaveMessageOnServer();
+    String accountFormLogin();
+    String accountFormMessagesAuthorAddress();
+    String accountFormName();
+    String accountFormPasswd();
+    String accountFormPort();
+    String accountFormServerType();
+    String accountFormTitle();
+    String accountFormTrustedHosts();
+    String accountFormTypeSelectionPopupName();
     String accountFormUseSsl();
     String accountFormUseTls();
-    String accountForMessagesAuthorName();
-    String accountFormMessagesAuthorAddress();
-    String portNotNumber();
-    String portMustBeGreaterZero();
-
-    String outgoingMailSuffix();
-    String incomingMailSuffix();
-    String addAccountYandex();
+    String accountsSection();
     String addAccountGoogle();
-    String deleteAccount();
     String addAccountPopupName();
-    String yourYandexAccountQuestion();
+    String addAccountYandex();
+    String addMailAccount();
+    String deleteAccount();
+    String groupsSection();
+    String incomingMailSuffix();
+    String mailSection();
+    String noStoring();
+    String outgoingMailSuffix();
+    String portMustBeGreaterZero();
+    String portNotNumber();
+    String rulesSection();
     String yourFullNameQuestion();
-    String yourYandexPasswordQuestion(String accountName);
     String yourGoogleAccountQuestion();
     String yourGooglePasswordQuestion(String accountName);
+    String yourYandexAccountQuestion();
+    String yourYandexPasswordQuestion(String accountName);
 }

@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of the LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.settings.mail;
 
@@ -12,8 +27,6 @@ import org.luwrain.pim.*;
 
 public class Factory implements org.luwrain.cpanel.Factory
 {
-
-
     private Luwrain luwrain;
     private Strings strings;
     private MailStoring storing = null;
@@ -45,25 +58,22 @@ public class Factory implements org.luwrain.cpanel.Factory
     {
 	NullCheck.notNull(parent, "parent");
 	if (!initStoring())
-	return new Element[0];
+	    return new Element[0];
 	if (parent.equals(accountsElement))
 	{
-	try {
-	    final StoredMailAccount[] accounts = storing.loadAccounts();
-	    System.out.println("loaded " + accounts.length + " accounts");
-	    final Element[] res = new Element[accounts.length];
-	    for(int i = 0;i < accounts.length;++i)
-		res[i] = new AccountElement(parent, accounts[i].getId(), accounts[i].getTitle());
-	    return res;
+	    try {
+		final StoredMailAccount[] accounts = storing.loadAccounts();
+		final Element[] res = new Element[accounts.length];
+		for(int i = 0;i < accounts.length;++i)
+		    res[i] = new AccountElement(parent, accounts[i].getId(), accounts[i].getTitle());
+		return res;
+	    }
+	    catch(PimException e)
+	    {
+		luwrain.crash(e);
+	    }
 	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
-	}
-	}
-
 	return new Element[0];
-
     }
 
     @Override public Section createSection(Element el)
@@ -266,214 +276,5 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    return false;
 	storing = ((org.luwrain.pim.mail.Factory)obj).createMailStoring();
 	return storing != null;
-	}
+    }
 }
-
-
-    /*
-    private void constructChildSections()
-    {
-	if (childSections != null)
-	    return;
-	try {
-	    final StoredMailAccount[] accounts = storing.loadAccounts();
-	    if (accounts == null || accounts.length < 1)
-	    {
-		childSections = new MailAccountSection[0];
-		return;
-	    }
-	    childSections = new MailAccountSection[accounts.length];
-	    for(int i = 0;i < accounts.length;++i)
-		childSections[i] = new MailAccountSection(storing, accounts[i]);
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	    childSections = new MailAccountSection[0];
-	}
-    }
-
-    static void addNew(MailStoring storing, Environment environment)
-    {
-	final String title = Popups.simple(environment.getLuwrain(), "Новая учётная запись", "Введите имя новой учётной записи:", "");
-	if (title == null)
-	    return;
-	if (title.trim().isEmpty())
-	{
-	    environment.getLuwrain().message("Введённое имя новой учётной записи не может быть пустым", Luwrain.MESSAGE_ERROR);//FIXME:
-	    return;
-	}
-	final MailAccount account = new MailAccount();
-	account.title = title;
-	try {
-	    storing.saveAccount(account);
-	}
-	catch(Exception e)
-	{
-	    e.printStackTrace();
-	    environment.getLuwrain().message("Во время добавления новой учётной записи произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
-	    return;
-	}
-	environment.refreshSectionsTree();
-    }
-    */
-
-    /*
-    @Override public SectionArea getSectionArea(Environment environment)
-    {
-	try {
-	    if (area == null)
-		area = new MailAccountArea(environment, storing, account);
-	}
-	catch (Exception e)
-	{
-	    environment.getLuwrain().message("Невозможно получить параметры учётной записи", Luwrain.MESSAGE_ERROR);
-	    e.printStackTrace();
-	    return null;
-	}
-	return area;
-    }
-
-    @Override public boolean canCloseSection(Environment environment)
-    {
-	if (account == null || area == null)
-	    return true;
-	try {
-	    if (!area.save())
-		return false;
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	    environment.getLuwrain().message("Во время сохранения введённых изменений произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
-	}
-	area = null;
-	return true;
-    }
-
-    @Override public boolean onTreeInsert(Environment environment)
-    {
-	MailAccountsSection.addNew(storing, environment);
-	return true;
-    }
-
-    @Override public boolean onTreeDelete(Environment environment)
-    {
-	String title;
-	try {
-	    title = account.getTitle();
-	}
-	catch(Exception e)
-	{
-	    e.printStackTrace();
-	    title = "";
-	}
-	final YesNoPopup popup = new YesNoPopup(environment.getLuwrain(),
-						"Удаление учётной записи", "Вы действительно хотите удалить учётную запись" + (!title.isEmpty()?" \"" + title + "\"?":"?"),//FIXME:
-						false, Popups.DEFAULT_POPUP_FLAGS);
-	environment.getLuwrain().popup(popup);
-	if (popup.closing.cancelled() || !popup.result())
-	    return true;
-	try {
-	    storing.deleteAccount(account);
-	}
-	catch(Exception e)
-	{
-	    e.printStackTrace();
-	    environment.getLuwrain().message("При удалении учётной записи произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
-	    return true;
-	}
-	System.out.println("deleted");
-	account = null;
-	area = null;
-	environment.refreshSectionsTree();
-	return true;
-    }
-    */
-
-    /*
-    private void constructChildSections()
-    {
-	if (childSections != null)
-	    return;
-	try {
-	    final StoredMailRule[] rules = storing.getRules();
-	    if (rules == null || rules.length < 1)
-	    {
-		childSections = new MailRuleSection[0];
-		return;
-	    }
-	    childSections = new MailRuleSection[rules.length];
-	    for(int i = 0;i < rules.length;++i)
-		childSections[i] = new MailRuleSection(storing, rules[i]);
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	    childSections = new MailRuleSection[0];
-	}
-    }
-
-    static boolean addNew(MailStoring storing)
-    {
-	final MailRule rule = new MailRule();
-	rule.action = MailRule.ACTION_MOVE_TO_FOLDER;
-	rule.headerRegex = "^From:.*";
-	rule.destFolderUniRef = "";
-	try {
-	    storing.saveRule(rule);
-	    return true;
-	}
-	catch (Exception e)
-	{
-	    e.printStackTrace();
-	    return false;
-	}
-    }
-    */
-
-    /*
-    @Override public SectionArea getSectionArea(Environment environment)
-    {
-	try {
-	    if (area == null)
-		area = new MailRuleArea(environment, storing, rule);
-	}
-	catch (Exception e)
-	{
-	    environment.getLuwrain().message("Невозможно получить параметры правила фильтрации", Luwrain.MESSAGE_ERROR);//FIXME:
-	    e.printStackTrace();
-	    return null;
-	}
-	return area;
-    }
-
-    */
-
-    /*
-    @Override public boolean onTreeDelete(Environment environment)
-    {
-	final YesNoPopup popup = new YesNoPopup(environment.getLuwrain(),
-						"Удаление правила фильтрации", "Вы действительно хотите удалить выделенное правило фильтрации?",//FIXME:
-						false, Popups.DEFAULT_POPUP_FLAGS);
-	environment.getLuwrain().popup(popup);
-	if (popup.closing.cancelled() || !popup.result())
-	    return true;
-	try {
-	    storing.deleteRule(rule);
-	}
-	catch(Exception e)
-	{
-	    e.printStackTrace();
-	    environment.getLuwrain().message("При удалении правила фильтрации произошла непредвиденная ошибка", Luwrain.MESSAGE_ERROR);
-	    return true;
-	}
-	rule = null;
-	area = null;
-	environment.refreshSectionsTree();
-	return true;
-    }
-
-    */
-
-
