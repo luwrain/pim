@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of the LUWRAIN.
@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.util;
+package org.luwrain.network;
 
 import java.net.URL;
 import java.util.*;
@@ -29,6 +29,8 @@ import javax.mail.internet.MimeUtility;
 
 import org.luwrain.core.NullCheck;
 import org.luwrain.pim.mail.*;
+
+import org.luwrain.util.*;
 
 public class MailServerConversations
 {
@@ -139,16 +141,16 @@ public class MailServerConversations
 	    }
 	    if (Thread.currentThread().interrupted())
 		throw new InterruptedException();
-	    final MailEssentialJavamail es=new MailEssentialJavamail(); // FIXME: replace empty EmailEssentialJavamail to instance from luwrain.getSharedObject("luwrain.pim.email");  
+	    final MailUtils util = new MailUtils();
 	    for(int i = 0;i < messages.length;++i)
 	    {
 		if (Thread.currentThread().interrupted())
 		    throw new InterruptedException();
 		final MailMessage message=new MailMessage();
-		es.jmailmsg=messages[i];
-		es.fillBasicFields(message, htmlPreview);
-message.messageId = es.getMessageId();
-		message.rawMail = es.toByteArray();
+		util.jmailmsg=messages[i];
+		util.fillBasicFields(message, htmlPreview);
+message.messageId = util.getMessageId();
+		message.rawMail = util.toByteArray();
 		listener.newMessage(message, i, messages.length);
 		if (deleteMessagesOnServer)
 		    messages[i].setFlag(Flags.Flag.DELETED, true);
@@ -168,13 +170,13 @@ message.messageId = es.getMessageId();
     {
 	if(smtpTransport==null) 
 	    throw new Exception("SMTP connection must be initialised");
-	MailEssentialJavamail es=new MailEssentialJavamail();
+	final MailUtils util = new MailUtils();
 	for(MailMessage message: emails)
 	{
 	    if (Thread.currentThread().interrupted())
 		throw new InterruptedException();
-	    es.load(message);
-	    smtpTransport.sendMessage(es.jmailmsg,es.jmailmsg.getRecipients(RecipientType.TO));
+	    util.load(message);
+	    smtpTransport.sendMessage(util.jmailmsg,util.jmailmsg.getRecipients(RecipientType.TO));
 	}
     }
 
@@ -182,9 +184,9 @@ message.messageId = es.getMessageId();
     {
 	if(smtpTransport==null) 
 	    throw new Exception("SMTP connection must be initialised");
-	final MailEssentialJavamail es=new MailEssentialJavamail();
-	es.load(new ByteArrayInputStream(bytes));
-	smtpTransport.sendMessage(es.jmailmsg,es.jmailmsg.getRecipients(RecipientType.TO));
+	final MailUtils util=new MailUtils();
+	util.load(new ByteArrayInputStream(bytes));
+	smtpTransport.sendMessage(util.jmailmsg, util.jmailmsg.getRecipients(RecipientType.TO));
     }
 
     static public String makeAddress(String name, String addr) throws UnsupportedEncodingException

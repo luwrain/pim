@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of the LUWRAIN.
@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.util;
+package org.luwrain.network;
 
 import java.io.*;
 import java.nio.file.*;
@@ -40,7 +40,9 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.MailStoringSql.Condition;
 import org.luwrain.pim.mail.*;
 
-public class MailEssentialJavamail
+import org.luwrain.util.*;
+
+public class MailUtils
 {
     private Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
     public Message jmailmsg;
