@@ -75,8 +75,9 @@ public class Factory implements org.luwrain.cpanel.Factory
 	if (el.equals(accountsElement))
 	    return new SimpleSection(accountsElement, strings.accountsSection(), null,
 				     new Action[]{
+					 new Action("add-mail-account-yandex", strings.addAccountYandex()),
 					 new Action("add-mail-account", strings.addMailAccount(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
-					 new Action("add-mail-account-yandex", "Добавить учётную запись для Яндекс.Почты"),
+					 new Action("add-mail-account-google", strings.addAccountGoogle()),
 				     }, (controlPanel, event)->onAccountsActionEvent(controlPanel, event, -1));
 
 	if (el.equals(groupsElement))
@@ -88,8 +89,9 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    return new SimpleSection(el, ((AccountElement)el).title(), (controlPanel)->Account.create(controlPanel, storing, ((AccountElement)el).id()),
 				     new Action[]{
 					 new Action("add-mail-account", strings.addMailAccount(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
-					 new Action("add-mail-account-yandex", "Добавить учётную запись для Яндекс.Почты"),
-					 new Action("delete-mail-account", "Удалить учётную запись", new KeyboardEvent(KeyboardEvent.Special.DELETE)),
+					 new Action("add-mail-account-google", strings.addAccountGoogle()),
+					 new Action("add-mail-account-yandex", strings.addAccountYandex()),
+					 new Action("delete-mail-account", strings.deleteAccount(), new KeyboardEvent(KeyboardEvent.Special.DELETE)),
 				     }, (controlPanel, event)->onAccountsActionEvent(controlPanel, event, ((AccountElement)el).id()));
 
 	return null;
@@ -149,18 +151,18 @@ public class Factory implements org.luwrain.cpanel.Factory
 	//yandex
 	if (ActionEvent.isAction(event, "add-mail-account-yandex"))
 	{
-	    final String title = Popups.simple(luwrain, "Добавление учётной записи Яндекс.Почты", "Как вы зарегистрированы в Яндекс.Почте (без строки \"@yandex.ru\"):", "");
+	    final String title = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourYandexAccountQuestion(), "");
 	    if (title == null)
 		return true;
-	    final String fullName = Popups.simple(luwrain, "Добавление учётной записи Яндекс.Почты", "Введите ваше полное имя:", "");
+	    final String fullName = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourFullNameQuestion(), "");
 	    if (fullName == null)
 		return true;
-	    final String passwd = Popups.simple(luwrain, "Добавление учётной записи Яндекс.Почты", "Введите пароль для доступа к учётной записи " + title.trim() + "@yandex.ru:", "");
+	    final String passwd = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourYandexPasswordQuestion(title), "");
 	    if (passwd == null)
 		return true;
 	    try {
 		final MailAccount account = new MailAccount();
-		account.title = title.trim() + "@yandex.ru (входящая почта)";
+		account.title = title.trim() + "@yandex.ru (" + strings.incomingMailSuffix() + ")";
 		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_LEAVE_MESSAGES | MailAccount.FLAG_SSL;
 		account.type = MailAccount.POP3;
 		account.host = "pop3.yandex.ru";
@@ -172,7 +174,7 @@ public class Factory implements org.luwrain.cpanel.Factory
 		storing.saveAccount(account);
 
 		account.type = MailAccount.SMTP;
-		account.title = title.trim() + "@yandex.ru (исходящая почта)";
+		account.title = title.trim() + "@yandex.ru (" + strings.outgoingMailSuffix() + ")";
 		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_DEFAULT | MailAccount.FLAG_TLS;
 		account.host = "smtp.yandex.ru";
 		account.port = 587;
@@ -189,9 +191,54 @@ public class Factory implements org.luwrain.cpanel.Factory
 		return false;
 	    }
 	}
+
+	//google
+	if (ActionEvent.isAction(event, "add-mail-account-google"))
+	{
+	    final String title = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourGoogleAccountQuestion(), "");
+	    if (title == null)
+		return true;
+	    final String fullName = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourFullNameQuestion(), "");
+	    if (fullName == null)
+		return true;
+	    final String passwd = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourGooglePasswordQuestion(title), "");
+	    if (passwd == null)
+		return true;
+	    try {
+		final MailAccount account = new MailAccount();
+		account.title = title.trim() + "@gmail.com(" + strings.incomingMailSuffix() + ")";
+		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_LEAVE_MESSAGES | MailAccount.FLAG_SSL;
+		account.type = MailAccount.POP3;
+		account.host = "pop.gmail.com";
+		account.port = 995;
+		account.login = title.trim() + "@gmail.com";
+		account.passwd = passwd;
+		account.substAddress = "";
+		account.substName = "";
+		storing.saveAccount(account);
+
+		account.type = MailAccount.SMTP;
+		account.title = title.trim() + "@gmail.com (" + strings.outgoingMailSuffix() + ")";
+		account.flags = MailAccount.FLAG_ENABLED | MailAccount.FLAG_DEFAULT | MailAccount.FLAG_TLS;
+		account.host = "smtp.gmail.com";
+		account.port = 587;
+		account.substAddress = account.login;
+		account.substName = fullName;
+		storing.saveAccount(account);
+
+		controlPanel.refreshSectionsTree();
+		return true;
+	    }
+	    catch(PimException e)
+	    {
+		luwrain.crash(e);
+		return false;
+	    }
+	}
+
 	return false;
     }
-    
+
     private boolean init()
     {
 	if (strings == null)

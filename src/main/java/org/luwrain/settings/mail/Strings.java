@@ -29,4 +29,16 @@ public interface Strings
     String accountFormMessagesAuthorAddress();
     String portNotNumber();
     String portMustBeGreaterZero();
+
+    String outgoingMailSuffix();
+    String incomingMailSuffix();
+    String addAccountYandex();
+    String addAccountGoogle();
+    String deleteAccount();
+    String addAccountPopupName();
+    String yourYandexAccountQuestion();
+    String yourFullNameQuestion();
+    String yourYandexPasswordQuestion(String accountName);
+    String yourGoogleAccountQuestion();
+    String yourGooglePasswordQuestion(String accountName);
 }
