@@ -111,4 +111,11 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		mailFolderUniRefProc,
 	    };
     }
+
+    @Override public void close()
+    {
+	mailFactory.close();
+	newsFactory.close();
+	contactsFactory.close();
+    }
 }

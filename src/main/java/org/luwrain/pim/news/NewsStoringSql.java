@@ -18,7 +18,7 @@ class NewsStoringSql extends NewsStoringRegistry
 	NullCheck.notNull(con, "con");
     }
 
-    @Override public void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws PimException
+    @Override public void saveArticle(StoredNewsGroup newsGroup, NewsArticle article) throws PimException
     {
 	try {
 	if (newsGroup == null)
@@ -49,7 +49,7 @@ class NewsStoringSql extends NewsStoringRegistry
 	}
     }
 
-    @Override public     StoredNewsArticle[] loadNewsArticlesOfGroup(StoredNewsGroup newsGroup) throws PimException
+    @Override public     StoredNewsArticle[] loadArticlesInGroup(StoredNewsGroup newsGroup) throws PimException
     {
 	try {
 	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
@@ -85,7 +85,7 @@ class NewsStoringSql extends NewsStoringRegistry
 	}
     }
 
-    @Override public     StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws PimException
+    @Override public     StoredNewsArticle[] loadArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws PimException
     {
 	try {
 	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
@@ -233,5 +233,11 @@ class NewsStoringSql extends NewsStoringRegistry
 	{
 	    throw new PimException(e.getMessage(), e);
 	}
+    }
+
+    @Override public Set<String> loadArticleUrisInGroup(StoredNewsGroup group) throws PimException
+    {
+	NullCheck.notNull(group, "group");
+	return null;
     }
 }

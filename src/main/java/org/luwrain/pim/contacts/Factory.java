@@ -60,4 +60,20 @@ if (settings.getInitProc("").toLowerCase().equals("sqlite-wal"))
 	    return null;
 	}
     }
+
+    public void close()
+    {
+	if (con == null)
+	    return;
+	Log.debug("pim", "closing JDBC connection for news");
+	try {
+	    con.close();
+	}
+	catch(SQLException e)
+	{
+	    Log.error("pim", "unable to close mail JDBC connection normally:" + e.getMessage());
+	    e.printStackTrace();
+	}
+	con = null;
+    }
 }

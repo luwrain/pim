@@ -1,6 +1,8 @@
 
 package org.luwrain.pim.news;
 
+import java.util.*;
+
 import org.luwrain.pim.*;
 
 public interface NewsStoring extends Cloneable
@@ -11,9 +13,10 @@ public interface NewsStoring extends Cloneable
     void deleteGroup(StoredNewsGroup group) throws PimException;
     //    long getGroupId(StoredNewsGroup group) throws PimException;
 
-    void saveNewsArticle(StoredNewsGroup newsGroup, NewsArticle article) throws PimException;
-    StoredNewsArticle[] loadNewsArticlesOfGroup(StoredNewsGroup newsGroup) throws PimException;
-    StoredNewsArticle[] loadNewsArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws PimException;
+    void saveArticle(StoredNewsGroup newsGroup, NewsArticle article) throws PimException;
+    StoredNewsArticle[] loadArticlesInGroup(StoredNewsGroup newsGroup) throws PimException;
+    StoredNewsArticle[] loadArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws PimException;
+Set<String> loadArticleUrisInGroup(StoredNewsGroup group) throws PimException;
     int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws PimException;
     int countNewArticleInGroup(StoredNewsGroup group) throws PimException;
     int[] countNewArticlesInGroups(StoredNewsGroup[] groups) throws PimException;
