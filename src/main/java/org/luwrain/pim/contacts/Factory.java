@@ -1,58 +1,61 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.contacts;
 
 import java.sql.*;
 
-import org.luwrain.pim.RegistryKeys;
-import org.luwrain.core.Registry;
-import org.luwrain.util.RegistryAutoCheck;
+import org.luwrain.core.*;
 
 public class Factory
 {
     private Registry registry;
-    private RegistryKeys registryKeys = new RegistryKeys();
+    private Settings.Storing settings;
+    private Connection con = null;
 
     public Factory(Registry registry)
     {
+	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
-	if (registry == null)
-	    throw new NullPointerException("registry may not be null");
+	settings = Settings.createStoring(registry);
     }
 
     public ContactsStoring createContactsStoring()
     {
-	RegistryAutoCheck check = new RegistryAutoCheck(registry);
-	final String type = check.stringNotEmpty(registryKeys.contactsType(), "");
+	if (settings.getSharedConnection(false) && con != null)
+	    return new ContactsStoringSql(registry, con);
+	final String type = settings.getType("");
+	if (type.trim().isEmpty())
+	{
+	    Log.error("pim", "contacts storing type may not be empty");
+	    return null;
+	}
 	if (!type.equals("jdbc"))
+	{
+	    Log.error("pim", "unknown storing type \'" + settings.getType("") + "\' for contacts");
 	    return null;
-	final String driver = check.stringNotEmpty(registryKeys.contactsDriver(), "");
-	final String url = check.stringNotEmpty(registryKeys.contactsUrl(), "");
-	final String login = check.stringAny(registryKeys.contactsLogin(), "");
-	final String passwd = check.stringAny(registryKeys.contactsPasswd(), "");
+	}
+	final String driver = settings.getDriver("");
+	final String url = settings.getUrl("");
+	final String login = settings.getLogin("");
+	final String passwd = settings.getPasswd("");
 	if (driver.isEmpty() || url.isEmpty())
+	{
+	    Log.error("pim", "driver and url may not be empty in contacts storing settings");
 	    return null;
+	}
 	try {
 	    Class.forName (driver).newInstance ();
-	    return new ContactsStoringSql(registry, DriverManager.getConnection (url, login, passwd));
+con = DriverManager.getConnection (url, login, passwd);
+if (settings.getInitProc("").toLowerCase().equals("sqlite-wal"))
+{
+    Log.debug("pim", "performing sqlite-wal init procedure for contacts storing");
+    final java.sql.ResultSet rs = con.createStatement().executeQuery("PRAGMA journal_mode = WAL;");
+    while (rs.next());
+}
+    return new ContactsStoringSql(registry, con);
 	}
-	catch(Exception e)
+	catch(ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e)
 	{
+	    Log.error("pim", "unable to get JDBC connection for contacts:" + e.getClass().getName() + ":" + e.getMessage());
 	    e.printStackTrace();
 	    return null;
 	}
