@@ -121,18 +121,24 @@ public class MailUtils
 	load(new ByteArrayInputStream(bytes));
     }
 
-    public byte[] toByteArray() throws IOException, MessagingException
+    public byte[] toByteArray() throws IOException, PimException
     {
-	final File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
 	try {
-	    FileOutputStream fs=new FileOutputStream(temp);
-	    jmailmsg.writeTo(fs);
-	    fs.flush();
-	    fs.close();
-	    return Files.readAllBytes(temp.toPath());
+	    final File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
+	    try {
+		FileOutputStream fs=new FileOutputStream(temp);
+		jmailmsg.writeTo(fs);
+		fs.flush();
+		fs.close();
+		return Files.readAllBytes(temp.toPath());
+	    }
+	    finally {
+		temp.delete();
+	    }
 	}
-	finally {
-	    temp.delete();
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
 	}
     }
 
