@@ -7,14 +7,16 @@ import org.luwrain.core.*;
 
 public class Factory
 {
-    private Registry registry;
-    private Settings.Storing settings;
+    private final Luwrain luwrain;
+    private final Registry registry;
+    private final Settings.Storing settings;
     private Connection con = null;
 
-    public Factory(Registry registry)
+    public Factory(Luwrain luwrain)
     {
-	NullCheck.notNull(registry, "registry");
-	this.registry = registry;
+	NullCheck.notNull(luwrain, "luwrain");
+	this.luwrain = luwrain;
+	this.registry = luwrain.getRegistry();
 	settings = Settings.createStoring(registry);
     }
 
@@ -34,7 +36,7 @@ public class Factory
 	    return null;
 	}
 	final String driver = settings.getDriver("");
-	final String url = settings.getUrl("");
+	final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, settings.getUrl(""));
 	final String login = settings.getLogin("");
 	final String passwd = settings.getPasswd("");
 	if (driver.isEmpty() || url.isEmpty())

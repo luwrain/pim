@@ -21,8 +21,6 @@ import org.luwrain.core.*;
 
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
-    private Registry registry;
-
     private org.luwrain.pim.mail.Factory mailFactory;
     private org.luwrain.pim.news.Factory newsFactory;
     private org.luwrain.pim.contacts.Factory contactsFactory;
@@ -32,21 +30,16 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 
     @Override public String init(Luwrain luwrain)
     {
-	this.registry = luwrain.getRegistry();
-	mailFactory = new org.luwrain.pim.mail.Factory(registry);
-	newsFactory = new org.luwrain.pim.news.Factory(registry);
-	contactsFactory = new org.luwrain.pim.contacts.Factory(registry);
-	binderFactory = new org.luwrain.pim.binder.Factory(registry);
+	NullCheck.notNull(luwrain, "luwrain");
+	mailFactory = new org.luwrain.pim.mail.Factory(luwrain);
+	newsFactory = new org.luwrain.pim.news.Factory(luwrain);
+	contactsFactory = new org.luwrain.pim.contacts.Factory(luwrain.getRegistry());
+	binderFactory = new org.luwrain.pim.binder.Factory(luwrain.getRegistry());
 	return null;
     }
 
     @Override public SharedObject[] getSharedObjects(Luwrain luwrain)
     {
-	final org.luwrain.pim.mail.Factory m = mailFactory;
-	final org.luwrain.pim.news.Factory n = newsFactory;
-	final org.luwrain.pim.contacts.Factory c = contactsFactory;
-	final org.luwrain.pim.binder.Factory b = binderFactory;
-
 	return new SharedObject[]{
 
 	    new SharedObject(){
@@ -67,7 +60,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		}
 		@Override public Object getSharedObject()
 		{
-		    return n;
+		    return newsFactory;
 		}
 	    },
 
@@ -78,7 +71,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		}
 		@Override public Object getSharedObject()
 		{
-		    return c;
+		    return contactsFactory;
 		}
 	    },
 
@@ -89,7 +82,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		}
 		@Override public Object getSharedObject()
 		{
-		    return b;
+		    return binderFactory;
 		}
 	    }};
     }

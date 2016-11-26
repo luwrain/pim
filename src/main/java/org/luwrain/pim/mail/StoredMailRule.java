@@ -1,28 +1,14 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.mail;
 
+import org.luwrain.pim.*;
+
 public interface StoredMailRule
 {
-    int getAction() throws Exception;
-    void setAction(int value) throws Exception;
-    String getHeaderRegex() throws Exception;
-    void setHeaderRegex(String value) throws Exception;
-    String getDestFolderUniRef() throws Exception;
-    void setDestFolderUniRef(String value) throws Exception;
+    MailRule.Actions getAction() throws PimException;
+    void setAction(MailRule.Actions value) throws PimException;
+    String getHeaderRegex() throws PimException;
+    void setHeaderRegex(String value) throws PimException;
+    String getDestFolderUniRef() throws PimException;
+    void setDestFolderUniRef(String value) throws PimException;
 }

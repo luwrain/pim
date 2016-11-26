@@ -1,90 +1,72 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.mail;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.NullCheck;
-import org.luwrain.util.*;
-import org.luwrain.pim.RegistryKeys;
+import org.luwrain.core.*;
+import org.luwrain.pim.*;
+//import org.luwrain.util.*;
+//import org.luwrain.pim.RegistryKeys;
 
 class StoredMailRuleRegistry extends MailRule implements StoredMailRule
 {
-    private final RegistryKeys registryKeys = new RegistryKeys();
-    private Registry registry;
-    int id;
+    private final Registry registry;
+    private final Settings.Rule sett;
+
+    final int id;
 
     StoredMailRuleRegistry(Registry registry, int id)
     {
+	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = id;
-	NullCheck.notNull(registry, "registry");
+	this.sett = Settings.createRule(registry, Registry.join(Settings.RULES_PATH, "" + id));
     }
 
-    @Override public int getAction() throws Exception
+    @Override public Actions getAction() throws PimException
     {
 	return action;
     }
 
-    @Override public void setAction(int value) throws Exception
+    @Override public void setAction(Actions value) throws PimException
     {
+	NullCheck.notNull(value, "value");
 	final String valueStr = getActionStr(value);
-	if (!registry.setString(Registry.join(getPath(), "action"), valueStr))
-	    updateError("action");
-	action = value;
+	sett.setAction(valueStr);
+	this.action = value;
     }
 
-    @Override public String getHeaderRegex() throws Exception
+    @Override public String getHeaderRegex() throws PimException
     {
 	return headerRegex != null?headerRegex:"";
     }
 
-    @Override public void setHeaderRegex(String value) throws Exception
+    @Override public void setHeaderRegex(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "header-regex"), value))
-	    updateError("header-regex");
-	headerRegex = value;
+	sett.setHeaderRegex(value);
+	this.headerRegex = value;
     }
 
-    @Override public String getDestFolderUniRef() throws Exception
+    @Override public String getDestFolderUniRef() throws PimException
     {
-	return destFolderUniRef != null?destFolderUniRef:"";
+	return destFolderUniRef;
     }
 
-    @Override public void setDestFolderUniRef(String value) throws Exception
+    @Override public void setDestFolderUniRef(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "dest-folder-uniref"), value))
-	    updateError("dest-folder-uniref");
-	destFolderUniRef = value;
+	sett.setDestFolderUniRef(value);
+	this.destFolderUniRef = value;
     }
 
     boolean load()
     {
-	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
-	final String path = getPath();
-	final String actionStr = check.stringNotEmpty(Registry.join(path, "action"), "").toLowerCase().trim();
-	headerRegex = check.stringAny(Registry.join(path, "header-regex"), "");
-	destFolderUniRef=  check.stringAny(Registry.join(path, "dest-folder-uniref"), "");
-	switch(actionStr)
+	final String actionStr = sett.getAction("");
+	headerRegex = sett.getHeaderRegex("");
+	destFolderUniRef= sett.getDestFolderUniRef("");
+	switch(actionStr.trim().toLowerCase())
 	{
 	case "move-to-folder":
-	    action = ACTION_MOVE_TO_FOLDER;
+	    action = Actions.MOVE_TO_FOLDER;
 	    break;
 	default:
 	    return false;
@@ -92,24 +74,15 @@ class StoredMailRuleRegistry extends MailRule implements StoredMailRule
 	return true;
     }
 
-    private String getPath()
+    static String getActionStr(Actions action)
     {
-	return Registry.join(registryKeys.mailRules(), "" + id);
-    }
-
-    static String getActionStr(int code)
-    {
-	switch(code)
+	NullCheck.notNull(action, "action");
+	switch(action)
 	{
-	case ACTION_MOVE_TO_FOLDER:
+	case MOVE_TO_FOLDER:
 	    return "move-to-folder";
 	default:
 	    return "";
 	}
-    }
-
-    void updateError(String param) throws Exception
-    {
-	throw new Exception("Unable to update in the registry " + getPath() + "/" + param);
     }
 }
