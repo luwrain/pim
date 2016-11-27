@@ -20,7 +20,7 @@ package org.luwrain.pim.mail;
 import java.util.*;
 
 import org.luwrain.core.*;
-import org.luwrain.util.RegistryAutoCheck;
+//import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.pim.*;
 import org.luwrain.pim.RegistryKeys;
 

@@ -19,7 +19,7 @@ package org.luwrain.pim.contacts;
 
 import org.luwrain.core.Registry;
 import org.luwrain.core.NullCheck;
-import org.luwrain.util.RegistryAutoCheck;
+//import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.pim.RegistryKeys;
 
 class StoredContactsFolderRegistry extends ContactsFolder implements StoredContactsFolder
@@ -75,6 +75,7 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 
     boolean load()
     {
+	/*
 	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
 	final String path = getPath();
 	title = check.stringNotEmpty(Registry.join(path, "title"), "");
@@ -84,6 +85,7 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 	    return false;
 	if (orderIndex < 0)
 	    orderIndex = 0;
+	*/
 	return true;
     }
 

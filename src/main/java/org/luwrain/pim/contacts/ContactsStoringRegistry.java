@@ -21,7 +21,7 @@ import java.util.*;
 
 import org.luwrain.core.Registry;
 import org.luwrain.core.NullCheck;
-import org.luwrain.util.RegistryAutoCheck;
+//import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.pim.RegistryKeys;
 
 abstract class ContactsStoringRegistry implements ContactsStoring

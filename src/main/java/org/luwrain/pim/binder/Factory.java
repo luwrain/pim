@@ -21,7 +21,7 @@ import java.sql.*;
 
 import org.luwrain.pim.RegistryKeys;
 import org.luwrain.core.Registry;
-import org.luwrain.util.RegistryAutoCheck;
+//import org.luwrain.util.RegistryAutoCheck;
 
 public class Factory
 {
@@ -37,6 +37,7 @@ public class Factory
 
     public BinderStoring createBinderStoring()
     {
+	/*
 	RegistryAutoCheck check = new RegistryAutoCheck(registry);
 	final String type = check.stringNotEmpty(registryKeys.binderType(), "");
 	if (!type.equals("jdbc"))
@@ -56,5 +57,7 @@ public class Factory
 	    e.printStackTrace();
 	    return null;
 	}
+	*/
+	return null;
     }
 }
