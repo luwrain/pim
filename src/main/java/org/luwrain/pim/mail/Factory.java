@@ -4,6 +4,7 @@ package org.luwrain.pim.mail;
 import java.sql.*;
 
 import org.luwrain.core.*;
+import org.luwrain.pim.*;
 
 public class Factory
 {
@@ -17,7 +18,7 @@ public class Factory
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.registry = luwrain.getRegistry();
-	settings = Settings.createStoring(registry);
+	this.settings = Settings.createStoring(registry);
     }
 
     public MailStoring createMailStoring()
@@ -44,6 +45,7 @@ public class Factory
 	    Log.error("pim", "driver and url may not be empty in mail storing settings");
 	    return null;
 	}
+	Log.debug("pim", "opening connection for mail:URL=" + url + ",driver=" + driver + ",login=" + login);
 	try {
 	    Class.forName (driver).newInstance ();
 con = DriverManager.getConnection (url, login, passwd);
@@ -77,5 +79,23 @@ if (settings.getInitProc("").toLowerCase().equals("sqlite-wal"))
 	    e.printStackTrace();
 	}
 	con = null;
+    }
+
+    static public MailStoring getMailStoring(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final Object o = luwrain.getSharedObject(Extension.MAIL_SHARED_OBJECT);
+	if (o == null)
+	{
+	    Log.error("pim", "unable to get mail storing:no shared object " + Extension.MAIL_SHARED_OBJECT);
+	    return null;
+	}
+	if (!(o instanceof Factory))
+	{
+	    Log.error("pim", "unable to get mail storing:shared object " + Extension.MAIL_SHARED_OBJECT + " is not an instance of " + Factory.class.getName());
+	    return null;
+	}
+	final Factory factory = (Factory)o;
+	return factory.createMailStoring();
     }
 }

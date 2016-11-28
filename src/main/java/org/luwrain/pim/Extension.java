@@ -21,6 +21,8 @@ import org.luwrain.core.*;
 
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
+    static public final String MAIL_SHARED_OBJECT = "luwrain.pim.mail";
+
     private org.luwrain.pim.mail.Factory mailFactory;
     private org.luwrain.pim.news.Factory newsFactory;
     private org.luwrain.pim.contacts.Factory contactsFactory;
@@ -45,7 +47,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	    new SharedObject(){
 		@Override public String getName()
 		{
-		    return "luwrain.pim.mail";
+		    return MAIL_SHARED_OBJECT;
 		}
 		@Override public Object getSharedObject()
 		{
