@@ -21,7 +21,7 @@ public class Factory
 	this.settings = Settings.createStoring(registry);
     }
 
-    public MailStoring createMailStoring()
+    MailStoring createMailStoring()
     {
 	if (settings.getSharedConnection(false) && con != null)
 	    return new MailStoringSql(registry, con);

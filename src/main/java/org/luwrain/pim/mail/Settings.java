@@ -74,10 +74,10 @@ interface Rule
 {
     String getAction(String defValue);
     String getHeaderRegex(String defValue);
-    String getDestFolderUniRef(String defValue);
+    String getDestFolderUniref(String defValue);
     void setAction(String value);
     void setHeaderRegex(String value);
-    void setDestFolderUniRef(String value);
+    void setDestFolderUniref(String value);
 }
 
     static Account createAccount(Registry registry, String path)

@@ -1,26 +1,8 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.contacts;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.NullCheck;
-//import org.luwrain.util.RegistryAutoCheck;
-import org.luwrain.pim.RegistryKeys;
+import org.luwrain.core.*;
+import org.luwrain.pim.*;
 
 class StoredContactsFolderRegistry extends ContactsFolder implements StoredContactsFolder
 {
@@ -36,12 +18,12 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 	NullCheck.notNull(registry, "registry");
     }
 
-    @Override public String getTitle() throws Exception
+    @Override public String getTitle() throws PimException
     {
 	return title != null?title:"";
     }
 
-    @Override public void setTitle(String value) throws Exception
+    @Override public void setTitle(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
 	if (!registry.setString(Registry.join(getPath(), "title"), value))
@@ -49,12 +31,12 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 	title = value;
     }
 
-    @Override public int getOrderIndex() throws Exception
+    @Override public int getOrderIndex() throws PimException
     {
 	return orderIndex;
     }
 
-    @Override public void setOrderIndex(int value) throws Exception
+    @Override public void setOrderIndex(int value) throws PimException
     {
 	if (!registry.setInteger(Registry.join(getPath(), "order-index"), value))
 	    updateError("order-index");
@@ -102,8 +84,8 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 return Registry.join(registryKeys.contactsFolders(), "" + id);
     }
 
-    private void updateError(String param) throws Exception
+    private void updateError(String param) throws PimException
     {
-	throw new Exception("Unable to update in the registry " + getPath() + "/" + param);
+	throw new PimException("Unable to update in the registry " + getPath() + "/" + param);
     }
 }

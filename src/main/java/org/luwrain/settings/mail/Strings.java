@@ -37,7 +37,7 @@ public interface Strings
     String accountFormUseSsl();
     String accountFormUseTls();
     String accountsSection();
-    String addAccountGoogle();
+    String addAccountPredefined();
     String addAccountPopupName();
     String addAccountYandex();
     String addMailAccount();

@@ -5,7 +5,7 @@ import java.util.*;
 import java.sql.*;
 import org.luwrain.core.NullCheck;
 import org.luwrain.pim.*;
-import org.luwrain.util.Strings;
+//import org.luwrain.util.Strings;
 
 class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Comparable
 {
@@ -55,7 +55,7 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
 
     @Override public String[] getTo() 
     {
-	return Strings.notNullArray(to);
+	return to;
 }
 
     @Override public void setTo(String[] to) throws PimException
@@ -64,7 +64,7 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
 
 	@Override public String[] getCc() 
     {
-	return Strings.notNullArray(cc);
+	return cc;
     }
 
 	@Override public void setCc(String[] cc) throws PimException
@@ -73,7 +73,7 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
 
     @Override public String[] getBcc() 
     {
-	return Strings.notNullArray(bcc);
+	return bcc;
     }
 
     @Override public void setBcc(String[] bcc) throws PimException
@@ -82,7 +82,7 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
 
     @Override public String[] getAttachments() 
     {
-	return Strings.notNullArray(attachments);
+	return attachments;
     }
 
     @Override public void setAttachments(String[] value) throws PimException

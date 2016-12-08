@@ -19,8 +19,8 @@ package org.luwrain.pim.contacts;
 
 import java.sql.*;
 
-import org.luwrain.core.NullCheck;
-import org.luwrain.pim.StoredCommonAttr;
+import org.luwrain.core.*;
+import org.luwrain.pim.*;
 
 class StoredContactSql extends Contact implements  StoredContact
 {
@@ -35,30 +35,36 @@ class StoredContactSql extends Contact implements  StoredContact
 	NullCheck.notNull(con, "con");
     }
 
-    @Override public String getTitle() throws Exception
+    @Override public String getTitle() throws PimException
     {
 	return title != null?title:"";
     }
 
-    @Override public void setTitle(String value) throws Exception
+    @Override public void setTitle(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
+	try {
 	final PreparedStatement st = con.prepareStatement(
 "UPDATE contact SET title=? WHERE id=?"
 );
 	st.setString(1, value);
 	st.setLong(2, id);
 	if (st.executeUpdate() != 1)
-	    throw new Exception("Unable to update the title in contact table");
+	    throw new PimException("Unable to update the title in contact table");
 	title = value;
+	}
+	catch(SQLException e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    @Override public ContactValue[] getValues() throws Exception
+    @Override public ContactValue[] getValues() throws PimException
     {
 	return values != null?values:new ContactValue[0];
     }
 
-    @Override public void setValues(ContactValue[] values) throws Exception
+    @Override public void setValues(ContactValue[] values) throws PimException
     {
 	NullCheck.notNull(values, "values");
 	for(int i = 0;i < values.length;++i)
@@ -70,14 +76,15 @@ class StoredContactSql extends Contact implements  StoredContact
 	saveValues();
     }
 
-    @Override public String[] getTags() throws Exception
+    @Override public String[] getTags() throws PimException
     {
 	return tags != null?tags:new String[0];
     }
 
     @Override public void setTags(String[] value) throws Exception
     {
-	tags = org.luwrain.util.Strings.notNullArray(value);
+	NullCheck.notNullItems(value, "value");
+	tags = value;
 	saveValues();
     }
 
@@ -88,7 +95,8 @@ class StoredContactSql extends Contact implements  StoredContact
 
     @Override public void setUniRefs(String[] value) throws Exception
     {
-	uniRefs = org.luwrain.util.Strings.notNullArray(value);
+	NullCheck.notNullItems(value, "value");
+	uniRefs = value;
 	saveValues();
     }
 
@@ -110,8 +118,9 @@ class StoredContactSql extends Contact implements  StoredContact
 	notes = value;
     }
 
-    private void saveValues() throws Exception
+    private void saveValues() throws PimException
     {
+	try {
 	PreparedStatement st = con.prepareStatement("DELETE FROM contact_value WHERE contact_id=?");
 	st.setLong(1, id);
 	st.executeUpdate();
@@ -126,7 +135,7 @@ class StoredContactSql extends Contact implements  StoredContact
 		st.setString(3, v.value);
 		st.setBoolean(4, v.preferable);
 		if (st.executeUpdate() != 1)
-		    throw new Exception("Unable to save a contact value");
+		    throw new PimException("Unable to save a contact value");
 	    }
 	if (tags != null)
 	    for(String s: tags)
@@ -140,7 +149,7 @@ class StoredContactSql extends Contact implements  StoredContact
 		    st.setString(3, s);
 		    st.setBoolean(4, false);
 		    if (st.executeUpdate() != 1)
-			throw new Exception("Unable to save a contact tag");
+			throw new PimException("Unable to save a contact tag");
 		}
 	if (uniRefs != null)
 	    for(String s: uniRefs)
@@ -154,7 +163,12 @@ class StoredContactSql extends Contact implements  StoredContact
 		    st.setString(3, s);
 		    st.setBoolean(4, false);
 		    if (st.executeUpdate() != 1)
-			throw new Exception("Unable to save a contact tag");
+			throw new PimException("Unable to save a contact tag");
 		}
+	}
+	catch(SQLException e)
+	{
+	    throw new PimException(e);
+	}
     }
 }

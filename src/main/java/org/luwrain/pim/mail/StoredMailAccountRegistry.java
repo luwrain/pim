@@ -205,15 +205,9 @@ private Registry registry;
 	default:
 	    return false;
 	}
+	Log.debug("pim", "mail group \"" + title + "\" loaded, type " + type + ", flags " + flags);
 	return true;
     }
-
-    /*
-    private String getPath()
-    {
-	return Registry.join(registryKeys.mailAccounts(), "" + id);
-    }
-    */
 
     static String getTypeStr(Type type)
     {
@@ -228,11 +222,4 @@ private Registry registry;
 	    return "";
 	}
     }
-
-    /*
-    void updateError(String param) throws PimException
-    {
-	throw new PimException("Unable to update in the registry " + getPath() + "/" + param);
-    }
-    */
 }

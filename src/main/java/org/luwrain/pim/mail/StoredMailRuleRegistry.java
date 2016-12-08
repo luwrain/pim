@@ -54,7 +54,7 @@ class StoredMailRuleRegistry extends MailRule implements StoredMailRule
     @Override public void setDestFolderUniRef(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	sett.setDestFolderUniRef(value);
+	sett.setDestFolderUniref(value);
 	this.destFolderUniRef = value;
     }
 
@@ -62,7 +62,7 @@ class StoredMailRuleRegistry extends MailRule implements StoredMailRule
     {
 	final String actionStr = sett.getAction("");
 	headerRegex = sett.getHeaderRegex("");
-	destFolderUniRef= sett.getDestFolderUniRef("");
+	destFolderUniRef= sett.getDestFolderUniref("");
 	switch(actionStr.trim().toLowerCase())
 	{
 	case "move-to-folder":

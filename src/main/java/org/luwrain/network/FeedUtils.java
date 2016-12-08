@@ -1,19 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.network;
 
@@ -23,7 +7,8 @@ import java.io.*;
 import com.sun.syndication.feed.synd.*;
 import com.sun.syndication.io.*;
 
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
+import org.luwrain.util.*;
 import org.luwrain.pim.news.NewsArticle;
 import org.luwrain.pim.PimException;
 
@@ -46,7 +31,7 @@ public class FeedUtils
 		    NewsArticle article = new NewsArticle();
 		    if (feed.getTitle() != null)
 			//FIXME:		    article.sourceTitle = MlTagStrip.run(feed.getTitle());
-			article.sourceTitle = feed.getTitle();
+			article.sourceTitle = MlTagStrip.run(feed.getTitle());
 		    if (entry.getTitle() != null)
 			article.title = entry.getTitle().replaceAll(" ", " ");
 		    if (entry.getUri() != null)
