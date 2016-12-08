@@ -4,6 +4,7 @@ package org.luwrain.pim.contacts;
 import java.sql.*;
 
 import org.luwrain.core.*;
+import org.luwrain.pim.*;
 
 public class Factory
 {
@@ -18,7 +19,7 @@ public class Factory
 	settings = Settings.createStoring(registry);
     }
 
-    public ContactsStoring createContactsStoring()
+    private ContactsStoring createContactsStoring()
     {
 	if (settings.getSharedConnection(false) && con != null)
 	    return new ContactsStoringSql(registry, con);
@@ -76,4 +77,23 @@ if (settings.getInitProc("").toLowerCase().equals("sqlite-wal"))
 	}
 	con = null;
     }
+
+    static public ContactsStoring getContactsStoring(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final Object o = luwrain.getSharedObject(Extension.CONTACTS_SHARED_OBJECT);
+	if (o == null)
+	{
+	    Log.error("pim", "unable to get contacts storing:no shared object " + Extension.CONTACTS_SHARED_OBJECT);
+	    return null;
+	}
+	if (!(o instanceof Factory))
+	{
+	    Log.error("pim", "unable to get mail storing:shared object " + Extension.CONTACTS_SHARED_OBJECT + " is not an instance of " + Factory.class.getName());
+	    return null;
+	}
+	final Factory factory = (Factory)o;
+	return factory.createContactsStoring();
+    }
+
 }

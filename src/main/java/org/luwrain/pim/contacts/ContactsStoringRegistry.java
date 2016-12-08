@@ -19,9 +19,8 @@ package org.luwrain.pim.contacts;
 
 import java.util.*;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.NullCheck;
-//import org.luwrain.util.RegistryAutoCheck;
+import org.luwrain.core.*;
+import org.luwrain.pim.*;
 import org.luwrain.pim.RegistryKeys;
 
 abstract class ContactsStoringRegistry implements ContactsStoring
@@ -36,7 +35,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	    throw new NullPointerException("registry may not be null");
     }
 
-    @Override public StoredContactsFolder getFoldersRoot() throws Exception
+    @Override public StoredContactsFolder getFoldersRoot() throws PimException
     {
 	final StoredContactsFolderRegistry[] folders = loadAllFolders();
 	for(StoredContactsFolderRegistry f: folders)
@@ -45,7 +44,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	return null;
     }
 
-    @Override public StoredContactsFolder[] getFolders(StoredContactsFolder folder) throws Exception
+    @Override public StoredContactsFolder[] getFolders(StoredContactsFolder folder) throws PimException
     {
 	if (folder == null || !(folder instanceof StoredContactsFolderRegistry))
 	    return null;
@@ -58,7 +57,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	return res.toArray(new StoredContactsFolder[res.size()]);
     }
 
-    @Override public void saveFolder(StoredContactsFolder addTo, ContactsFolder folder) throws Exception
+    @Override public void saveFolder(StoredContactsFolder addTo, ContactsFolder folder) throws PimException
     {
 	NullCheck.notNull(addTo, "addTo");
 	NullCheck.notNull(folder, "folder");
@@ -69,16 +68,16 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	final int newId = newFolderId();
 	final String newPath = Registry.join(registryKeys.contactsFolders(), "" + newId);
 	if (!registry.addDirectory(newPath))
-	    throw new Exception("Unable to add to the registry new directory " + newPath);
+	    throw new PimException("Unable to add to the registry new directory " + newPath);
 	if (!registry.setString(Registry.join(newPath, "title"), folder.title))
-	    throw new Exception("Unable to add to the registry new string value " + newPath + "/title");
+	    throw new PimException("Unable to add to the registry new string value " + newPath + "/title");
 	if (!registry.setInteger(Registry.join(newPath, "order-index"), folder.orderIndex))
-	    throw new Exception("Unable to add to the registry new integer value " + newPath + "/order-index");
+	    throw new PimException("Unable to add to the registry new integer value " + newPath + "/order-index");
 	if (!registry.setInteger(Registry.join(newPath, "parent-id"), parentFolder.id))
-	    throw new Exception("Unable to add to the registry new integer value " + newPath + "/parent-id");
+	    throw new PimException("Unable to add to the registry new integer value " + newPath + "/parent-id");
     }
 
-    @Override public void deleteFolder(StoredContactsFolder folder) throws Exception
+    @Override public void deleteFolder(StoredContactsFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	if (!(folder instanceof StoredContactsFolderRegistry))
@@ -86,7 +85,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	final StoredContactsFolderRegistry folderRegistry = (StoredContactsFolderRegistry)folder;
 	final String path = Registry.join(registryKeys.contactsFolders(), "" + folderRegistry.id);
 	if (!registry.deleteDirectory(path))
-	    throw new Exception("Unable to delete the registry directory " + path);
+	    throw new PimException("Unable to delete the registry directory " + path);
     }
 
     private StoredContactsFolderRegistry[] loadAllFolders()
