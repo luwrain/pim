@@ -6,28 +6,30 @@ import org.luwrain.pim.*;
 
 class StoredContactsFolderRegistry extends ContactsFolder implements StoredContactsFolder
 {
-    private Registry registry;
+    private final Registry registry;
+    private final Settings.Folder sett;
 
-    int id;
+    final int id;
     int parentId; 
 
-    StoredContactsFolderRegistry(Registry registry)
+    StoredContactsFolderRegistry(Registry registry, int id)
     {
-	this.registry = registry;
 	NullCheck.notNull(registry, "registry");
+	this.registry = registry;
+	this.id = id;
+	this.sett = Settings.createFolder(registry, Registry.join(Settings.FOLDERS_PATH, "" + id));
     }
 
     @Override public String getTitle() throws PimException
     {
-	return title != null?title:"";
+	return title;
     }
 
     @Override public void setTitle(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	if (!registry.setString(Registry.join(getPath(), "title"), value))
-	    updateError("title");
-	title = value;
+	sett.setTitle(value);
+	this.title = value;
     }
 
     @Override public int getOrderIndex() throws PimException
@@ -37,10 +39,9 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 
     @Override public void setOrderIndex(int value) throws PimException
     {
-	if (!registry.setInteger(Registry.join(getPath(), "order-index"), value))
-	    updateError("order-index");
-	orderIndex = value;
-    }
+	sett.setOrderIndex(value);
+	this.orderIndex = value;
+}
 
     @Override public boolean isRoot()
     {
@@ -49,24 +50,19 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 
     void setParentId(int value) throws Exception
     {
-	if (!registry.setInteger(Registry.join(getPath(), "parent-id"), value))
-	    updateError("parent-id");
-	parentId = value;
+	sett.setParentId(value);
+	this.parentId = value;
     }
 
     boolean load()
     {
-	/*
-	final RegistryAutoCheck check = new RegistryAutoCheck(registry);
-	final String path = getPath();
-	title = check.stringNotEmpty(Registry.join(path, "title"), "");
-	orderIndex = check.intPositive(Registry.join(path, "order-index"), -1);
-	parentId = check.intPositive(Registry.join(path, "parent-id"), -1);
+	title = sett.getTitle("");
+	orderIndex = sett.getOrderIndex(0);
+	parentId = sett.getParentId(-1);
 	if (title.isEmpty() || parentId < 0)
 	    return false;
 	if (orderIndex < 0)
 	    orderIndex = 0;
-	*/
 	return true;
     }
 
@@ -78,6 +74,7 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 	return id == folder.id;
     }
 
+    /*
     String getPath()
     {
 return Registry.join(Settings.FOLDERS_PATH, "" + id);
@@ -87,4 +84,5 @@ return Registry.join(Settings.FOLDERS_PATH, "" + id);
     {
 	throw new PimException("Unable to update in the registry " + getPath() + "/" + param);
     }
+    */
 }

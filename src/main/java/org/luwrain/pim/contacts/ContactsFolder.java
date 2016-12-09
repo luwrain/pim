@@ -1,19 +1,3 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.contacts;
 
@@ -24,7 +8,7 @@ public class ContactsFolder implements Comparable
 
     @Override public String toString()
     {
-	return title != null?title:"";
+	return title;
     }
 
     @Override public int compareTo(Object o)
@@ -39,4 +23,11 @@ public class ContactsFolder implements Comparable
 	return 0;
     }
 
+    @Override public boolean equals(Object o)
+    {
+	if (o == null || !(o instanceof ContactsFolder))
+	    return false;
+	final ContactsFolder folder = (ContactsFolder)o;
+	return title.equals(folder.title);
+}
 }

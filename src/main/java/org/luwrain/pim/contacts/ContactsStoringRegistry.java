@@ -44,12 +44,12 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 
     @Override public StoredContactsFolder[] getFolders(StoredContactsFolder folder) throws PimException
     {
-	if (folder == null || !(folder instanceof StoredContactsFolderRegistry))
-	    return null;
+	NullCheck.notNull(folder, "folder");
+	if (!(folder instanceof StoredContactsFolderRegistry))
+	    return new StoredContactsFolder[0];
 	final StoredContactsFolderRegistry parent = (StoredContactsFolderRegistry)folder;
 	final LinkedList<StoredContactsFolder> res = new LinkedList<StoredContactsFolder>();
-	final StoredContactsFolderRegistry[] folders = loadAllFolders();
-	for(StoredContactsFolderRegistry f: folders)
+	for(StoredContactsFolderRegistry f: loadAllFolders())
 	    if (f.parentId == parent.id && f.id != f.parentId)
 		res.add(f);
 	return res.toArray(new StoredContactsFolder[res.size()]);
@@ -88,13 +88,11 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 
     private StoredContactsFolderRegistry[] loadAllFolders()
     {
-	final String[] subdirs = registry.getDirectories(Settings.FOLDERS_PATH);
-	if (subdirs == null || subdirs.length < 1)
-	    return new StoredContactsFolderRegistry[0];
+	registry.addDirectory(Settings.FOLDERS_PATH);
 	final LinkedList<StoredContactsFolderRegistry> folders = new LinkedList<StoredContactsFolderRegistry>();
-	for(String s: subdirs)
+	for(String s: registry.getDirectories(Settings.FOLDERS_PATH))
 	{
-	    if (s == null || s.isEmpty())
+	    if (s.isEmpty())
 		continue;
 	    int id = 0;
 	    try {
@@ -102,14 +100,14 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	    }
 	    catch (NumberFormatException e)
 	    {
-		e.printStackTrace();
+		Log.error("pim-contacts", "invalid contact folder directory name:" + s);
 		continue;
 	    }
-	    final StoredContactsFolderRegistry f = new StoredContactsFolderRegistry(registry);
-	    f.id = id;
+	    final StoredContactsFolderRegistry f = new StoredContactsFolderRegistry(registry, id);
 	    if (f.load())
 		folders.add(f);
 	}
+	Log.debug("pim-contacts", "loaded " + folders.size() + " folders");
 	return folders.toArray(new StoredContactsFolderRegistry[folders.size()]);
     }
 
