@@ -6,7 +6,6 @@ import org.luwrain.pim.*;
 
 class StoredContactsFolderRegistry extends ContactsFolder implements StoredContactsFolder
 {
-    private final RegistryKeys registryKeys = new RegistryKeys();
     private Registry registry;
 
     int id;
@@ -81,7 +80,7 @@ class StoredContactsFolderRegistry extends ContactsFolder implements StoredConta
 
     String getPath()
     {
-return Registry.join(registryKeys.contactsFolders(), "" + id);
+return Registry.join(Settings.FOLDERS_PATH, "" + id);
     }
 
     private void updateError(String param) throws PimException

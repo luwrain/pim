@@ -8,7 +8,6 @@ import org.luwrain.pim.*;
 
 abstract class NewsStoringRegistry implements NewsStoring
 {
-protected final org.luwrain.pim.RegistryKeys keys = new org.luwrain.pim.RegistryKeys();
     protected Registry registry;
 
     public NewsStoringRegistry(Registry registry)
@@ -20,7 +19,7 @@ protected final org.luwrain.pim.RegistryKeys keys = new org.luwrain.pim.Registry
     @Override public StoredNewsGroup[] loadGroups() throws PimException
     {
 	    final LinkedList<StoredNewsGroup> groups = new LinkedList<StoredNewsGroup>();
-	    for(String s: registry.getDirectories(keys.newsGroups()))
+	    for(String s: registry.getDirectories(Settings.GROUPS_PATH))
 	    {
 		if (s.isEmpty())
 		    continue;
@@ -52,8 +51,8 @@ return res;
     @Override public void saveGroup(NewsGroup group) throws PimException
     {
 	NullCheck.notNull(group, "group");
-	final int id = Registry.nextFreeNum(registry, keys.newsGroups());
-	final String path = Registry.join(keys.newsGroups(), "" + id);
+	final int id = Registry.nextFreeNum(registry, Settings.GROUPS_PATH);
+	final String path = Registry.join(Settings.GROUPS_PATH, "" + id);
 	registry.addDirectory(path);
 	final Settings.Group settings = Settings.createGroup(registry, path);
 	settings.setName(group.name);

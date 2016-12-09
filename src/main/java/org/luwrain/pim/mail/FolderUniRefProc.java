@@ -19,13 +19,11 @@ package org.luwrain.pim.mail;
 
 import org.luwrain.core.*;
 import org.luwrain.util.*;
-import org.luwrain.pim.RegistryKeys;
 
 public class FolderUniRefProc implements UniRefProc
 {
     static final String PREFIX = "mailfolder";
 
-    private final RegistryKeys registryKeys = new RegistryKeys();
     private Luwrain luwrain;
 
     public FolderUniRefProc(Luwrain luwrain)

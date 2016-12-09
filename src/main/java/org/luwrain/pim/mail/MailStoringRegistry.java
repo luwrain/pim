@@ -22,12 +22,10 @@ import java.util.*;
 import org.luwrain.core.*;
 //import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.pim.*;
-import org.luwrain.pim.RegistryKeys;
 
 abstract class MailStoringRegistry implements MailStoring
 {
     private Registry registry;
-    private RegistryKeys registryKeys = new RegistryKeys();
 
     public MailStoringRegistry(Registry registry)
     {
@@ -89,7 +87,7 @@ abstract class MailStoringRegistry implements MailStoring
 
     @Override public StoredMailRule[] getRules() throws PimException
     {
-	final String[] dirNames = registry.getDirectories(registryKeys.mailRules());
+	final String[] dirNames = registry.getDirectories(Settings.RULES_PATH);
 	if (dirNames == null || dirNames.length < 1)
 	    return new StoredMailRule[0];
 	final LinkedList<StoredMailRuleRegistry> res = new LinkedList<StoredMailRuleRegistry>();
@@ -116,8 +114,8 @@ abstract class MailStoringRegistry implements MailStoring
     @Override public void saveRule(MailRule rule) throws PimException
     {
 	NullCheck.notNull(rule, "rule");
-	final int newId = org.luwrain.pim.Util.newFolderId(registry, registryKeys.mailRules());
-	final String path = Registry.join(registryKeys.mailRules(), "" + newId);
+	final int newId = org.luwrain.pim.Util.newFolderId(registry, Settings.RULES_PATH);
+	final String path = Registry.join(Settings.RULES_PATH, "" + newId);
 	if (!registry.addDirectory(path))
 	    throw new PimException("Unable to create new registry directory " + path);
 	if (!registry.setString(Registry.join(path, "action"), StoredMailRuleRegistry.getActionStr(rule.action)))
@@ -134,7 +132,7 @@ abstract class MailStoringRegistry implements MailStoring
 	if (!(rule instanceof StoredMailRuleRegistry))
 	    throw new IllegalArgumentException("rule is not an instance of StoredMailRuleRegistry");
 	final StoredMailRuleRegistry ruleRegistry = (StoredMailRuleRegistry)rule;
-	final String path = Registry.join(registryKeys.mailRules(), "" + ruleRegistry.id);
+	final String path = Registry.join(Settings.RULES_PATH, "" + ruleRegistry.id);
 	if (!registry.deleteDirectory(path))
 	    throw new PimException("Unable to delete the registry directory " + path);
     }
@@ -142,7 +140,7 @@ abstract class MailStoringRegistry implements MailStoring
     @Override public StoredMailAccount[] loadAccounts() throws PimException
     {
 	final LinkedList<StoredMailAccountRegistry> accounts = new LinkedList<StoredMailAccountRegistry>();
-	for(String s: registry.getDirectories(registryKeys.mailAccounts()))
+	for(String s: registry.getDirectories(Settings.ACCOUNTS_PATH))
 	{
 	    if (s.isEmpty())
 		continue;
@@ -173,8 +171,8 @@ abstract class MailStoringRegistry implements MailStoring
     @Override public void saveAccount(MailAccount account) throws PimException
     {
 	NullCheck.notNull(account, "account");
-	final int newId = Registry.nextFreeNum(registry, registryKeys.mailAccounts());
-	final String path = Registry.join(registryKeys.mailAccounts(), "" + newId);
+	final int newId = Registry.nextFreeNum(registry, Settings.ACCOUNTS_PATH);
+	final String path = Registry.join(Settings.ACCOUNTS_PATH, "" + newId);
 	if (!registry.addDirectory(path))
 	    throw new PimException("Unable to create new registry directory " + path);
 	final boolean enabled = account.flags.contains(MailAccount.Flags.ENABLED);
@@ -205,7 +203,7 @@ abstract class MailStoringRegistry implements MailStoring
 	if (!(account instanceof StoredMailAccountRegistry))
 	    throw new IllegalArgumentException("account is not an instance of StoredMailRAccountRegistry");
 	final StoredMailAccountRegistry accountRegistry = (StoredMailAccountRegistry)account;
-	final String path = Registry.join(registryKeys.mailAccounts(), "" + accountRegistry.getId());
+	final String path = Registry.join(Settings.ACCOUNTS_PATH, "" + accountRegistry.getId());
 	if (!registry.deleteDirectory(path))
 	    throw new PimException("Unable to delete the registry directory " + path);
     }
@@ -241,7 +239,7 @@ abstract class MailStoringRegistry implements MailStoring
 
     private StoredMailFolderRegistry[] loadAllFolders()
     {
-	final String[] subdirs = registry.getDirectories(registryKeys.mailFolders());
+	final String[] subdirs = registry.getDirectories(Settings.FOLDERS_PATH);
 	if (subdirs == null || subdirs.length < 1)
 	    return new StoredMailFolderRegistry[0];
 	final LinkedList<StoredMailFolderRegistry> folders = new LinkedList<StoredMailFolderRegistry>();

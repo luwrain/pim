@@ -25,7 +25,6 @@ import org.luwrain.pim.*;
 
 class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 {
-    private final org.luwrain.pim.RegistryKeys registryKeys = new org.luwrain.pim.RegistryKeys();
 private Registry registry;
     private Settings.Account settings;
     private int id;
@@ -35,7 +34,7 @@ private Registry registry;
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = id;
-	this.settings = Settings.createAccount(registry, Registry.join(registryKeys.mailAccounts(), "" + id));
+	this.settings = Settings.createAccount(registry, Registry.join(Settings.ACCOUNTS_PATH, "" + id));
     }
 
     @Override public long getId()

@@ -21,11 +21,9 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.RegistryKeys;
 
 abstract class ContactsStoringRegistry implements ContactsStoring
 {
-    private final RegistryKeys registryKeys = new RegistryKeys();
     private Registry registry;
 
     public ContactsStoringRegistry(Registry registry)
@@ -66,7 +64,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	    throw new IllegalArgumentException("folder.title may not be null");
 	final StoredContactsFolderRegistry parentFolder = (StoredContactsFolderRegistry)addTo;
 	final int newId = newFolderId();
-	final String newPath = Registry.join(registryKeys.contactsFolders(), "" + newId);
+	final String newPath = Registry.join(Settings.FOLDERS_PATH, "" + newId);
 	if (!registry.addDirectory(newPath))
 	    throw new PimException("Unable to add to the registry new directory " + newPath);
 	if (!registry.setString(Registry.join(newPath, "title"), folder.title))
@@ -83,14 +81,14 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 	if (!(folder instanceof StoredContactsFolderRegistry))
 	    throw new IllegalArgumentException("folder is not an instance of StoredContactsFolderRegistry");
 	final StoredContactsFolderRegistry folderRegistry = (StoredContactsFolderRegistry)folder;
-	final String path = Registry.join(registryKeys.contactsFolders(), "" + folderRegistry.id);
+	final String path = Registry.join(Settings.FOLDERS_PATH, "" + folderRegistry.id);
 	if (!registry.deleteDirectory(path))
 	    throw new PimException("Unable to delete the registry directory " + path);
     }
 
     private StoredContactsFolderRegistry[] loadAllFolders()
     {
-	final String[] subdirs = registry.getDirectories(registryKeys.contactsFolders());
+	final String[] subdirs = registry.getDirectories(Settings.FOLDERS_PATH);
 	if (subdirs == null || subdirs.length < 1)
 	    return new StoredContactsFolderRegistry[0];
 	final LinkedList<StoredContactsFolderRegistry> folders = new LinkedList<StoredContactsFolderRegistry>();
@@ -117,7 +115,7 @@ abstract class ContactsStoringRegistry implements ContactsStoring
 
     private int newFolderId()//FIXME:
     {
-	final String[] values = registry.getDirectories(registryKeys.contactsFolders());
+	final String[] values = registry.getDirectories(Settings.FOLDERS_PATH);
 	int res = 0;
 	for(String s: values)
 	{

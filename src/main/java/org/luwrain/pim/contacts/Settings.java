@@ -6,6 +6,8 @@ import org.luwrain.core.*;
 interface Settings
 {
     static final String STORING_PATH = "/org/luwrain/pim/contacts/storing";
+    static final String FOLDERS_PATH = "/org/luwrain/pim/contacts/folders";
+
 
     interface Storing
     {

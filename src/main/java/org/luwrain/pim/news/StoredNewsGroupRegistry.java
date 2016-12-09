@@ -9,7 +9,6 @@ import org.luwrain.pim.*;
 
 class StoredNewsGroupRegistry implements StoredNewsGroup, Comparable
 {
-    private final org.luwrain.pim.RegistryKeys registryKeys = new RegistryKeys();
     private Registry registry;
     private Settings.Group settings;
 
@@ -174,6 +173,6 @@ mediaContentType = settings.getMediaContentType("");
 
     private String getPath()
     {
-	return Registry.join(registryKeys.newsGroups(), "" + id);
+	return Registry.join(Settings.GROUPS_PATH, "" + id);
     }
 }

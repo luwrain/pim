@@ -19,14 +19,12 @@ package org.luwrain.pim.binder;
 
 import java.sql.*;
 
-import org.luwrain.pim.RegistryKeys;
 import org.luwrain.core.Registry;
 //import org.luwrain.util.RegistryAutoCheck;
 
 public class Factory
 {
     private Registry registry;
-    private RegistryKeys registryKeys = new RegistryKeys();
 
     public Factory(Registry registry)
     {

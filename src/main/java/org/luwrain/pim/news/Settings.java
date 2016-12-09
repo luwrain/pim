@@ -6,6 +6,7 @@ import org.luwrain.core.*;
 interface Settings
 {
     static final String STORING_PATH = "/org/luwrain/pim/news/storing";
+    static final String GROUPS_PATH = "/org/luwrain/pim/news/groups";
 
     interface Storing
     {

@@ -8,6 +8,7 @@ interface Settings
     static final String STORING_PATH = "/org/luwrain/pim/mail/storing";
     static final String FOLDERS_PATH = "/org/luwrain/pim/mail/folders";
     static final String RULES_PATH = "/org/luwrain/pim/mail/rules";
+    static final String ACCOUNTS_PATH = "/org/luwrain/pim/mail/accounts";
 
 
     interface Storing
