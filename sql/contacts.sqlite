@@ -1,15 +1,15 @@
 
 CREATE TABLE contact (
-  id identity,
+  id integer PRIMARY KEY AUTOINCREMENT, 
   contacts_folder_id int NOT NULL,
-  title varchar(2048) NOT NULL,
-  notes varchar(65536) NOT NULL
+  title text NOT NULL,
+  notes text NOT NULL
 );
 
 CREATE TABLE contact_value (
-  id identity,
+  id integer PRIMARY KEY AUTOINCREMENT, 
   contact_id int NOT NULL,
   type_id int NOT NULL,
-  value varchar(2048) NOT NULL,
+  value text NOT NULL,
   preferable boolean NOT NULL
 );
