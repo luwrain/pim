@@ -8,15 +8,17 @@ import org.luwrain.pim.*;
 
 public class Factory
 {
-    private Registry registry;
-    private Settings.Storing settings;
+    private final Luwrain luwrain;
+    private final Registry registry;
+    private final Settings.Storing settings;
     private Connection con = null;
 
-    public Factory(Registry registry)
+    public Factory(Luwrain luwrain)
     {
-	NullCheck.notNull(registry, "registry");
-	this.registry = registry;
-	settings = Settings.createStoring(registry);
+	NullCheck.notNull(luwrain, "luwrain");
+	this.luwrain = luwrain;
+	this.registry = luwrain.getRegistry();
+	this.settings = Settings.createStoring(registry);
     }
 
     private ContactsStoring createContactsStoring()
@@ -35,7 +37,7 @@ public class Factory
 	    return null;
 	}
 	final String driver = settings.getDriver("");
-	final String url = settings.getUrl("");
+	final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, settings.getUrl(""));
 	final String login = settings.getLogin("");
 	final String passwd = settings.getPasswd("");
 	if (driver.isEmpty() || url.isEmpty())
@@ -43,6 +45,7 @@ public class Factory
 	    Log.error("pim", "driver and url may not be empty in contacts storing settings");
 	    return null;
 	}
+	Log.debug("pim", "opening connection for contacts:URL=" + url + ",driver=" + driver + ",login=" + login);
 	try {
 	    Class.forName (driver).newInstance ();
 con = DriverManager.getConnection (url, login, passwd);
@@ -66,13 +69,13 @@ if (settings.getInitProc("").toLowerCase().equals("sqlite-wal"))
     {
 	if (con == null)
 	    return;
-	Log.debug("pim", "closing JDBC connection for news");
+	Log.debug("pim", "closing JDBC connection for contacts");
 	try {
 	    con.close();
 	}
-	catch(SQLException e)
+	catch (SQLException e)
 	{
-	    Log.error("pim", "unable to close mail JDBC connection normally:" + e.getMessage());
+	    Log.error("pim", "unable to close contacts JDBC connection normally:" + e.getMessage());
 	    e.printStackTrace();
 	}
 	con = null;
@@ -95,5 +98,4 @@ if (settings.getInitProc("").toLowerCase().equals("sqlite-wal"))
 	final Factory factory = (Factory)o;
 	return factory.createContactsStoring();
     }
-
 }

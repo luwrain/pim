@@ -20,7 +20,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	NullCheck.notNull(luwrain, "luwrain");
 	mailFactory = new org.luwrain.pim.mail.Factory(luwrain);
 	newsFactory = new org.luwrain.pim.news.Factory(luwrain);
-	contactsFactory = new org.luwrain.pim.contacts.Factory(luwrain.getRegistry());
+	contactsFactory = new org.luwrain.pim.contacts.Factory(luwrain);
 	binderFactory = new org.luwrain.pim.binder.Factory(luwrain.getRegistry());
 	return null;
     }
