@@ -1,26 +1,9 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.mail;
 
 import java.util.*;
 
 import org.luwrain.core.*;
-//import org.luwrain.util.*;
 import org.luwrain.pim.*;
 
 class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
@@ -37,95 +20,95 @@ private Registry registry;
 	this.settings = Settings.createAccount(registry, Registry.join(Settings.ACCOUNTS_PATH, "" + id));
     }
 
-    @Override public Type getType() throws PimException
+    @Override public Type getType()
     {
 	return type;
     }
 
-    @Override public void setType(Type value) throws PimException
+    @Override public void setType(Type value)
     {
 	NullCheck.notNull(value, "value");
 	settings.setType(getTypeStr(value));
 	type = value;
     }
 
-    @Override public String getTitle() throws PimException
+    @Override public String getTitle()
     {
 	return title;
     }
 
-    @Override public void setTitle(String value) throws PimException
+    @Override public void setTitle(String value)
     {
 	NullCheck.notNull(value, "value");
 	settings.setTitle(value);
 	title = value;
     }
 
-    @Override public String getHost() throws PimException
+    @Override public String getHost()
     {
 	return host;
     }
 
-    @Override public void setHost(String value) throws PimException
+    @Override public void setHost(String value)
     {
 	NullCheck.notNull(value, "value");
 	settings.setHost(value);
 	host = value;
     }
 
-    @Override public int getPort() throws PimException
+    @Override public int getPort()
     {
 	return port;
     }
 
-    @Override public void setPort(int value) throws PimException
+    @Override public void setPort(int value)
     {
 	settings.setPort(value);
 	port = value;
     }
 
-    @Override public String getLogin() throws PimException
+    @Override public String getLogin()
     {
 	return login;
     }
 
-    @Override public void setLogin(String value) throws PimException
+    @Override public void setLogin(String value)
     {
 	NullCheck.notNull(value, "value");
 	settings.setLogin(value);
 	login = value;
     }
 
-    @Override public String getPasswd() throws PimException
+    @Override public String getPasswd()
     {
 	return passwd;
     }
 
-    @Override public void setPasswd(String value) throws PimException
+    @Override public void setPasswd(String value)
     {
 	NullCheck.notNull(value, "value");
 	settings.setPasswd(value);
 	passwd = value;
     }
 
-    @Override public String getTrustedHosts() throws PimException
+    @Override public String getTrustedHosts()
     {
 	return trustedHosts;
     }
 
-    @Override public void setTrustedHosts(String value) throws PimException
+    @Override public void setTrustedHosts(String value)
     {
 	NullCheck.notNull(value, "value");
 	settings.setTrustedHosts(value);
 	trustedHosts = value;
     }
 
-    @Override public Set<Flags> getFlags() throws PimException
+    @Override public Set<Flags> getFlags()
     {
 	return flags;
     } 
 
-    @Override public void setFlags(Set<Flags> value) throws PimException
+    @Override public void setFlags(Set<Flags> value)
     {
 	NullCheck.notNull(value, "value");
 	final boolean enabled = value.contains(Flags.ENABLED);
@@ -141,24 +124,24 @@ private Registry registry;
 	flags = value;
     }
 
-    @Override public String getSubstName() throws PimException
+    @Override public String getSubstName()
     {
 	return substName;
     }
 
-    @Override public void setSubstName(String value) throws PimException
+    @Override public void setSubstName(String value)
     {
 	NullCheck.notNull(value, "value");
 	settings.setSubstName(value);
 	substName = value;
     }
 
-    @Override public String getSubstAddress() throws PimException
+    @Override public String getSubstAddress()
     {
 	return substAddress;
     }
 
-    @Override public void setSubstAddress(String value) throws PimException
+    @Override public void setSubstAddress(String value)
     {
 	NullCheck.notNull(value, "value");
 	settings.setSubstAddress(value);

@@ -3,11 +3,10 @@ package org.luwrain.pim.mail;
 
 import java.util.*;
 import java.sql.*;
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.pim.*;
-//import org.luwrain.util.Strings;
 
-class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Comparable
+class StoredMailMessageSql extends MailMessage implements StoredMailMessage
 {
     final Connection con;
     long id;
@@ -214,21 +213,5 @@ return mimeContentType;
     @Override public void setExtInfo(String value) throws PimException
     {
 	//FIXME:
-    }
-
-	@Override public int compareTo(Object o)
-    {
-    	if (o == null || !(o instanceof StoredMailMessageSql)) return 0;
-    	StoredMailMessageSql article = (StoredMailMessageSql)o;
-    	if (state != article.state)
-    	{
-    		if (state > article.state) return -1;
-    		if (state < article.state) return 1;
-    		return 0;
-    	}
-    	if (receivedDate == null || article.receivedDate == null) return 0;
-    	// if receivedDate are equal, compare messages via sentDate
-    	if(receivedDate==article.receivedDate&&sentDate!=null&&article.sentDate!=null) return -1 * sentDate.compareTo(article.sentDate);
-    	return -1 * receivedDate.compareTo(article.receivedDate);
     }
 }
