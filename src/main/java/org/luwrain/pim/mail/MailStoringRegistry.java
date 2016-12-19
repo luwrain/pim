@@ -1,38 +1,22 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.mail;
 
 import java.util.*;
 
 import org.luwrain.core.*;
-//import org.luwrain.util.RegistryAutoCheck;
 import org.luwrain.pim.*;
 
 abstract class MailStoringRegistry implements MailStoring
 {
-    private Registry registry;
+    private final Registry registry;
 
-    public MailStoringRegistry(Registry registry)
+    MailStoringRegistry(Registry registry)
     {
+	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
-	if (registry == null)
-	    throw new NullPointerException("registry may not be null");
     }
+
+    //folders
 
     @Override public StoredMailFolder getFoldersRoot() throws PimException
     {
@@ -84,6 +68,36 @@ abstract class MailStoringRegistry implements MailStoring
 	    return folder;
 	return null;
     }
+
+    private StoredMailFolderRegistry[] loadAllFolders()
+    {
+	final String[] subdirs = registry.getDirectories(Settings.FOLDERS_PATH);
+	if (subdirs == null || subdirs.length < 1)
+	    return new StoredMailFolderRegistry[0];
+	final LinkedList<StoredMailFolderRegistry> folders = new LinkedList<StoredMailFolderRegistry>();
+	for(String s: subdirs)
+	{
+	    if (s == null || s.isEmpty())
+		continue;
+	    int id = 0;
+	    try {
+		id = Integer.parseInt(s);
+	    }
+	    catch (NumberFormatException e)
+	    {
+		e.printStackTrace();
+		continue;
+	    }
+	    final StoredMailFolderRegistry f = new StoredMailFolderRegistry(registry, id);
+	    if (f.load())
+		folders.add(f);
+	}
+	final StoredMailFolderRegistry[] res = folders.toArray(new StoredMailFolderRegistry[folders.size()]);
+	Arrays.sort(res);
+	return res;
+    }
+
+    //rules
 
     @Override public StoredMailRule[] getRules() throws PimException
     {
@@ -137,20 +151,21 @@ abstract class MailStoringRegistry implements MailStoring
 	    throw new PimException("Unable to delete the registry directory " + path);
     }
 
+    //accounts
+
     @Override public StoredMailAccount[] loadAccounts() throws PimException
     {
+	registry.addDirectory(Settings.ACCOUNTS_PATH);
 	final LinkedList<StoredMailAccountRegistry> accounts = new LinkedList<StoredMailAccountRegistry>();
 	for(String s: registry.getDirectories(Settings.ACCOUNTS_PATH))
 	{
-	    if (s.isEmpty())
-		continue;
-	    int id = 0;
+	    final int id ;
 	    try {
 		id = Integer.parseInt(s);
 	    }
 	    catch(NumberFormatException e)
 	    {
-		Log.warning("pim", "invalid mail account registry directory:" + s);
+		Log.warning("pim", "invalid mail account directory:" + s);
 		continue;
 	    }
 	    final StoredMailAccountRegistry account = new StoredMailAccountRegistry(registry, id);
@@ -165,7 +180,7 @@ abstract class MailStoringRegistry implements MailStoring
     @Override public StoredMailAccount loadAccountById(long id) throws PimException
     {
 	final StoredMailAccountRegistry account = new StoredMailAccountRegistry(registry, (int)id);//FIXME:
-	    return account.load()?account:null;
+	return account.load()?account:null;
     }
 
     @Override public void saveAccount(MailAccount account) throws PimException
@@ -173,8 +188,7 @@ abstract class MailStoringRegistry implements MailStoring
 	NullCheck.notNull(account, "account");
 	final int newId = Registry.nextFreeNum(registry, Settings.ACCOUNTS_PATH);
 	final String path = Registry.join(Settings.ACCOUNTS_PATH, "" + newId);
-	if (!registry.addDirectory(path))
-	    throw new PimException("Unable to create new registry directory " + path);
+	registry.addDirectory(path);
 	final boolean enabled = account.flags.contains(MailAccount.Flags.ENABLED);
 	final boolean ssl = account.flags.contains(MailAccount.Flags.SSL);
 	final boolean tls = account.flags.contains(MailAccount.Flags.TLS);
@@ -201,67 +215,44 @@ abstract class MailStoringRegistry implements MailStoring
     {
 	NullCheck.notNull(account, "account");
 	if (!(account instanceof StoredMailAccountRegistry))
-	    throw new IllegalArgumentException("account is not an instance of StoredMailRAccountRegistry");
+	    throw new PimException("account must be an instance of StoredMailAccountRegistry");
 	final StoredMailAccountRegistry accountRegistry = (StoredMailAccountRegistry)account;
-	final String path = Registry.join(Settings.ACCOUNTS_PATH, "" + accountRegistry.getId());
+	final String path = Registry.join(Settings.ACCOUNTS_PATH, "" + accountRegistry.id);
 	if (!registry.deleteDirectory(path))
 	    throw new PimException("Unable to delete the registry directory " + path);
     }
 
     @Override public String getAccountUniRef(StoredMailAccount account) throws PimException
     {
-	if (account == null || !(account instanceof StoredMailAccountRegistry))
-	    return "";
+	NullCheck.notNull(account, "account");
+	if (!(account instanceof StoredMailAccountRegistry))
+	    throw new PimException("account must be an instance of StoredMailAccountRegistry");
 	final StoredMailAccountRegistry accountRegistry = (StoredMailAccountRegistry)account;
-	return AccountUniRefProc.PREFIX + ":" + accountRegistry.getId();
+	return AccountUniRefProc.PREFIX + ":" + accountRegistry.id;
     }
 
     @Override public StoredMailAccount getAccountByUniRef(String uniRef)
     {
-	if (uniRef == null || uniRef.length() < AccountUniRefProc.PREFIX.length() + 2)
-	    return null;
+	NullCheck.notEmpty(uniRef, "uniRef");
 	if (!uniRef.startsWith(AccountUniRefProc.PREFIX + ":"))
 	    return null;
-	int id = 0;
+	final int id;
 	try {
 	    id = Integer.parseInt(uniRef.substring(AccountUniRefProc.PREFIX.length() + 1));
 	}
 	catch (NumberFormatException e)
 	{
-	    e.printStackTrace();
 	    return null;
 	}
 	final StoredMailAccountRegistry account = new StoredMailAccountRegistry(registry, id);
-	if (account.load())
-	    return account;
-	return null;
+	return account.load()?account:null;
     }
 
-    private StoredMailFolderRegistry[] loadAllFolders()
+    @Override public int getAccountId(StoredMailAccount account) throws PimException
     {
-	final String[] subdirs = registry.getDirectories(Settings.FOLDERS_PATH);
-	if (subdirs == null || subdirs.length < 1)
-	    return new StoredMailFolderRegistry[0];
-	final LinkedList<StoredMailFolderRegistry> folders = new LinkedList<StoredMailFolderRegistry>();
-	for(String s: subdirs)
-	{
-	    if (s == null || s.isEmpty())
-		continue;
-	    int id = 0;
-	    try {
-		id = Integer.parseInt(s);
-	    }
-	    catch (NumberFormatException e)
-	    {
-		e.printStackTrace();
-		continue;
-	    }
-	    final StoredMailFolderRegistry f = new StoredMailFolderRegistry(registry, id);
-	    if (f.load())
-		folders.add(f);
-	}
-	final StoredMailFolderRegistry[] res = folders.toArray(new StoredMailFolderRegistry[folders.size()]);
-	Arrays.sort(res);
-	return res;
+	NullCheck.notNull(account, "account");
+	if (!(account instanceof StoredMailAccountRegistry))
+	    throw new PimException("account must be an instance of StoredMailAccountRegistry");
+	return ((StoredMailAccountRegistry)account).id;
     }
 }

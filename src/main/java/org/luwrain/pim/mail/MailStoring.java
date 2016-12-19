@@ -18,7 +18,7 @@
 package org.luwrain.pim.mail;
 
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail.MailStoringSql.Condition;
+//import org.luwrain.pim.mail.MailStoringSql.Condition;
 
 public interface MailStoring extends Cloneable
 {
@@ -26,15 +26,22 @@ public interface MailStoring extends Cloneable
     StoredMailFolder[] getFolders(StoredMailFolder folder) throws PimException;
     String getFolderUniRef(StoredMailFolder folder) throws PimException;
     StoredMailFolder getFolderByUniRef(String uniRef) throws PimException;
+
+    //accounts
     StoredMailAccount[] loadAccounts() throws PimException;
+    int getAccountId(StoredMailAccount account) throws PimException;
     StoredMailAccount loadAccountById(long id) throws PimException;
     void saveAccount(MailAccount account) throws PimException;
     void deleteAccount(StoredMailAccount account) throws PimException;
     String getAccountUniRef(StoredMailAccount account) throws PimException;
     StoredMailAccount getAccountByUniRef(String uniRef) throws PimException;
+
+    //rules
     StoredMailRule[] getRules() throws PimException;
     void saveRule(MailRule rule) throws PimException;
     void deleteRule(StoredMailRule rule) throws PimException;
+
+    //messages
     void saveMessage(StoredMailFolder folder, MailMessage message) throws PimException;
     StoredMailMessage[] loadMessages(StoredMailFolder folder) throws PimException;
     void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder) throws PimException;

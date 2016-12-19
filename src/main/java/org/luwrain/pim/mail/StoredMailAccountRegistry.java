@@ -27,7 +27,7 @@ class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 {
 private Registry registry;
     private Settings.Account settings;
-    private int id;
+    final int id;
 
     StoredMailAccountRegistry(Registry registry, int id)
     {
@@ -35,11 +35,6 @@ private Registry registry;
 	this.registry = registry;
 	this.id = id;
 	this.settings = Settings.createAccount(registry, Registry.join(Settings.ACCOUNTS_PATH, "" + id));
-    }
-
-    @Override public long getId()
-    {
-	return id;
     }
 
     @Override public Type getType() throws PimException

@@ -37,7 +37,6 @@ import org.luwrain.pim.PimException;
  */
 public interface StoredMailAccount
 {
-    long getId() throws PimException;
     MailAccount.Type getType() throws PimException;
     void setType(MailAccount.Type value) throws PimException;
     String getTitle() throws PimException;

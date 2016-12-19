@@ -37,7 +37,7 @@ import com.sun.mail.pop3.POP3Message;
 
 import org.luwrain.core.NullCheck;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail.MailStoringSql.Condition;
+//import org.luwrain.pim.mail.MailStoringSql.Condition;
 import org.luwrain.pim.mail.*;
 
 import org.luwrain.util.*;

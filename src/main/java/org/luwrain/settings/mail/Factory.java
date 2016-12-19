@@ -65,7 +65,7 @@ public class Factory implements org.luwrain.cpanel.Factory
 		final StoredMailAccount[] accounts = storing.loadAccounts();
 		final Element[] res = new Element[accounts.length];
 		for(int i = 0;i < accounts.length;++i)
-		    res[i] = new AccountElement(parent, accounts[i].getId(), accounts[i].getTitle());
+		    res[i] = new AccountElement(parent, storing.getAccountId(accounts[i]), accounts[i].getTitle());
 		return res;
 	    }
 	    catch(PimException e)
