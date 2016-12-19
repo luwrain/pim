@@ -9,12 +9,13 @@ import org.luwrain.pim.*;
 
 class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Comparable
 {
-    Connection con;
+    final Connection con;
     long id;
+
     StoredMailMessageSql(Connection con)
     {
-    	this.con = con;
 	NullCheck.notNull(con, "con");
+    	this.con = con;
     }
 
     @Override public int getState()
@@ -130,16 +131,20 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage, Com
 	    }
 	    }
 
-    @Override public String getBaseContent() {return baseContent;}
+    @Override public String getText() 
+{
+return baseContent;
+}
 
-    @Override public void setBaseContent(String baseContent) throws PimException
+    @Override public void setText(String text) throws PimException
     {
+	NullCheck.notNull(text, "text");
 	try {
-	    PreparedStatement st = con.prepareStatement("UPDATE email_message SET body = ? WHERE id = ?;");
-	    st.setString(1, baseContent);
+	    final PreparedStatement st = con.prepareStatement("UPDATE email_message SET body = ? WHERE id = ?;");
+	    st.setString(1, text);
 	    st.setLong(2, id);
 	    st.executeUpdate();
-	    this.baseContent = baseContent;
+	    this.baseContent = text;
 	}
 	catch(SQLException e)
 	{
@@ -167,7 +172,7 @@ return mimeContentType;
 	}
 	}
 
-    @Override public byte[] getRawMail() throws PimException
+    @Override public byte[] getRawMessage() throws PimException
     {
 	try {
 	    if(rawMail==null)
@@ -186,7 +191,7 @@ return mimeContentType;
 	}
 	}
 
-    @Override public void setRawMail(byte[] rawMail) throws PimException
+    @Override public void setRawMessage(byte[] rawMail) throws PimException
     {
 	try {
 	    PreparedStatement st = con.prepareStatement("UPDATE email_message SET raw = ? WHERE id = ?;");
