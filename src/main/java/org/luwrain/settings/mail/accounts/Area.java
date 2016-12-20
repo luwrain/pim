@@ -1,20 +1,5 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
-
-package org.luwrain.settings.mail;
+package org.luwrain.settings.mail.accounts;
 
 import java.util.*;
 
@@ -25,8 +10,9 @@ import org.luwrain.popups.Popups;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
+import org.luwrain.settings.mail.*;
 
-class Account extends FormArea implements SectionArea
+public class Area extends FormArea implements SectionArea
 {
     final String smtpTitle = "SMTP";//FIXME:
     final String pop3Title = "POP3";//FIXME:
@@ -37,7 +23,7 @@ class Account extends FormArea implements SectionArea
     private StoredMailAccount account;
     private Strings strings;
 
-    Account(ControlPanel controlPanel, Strings strings,
+    Area(ControlPanel controlPanel, Strings strings,
 	    MailStoring storing, StoredMailAccount account) throws PimException
     {
 	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), strings.accountFormName());
@@ -148,22 +134,5 @@ class Account extends FormArea implements SectionArea
 	if (controlPanel.onEnvironmentEvent(event))
 	    return true;
 	return super.onEnvironmentEvent(event);
-    }
-
-    static Account create(ControlPanel controlPanel, MailStoring storing,
-			  long id)
-    {
-	NullCheck.notNull(controlPanel, "controlPanel");
-	NullCheck.notNull(storing, "storing");
-	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final Strings strings = (Strings)luwrain.i18n().getStrings(Strings.NAME);
-	try {
-	    return new Account(controlPanel, strings, storing, storing.loadAccountById(id));
-	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
-	    return null;
-	}
     }
 }
