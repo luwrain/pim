@@ -18,7 +18,15 @@ abstract class MailStoringRegistry implements MailStoring
 
     //folders
 
-    @Override public StoredMailFolder getFoldersRoot() throws PimException
+    @Override public int getFolderId(StoredMailFolder folder)
+    {
+	NullCheck.notNull(folder, "folder");
+	if (!(folder instanceof StoredMailFolderRegistry))
+	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
+	return ((StoredMailFolderRegistry)folder).id;
+    }
+
+    @Override public StoredMailFolder getFoldersRoot()
     {
 	final StoredMailFolderRegistry[] folders = loadAllFolders();
 	for(StoredMailFolderRegistry f: folders)
@@ -27,7 +35,7 @@ abstract class MailStoringRegistry implements MailStoring
 	return null;
     }
 
-    @Override public StoredMailFolder[] getFolders(StoredMailFolder folder) throws PimException
+    @Override public StoredMailFolder[] getFolders(StoredMailFolder folder)
     {
 	if (folder == null || !(folder instanceof StoredMailFolderRegistry))
 	    return null;

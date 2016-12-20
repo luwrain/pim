@@ -8,7 +8,9 @@ import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
+
 import org.luwrain.settings.mail.accounts.Accounts;
+import org.luwrain.settings.mail.folders.Folders;
 
 public class Factory implements org.luwrain.cpanel.Factory
 {
@@ -17,6 +19,7 @@ public class Factory implements org.luwrain.cpanel.Factory
     private MailStoring storing = null;
 
     private Accounts accounts = null;
+    private Folders folders = null;
 
     private SimpleElement mailElement = null;
     private SimpleElement accountsElement = null;
@@ -48,6 +51,8 @@ foldersElement,
 	    return new Element[0];
 	if (parent.equals(accountsElement))
 	    return accounts.getElements(parent);
+	if (parent.equals(foldersElement))
+	    return folders.getElements(parent);
 	return new Element[0];
     }
 
@@ -60,7 +65,8 @@ foldersElement,
 	    return new SimpleSection(accountsElement, strings.accountsSection(), null,
 				     accounts.getActions(), (controlPanel, event)->accounts.onActionEvent(controlPanel, event, -1));
 	if (el.equals(foldersElement))
-	    return new SimpleSection(foldersElement, strings.groupsSection());
+	    return new SimpleSection(foldersElement, strings.groupsSection(), null,
+folders.getActions(), (controlPanel, event)->folders.onActionEvent(controlPanel, event, -1));
 	if (el.equals(rulesElement))
 	    return new SimpleSection(rulesElement, strings.rulesSection());
 	if (el instanceof org.luwrain.settings.mail.accounts.Element)
@@ -69,6 +75,15 @@ foldersElement,
 	    return new SimpleSection(el, accountElement.title, (controlPanel)->accounts.createArea(controlPanel, accountElement.id),
 				     accounts.getActions(), (controlPanel, event)->accounts.onActionEvent(controlPanel, event, accountElement.id));
 	}
+
+	if (el instanceof org.luwrain.settings.mail.folders.Element)
+	{
+	    final org.luwrain.settings.mail.folders.Element folderElement = (org.luwrain.settings.mail.folders.Element)el;
+	    return new SimpleSection(el, folderElement.title, (controlPanel)->folders.createArea(controlPanel, folderElement.id),
+				     folders.getActions(), (controlPanel, event)->folders.onActionEvent(controlPanel, event, folderElement.id));
+	}
+
+
 	return null;
     }
 
@@ -100,6 +115,7 @@ foldersElement,
 	if (storing == null)
 	    return false;
 	accounts = new Accounts(luwrain, strings, storing);
+	folders = new Folders(luwrain, strings, storing);
 	return true;
     }
 }
