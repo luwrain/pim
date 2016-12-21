@@ -37,10 +37,10 @@ public class Folders
 		final Element el = (Element)parent;
 		final StoredMailFolder parentFolder = storing.loadFolderById(el.id);
 		folders = storing.getFolders(parentFolder);
-} else
+	    } else
 	    {
-	    final StoredMailFolder rootFolder = storing.getFoldersRoot();
-	    folders = storing.getFolders(rootFolder);
+		final StoredMailFolder rootFolder = storing.getFoldersRoot();
+		folders = storing.getFolders(rootFolder);
 	    }
 	    final Element[] res = new Element[folders.length];
 	    for(int i = 0;i < folders.length;++i)
@@ -54,7 +54,7 @@ public class Folders
 	}
     }
 
-public SectionArea createArea(ControlPanel controlPanel, int id)
+    public SectionArea createArea(ControlPanel controlPanel, int id)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	try {
@@ -70,19 +70,20 @@ public SectionArea createArea(ControlPanel controlPanel, int id)
     public Action[] getActions(boolean withDeleting)
     {
 	if (withDeleting)
-				     return new Action[]{
-					 new Action("add-mail-folder", strings.addMailFolder(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
-					 new Action("delete-mail-folder", strings.deleteMailFolder(), new KeyboardEvent(KeyboardEvent.Special.DELETE)),
-				     };
-				     return new Action[]{
-					 new Action("add-mail-folder", strings.addMailFolder(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
-				     };
+	    return new Action[]{
+		new Action("add-mail-folder", strings.addMailFolder(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
+		new Action("delete-mail-folder", strings.deleteMailFolder(), new KeyboardEvent(KeyboardEvent.Special.DELETE)),
+	    };
+	return new Action[]{
+	    new Action("add-mail-folder", strings.addMailFolder(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
+	};
     }
 
-public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int id)
+    public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int id)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(event, "event");
+
 	//adding
 	if (ActionEvent.isAction(event, "add-mail-folder"))
 	{
@@ -90,17 +91,17 @@ public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int i
 	    if (newFolderName == null || newFolderName.isEmpty())
 		return true;
 	    try {
-	    final StoredMailFolder parentFolder;
-	    if (id < 0)
-		parentFolder = storing.getFoldersRoot(); else
-		parentFolder = storing.loadFolderById(id);
-	    if (parentFolder == null)
-		throw new PimException("No parent folder");
-	    final MailFolder newFolder = new MailFolder();
-	    newFolder.title = newFolderName;
-	    storing.saveFolder(parentFolder, newFolder);
-	    controlPanel.refreshSectionsTree();
-	    return true;
+		final StoredMailFolder parentFolder;
+		if (id < 0)
+		    parentFolder = storing.getFoldersRoot(); else
+		    parentFolder = storing.loadFolderById(id);
+		if (parentFolder == null)
+		    throw new PimException("No parent folder");
+		final MailFolder newFolder = new MailFolder();
+		newFolder.title = newFolderName;
+		storing.saveFolder(parentFolder, newFolder);
+		controlPanel.refreshSectionsTree();
+		return true;
 	    }
 	    catch(PimException e)
 	    {

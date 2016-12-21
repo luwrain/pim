@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.settings.mail;
 
@@ -37,16 +22,22 @@ public interface Strings
     String accountFormUseSsl();
     String accountFormUseTls();
     String accountsSection();
-    String addAccountPredefined();
     String addAccountPopupName();
+    String addAccountPredefined();
     String addAccountYandex();
     String addMailAccount();
     String addMailFolder();
-    String deleteMailFolder();
     String deleteAccount();
+    String deleteMailFolder();
+    String folderFormName(String folderName);
     String groupsSection();
     String incomingMailSuffix();
+    String mailFolderFormBadOrderIndex(String value);
+    String mailFolderFormOrderIndex();
+    String mailFolderFormTitle();
     String mailSection();
+    String newMailFolderPopupName();
+    String newMailFolderPopupPrefix();
     String noStoring();
     String outgoingMailSuffix();
     String portMustBeGreaterZero();
@@ -57,10 +48,4 @@ public interface Strings
     String yourGooglePasswordQuestion(String accountName);
     String yourYandexAccountQuestion();
     String yourYandexPasswordQuestion(String accountName);
-    String newMailFolderPopupName();
-    String newMailFolderPopupPrefix();
-    String folderFormName(String folderName);
-    String mailFolderFormTitle();
-    String mailFolderFormOrderIndex();
-    String mailFolderFormBadOrderIndex(String value);
 }

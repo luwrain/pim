@@ -38,7 +38,7 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    return new Element[0];
 	return new Element[]{
 	    mailElement,
-foldersElement,
+	    foldersElement,
 	    accountsElement,
 	    rulesElement,
 	};
@@ -66,7 +66,7 @@ foldersElement,
 				     accounts.getActions(), (controlPanel, event)->accounts.onActionEvent(controlPanel, event, -1));
 	if (el.equals(foldersElement))
 	    return new SimpleSection(foldersElement, strings.groupsSection(), null,
-folders.getActions(false), (controlPanel, event)->folders.onActionEvent(controlPanel, event, -1));
+				     folders.getActions(false), (controlPanel, event)->folders.onActionEvent(controlPanel, event, -1));
 	if (el.equals(rulesElement))
 	    return new SimpleSection(rulesElement, strings.rulesSection());
 	if (el instanceof org.luwrain.settings.mail.accounts.Element)
@@ -75,15 +75,12 @@ folders.getActions(false), (controlPanel, event)->folders.onActionEvent(controlP
 	    return new SimpleSection(el, accountElement.title, (controlPanel)->accounts.createArea(controlPanel, accountElement.id),
 				     accounts.getActions(), (controlPanel, event)->accounts.onActionEvent(controlPanel, event, accountElement.id));
 	}
-
 	if (el instanceof org.luwrain.settings.mail.folders.Element)
 	{
 	    final org.luwrain.settings.mail.folders.Element folderElement = (org.luwrain.settings.mail.folders.Element)el;
 	    return new SimpleSection(el, folderElement.title, (controlPanel)->folders.createArea(controlPanel, folderElement.id),
 				     folders.getActions(true), (controlPanel, event)->folders.onActionEvent(controlPanel, event, folderElement.id));
 	}
-
-
 	return null;
     }
 
