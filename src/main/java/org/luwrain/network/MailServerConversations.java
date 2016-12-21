@@ -156,8 +156,8 @@ public class MailServerConversations
 		    if (Thread.currentThread().interrupted())
 			throw new InterruptedException();
 		    final MailMessage message=new MailMessage();
-		final MailUtils util = new MailUtils();
-		    util.jmailmsg=messages[i];
+		final MailUtils util = new MailUtils(messages[i]);
+		//		    util.jmailmsg=;
 		    util.saveTo(message, htmlPreview);
 		    message.messageId = util.getMessageId();
 		    message.rawMail = util.saveToByteArray();
@@ -180,10 +180,9 @@ public class MailServerConversations
     public void sendRawMessage(byte[] bytes) throws IOException, PimException
     {
 	NullCheck.notNull(smtpTransport, "smtpTransport");
-	final MailUtils util=new MailUtils();
-	util.loadFrom(bytes);
+	final MailUtils util=new MailUtils(bytes);
 	try {
-	    smtpTransport.sendMessage(util.jmailmsg, util.jmailmsg.getRecipients(RecipientType.TO));
+	    smtpTransport.sendMessage(util.getStoredMessage(), util.getStoredMessage().getRecipients(RecipientType.TO));
 	}
 	catch(MessagingException e)
 	{

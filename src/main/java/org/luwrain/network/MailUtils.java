@@ -27,7 +27,53 @@ import org.luwrain.util.*;
 public class MailUtils
 {
     private final Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
-    public Message jmailmsg;
+    private final Message jmailmsg;
+
+    public MailUtils()
+    {
+	jmailmsg = new MimeMessage(session);
+    }
+
+    MailUtils(Message message)
+    {
+	NullCheck.notNull(message, "message");
+	jmailmsg = message;
+    }
+
+    public MailUtils(InputStream fs) throws PimException, IOException
+    {
+	NullCheck.notNull(fs, "fs");
+	try {
+	    jmailmsg = new MimeMessage(session, fs);
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+    public MailUtils(byte[] bytes) throws PimException, IOException
+    {
+	NullCheck.notNull(bytes, "bytes");
+	final InputStream s = new ByteArrayInputStream(bytes);
+	try {
+	    try {
+		jmailmsg = new MimeMessage(session, s);
+	    }
+	    finally {
+		s.close();
+	    }
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+    Message getStoredMessage()
+    {
+	return jmailmsg;
+    }
 
     public void loadFrom(MailMessage msg) throws PimException
     {
@@ -40,7 +86,6 @@ public class MailUtils
 	NullCheck.notEmptyItems(msg.bcc, "msg.bcc");
 	NullCheck.notEmptyItems(msg.attachments, "msg.attachments");
 	try {
-	    jmailmsg=new MimeMessage(session);
 	    jmailmsg.setSubject(msg.subject);
 	    jmailmsg.setFrom(new InternetAddress(msg.from));
 	    jmailmsg.setRecipients(RecipientType.TO, MailAddress.makeInternetAddrs(msg.to));
@@ -84,26 +129,7 @@ public class MailUtils
 	}
     }
 
-    public void loadFrom(InputStream fs) throws PimException, IOException
-    {
-	NullCheck.notNull(fs, "fs");
-	try {
-	    jmailmsg=new MimeMessage(session,fs);
-	    fs.close();
-	}
-	catch(MessagingException e)
-	{
-	    throw new PimException(e);
-	}
-	}
-
-    public void loadFrom(byte[] bytes) throws PimException, IOException
-    {
-	NullCheck.notNull(bytes, "bytes");
-	loadFrom(new ByteArrayInputStream(bytes));
-    }
-
-    void saveTo(MailMessage msg, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
+    public void saveTo(MailMessage msg, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
     {
 	NullCheck.notNull(msg, "msg");
 	NullCheck.notNull(htmlPreview, "htmlPreview");
@@ -162,19 +188,19 @@ public class MailUtils
 	}
     }
 
-    String getMessageId() throws PimException, MessagingException
+    public String getMessageId() throws PimException, MessagingException
     {
 	if(jmailmsg instanceof IMAPMessage)
 	{
 	    final IMAPMessage imessage=((IMAPMessage)jmailmsg);
-return imessage.getMessageID();
+	    return imessage.getMessageID();
 	} else 
 	    if(jmailmsg instanceof POP3Message)
 	    {
 		final POP3Message pmessage=((POP3Message)jmailmsg);
 		return pmessage.getMessageID();
 	    } else
-	throw new PimException("Unknown email Message class "+jmailmsg.getClass().getName());
+		throw new PimException("Unknown email Message class "+jmailmsg.getClass().getName());
     }
 
     public String[] getReplyTo(boolean decode) throws PimException
@@ -194,7 +220,7 @@ return imessage.getMessageID();
 	{
 	    throw new PimException(e);
 	}
-	}
+    }
 
     public String getWideReplyCcList(boolean decode) throws PimException
     {
@@ -222,7 +248,7 @@ return imessage.getMessageID();
 	{
 	    throw new PimException(e);
 	}
-	}
+    }
 
     public boolean saveAttachment(String fileName, File destFile) throws PimException
     {
