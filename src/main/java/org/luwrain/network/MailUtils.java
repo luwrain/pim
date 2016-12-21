@@ -27,24 +27,24 @@ import org.luwrain.util.*;
 public class MailUtils
 {
     private final Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
-    private final Message jmailmsg;
+    private final Message storedMsg;
 
     public MailUtils()
     {
-	jmailmsg = new MimeMessage(session);
+	storedMsg = new MimeMessage(session);
     }
 
     MailUtils(Message message)
     {
 	NullCheck.notNull(message, "message");
-	jmailmsg = message;
+	storedMsg = message;
     }
 
     public MailUtils(InputStream fs) throws PimException, IOException
     {
 	NullCheck.notNull(fs, "fs");
 	try {
-	    jmailmsg = new MimeMessage(session, fs);
+	    storedMsg = new MimeMessage(session, fs);
 	}
 	catch(MessagingException e)
 	{
@@ -58,7 +58,7 @@ public class MailUtils
 	final InputStream s = new ByteArrayInputStream(bytes);
 	try {
 	    try {
-		jmailmsg = new MimeMessage(session, s);
+		storedMsg = new MimeMessage(session, s);
 	    }
 	    finally {
 		s.close();
@@ -72,7 +72,7 @@ public class MailUtils
 
     Message getStoredMessage()
     {
-	return jmailmsg;
+	return storedMsg;
     }
 
     public void loadFrom(MailMessage msg) throws PimException
@@ -86,15 +86,15 @@ public class MailUtils
 	NullCheck.notEmptyItems(msg.bcc, "msg.bcc");
 	NullCheck.notEmptyItems(msg.attachments, "msg.attachments");
 	try {
-	    jmailmsg.setSubject(msg.subject);
-	    jmailmsg.setFrom(new InternetAddress(msg.from));
-	    jmailmsg.setRecipients(RecipientType.TO, MailAddress.makeInternetAddrs(msg.to));
+	    storedMsg.setSubject(msg.subject);
+	    storedMsg.setFrom(new InternetAddress(msg.from));
+	    storedMsg.setRecipients(RecipientType.TO, MailAddress.makeInternetAddrs(msg.to));
 	    if(msg.cc.length>0)
-		jmailmsg.setRecipients(RecipientType.CC, MailAddress.makeInternetAddrs(msg.cc));
+		storedMsg.setRecipients(RecipientType.CC, MailAddress.makeInternetAddrs(msg.cc));
 	    if(msg.bcc.length>0)
-		jmailmsg.setRecipients(RecipientType.BCC, MailAddress.makeInternetAddrs(msg.bcc));
+		storedMsg.setRecipients(RecipientType.BCC, MailAddress.makeInternetAddrs(msg.bcc));
 	    if(msg.sentDate!=null)
-		jmailmsg.setSentDate(msg.sentDate);
+		storedMsg.setSentDate(msg.sentDate);
 	    if(msg.attachments.length > 0)
 	    {
 		final Multipart mp = new MimeMultipart();
@@ -111,15 +111,15 @@ public class MailUtils
 		    part.setDataHandler(new DataHandler(fds));
 		    mp.addBodyPart(part);
 		}
-		jmailmsg.setContent(mp);
+		storedMsg.setContent(mp);
 	    } else
 	    {
 		if(msg.mimeContentType==null)
 		{ // simple text email body
-		    jmailmsg.setText(msg.baseContent);
+		    storedMsg.setText(msg.baseContent);
 		} else
 		{ // for example utf8 html - mimeContentType="text/html; charset=utf-8"
-		    jmailmsg.setContent(msg.baseContent,msg.mimeContentType);
+		    storedMsg.setContent(msg.baseContent,msg.mimeContentType);
 		}
 	    }
 	}
@@ -133,36 +133,36 @@ public class MailUtils
     {
 	NullCheck.notNull(msg, "msg");
 	NullCheck.notNull(htmlPreview, "htmlPreview");
-	msg.subject=jmailmsg.getSubject();
+	msg.subject=storedMsg.getSubject();
 	if (msg.subject == null)
 	    msg.subject = "";
-	if(jmailmsg.getFrom()!=null)
-	    msg.from = MimeUtility.decodeText(jmailmsg.getFrom()[0].toString()); else
+	if(storedMsg.getFrom()!=null)
+	    msg.from = MimeUtility.decodeText(storedMsg.getFrom()[0].toString()); else
 	    msg.from = "";
-	if(jmailmsg.getRecipients(RecipientType.TO)!=null)
-	    msg.to = MailAddress.decodeAddrs(jmailmsg.getRecipients(RecipientType.TO)); else
+	if(storedMsg.getRecipients(RecipientType.TO)!=null)
+	    msg.to = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.TO)); else
 	    msg.to = new String[0];
-	if(jmailmsg.getRecipients(RecipientType.CC)!=null)
-	    msg.cc = MailAddress.decodeAddrs(jmailmsg.getRecipients(RecipientType.CC)); else
+	if(storedMsg.getRecipients(RecipientType.CC)!=null)
+	    msg.cc = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.CC)); else
 	    msg.cc = new String[0];
-	if(jmailmsg.getRecipients(RecipientType.BCC)!=null)
-	    msg.bcc = MailAddress.decodeAddrs(jmailmsg.getRecipients(RecipientType.BCC)); else
+	if(storedMsg.getRecipients(RecipientType.BCC)!=null)
+	    msg.bcc = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.BCC)); else
 	    msg.bcc = new String[0];
-	msg.sentDate=jmailmsg.getSentDate();
-	msg.receivedDate=jmailmsg.getReceivedDate();
+	msg.sentDate=storedMsg.getSentDate();
+	msg.receivedDate=storedMsg.getReceivedDate();
 	if (msg.receivedDate == null)
 	    msg.receivedDate = new java.util.Date();
 	final MimePartCollector collector = new MimePartCollector(htmlPreview);
-	msg.baseContent = collector.run(jmailmsg.getContent(), jmailmsg.getContentType(), "", "");
+	msg.baseContent = collector.run(storedMsg.getContent(), storedMsg.getContentType(), "", "");
 	msg.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
 	//	msg.baseContent = collector.body.toString();
-	msg.mimeContentType = jmailmsg.getContentType();
+	msg.mimeContentType = storedMsg.getContentType();
     }
 
     public void saveTo(FileOutputStream fs) throws MessagingException, IOException
     {
 	NullCheck.notNull(fs, "fs");
-	jmailmsg.writeTo(fs);
+	storedMsg.writeTo(fs);
 	fs.flush();
 	fs.close();
     }
@@ -170,10 +170,10 @@ public class MailUtils
     public byte[] saveToByteArray() throws IOException, PimException
     {
 	try {
-	    final File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
+	    final File temp = File.createTempFile("email-"+String.valueOf(storedMsg.hashCode()), ".tmp");
 	    try {
 		FileOutputStream fs=new FileOutputStream(temp);
-		jmailmsg.writeTo(fs);
+		storedMsg.writeTo(fs);
 		fs.flush();
 		fs.close();
 		return Files.readAllBytes(temp.toPath());
@@ -190,23 +190,23 @@ public class MailUtils
 
     public String getMessageId() throws PimException, MessagingException
     {
-	if(jmailmsg instanceof IMAPMessage)
+	if(storedMsg instanceof IMAPMessage)
 	{
-	    final IMAPMessage imessage=((IMAPMessage)jmailmsg);
+	    final IMAPMessage imessage=((IMAPMessage)storedMsg);
 	    return imessage.getMessageID();
 	} else 
-	    if(jmailmsg instanceof POP3Message)
+	    if(storedMsg instanceof POP3Message)
 	    {
-		final POP3Message pmessage=((POP3Message)jmailmsg);
+		final POP3Message pmessage=((POP3Message)storedMsg);
 		return pmessage.getMessageID();
 	    } else
-		throw new PimException("Unknown email Message class "+jmailmsg.getClass().getName());
+		throw new PimException("Unknown email Message class "+storedMsg.getClass().getName());
     }
 
     public String[] getReplyTo(boolean decode) throws PimException
     {
 	try {
-	    final Address[] addr = jmailmsg.getReplyTo();
+	    final Address[] addr = storedMsg.getReplyTo();
 	    if (addr == null || addr.length < 1)
 		return new String[0];
 	    final LinkedList<String> res = new LinkedList<String>();
@@ -226,12 +226,12 @@ public class MailUtils
     {
 	try {
 	    final LinkedList<Address> addrs = new LinkedList<Address>();
-	    if (jmailmsg.getRecipients(RecipientType.CC) != null)
-		for(Address a: jmailmsg.getRecipients(RecipientType.CC)) 
+	    if (storedMsg.getRecipients(RecipientType.CC) != null)
+		for(Address a: storedMsg.getRecipients(RecipientType.CC)) 
 		    if (a != null)
 			addrs.add(a);
-	    if (jmailmsg.getRecipients(RecipientType.TO) != null)
-		for(Address a: jmailmsg.getRecipients(RecipientType.TO))
+	    if (storedMsg.getRecipients(RecipientType.TO) != null)
+		for(Address a: storedMsg.getRecipients(RecipientType.TO))
 		    if (a != null)
 			addrs.add(a);
 	    final Address addrs2[] = addrs.toArray(new Address[addrs.size()]);
@@ -256,7 +256,7 @@ public class MailUtils
 	NullCheck.notNull(destFile, "destFile");
 	final MailAttachmentSaving saving = new MailAttachmentSaving(fileName, destFile);
 	try {
-	    saving.run(jmailmsg.getContent(), jmailmsg.getContentType(), "", "");
+	    saving.run(storedMsg.getContent(), storedMsg.getContentType(), "", "");
 	    return saving.result() == MailAttachmentSaving.SUCCESS;
 	}
 	catch(IOException | MessagingException e)
