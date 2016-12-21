@@ -1,19 +1,3 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.network;
 
@@ -61,11 +45,11 @@ public class MailUtils
 	    jmailmsg=new MimeMessage(session);
 	    jmailmsg.setSubject(msg.subject);
 	    jmailmsg.setFrom(new InternetAddress(msg.from));
-	    jmailmsg.setRecipients(RecipientType.TO, prepareAddrs(msg.to));
+	    jmailmsg.setRecipients(RecipientType.TO, MailAddress.makeInternetAddrs(msg.to));
 	    if(msg.cc.length>0)
-		jmailmsg.setRecipients(RecipientType.CC, prepareAddrs(msg.cc));
+		jmailmsg.setRecipients(RecipientType.CC, MailAddress.makeInternetAddrs(msg.cc));
 	    if(msg.bcc.length>0)
-		jmailmsg.setRecipients(RecipientType.BCC, prepareAddrs(msg.bcc));
+		jmailmsg.setRecipients(RecipientType.BCC, MailAddress.makeInternetAddrs(msg.bcc));
 	    if(msg.sentDate!=null)
 		jmailmsg.setSentDate(msg.sentDate);
 	    if(msg.attachments.length > 0)
@@ -159,13 +143,13 @@ public class MailUtils
 	    msg.from = MimeUtility.decodeText(jmailmsg.getFrom()[0].toString()); else
 	    msg.from = "";
 	if(jmailmsg.getRecipients(RecipientType.TO)!=null)
-	    msg.to = saveAddrs(jmailmsg.getRecipients(RecipientType.TO)); else
+	    msg.to = MailAddress.decodeAddrs(jmailmsg.getRecipients(RecipientType.TO)); else
 	    msg.to = new String[0];
 	if(jmailmsg.getRecipients(RecipientType.CC)!=null)
-	    msg.cc = saveAddrs(jmailmsg.getRecipients(RecipientType.CC)); else
+	    msg.cc = MailAddress.decodeAddrs(jmailmsg.getRecipients(RecipientType.CC)); else
 	    msg.cc = new String[0];
 	if(jmailmsg.getRecipients(RecipientType.BCC)!=null)
-	    msg.bcc = saveAddrs(jmailmsg.getRecipients(RecipientType.BCC)); else
+	    msg.bcc = MailAddress.decodeAddrs(jmailmsg.getRecipients(RecipientType.BCC)); else
 	    msg.bcc = new String[0];
 	msg.sentDate=jmailmsg.getSentDate();
 	msg.receivedDate=jmailmsg.getReceivedDate();
@@ -254,24 +238,5 @@ return imessage.getMessageID();
 	    e.printStackTrace();
 	    return false;
 	}
-    }
-
-    static private InternetAddress[] prepareAddrs(String[] addrs) throws AddressException
-    {
-	NullCheck.notNull(addrs, "addrs");
-	final InternetAddress[] res =new InternetAddress[addrs.length];
-	for(int i = 0;i < addrs.length;++i)
-	    res[i] = new InternetAddress(addrs[i]);
-	return res;
-    }
-
-    static private String[] saveAddrs(Address[] addrs) throws UnsupportedEncodingException
-    {
-	NullCheck.notNull(addrs, "addrs");
-	final LinkedList<String> res=new LinkedList<String>();
-	for(int i = 0;i < addrs.length;++i)
-	    if (addrs[i] != null)
-		res.add(MimeUtility.decodeText(addrs[i].toString()));
-	return res.toArray(new String[res.size()]);
     }
 }
