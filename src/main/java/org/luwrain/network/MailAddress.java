@@ -22,9 +22,11 @@ public class MailAddress
 
     static public String[] decodeAddrs(Address[] addrs) throws UnsupportedEncodingException
     {
-	NullCheck.notNullItems(addrs, "addrs");
+	if (addrs == null)
+	    return new String[0];
 	final LinkedList<String> res=new LinkedList<String>();
 	for(int i = 0;i < addrs.length;++i)
+	    if (addrs[i] != null)
 		res.add(MimeUtility.decodeText(addrs[i].toString()));
 	return res.toArray(new String[res.size()]);
     }
@@ -37,7 +39,4 @@ public class MailAddress
 	    res[i] = new InternetAddress(addrs[i]);
 	return res;
     }
-
-
-
 }

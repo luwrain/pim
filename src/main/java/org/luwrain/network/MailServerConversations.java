@@ -11,7 +11,7 @@ import javax.mail.search.ComparisonTerm;
 import javax.mail.search.ReceivedDateTerm;
 import javax.mail.internet.MimeUtility;
 
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.pim.mail.*;
 
 import org.luwrain.util.*;
@@ -128,6 +128,7 @@ public class MailServerConversations
     {
 	NullCheck.notEmpty(folderName, "folderName");
 	NullCheck.notNull(listener, "listener");
+	Log.debug("pim", "delete messages:" + deleteMessagesOnServer);
 	try {
 	    Folder folder = null;
 	    try {
@@ -168,7 +169,7 @@ public class MailServerConversations
 	    }
 	    finally {
 		if (folder != null)
-		    folder.close(false);
+		    folder.close(true);
 	    }
 	}
 	catch(MessagingException | UnsupportedEncodingException e)

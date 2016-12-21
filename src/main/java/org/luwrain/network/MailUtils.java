@@ -75,9 +75,10 @@ public class MailUtils
 	return storedMsg;
     }
 
-    public void loadFrom(MailMessage msg) throws PimException
+    public void loadFrom(MailMessage msg, Map<String, String> headers) throws PimException
     {
 	NullCheck.notNull(msg, "msg");
+	NullCheck.notNull(headers, "headers");
 	NullCheck.notNull(msg.subject, "msg.subject");
 	NullCheck.notEmpty(msg.from, "msg.from");
 	NullCheck.notEmptyArray(msg.to, "msg.to");
@@ -86,6 +87,8 @@ public class MailUtils
 	NullCheck.notEmptyItems(msg.bcc, "msg.bcc");
 	NullCheck.notEmptyItems(msg.attachments, "msg.attachments");
 	try {
+	    for(Map.Entry<String,String> e: headers.entrySet())
+		storedMsg.addHeader(e.getKey(), e.getValue());
 	    storedMsg.setSubject(msg.subject);
 	    storedMsg.setFrom(new InternetAddress(msg.from));
 	    storedMsg.setRecipients(RecipientType.TO, MailAddress.makeInternetAddrs(msg.to));
@@ -100,14 +103,13 @@ public class MailUtils
 		final Multipart mp = new MimeMultipart();
 		MimeBodyPart part = new MimeBodyPart();
 		part.setText(msg.baseContent);
-		// TODO: need to repair - in multipart message mimeContentType of baseContent was ignored
 		mp.addBodyPart(part);
 		for(String fn:msg.attachments)
 		{
-		    part = new MimeBodyPart();
-		    Path pfn=Paths.get(fn);
+part = new MimeBodyPart();
+		    final Path pfn = Paths.get(fn);
 		    part.setFileName(MimeUtility.encodeText(pfn.getFileName().toString()));
-		    FileDataSource fds = new FileDataSource(fn);
+		    final FileDataSource fds = new FileDataSource(fn);
 		    part.setDataHandler(new DataHandler(fds));
 		    mp.addBodyPart(part);
 		}
@@ -133,21 +135,15 @@ public class MailUtils
     {
 	NullCheck.notNull(msg, "msg");
 	NullCheck.notNull(htmlPreview, "htmlPreview");
-	msg.subject=storedMsg.getSubject();
+	msg.subject = storedMsg.getSubject();
 	if (msg.subject == null)
 	    msg.subject = "";
 	if(storedMsg.getFrom()!=null)
 	    msg.from = MimeUtility.decodeText(storedMsg.getFrom()[0].toString()); else
 	    msg.from = "";
-	if(storedMsg.getRecipients(RecipientType.TO)!=null)
-	    msg.to = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.TO)); else
-	    msg.to = new String[0];
-	if(storedMsg.getRecipients(RecipientType.CC)!=null)
-	    msg.cc = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.CC)); else
-	    msg.cc = new String[0];
-	if(storedMsg.getRecipients(RecipientType.BCC)!=null)
-	    msg.bcc = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.BCC)); else
-	    msg.bcc = new String[0];
+	msg.to = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.TO));
+	msg.cc = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.CC));
+	msg.bcc = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.BCC));
 	msg.sentDate=storedMsg.getSentDate();
 	msg.receivedDate=storedMsg.getReceivedDate();
 	if (msg.receivedDate == null)
@@ -155,16 +151,19 @@ public class MailUtils
 	final MimePartCollector collector = new MimePartCollector(htmlPreview);
 	msg.baseContent = collector.run(storedMsg.getContent(), storedMsg.getContentType(), "", "");
 	msg.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
-	//	msg.baseContent = collector.body.toString();
 	msg.mimeContentType = storedMsg.getContentType();
     }
 
     public void saveTo(FileOutputStream fs) throws MessagingException, IOException
     {
 	NullCheck.notNull(fs, "fs");
-	storedMsg.writeTo(fs);
-	fs.flush();
-	fs.close();
+	try {
+	    storedMsg.writeTo(fs);
+	}
+	finally {
+	    fs.flush();
+	    fs.close();
+	}
     }
 
     public byte[] saveToByteArray() throws IOException, PimException
