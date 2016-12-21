@@ -118,10 +118,10 @@ public class MailServerConversations
 	return result;
     }
 
-    /** Fetches messages from the server.
+    /** Fetching of messages from the server.
      *
      * @param folderName Can be "INBOX" or any other IMAP folder name
-     * @param listener The listener object to get information about fetching progress and the messages themselves
+     * @param listener The listener object to get information about fetching progress
      */
     public void fetchMessages(String folderName, Listener listener,
 			      boolean deleteMessagesOnServer, HtmlPreview htmlPreview) throws PimException, IOException, InterruptedException
@@ -151,16 +151,16 @@ public class MailServerConversations
 		}
 		if (Thread.currentThread().interrupted())
 		    throw new InterruptedException();
-		final MailUtils util = new MailUtils();
 		for(int i = 0;i < messages.length;++i)
 		{
 		    if (Thread.currentThread().interrupted())
 			throw new InterruptedException();
 		    final MailMessage message=new MailMessage();
+		final MailUtils util = new MailUtils();
 		    util.jmailmsg=messages[i];
-		    util.fillBasicFields(message, htmlPreview);
+		    util.saveTo(message, htmlPreview);
 		    message.messageId = util.getMessageId();
-		    message.rawMail = util.toByteArray();
+		    message.rawMail = util.saveToByteArray();
 		    listener.newMessage(message, i, messages.length);
 		    if (deleteMessagesOnServer)
 			messages[i].setFlag(Flags.Flag.DELETED, true);
@@ -177,25 +177,17 @@ public class MailServerConversations
 	}
     }
 
-    public void sendMessages(MailMessage[] emails) throws Exception
-    {
-	NullCheck.notNullItems(emails, "emails");
-	NullCheck.notNull(smtpTransport, "smtpTransport");
-	final MailUtils util = new MailUtils();
-	for(MailMessage message: emails)
-	{
-	    if (Thread.currentThread().interrupted())
-		throw new InterruptedException();
-	    util.load(message);
-	    smtpTransport.sendMessage(util.jmailmsg,util.jmailmsg.getRecipients(RecipientType.TO));
-	}
-    }
-
-    public void sendEncodedMessage(byte[] bytes) throws Exception
+    public void sendRawMessage(byte[] bytes) throws IOException, PimException
     {
 	NullCheck.notNull(smtpTransport, "smtpTransport");
 	final MailUtils util=new MailUtils();
-	util.load(new ByteArrayInputStream(bytes));
-	smtpTransport.sendMessage(util.jmailmsg, util.jmailmsg.getRecipients(RecipientType.TO));
+	util.loadFrom(bytes);
+	try {
+	    smtpTransport.sendMessage(util.jmailmsg, util.jmailmsg.getRecipients(RecipientType.TO));
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
     }
 }

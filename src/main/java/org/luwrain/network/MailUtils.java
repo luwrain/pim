@@ -19,19 +19,17 @@ import javax.mail.internet.*;
 import com.sun.mail.imap.IMAPMessage;
 import com.sun.mail.pop3.POP3Message;
 
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.pim.*;
-//import org.luwrain.pim.mail.MailStoringSql.Condition;
 import org.luwrain.pim.mail.*;
-
 import org.luwrain.util.*;
 
 public class MailUtils
 {
-    private Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
+    private final Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
     public Message jmailmsg;
 
-    public void load(MailMessage msg) throws PimException
+    public void loadFrom(MailMessage msg) throws PimException
     {
 	NullCheck.notNull(msg, "msg");
 	NullCheck.notNull(msg.subject, "msg.subject");
@@ -86,7 +84,7 @@ public class MailUtils
 	}
     }
 
-    public void load(InputStream fs) throws PimException, IOException
+    public void loadFrom(InputStream fs) throws PimException, IOException
     {
 	NullCheck.notNull(fs, "fs");
 	try {
@@ -99,43 +97,16 @@ public class MailUtils
 	}
 	}
 
-    public void load(byte[] bytes) throws PimException, IOException
+    public void loadFrom(byte[] bytes) throws PimException, IOException
     {
 	NullCheck.notNull(bytes, "bytes");
-	load(new ByteArrayInputStream(bytes));
+	loadFrom(new ByteArrayInputStream(bytes));
     }
 
-    public byte[] toByteArray() throws IOException, PimException
+    void saveTo(MailMessage msg, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
     {
-	try {
-	    final File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
-	    try {
-		FileOutputStream fs=new FileOutputStream(temp);
-		jmailmsg.writeTo(fs);
-		fs.flush();
-		fs.close();
-		return Files.readAllBytes(temp.toPath());
-	    }
-	    finally {
-		temp.delete();
-	    }
-	}
-	catch(MessagingException e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
-    public void toOutputStream(FileOutputStream fs) throws MessagingException, IOException
-    {
-	NullCheck.notNull(fs, "fs");
-	jmailmsg.writeTo(fs);
-	fs.flush();
-	fs.close();
-    }
-
-    void fillBasicFields(MailMessage msg, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
-    {
+	NullCheck.notNull(msg, "msg");
+	NullCheck.notNull(htmlPreview, "htmlPreview");
 	msg.subject=jmailmsg.getSubject();
 	if (msg.subject == null)
 	    msg.subject = "";
@@ -160,6 +131,35 @@ public class MailUtils
 	msg.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
 	//	msg.baseContent = collector.body.toString();
 	msg.mimeContentType = jmailmsg.getContentType();
+    }
+
+    public void saveTo(FileOutputStream fs) throws MessagingException, IOException
+    {
+	NullCheck.notNull(fs, "fs");
+	jmailmsg.writeTo(fs);
+	fs.flush();
+	fs.close();
+    }
+
+    public byte[] saveToByteArray() throws IOException, PimException
+    {
+	try {
+	    final File temp = File.createTempFile("email-"+String.valueOf(jmailmsg.hashCode()), ".tmp");
+	    try {
+		FileOutputStream fs=new FileOutputStream(temp);
+		jmailmsg.writeTo(fs);
+		fs.flush();
+		fs.close();
+		return Files.readAllBytes(temp.toPath());
+	    }
+	    finally {
+		temp.delete();
+	    }
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
     }
 
     String getMessageId() throws PimException, MessagingException
@@ -196,7 +196,7 @@ return imessage.getMessageID();
 	}
 	}
 
-    public String constructWideReplyCcList(boolean decode) throws PimException
+    public String getWideReplyCcList(boolean decode) throws PimException
     {
 	try {
 	    final LinkedList<Address> addrs = new LinkedList<Address>();
@@ -224,19 +224,19 @@ return imessage.getMessageID();
 	}
 	}
 
-    public boolean saveAttachment(String fileName, File destFile) throws Exception
+    public boolean saveAttachment(String fileName, File destFile) throws PimException
     {
-	NullCheck.notNull(fileName, "fileName");
+	NullCheck.notEmpty(fileName, "fileName");
 	NullCheck.notNull(destFile, "destFile");
 	final MailAttachmentSaving saving = new MailAttachmentSaving(fileName, destFile);
 	try {
 	    saving.run(jmailmsg.getContent(), jmailmsg.getContentType(), "", "");
 	    return saving.result() == MailAttachmentSaving.SUCCESS;
 	}
-	catch(MessagingException e)
+	catch(IOException | MessagingException e)
 	{
 	    e.printStackTrace();
-	    return false;
+	    throw new PimException(e);
 	}
     }
 }
