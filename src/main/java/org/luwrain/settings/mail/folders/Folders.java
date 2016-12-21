@@ -54,28 +54,28 @@ public class Folders
 	}
     }
 
-public Area createArea(ControlPanel controlPanel, long id)
+public SectionArea createArea(ControlPanel controlPanel, int id)
     {
-	/*
 	NullCheck.notNull(controlPanel, "controlPanel");
-	final Luwrain luwrain = controlPanel.getCoreInterface();
 	try {
-	    return new Area(controlPanel, strings, storing, storing.loadAccountById(id));
+	    return new Area(controlPanel, strings, storing, storing.loadFolderById(id));
 	}
 	catch(PimException e)
 	{
 	    luwrain.crash(e);
 	    return null;
 	}
-	*/
-	return null;
     }
 
-    public Action[] getActions()
+    public Action[] getActions(boolean withDeleting)
     {
+	if (withDeleting)
 				     return new Action[]{
 					 new Action("add-mail-folder", strings.addMailFolder(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
 					 new Action("delete-mail-folder", strings.deleteMailFolder(), new KeyboardEvent(KeyboardEvent.Special.DELETE)),
+				     };
+				     return new Action[]{
+					 new Action("add-mail-folder", strings.addMailFolder(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
 				     };
     }
 

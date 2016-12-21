@@ -66,7 +66,7 @@ foldersElement,
 				     accounts.getActions(), (controlPanel, event)->accounts.onActionEvent(controlPanel, event, -1));
 	if (el.equals(foldersElement))
 	    return new SimpleSection(foldersElement, strings.groupsSection(), null,
-folders.getActions(), (controlPanel, event)->folders.onActionEvent(controlPanel, event, -1));
+folders.getActions(false), (controlPanel, event)->folders.onActionEvent(controlPanel, event, -1));
 	if (el.equals(rulesElement))
 	    return new SimpleSection(rulesElement, strings.rulesSection());
 	if (el instanceof org.luwrain.settings.mail.accounts.Element)
@@ -80,7 +80,7 @@ folders.getActions(), (controlPanel, event)->folders.onActionEvent(controlPanel,
 	{
 	    final org.luwrain.settings.mail.folders.Element folderElement = (org.luwrain.settings.mail.folders.Element)el;
 	    return new SimpleSection(el, folderElement.title, (controlPanel)->folders.createArea(controlPanel, folderElement.id),
-				     folders.getActions(), (controlPanel, event)->folders.onActionEvent(controlPanel, event, folderElement.id));
+				     folders.getActions(true), (controlPanel, event)->folders.onActionEvent(controlPanel, event, folderElement.id));
 	}
 
 

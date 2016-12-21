@@ -59,4 +59,8 @@ public interface Strings
     String yourYandexPasswordQuestion(String accountName);
     String newMailFolderPopupName();
     String newMailFolderPopupPrefix();
+    String folderFormName(String folderName);
+    String mailFolderFormTitle();
+    String mailFolderFormOrderIndex();
+    String mailFolderFormBadOrderIndex(String value);
 }
