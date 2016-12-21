@@ -31,8 +31,17 @@ public class Folders
     public org.luwrain.cpanel.Element[] getElements(org.luwrain.cpanel.Element parent)
     {
 	try {
+	    final StoredMailFolder[] folders;
+	    if (parent instanceof Element)
+	    {
+		final Element el = (Element)parent;
+		final StoredMailFolder parentFolder = storing.loadFolderById(el.id);
+		folders = storing.getFolders(parentFolder);
+} else
+	    {
 	    final StoredMailFolder rootFolder = storing.getFoldersRoot();
-	    final StoredMailFolder[] folders = storing.getFolders(rootFolder);
+	    folders = storing.getFolders(rootFolder);
+	    }
 	    final Element[] res = new Element[folders.length];
 	    for(int i = 0;i < folders.length;++i)
 		res[i] = new Element(parent, storing.getFolderId(folders[i]), folders[i].getTitle());
@@ -64,22 +73,41 @@ public Area createArea(ControlPanel controlPanel, long id)
 
     public Action[] getActions()
     {
-	return new Action[0];
-	/*
 				     return new Action[]{
-					 new Action("add-mail-account", strings.addMailAccount(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
-					 new Action("add-mail-account-predefined", strings.addAccountPredefined()),
-					 new Action("delete-mail-account", strings.deleteAccount(), new KeyboardEvent(KeyboardEvent.Special.DELETE)),
+					 new Action("add-mail-folder", strings.addMailFolder(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
+					 new Action("delete-mail-folder", strings.deleteMailFolder(), new KeyboardEvent(KeyboardEvent.Special.DELETE)),
 				     };
-	*/
     }
 
-public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, long id)
+public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int id)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(event, "event");
 	//adding
-	//	if (ActionEvent.isAction(event, "add-mail-account"))
+	if (ActionEvent.isAction(event, "add-mail-folder"))
+	{
+	    final String newFolderName = Popups.simple(luwrain, strings.newMailFolderPopupName(), strings.newMailFolderPopupPrefix(), "");
+	    if (newFolderName == null || newFolderName.isEmpty())
+		return true;
+	    try {
+	    final StoredMailFolder parentFolder;
+	    if (id < 0)
+		parentFolder = storing.getFoldersRoot(); else
+		parentFolder = storing.loadFolderById(id);
+	    if (parentFolder == null)
+		throw new PimException("No parent folder");
+	    final MailFolder newFolder = new MailFolder();
+	    newFolder.title = newFolderName;
+	    storing.saveFolder(parentFolder, newFolder);
+	    controlPanel.refreshSectionsTree();
+	    return true;
+	    }
+	    catch(PimException e)
+	    {
+		luwrain.crash(e);
+		return true;
+	    }
+	}
 	return false;
     }
 }

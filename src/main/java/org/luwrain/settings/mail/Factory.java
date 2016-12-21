@@ -51,7 +51,7 @@ foldersElement,
 	    return new Element[0];
 	if (parent.equals(accountsElement))
 	    return accounts.getElements(parent);
-	if (parent.equals(foldersElement))
+	if (parent.equals(foldersElement) || (parent instanceof org.luwrain.settings.mail.folders.Element))
 	    return folders.getElements(parent);
 	return new Element[0];
     }

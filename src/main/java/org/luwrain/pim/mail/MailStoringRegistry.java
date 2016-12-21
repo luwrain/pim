@@ -26,6 +26,28 @@ abstract class MailStoringRegistry implements MailStoring
 	return ((StoredMailFolderRegistry)folder).id;
     }
 
+    @Override public StoredMailFolder loadFolderById(int id)
+    {
+	final StoredMailFolderRegistry folder = new StoredMailFolderRegistry(registry, id);
+	return folder.load()?folder:null;
+    }
+
+    @Override public void saveFolder(StoredMailFolder parentFolder, MailFolder newFolder)
+    {
+	NullCheck.notNull(parentFolder, "parentFolder");
+	NullCheck.notNull(parentFolder, "parentFolder");
+	if (!(parentFolder instanceof StoredMailFolderRegistry))
+	    throw new IllegalArgumentException("parentFolder must be an instance of StoredMailFolderRegistry");
+	final StoredMailFolderRegistry parent = (StoredMailFolderRegistry)parentFolder;
+	final int newId = Registry.nextFreeNum(registry, Settings.FOLDERS_PATH);
+	final String path = Registry.join(Settings.FOLDERS_PATH, "" + newId);
+	registry.addDirectory(path);
+	final Settings.Folder sett = Settings.createFolder(registry, path);
+	sett.setTitle(newFolder.title);
+	sett.setOrderIndex(newFolder.orderIndex);
+	sett.setParentId(parent.id);
+    }
+
     @Override public StoredMailFolder getFoldersRoot()
     {
 	final StoredMailFolderRegistry[] folders = loadAllFolders();

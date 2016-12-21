@@ -1,7 +1,7 @@
 
 package org.luwrain.pim.mail;
 
-class MailFolder implements Comparable
+public class MailFolder implements Comparable
 {
     public String title = "";
     public int orderIndex = 0;

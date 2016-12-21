@@ -41,6 +41,8 @@ public interface Strings
     String addAccountPopupName();
     String addAccountYandex();
     String addMailAccount();
+    String addMailFolder();
+    String deleteMailFolder();
     String deleteAccount();
     String groupsSection();
     String incomingMailSuffix();
@@ -55,4 +57,6 @@ public interface Strings
     String yourGooglePasswordQuestion(String accountName);
     String yourYandexAccountQuestion();
     String yourYandexPasswordQuestion(String accountName);
+    String newMailFolderPopupName();
+    String newMailFolderPopupPrefix();
 }
