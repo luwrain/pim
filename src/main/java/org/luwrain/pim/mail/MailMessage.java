@@ -7,7 +7,7 @@ import org.luwrain.core.*;
 
 public class MailMessage implements Comparable
 {
-    public enum State {UNREAD, READ, MARKED, DELETED};
+    public enum State {NEW, READ, MARKED, DELETED};
 
     public String messageId = "";
 	public String subject = "";
@@ -15,7 +15,7 @@ public class MailMessage implements Comparable
     public String[] to = new String[0];
     public String[] cc = new String[0];
     public String[] bcc = new String[0];
-    public State state = State.UNREAD;
+    public State state = State.NEW;
     public Date sentDate = new Date();
     public Date receivedDate = new Date();
     public String baseContent = "";
@@ -47,7 +47,7 @@ return 1;
 	switch(stateCode)
 	{
 	case 1:
-	    return State.UNREAD;
+	    return State.NEW;
 	case 2:
 	    return State.READ;
 	case 3:
@@ -55,7 +55,7 @@ return 1;
 	case 4:
 	    return State.DELETED;
 	default:
-	    return null;
+	    return State.NEW;
 	}
     }
 
@@ -64,7 +64,7 @@ return 1;
 	NullCheck.notNull(state, "state");
 	switch(state)
 	{
-	case UNREAD:
+	case NEW:
 	    return 1;
 	case READ:
 	    return 2;
@@ -73,7 +73,7 @@ return 1;
 	case DELETED:
 	    return 4;
 	default:
-	    return 0;
+	    return 1;
 	}
     }
 }

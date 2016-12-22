@@ -264,4 +264,26 @@ part = new MimeBodyPart();
 	    throw new PimException(e);
 	}
     }
+
+    static public String extractNameFromAddr(String addr)
+    {
+	NullCheck.notNull(addr, "addr");
+	if (addr.trim().isEmpty())
+	    return addr;
+	try {
+	    final javax.mail.internet.InternetAddress inetAddr = new javax.mail.internet.InternetAddress(addr, false);
+	    final String personal = inetAddr.getPersonal();
+	    if (personal == null || personal.trim().isEmpty())
+		return addr;
+	    return personal;
+	}
+	catch (javax.mail.internet.AddressException e)
+	{
+	    e.printStackTrace();
+	    return addr;
+	}
+    }
+
+
+
 }

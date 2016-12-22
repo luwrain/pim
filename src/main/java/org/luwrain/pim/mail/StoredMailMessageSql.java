@@ -24,7 +24,18 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage
 
     @Override public void setState(MailMessage.State state) throws PimException
     {
-	//FIXME:
+	NullCheck.notNull(state, "state");
+	    try {
+		final PreparedStatement st = con.prepareStatement("UPDATE mail_message SET state=? WHERE id=?;");
+		st.setInt(1, MailMessage.stateToInt(state));
+		st.setLong(2, id);
+		st.executeUpdate();
+		this.state = state;
+	    }
+	    catch(SQLException e)
+	    {
+		throw new PimException(e);
+	    }
     }
 
     @Override public String getMessageId() 
