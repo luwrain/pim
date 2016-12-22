@@ -221,7 +221,7 @@ part = new MimeBodyPart();
 	}
     }
 
-    public String getWideReplyCcList(boolean decode) throws PimException
+    public String getWideReplyCc(String[] exclude, boolean decode) throws PimException
     {
 	try {
 	    final LinkedList<Address> addrs = new LinkedList<Address>();
@@ -233,10 +233,30 @@ part = new MimeBodyPart();
 		for(Address a: storedMsg.getRecipients(RecipientType.TO))
 		    if (a != null)
 			addrs.add(a);
-	    final Address addrs2[] = addrs.toArray(new Address[addrs.size()]);
+	    final LinkedList<Address> filtered = new LinkedList<Address>();
+	    for(Address a: addrs)
+	    {
+		if (!(a instanceof InternetAddress))
+		{
+		    filtered.add(a);
+		    continue;
+		}
+		final InternetAddress addr = (InternetAddress)a;
+		if (addr.getAddress() == null)
+		{
+		    filtered.add(addr);
+		    continue;
+		}
+		int k;
+		for(k = 0;k < exclude.length;++k)
+		    if (addr.getAddress().trim().toLowerCase().equals(exclude[k].toLowerCase().trim()))
+			break;
+		if (k >= exclude.length)
+		    filtered.add(addr);
+		    }
+	    final Address addrs2[] = filtered.toArray(new Address[filtered.size()]);
 	    if (addrs2.length < 1)
 		return "";
-	    //	    final LinkedList<String> res = new LinkedList<String>();
 	    final StringBuilder res = new StringBuilder();
 	    res.append(decode?MimeUtility.decodeText(addrs2[0].toString()):addrs2[0].toString());
 	    for(int i = 1;i < addrs2.length;++i)
@@ -283,7 +303,4 @@ part = new MimeBodyPart();
 	    return addr;
 	}
     }
-
-
-
 }
