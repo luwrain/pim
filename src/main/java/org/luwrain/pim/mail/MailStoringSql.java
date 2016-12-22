@@ -34,7 +34,7 @@ class MailStoringSql extends MailStoringRegistry //FIXME:Should not be public
 							"INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
 							Statement.RETURN_GENERATED_KEYS);
 	    st.setLong(1, folderRegistry.id);
-	    st.setInt(2, message.state);
+	    st.setInt(2, MailMessage.stateToInt(message.state));
 	    st.setString(3, message.subject);
 	    st.setString(4, message.from);
 	    st.setString(5, message.messageId);
@@ -123,7 +123,7 @@ class MailStoringSql extends MailStoringRegistry //FIXME:Should not be public
 		final StoredMailMessageSql message=new StoredMailMessageSql(con);
 		message.id = rs.getLong(1);
 		message.messageId = rs.getString(2).trim();
-		message.state = rs.getInt(3);
+		message.state = MailMessage.intToState(rs.getInt(3));
 		message.subject = rs.getString(4);
 		message.from = rs.getString(5);
 		message.sentDate = new java.util.Date(rs.getTimestamp(6).getTime());

@@ -8,8 +8,8 @@ import org.luwrain.pim.*;
 
 public interface StoredMailMessage
 {
-    int getState() throws PimException;
-    void setState(int state) throws PimException;
+    MailMessage.State getState() throws PimException;
+    void setState(MailMessage.State state) throws PimException;
     String getMessageId() throws PimException; 
     void setMessageId(String messageId) throws PimException;
     String getSubject() throws PimException;

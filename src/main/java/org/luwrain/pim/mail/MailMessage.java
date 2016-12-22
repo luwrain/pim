@@ -1,33 +1,21 @@
-/*
-   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.mail;
 
 import java.util.*;
 
+import org.luwrain.core.*;
+
 public class MailMessage implements Comparable
 {
+    public enum State {UNREAD, READ, MARKED, DELETED};
+
     public String messageId = "";
 	public String subject = "";
     public String from = "";
     public String[] to = new String[0];
     public String[] cc = new String[0];
     public String[] bcc = new String[0];
-    public int state = 0;
+    public State state = State.UNREAD;
     public Date sentDate = new Date();
     public Date receivedDate = new Date();
     public String baseContent = "";
@@ -42,8 +30,10 @@ public class MailMessage implements Comparable
     	StoredMailMessageSql article = (StoredMailMessageSql)o;
     	if (state != article.state)
     	{
-    		if (state > article.state) return -1;
-    		if (state < article.state) return 1;
+	    if (stateToInt(state) > stateToInt(article.state))
+ return -1;
+	    if (stateToInt(state) < stateToInt(article.state)) 
+return 1;
     		return 0;
     	}
     	if (receivedDate == null || article.receivedDate == null) return 0;
@@ -52,4 +42,38 @@ public class MailMessage implements Comparable
     	return -1 * receivedDate.compareTo(article.receivedDate);
     }
 
+    static public State intToState(int stateCode)
+    {
+	switch(stateCode)
+	{
+	case 1:
+	    return State.UNREAD;
+	case 2:
+	    return State.READ;
+	case 3:
+	    return State.MARKED;
+	case 4:
+	    return State.DELETED;
+	default:
+	    return null;
+	}
+    }
+
+    static public int stateToInt(State state)
+    {
+	NullCheck.notNull(state, "state");
+	switch(state)
+	{
+	case UNREAD:
+	    return 1;
+	case READ:
+	    return 2;
+	case MARKED:
+	    return 3;
+	case DELETED:
+	    return 4;
+	default:
+	    return 0;
+	}
+    }
 }

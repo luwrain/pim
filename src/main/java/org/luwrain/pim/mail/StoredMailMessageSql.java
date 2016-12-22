@@ -17,13 +17,14 @@ class StoredMailMessageSql extends MailMessage implements StoredMailMessage
     	this.con = con;
     }
 
-    @Override public int getState()
+    @Override public MailMessage.State getState()
     {
 	return state;
     }
 
-    @Override public void setState(int state) throws PimException
+    @Override public void setState(MailMessage.State state) throws PimException
     {
+	//FIXME:
     }
 
     @Override public String getMessageId() 
