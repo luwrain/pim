@@ -106,7 +106,7 @@ public class MailUtils
 		mp.addBodyPart(part);
 		for(String fn:msg.attachments)
 		{
-part = new MimeBodyPart();
+		    part = new MimeBodyPart();
 		    final Path pfn = Paths.get(fn);
 		    part.setFileName(MimeUtility.encodeText(pfn.getFileName().toString()));
 		    final FileDataSource fds = new FileDataSource(fn);
@@ -253,7 +253,7 @@ part = new MimeBodyPart();
 			break;
 		if (k >= exclude.length)
 		    filtered.add(addr);
-		    }
+	    }
 	    final Address addrs2[] = filtered.toArray(new Address[filtered.size()]);
 	    if (addrs2.length < 1)
 		return "";
