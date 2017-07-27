@@ -11,13 +11,13 @@ public class SQL
 	NullCheck.notNull(luwrain, "luwrain");
 	String userData = "";
 	try {
-	    userData = luwrain.getPathProperty("luwrain.dir.userdata").toUri().toURL().toString();
+	    userData = luwrain.getFileProperty("luwrain.dir.userdata").toPath().toUri().toURL().toString();
 	    if (userData.startsWith("file:"))
 		userData = userData.substring("file:".length());
 	}
 	catch(java.net.MalformedURLException e)
 	{
-	    userData = luwrain.getPathProperty("luwrain.dir.userdata").toString();
+	    userData = luwrain.getFileProperty("luwrain.dir.userdata").toPath().toString();
 	}
 	if (userData.length() > 1 && userData.endsWith("/"))
 	    userData = userData.substring(0, userData.length() - 1);
