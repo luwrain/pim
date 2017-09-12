@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls.pim;
+package org.luwrain.popups.pim;
 
 import java.util.*;
 
@@ -33,7 +33,7 @@ protected final Strings strings;
     public CcEditPopup(Luwrain luwrain, Strings strings, ContactsStoring storing, String[] initialList) throws PimException
     {
 	super(luwrain, 
-	      makeParams(luwrain, "FIXME", strings, storing, initialList),
+	      makeParams(luwrain, strings.ccEditPopupName(), strings, storing, initialList),
 Popups.DEFAULT_POPUP_FLAGS);
 	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(strings, "strings");
@@ -93,12 +93,16 @@ protected boolean openSubfolder()
 	return true;
     }
 
-    /*
-@Override public String result()
+@Override public String[] result()
     {
-	return result.toString();
+	final int count = editableListModel.getItemCount();
+	if (count < 1)
+	    return new String[0];
+	final List<String> res = new LinkedList<String>();
+	for(int i = 0;i < count;++i)
+	    res.add(editableListModel.getItem(i).toString());
+	return res.toArray(new String[res.size()]);
     }
-    */
 
     static protected EditableListArea.Params makeParams(Luwrain luwrain, String name, Strings strings,
 						     ContactsStoring storing, String[] initialList)

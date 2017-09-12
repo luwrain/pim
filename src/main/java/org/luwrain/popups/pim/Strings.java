@@ -14,9 +14,25 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls.pim;
+package org.luwrain.popups.pim;
+
+import org.luwrain.core.*;
 
 public interface Strings
 {
-    String contactsFolderTitle(String name);
+    static public final String NAME = "luwrain.pim.popups";
+
+    String chooseMailPopupName(String folderName);
+    String ccEditPopupName();
+    String contactDoesntHaveMail(String contactTitle);
+    String chooseMailForContactPopupName(String contactTitle);
+
+    static public Strings create(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final Object obj = luwrain.i18n().getStrings(NAME);
+	if (obj == null || !(obj instanceof Strings))
+	    return null;
+	return (Strings)obj;
+    }
 }

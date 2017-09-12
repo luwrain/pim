@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.controls.pim;
+package org.luwrain.popups.pim;
 
 import java.util.*;
 
@@ -25,15 +25,15 @@ import org.luwrain.popups.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.contacts.*;
 
-class ChooseMailPopup extends ListPopup2
+public class ChooseMailPopup extends ListPopup2
 {
 protected final ContactsStoring storing;
 protected final Strings strings;
 
-    ChooseMailPopup(Luwrain luwrain, Strings strings, ContactsStoring storing, StoredContactsFolder folder) throws PimException
+    public ChooseMailPopup(Luwrain luwrain, Strings strings, ContactsStoring storing, StoredContactsFolder folder) throws PimException
     {
 	super(luwrain, 
-	      constructParams(luwrain, "Выбор получателя в группе \"" + strings.contactsFolderTitle(folder.toString()) + "\"", strings, storing, folder),Popups.DEFAULT_POPUP_FLAGS);
+	      constructParams(luwrain, strings.chooseMailPopupName(folder.toString()), strings, storing, folder),Popups.DEFAULT_POPUP_FLAGS);
 	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(strings, "strings");
 	this.storing = storing;
@@ -104,7 +104,7 @@ protected void onContactEntry(StoredContact contact)
 			addrs.add(v.value.trim());
 	    if (addrs.isEmpty())
 	    {
-		luwrain.message("Контакт \"" + contact.getTitle() + "\" не содержит адресов электронной почты", Luwrain.MessageType.ERROR);//FIXME:
+		luwrain.message(strings.contactDoesntHaveMail(contact.getTitle()), Luwrain.MessageType.ERROR);
 		return ;
 	    }
 	    if (addrs.size() == 1)
@@ -114,7 +114,7 @@ protected void onContactEntry(StoredContact contact)
 		return;
 	    }
 	    final String[] toOffer = addrs.toArray(new String[addrs.size()]);
-	    final String r = (String)Popups.fixedList(luwrain, "Выберите адрес электронной почты для \"" + contact.getTitle() + "\"", toOffer);//FIXME:
+	    final String r = (String)Popups.fixedList(luwrain, strings.chooseMailForContactPopupName(contact.getTitle()), toOffer);
 	    if (r == null)
 		return;
 	    result = contact.getTitle() + " <" + r + ">";
@@ -211,7 +211,7 @@ protected final Strings strings;
 	    {
 		final StoredContactsFolder folder = (StoredContactsFolder)item;
 		try {
-		    final String title = strings.contactsFolderTitle(folder.getTitle());
+		    final String title = folder.getTitle();
 		    luwrain.say(title + " группа");
 		    return;
 		}
