@@ -58,15 +58,16 @@ public class FolderUniRefProc implements UniRefProc
     return new UniRefInfo(uniRef, "Почтовая группа", folderName(title));
 }
 
-		@Override public void openUniRef(String uniRef, Luwrain luwrain)
+		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)
 		{
 		    if (uniRef == null || uniRef.isEmpty())
-			return;
+			return false;
 		    if (!uniRef.startsWith(PREFIX + ":"))
-			return;
+			return false;
 		    luwrain.launchApp("mail", new String[]{"--UNIREF",
 							   uniRef.substring(PREFIX.length() + 1),
 			});
+		    return true;
 		}
 
     private String folderName(String title)
