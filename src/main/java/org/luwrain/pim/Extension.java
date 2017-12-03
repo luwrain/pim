@@ -1,6 +1,7 @@
 
 package org.luwrain.pim;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
@@ -25,12 +26,12 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	return null;
     }
 
-    @Override public SharedObject[] getSharedObjects(Luwrain luwrain)
+    @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	return new SharedObject[]{
+	return new ExtensionObject[]{
 
 	    new SharedObject(){
-		@Override public String getName()
+		@Override public String getExtObjName()
 		{
 		    return MAIL_SHARED_OBJECT;
 		}
@@ -41,7 +42,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	    },
 
 	    new SharedObject(){
-		@Override public String getName()
+		@Override public String getExtObjName()
 		{
 		    return "luwrain.pim.news";
 		}
@@ -52,7 +53,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	    },
 
 	    new SharedObject(){
-		@Override public String getName()
+		@Override public String getExtObjName()
 		{
 		    return "luwrain.pim.contacts";
 		}
@@ -63,7 +64,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	    },
 
 	    new SharedObject(){
-		@Override public String getName()
+		@Override public String getExtObjName()
 		{
 		    return "luwrain.pim.binder";
 		}
