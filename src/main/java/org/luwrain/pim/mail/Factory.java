@@ -21,7 +21,7 @@ public class Factory
 	this.settings = Settings.createStoring(registry);
     }
 
-    private MailStoring createMailStoring()
+    public MailStoring newMailStoring()
     {
 	if (settings.getSharedConnection(false) && con != null)
 	    return new MailStoringSql(registry, con);
@@ -79,23 +79,5 @@ if (settings.getInitProc("").toLowerCase().equals("sqlite-wal"))
 	    e.printStackTrace();
 	}
 	con = null;
-    }
-
-    static public MailStoring getMailStoring(Luwrain luwrain)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	final Object o = luwrain.getSharedObject(Extension.MAIL_SHARED_OBJECT);
-	if (o == null)
-	{
-	    Log.error("pim", "unable to get mail storing:no shared object " + Extension.MAIL_SHARED_OBJECT);
-	    return null;
-	}
-	if (!(o instanceof Factory))
-	{
-	    Log.error("pim", "unable to get mail storing:shared object " + Extension.MAIL_SHARED_OBJECT + " is not an instance of " + Factory.class.getName());
-	    return null;
-	}
-	final Factory factory = (Factory)o;
-	return factory.createMailStoring();
     }
 }

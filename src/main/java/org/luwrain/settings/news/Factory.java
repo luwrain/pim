@@ -156,10 +156,7 @@ private boolean initStoring()
 {
     if (storing != null)
 	return true;
-    final Object f =  luwrain.getSharedObject("luwrain.pim.news");
-    if (f == null || !(f instanceof org.luwrain.pim.news.Factory))
-	return false;
-    storing = ((org.luwrain.pim.news.Factory)f).createNewsStoring();
+    storing = org.luwrain.pim.Connections.getNewsStoring(luwrain);
     return storing != null;
 }
 }

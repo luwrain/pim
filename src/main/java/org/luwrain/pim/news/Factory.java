@@ -20,7 +20,7 @@ public class Factory
 	this.settings = Settings.createStoring(registry);
     }
 
-    public NewsStoring createNewsStoring()
+    public NewsStoring newNewsStoring()
     {
 	if (settings.getSharedConnection(false) && con != null)
 	    return new NewsStoringSql(registry, con);
