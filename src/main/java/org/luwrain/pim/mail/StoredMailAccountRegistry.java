@@ -8,8 +8,8 @@ import org.luwrain.pim.*;
 
 class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
 {
-private Registry registry;
-    private Settings.Account settings;
+private final Registry registry;
+    private final Settings.Account settings;
     final int id;
 
     StoredMailAccountRegistry(Registry registry, int id)
