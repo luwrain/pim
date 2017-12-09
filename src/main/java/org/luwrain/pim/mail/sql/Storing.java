@@ -1,28 +1,25 @@
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.sql;
 
 import java.sql.*;
 import java.util.*;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.mail.*;
 
-class MailStoringSql extends MailStoringRegistry
+public final class Storing implements MailStoring
 {
-    static private final int FIELD_TYPE_TO = 1;
-    static private final int FIELD_TYPE_CC = 2;
-    static private final int FIELD_TYPE_BCC = 3;
-    static private final int FIELD_TYPE_ATTACHMENT = 4;
-
+    private final Registry registry;
     private final Connection con;
 
-    MailStoringSql(Registry registry,Connection con)
+    public Storing(Registry registry,Connection con)
     {
-	super(registry);
+	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(con, "con");
+	this.registry = registry;
 	this.con = con;
-    }
+	    }
 
     @Override public MailRules getRules()
     {

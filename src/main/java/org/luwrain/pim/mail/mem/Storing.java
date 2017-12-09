@@ -1,14 +1,15 @@
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.mem;
 
 import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.mail.*;
 
-class MailStoringMemory implements MailStoring
+class Storing implements MailStoring
 {
-    MailStoringMemory()
+    Storing()
 		      {
 		      }
 
