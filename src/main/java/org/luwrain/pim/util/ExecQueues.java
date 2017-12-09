@@ -42,9 +42,9 @@ public final class ExecQueues implements Runnable
     public void enqueueHighPriority(FutureTask task)
     {
 	NullCheck.notNull(task, "task");
-	highPriorityQueue.addLast(task);
 	synchronized(syncObj)
 	{
+	    highPriorityQueue.addLast(task);
 	    syncObj.notifyAll();
 	}
     }
@@ -52,9 +52,9 @@ public final class ExecQueues implements Runnable
     public void enqueueLowPriority(FutureTask task)
     {
 	NullCheck.notNull(task, "task");
-	lowPriorityQueue.addLast(task);
 	synchronized(syncObj)
 	{
+	    lowPriorityQueue.addLast(task);
 	    syncObj.notifyAll();
 	}
     }
@@ -118,9 +118,9 @@ public final class ExecQueues implements Runnable
 
     public void cancel()
     {
-	cancelling = true;
 	synchronized(syncObj)
 	{
+	    cancelling = true;
 	    syncObj.notifyAll();
 	}
     }
@@ -132,14 +132,13 @@ public final class ExecQueues implements Runnable
 	    synchronized(syncObj)
 	    {
 		try {
-		    syncObj.wait();
+		    while (highPriorityQueue.isEmpty() && lowPriorityQueue.isEmpty() && !cancelling)
+			syncObj.wait();
 		}
 		catch(InterruptedException e)
 		{
 		    return;
 		}
-		if (highPriorityQueue.isEmpty() && lowPriorityQueue.isEmpty())
-		    continue;
 	    }
 	    if (cancelling)
 		return;
