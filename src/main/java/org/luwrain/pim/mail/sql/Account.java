@@ -1,23 +1,24 @@
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.sql;
 
 import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.mail.*;
 
-class StoredMailAccountRegistry extends MailAccount implements StoredMailAccount
+class Account extends MailAccount implements StoredMailAccount
 {
 private final Registry registry;
-    private final Settings.Account settings;
+    private final org.luwrain.pim.mail.Settings.Account settings;
     final int id;
 
-    StoredMailAccountRegistry(Registry registry, int id)
+    Account(Registry registry, int id)
     {
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = id;
-	this.settings = Settings.createAccount(registry, Registry.join(Settings.ACCOUNTS_PATH, "" + id));
+	this.settings = org.luwrain.pim.mail.Settings.createAccount(registry, Registry.join(org.luwrain.pim.mail.Settings.ACCOUNTS_PATH, "" + id));
     }
 
     @Override public Type getType()

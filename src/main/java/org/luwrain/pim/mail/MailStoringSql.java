@@ -34,6 +34,11 @@ class MailStoringSql extends MailStoringRegistry
 	return null;
     }
 
+    @Override public MailAccounts getAccounts()
+    {
+	return null;
+    }
+
     @Override public MailMessages getMessages()
     {
 	return null;

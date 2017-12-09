@@ -31,10 +31,10 @@ MailStoring storing)
     public org.luwrain.cpanel.Element[] getElements(org.luwrain.cpanel.Element parent)
     {
 	try {
-	    final StoredMailAccount[] accounts = storing.loadAccounts();
+	    final StoredMailAccount[] accounts = storing.getAccounts().load();
 	    final Element[] res = new Element[accounts.length];
 	    for(int i = 0;i < accounts.length;++i)
-		res[i] = new Element(parent, storing.getAccountId(accounts[i]), accounts[i].getTitle());
+		res[i] = new Element(parent, storing.getAccounts().getId(accounts[i]), accounts[i].getTitle());
 	    return res;
 	}
 	catch(PimException e)
@@ -49,7 +49,7 @@ public Area createArea(ControlPanel controlPanel, long id)
 	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
 	try {
-	    return new Area(controlPanel, strings, storing, storing.loadAccountById(id));
+	    return new Area(controlPanel, strings, storing, storing.getAccounts().loadById(id));
 	}
 	catch(PimException e)
 	{
@@ -79,7 +79,7 @@ public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, long 
 		final MailAccount account = new MailAccount();
 		account.title = "Новая";
 		account.flags = EnumSet.of(MailAccount.Flags.ENABLED);
-		storing.saveAccount(account);
+		storing.getAccounts().save(account);
 		controlPanel.refreshSectionsTree();
 		return true;
 	    }
@@ -96,12 +96,12 @@ public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, long 
 	    if (id < 0)
 		return false;
 	    try {
-		final StoredMailAccount account = storing.loadAccountById(id);
+		final StoredMailAccount account = storing.getAccounts().loadById(id);
 		if (account == null)
 		    return false;
 		if (Popups.confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + account.getTitle() + "\"?"))
 		{
-		    storing.deleteAccount(account);
+		    storing.getAccounts().delete(account);
 		    controlPanel.refreshSectionsTree();
 		}
 		return true;
@@ -162,7 +162,7 @@ private boolean addAccountGoogle(ControlPanel controlPanel) throws PimException
 		account.passwd = passwd;
 		account.substAddress = "";
 		account.substName = "";
-		storing.saveAccount(account);
+		storing.getAccounts().save(account);
 
 		account.type = MailAccount.Type.SMTP;
 		account.title = title.trim() + "@gmail.com (" + strings.outgoingMailSuffix() + ")";
@@ -171,7 +171,7 @@ private boolean addAccountGoogle(ControlPanel controlPanel) throws PimException
 		account.port = 587;
 		account.substAddress = account.login;
 		account.substName = fullName;
-		storing.saveAccount(account);
+		storing.getAccounts().save(account);
 
 		controlPanel.refreshSectionsTree();
 		return true;
@@ -198,7 +198,7 @@ private boolean addAccountGoogle(ControlPanel controlPanel) throws PimException
 		account.passwd = passwd;
 		account.substAddress = "";
 		account.substName = "";
-		storing.saveAccount(account);
+		storing.getAccounts().save(account);
 
 		account.type = MailAccount.Type.SMTP;
 		account.title = title.trim() + "@yandex.ru (" + strings.outgoingMailSuffix() + ")";
@@ -207,7 +207,7 @@ private boolean addAccountGoogle(ControlPanel controlPanel) throws PimException
 		account.port = 587;
 		account.substAddress = account.login;
 		account.substName = fullName;
-		storing.saveAccount(account);
+		storing.getAccounts().save(account);
 
 		controlPanel.refreshSectionsTree();
 		return true;
