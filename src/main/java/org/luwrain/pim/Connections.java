@@ -29,12 +29,12 @@ public class Connections
 		contactsFactory = null;
     }
 
-    static public org.luwrain.pim.news.NewsStoring getNewsStoring(Luwrain luwrain)
+    static public org.luwrain.pim.news.NewsStoring getNewsStoring(Luwrain luwrain, boolean highPriority)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	if (newsFactory == null)
 	    return null;
-	return newsFactory.newNewsStoring();
+	return newsFactory.newNewsStoring(highPriority);
     }
 
         static public org.luwrain.pim.mail.MailStoring getMailStoring(Luwrain luwrain)

@@ -156,7 +156,7 @@ private boolean initStoring()
 {
     if (storing != null)
 	return true;
-    storing = org.luwrain.pim.Connections.getNewsStoring(luwrain);
+    storing = org.luwrain.pim.Connections.getNewsStoring(luwrain, true);
     return storing != null;
 }
 }
