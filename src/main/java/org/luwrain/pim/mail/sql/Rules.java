@@ -33,7 +33,7 @@ final class Rules implements MailRules
 	this.registry = registry;
     }
 
-    @Override public StoredMailRule[] getRules() throws PimException
+    @Override public StoredMailRule[] load() throws PimException
     {
 	final String[] dirNames = registry.getDirectories(org.luwrain.pim.mail.Settings.RULES_PATH);
 	if (dirNames == null || dirNames.length < 1)
@@ -59,7 +59,7 @@ final class Rules implements MailRules
 	return res.toArray(new Rule[res.size()]);
     }
 
-    @Override public void saveRule(MailRule rule) throws PimException
+    @Override public void save(MailRule rule) throws PimException
     {
 	NullCheck.notNull(rule, "rule");
 	final int newId = org.luwrain.pim.Util.newFolderId(registry, org.luwrain.pim.mail.Settings.RULES_PATH);
@@ -74,7 +74,7 @@ final class Rules implements MailRules
 	    throw new PimException("Unable to set a string value " + Registry.join(path, "dest-folder-uniref"));
     }
 
-    @Override public void deleteRule(StoredMailRule rule) throws PimException
+    @Override public void delete(StoredMailRule rule) throws PimException
     {
 	NullCheck.notNull(rule, "rule");
 	if (!(rule instanceof Rule))

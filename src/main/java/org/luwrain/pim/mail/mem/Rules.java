@@ -23,17 +23,17 @@ import org.luwrain.pim.mail.*;
 
 class Rules implements MailRules
 {
-        @Override public StoredMailRule[] getRules() throws PimException
+        @Override public StoredMailRule[] load() throws PimException
     {
 	return null;
     }
 
-    @Override public void saveRule(MailRule rule) throws PimException
+    @Override public void save(MailRule rule) throws PimException
     {
 	NullCheck.notNull(rule, "rule");
     }
 
-    @Override public void deleteRule(StoredMailRule rule) throws PimException
+    @Override public void delete(StoredMailRule rule) throws PimException
     {
 	NullCheck.notNull(rule, "rule");
     }

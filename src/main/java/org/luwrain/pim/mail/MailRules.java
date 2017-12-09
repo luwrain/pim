@@ -21,7 +21,7 @@ import org.luwrain.pim.*;
 
 public interface MailRules
 {
-    StoredMailRule[] getRules() throws PimException;
-    void saveRule(MailRule rule) throws PimException;
-    void deleteRule(StoredMailRule rule) throws PimException;
+    StoredMailRule[] load() throws PimException;
+    void save(MailRule rule) throws PimException;
+    void delete(StoredMailRule rule) throws PimException;
 }

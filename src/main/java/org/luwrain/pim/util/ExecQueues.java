@@ -59,7 +59,7 @@ public final class ExecQueues implements Runnable
 	}
     }
 
-    public Object exec(FutureTask task, boolean highPriority) throws Throwable
+    public Object exec(FutureTask task, boolean highPriority) throws Exception
     {
 	NullCheck.notNull(task, "task");
 	if (highPriority)
@@ -67,7 +67,7 @@ public final class ExecQueues implements Runnable
 	return execLowPriority(task);
     }
 
-    public Object execHighPriority(FutureTask task) throws Throwable
+    public Object execHighPriority(FutureTask task) throws Exception
     {
 	NullCheck.notNull(task, "task");
 	enqueueHighPriority(task);
@@ -76,7 +76,9 @@ public final class ExecQueues implements Runnable
 	}
 	catch(ExecutionException e)
 	{
-	    throw e.getCause();
+	    if (e.getCause() instanceof Exception)
+		throw (Exception)e.getCause();
+	    throw e;
 	}
 	catch(InterruptedException e)
 	{
@@ -85,7 +87,7 @@ public final class ExecQueues implements Runnable
 	}
     }
 
-    public Object execLowPriority(FutureTask task) throws Throwable
+    public Object execLowPriority(FutureTask task) throws Exception
     {
 	NullCheck.notNull(task, "task");
 	enqueueLowPriority(task);
@@ -94,7 +96,9 @@ public final class ExecQueues implements Runnable
 	}
 	catch(ExecutionException e)
 	{
-	    throw e.getCause();
+	    if (e.getCause() instanceof Exception)
+		throw (Exception)e.getCause();
+	    throw e;
 	}
 	catch(InterruptedException e)
 	{
