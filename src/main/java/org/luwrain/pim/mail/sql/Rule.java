@@ -1,24 +1,22 @@
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.sql;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
-//import org.luwrain.util.*;
-//import org.luwrain.pim.RegistryKeys;
+import org.luwrain.pim.mail.*;
 
-class StoredMailRuleRegistry extends MailRule implements StoredMailRule
+class Rule extends MailRule implements StoredMailRule
 {
     private final Registry registry;
-    private final Settings.Rule sett;
-
+    private final org.luwrain.pim.mail.Settings.Rule sett;
     final int id;
 
-    StoredMailRuleRegistry(Registry registry, int id)
+    Rule(Registry registry, int id)
     {
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = id;
-	this.sett = Settings.createRule(registry, Registry.join(Settings.RULES_PATH, "" + id));
+	this.sett = org.luwrain.pim.mail.Settings.createRule(registry, Registry.join(org.luwrain.pim.mail.Settings.RULES_PATH, "" + id));
     }
 
     @Override public Actions getAction() throws PimException

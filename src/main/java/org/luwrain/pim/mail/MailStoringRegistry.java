@@ -129,57 +129,6 @@ abstract class MailStoringRegistry implements MailStoring
 
     //rules
 
-    @Override public StoredMailRule[] getRules() throws PimException
-    {
-	final String[] dirNames = registry.getDirectories(Settings.RULES_PATH);
-	if (dirNames == null || dirNames.length < 1)
-	    return new StoredMailRule[0];
-	final LinkedList<StoredMailRuleRegistry> res = new LinkedList<StoredMailRuleRegistry>();
-	for(String s: dirNames)
-	{
-	    if (s == null || s.trim().isEmpty())
-		continue;
-	    int id;
-	    try {
-		id = Integer.parseInt(s);
-	    }
-	    catch(NumberFormatException e)
-	    {
-		e.printStackTrace();
-		continue;
-	    }
-	    final StoredMailRuleRegistry rule = new StoredMailRuleRegistry(registry, id);
-	    if (rule.load())
-		res.add(rule);
-	}
-	return res.toArray(new StoredMailRuleRegistry[res.size()]);
-    }
-
-    @Override public void saveRule(MailRule rule) throws PimException
-    {
-	NullCheck.notNull(rule, "rule");
-	final int newId = org.luwrain.pim.Util.newFolderId(registry, Settings.RULES_PATH);
-	final String path = Registry.join(Settings.RULES_PATH, "" + newId);
-	if (!registry.addDirectory(path))
-	    throw new PimException("Unable to create new registry directory " + path);
-	if (!registry.setString(Registry.join(path, "action"), StoredMailRuleRegistry.getActionStr(rule.action)))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "action"));
-	if (!registry.setString(Registry.join(path, "header-regex"), rule.headerRegex))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "header-regex"));
-	if (!registry.setString(Registry.join(path, "dest-folder-uniref"), rule.destFolderUniRef))
-	    throw new PimException("Unable to set a string value " + Registry.join(path, "dest-folder-uniref"));
-    }
-
-    @Override public void deleteRule(StoredMailRule rule) throws PimException
-    {
-	NullCheck.notNull(rule, "rule");
-	if (!(rule instanceof StoredMailRuleRegistry))
-	    throw new IllegalArgumentException("rule is not an instance of StoredMailRuleRegistry");
-	final StoredMailRuleRegistry ruleRegistry = (StoredMailRuleRegistry)rule;
-	final String path = Registry.join(Settings.RULES_PATH, "" + ruleRegistry.id);
-	if (!registry.deleteDirectory(path))
-	    throw new PimException("Unable to delete the registry directory " + path);
-    }
 
     //accounts
 

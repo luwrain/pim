@@ -12,6 +12,11 @@ class MailStoringMemory implements MailStoring
 		      {
 		      }
 
+    @Override public MailRules getRules()
+    {
+	return null;
+    }
+
 	    @Override public int getFolderId(StoredMailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
@@ -49,20 +54,6 @@ class MailStoringMemory implements MailStoring
 	return null;
     }
 
-    @Override public StoredMailRule[] getRules() throws PimException
-    {
-	return null;
-    }
-
-    @Override public void saveRule(MailRule rule) throws PimException
-    {
-	NullCheck.notNull(rule, "rule");
-    }
-
-    @Override public void deleteRule(StoredMailRule rule) throws PimException
-    {
-	NullCheck.notNull(rule, "rule");
-    }
 
     @Override public StoredMailAccount[] loadAccounts() throws PimException
     {

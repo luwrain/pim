@@ -23,10 +23,7 @@ public interface MailStoring extends Cloneable
     String getAccountUniRef(StoredMailAccount account) throws PimException;
     StoredMailAccount getAccountByUniRef(String uniRef) throws PimException;
 
-    //rules
-    StoredMailRule[] getRules() throws PimException;
-    void saveRule(MailRule rule) throws PimException;
-    void deleteRule(StoredMailRule rule) throws PimException;
+    MailRules getRules();
 
     //messages
     void saveMessage(StoredMailFolder folder, MailMessage message) throws PimException;

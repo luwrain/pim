@@ -3,12 +3,12 @@ package org.luwrain.pim.mail;
 
 import org.luwrain.core.*;
 
-interface Settings
+public interface Settings
 {
-    static final String STORING_PATH = "/org/luwrain/pim/mail/storing";
-    static final String FOLDERS_PATH = "/org/luwrain/pim/mail/folders";
-    static final String RULES_PATH = "/org/luwrain/pim/mail/rules";
-    static final String ACCOUNTS_PATH = "/org/luwrain/pim/mail/accounts";
+    static public final String STORING_PATH = "/org/luwrain/pim/mail/storing";
+    static public final String FOLDERS_PATH = "/org/luwrain/pim/mail/folders";
+    static public final String RULES_PATH = "/org/luwrain/pim/mail/rules";
+    static public final String ACCOUNTS_PATH = "/org/luwrain/pim/mail/accounts";
 
 
     interface Storing
@@ -71,7 +71,7 @@ interface Folder
     void setParentId(int defValue);
 }
 
-interface Rule
+public interface Rule
 {
     String getAction(String defValue);
     String getHeaderRegex(String defValue);
@@ -81,29 +81,28 @@ interface Rule
     void setDestFolderUniref(String value);
 }
 
-    static Account createAccount(Registry registry, String path)
+    static public Account createAccount(Registry registry, String path)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(path, "path");
 	return RegistryProxy.create(registry, path, Account.class);
     }
 
-    static Folder createFolder(Registry registry, String path)
+    static public Folder createFolder(Registry registry, String path)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(path, "path");
 	return RegistryProxy.create(registry, path, Folder.class);
     }
 
-    static Rule createRule(Registry registry, String path)
+    static public Rule createRule(Registry registry, String path)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(path, "path");
 	return RegistryProxy.create(registry, path, Rule.class);
     }
 
-
-    static Storing createStoring(Registry registry)
+    static public Storing createStoring(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, STORING_PATH, Storing.class);

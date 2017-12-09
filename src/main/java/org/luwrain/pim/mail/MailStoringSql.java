@@ -8,7 +8,7 @@ import org.luwrain.core.Registry;
 import org.luwrain.core.NullCheck;
 import org.luwrain.pim.*;
 
-class MailStoringSql extends MailStoringRegistry //FIXME:Should not be public 
+class MailStoringSql extends MailStoringRegistry
 {
     static private final int FIELD_TYPE_TO = 1;
     static private final int FIELD_TYPE_CC = 2;
@@ -22,6 +22,11 @@ class MailStoringSql extends MailStoringRegistry //FIXME:Should not be public
 	super(registry);
 	NullCheck.notNull(con, "con");
 	this.con = con;
+    }
+
+    @Override public MailRules getRules()
+    {
+	return null;//FIXME:
     }
 
     @Override public void saveMessage(StoredMailFolder folder, MailMessage message) throws PimException
