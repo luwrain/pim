@@ -1,5 +1,5 @@
 
-CREATE TABLE news_article (
+CREATE TABLE IF NOT EXISTS news_article (
   id integer PRIMARY KEY AUTOINCREMENT, 
   news_group_id int NOT NULL,
   state int NOT NULL,
