@@ -24,8 +24,8 @@ import org.luwrain.core.*;
 
 public final class ExecQueues implements Runnable
 {
-    private final LinkedList<FutureTask> lowPriorityQueue = new LinkedList();
-    private final LinkedList<FutureTask> highPriorityQueue = new LinkedList();
+    private final ConcurrentLinkedQueue<FutureTask> lowPriorityQueue = new ConcurrentLinkedQueue();
+    private final ConcurrentLinkedQueue<FutureTask> highPriorityQueue = new ConcurrentLinkedQueue();
     private final Object syncObj = new Object();
     private final Executor executor = Executors.newSingleThreadExecutor();
     private Thread thread = null;
@@ -44,7 +44,7 @@ public final class ExecQueues implements Runnable
 	NullCheck.notNull(task, "task");
 	synchronized(syncObj)
 	{
-	    highPriorityQueue.addLast(task);
+	    highPriorityQueue.add(task);
 	    syncObj.notifyAll();
 	}
     }
@@ -54,7 +54,7 @@ public final class ExecQueues implements Runnable
 	NullCheck.notNull(task, "task");
 	synchronized(syncObj)
 	{
-	    lowPriorityQueue.addLast(task);
+	    lowPriorityQueue.add(task);
 	    syncObj.notifyAll();
 	}
     }
@@ -142,20 +142,23 @@ public final class ExecQueues implements Runnable
 	    }
 	    if (cancelling)
 		return;
-	    while(!highPriorityQueue.isEmpty())
-	    {
-		final FutureTask task = highPriorityQueue.pollFirst();
-		executor.execute(task);
-	    }
 	    if (cancelling)
 		return;
-	    while(!lowPriorityQueue.isEmpty())
+	    while (!highPriorityQueue.isEmpty() || !lowPriorityQueue.isEmpty())
 	    {
-		final FutureTask task = lowPriorityQueue.pollFirst();
-		executor.execute(task);
+		if (cancelling)
+		    return;
+		while(!highPriorityQueue.isEmpty())
+		{
+		    final FutureTask task = highPriorityQueue.poll();
+		    executor.execute(task);
+		}
+		if(!lowPriorityQueue.isEmpty())
+		{
+		    final FutureTask task = lowPriorityQueue.poll();
+		    executor.execute(task);
+		}
 	    }
-	    if (cancelling)
-		return;
 	}
     }
 }
