@@ -31,14 +31,12 @@ public interface Settings
 	String getUrl(String defValue);
     String getLogin(String defValue);
 String getPasswd(String defValue);
-boolean getSharedConnection(boolean defValue);
 String getInitProc(String defValue);
 void setType(String value);
 void setDriver(String value);
 void setUrl(String value);
 void setLogin(String value);
 void setPasswd(String value);
-void setSharedConnection(boolean value);
 void setInitProc(String value);
 }
 
