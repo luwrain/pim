@@ -28,7 +28,7 @@ class Messages implements MailMessages
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
 	try {
-	    final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
+	    final Folder folderRegistry = (Folder)folder;
 	    PreparedStatement st = con.prepareStatement(
 							"INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
 							Statement.RETURN_GENERATED_KEYS);
@@ -109,7 +109,7 @@ class Messages implements MailMessages
     {
 	NullCheck.notNull(folder, "folder");
 	try {
-	    final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
+	    final Folder folderRegistry = (Folder)folder;
 	    final TreeMap<Long, StringValue> stringValues = new TreeMap<Long, StringValue>();
 	    PreparedStatement st = con.prepareStatement(
 							"SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type,ext_info FROM mail_message WHERE mail_folder_id=?"
@@ -186,7 +186,7 @@ class Messages implements MailMessages
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
 	try {
-	    final StoredMailFolderRegistry folderRegistry = (StoredMailFolderRegistry)folder;
+	    final Folder folderRegistry = (Folder)folder;
 	    final Message messageSql = (Message)message;
 	    final PreparedStatement st = con.prepareStatement(
 							      "UPDATE mail_message SET mail_folder_id=? WHERE id=?"

@@ -22,43 +22,10 @@ class MailStoringMemory implements MailStoring
 	return null;
     }
 
-	    @Override public int getFolderId(StoredMailFolder folder)
-    {
-	NullCheck.notNull(folder, "folder");
-	return 0;
-    }
-
-    @Override public StoredMailFolder loadFolderById(int id)
+    @Override public MailFolders getFolders()
     {
 	return null;
     }
-
-    @Override public void saveFolder(StoredMailFolder parentFolder, MailFolder newFolder)
-    {
-	NullCheck.notNull(parentFolder, "parentFolder");
-	NullCheck.notNull(parentFolder, "parentFolder");
-    }
-
-    @Override public StoredMailFolder getFoldersRoot()
-    {
-	return null;
-    }
-
-    @Override public StoredMailFolder[] getFolders(StoredMailFolder folder)
-    {
-	return null;
-    }
-
-    @Override public String getFolderUniRef(StoredMailFolder folder) throws PimException
-    {
-	return null;
-    }
-
-    @Override public StoredMailFolder getFolderByUniRef(String uniRef)
-    {
-	return null;
-    }
-
 
     @Override public StoredMailAccount[] loadAccounts() throws PimException
     {

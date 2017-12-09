@@ -1,23 +1,24 @@
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.sql;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.mail.*;
 
-public class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder//FIXME:not public
+class Folder extends MailFolder implements StoredMailFolder
 {
     private final Registry registry;
-    private final Settings.Folder sett;
+    private final org.luwrain.pim.mail.Settings.Folder sett;
 
     public final int id;//FIXME:not public
     int parentId = 0;
 
-    StoredMailFolderRegistry(Registry registry, int id)
+    Folder(Registry registry, int id)
     {
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = id;
-	this.sett = Settings.createFolder(registry, Registry.join(Settings.FOLDERS_PATH, "" + id));
+	this.sett = org.luwrain.pim.mail.Settings.createFolder(registry, Registry.join(org.luwrain.pim.mail.Settings.FOLDERS_PATH, "" + id));
     }
 
     @Override public String getTitle() throws PimException
@@ -45,9 +46,9 @@ public class StoredMailFolderRegistry extends MailFolder implements StoredMailFo
 
     @Override public boolean equals(Object o)
     {
-	if (o == null || !(o instanceof StoredMailFolderRegistry))
+	if (o == null || !(o instanceof Folder))
 	    return false;
-	final StoredMailFolderRegistry folder = (StoredMailFolderRegistry)o;
+	final Folder folder = (Folder)o;
 	return id == folder.id;
     }
 

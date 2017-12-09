@@ -11,7 +11,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 
 
 
-    private org.luwrain.pim.mail.FolderUniRefProc mailFolderUniRefProc;
+    private org.luwrain.pim.mail.sql.FolderUniRefProc mailFolderUniRefProc;
 
     @Override public String init(Luwrain luwrain)
     {
@@ -32,7 +32,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	@Override public UniRefProc[] getUniRefProcs(Luwrain luwrain)
 	{
 	    if (mailFolderUniRefProc == null)
-		mailFolderUniRefProc = new org.luwrain.pim.mail.FolderUniRefProc(luwrain);
+		mailFolderUniRefProc = new org.luwrain.pim.mail.sql.FolderUniRefProc(luwrain);
 	    return new UniRefProc[]{
 		mailFolderUniRefProc,
 	    };

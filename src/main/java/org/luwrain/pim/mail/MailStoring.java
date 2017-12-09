@@ -6,13 +6,6 @@ import org.luwrain.pim.*;
 
 public interface MailStoring extends Cloneable
 {
-    StoredMailFolder getFoldersRoot() throws PimException;
-    StoredMailFolder[] getFolders(StoredMailFolder folder) throws PimException;
-    String getFolderUniRef(StoredMailFolder folder) throws PimException;
-    StoredMailFolder getFolderByUniRef(String uniRef) throws PimException;
-    int getFolderId(StoredMailFolder folder) throws PimException;
-    StoredMailFolder loadFolderById(int id) throws PimException;
-    void saveFolder(StoredMailFolder parentFolder, MailFolder newFolder) throws PimException;
 
     //accounts
     StoredMailAccount[] loadAccounts() throws PimException;
@@ -23,6 +16,7 @@ public interface MailStoring extends Cloneable
     String getAccountUniRef(StoredMailAccount account) throws PimException;
     StoredMailAccount getAccountByUniRef(String uniRef) throws PimException;
 
+    MailFolders getFolders();
     MailRules getRules();
     MailMessages getMessages();
 }

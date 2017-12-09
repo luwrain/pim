@@ -35,16 +35,16 @@ public class Folders
 	    if (parent instanceof Element)
 	    {
 		final Element el = (Element)parent;
-		final StoredMailFolder parentFolder = storing.loadFolderById(el.id);
-		folders = storing.getFolders(parentFolder);
+		final StoredMailFolder parentFolder = storing.getFolders().loadById(el.id);
+		folders = storing.getFolders().load(parentFolder);
 	    } else
 	    {
-		final StoredMailFolder rootFolder = storing.getFoldersRoot();
-		folders = storing.getFolders(rootFolder);
+		final StoredMailFolder rootFolder = storing.getFolders().getRoot();
+		folders = storing.getFolders().load(rootFolder);
 	    }
 	    final Element[] res = new Element[folders.length];
 	    for(int i = 0;i < folders.length;++i)
-		res[i] = new Element(parent, storing.getFolderId(folders[i]), folders[i].getTitle());
+		res[i] = new Element(parent, storing.getFolders().getId(folders[i]), folders[i].getTitle());
 	    return res;
 	}
 	catch(PimException e)
@@ -58,7 +58,7 @@ public class Folders
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	try {
-	    return new Area(controlPanel, strings, storing, storing.loadFolderById(id));
+	    return new Area(controlPanel, strings, storing, storing.getFolders().loadById(id));
 	}
 	catch(PimException e)
 	{
@@ -93,13 +93,13 @@ public class Folders
 	    try {
 		final StoredMailFolder parentFolder;
 		if (id < 0)
-		    parentFolder = storing.getFoldersRoot(); else
-		    parentFolder = storing.loadFolderById(id);
+		    parentFolder = storing.getFolders().getRoot(); else
+		    parentFolder = storing.getFolders().loadById(id);
 		if (parentFolder == null)
 		    throw new PimException("No parent folder");
 		final MailFolder newFolder = new MailFolder();
 		newFolder.title = newFolderName;
-		storing.saveFolder(parentFolder, newFolder);
+		storing.getFolders().save(parentFolder, newFolder);
 		controlPanel.refreshSectionsTree();
 		return true;
 	    }

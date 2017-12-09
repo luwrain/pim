@@ -29,6 +29,11 @@ class MailStoringSql extends MailStoringRegistry
 	return null;//FIXME:
     }
 
+    @Override public MailFolders getFolders()
+    {
+	return null;
+    }
+
     @Override public MailMessages getMessages()
     {
 	return null;

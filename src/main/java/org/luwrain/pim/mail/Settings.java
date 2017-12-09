@@ -10,8 +10,7 @@ public interface Settings
     static public final String RULES_PATH = "/org/luwrain/pim/mail/rules";
     static public final String ACCOUNTS_PATH = "/org/luwrain/pim/mail/accounts";
 
-
-    interface Storing
+    public interface Storing
     {
 	String getType(String defValue);
 	String getDriver(String defValue);
@@ -29,7 +28,7 @@ public interface Settings
 	void setInitProc(String value);
     }
 
-    interface Account
+    public interface Account
     {
 	String getType(String defValue);
 	String getTitle(String defValue);
@@ -61,7 +60,7 @@ public interface Settings
 	void setLeaveMessages(boolean value);
     }
 
-interface Folder
+public interface Folder
 {
     String getTitle(String defValue);
     int getOrderIndex(int defValue);
