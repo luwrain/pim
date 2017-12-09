@@ -17,7 +17,8 @@
 
 package org.luwrain.pim;
 
-import java.sql.*;
+import java.io.*;
+import    java.sql.*;
 
 import org.luwrain.core.*;
 
@@ -25,33 +26,83 @@ public class SQL
 {
     static private final String LOG_COMPONENT = "pim";
 
-    static public Connection connect(String driver, String url, String login, String passwd, String initProc)
+    static public Connection connect(String driver, String url, String login, String passwd)
     {
 	NullCheck.notEmpty(driver, "driver");
 	NullCheck.notEmpty(url, "url");
 	NullCheck.notNull(login, "login");
 	NullCheck.notNull(passwd, "passwd");
-	NullCheck.notNull(initProc, "initProc");
 	try {
 	    Class.forName (driver).newInstance ();
-	    final Connection con = DriverManager.getConnection (url, login, passwd);
-	    if (con == null)
-		return con;
-	    switch(initProc.toLowerCase().trim())
-	    {
-	    case "sqlite-wal":
-		{
-		    final java.sql.ResultSet rs = con.createStatement().executeQuery("PRAGMA journal_mode = WAL;");
-		    while (rs.next());
-		}
-	    }
-	    return con;
+return  DriverManager.getConnection (url, login, passwd);
 	}
 	catch(Throwable e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to get JDBC connection with the driver " + driver + " for " + url + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    return null;
 	}
+    }
+
+    static public boolean initProc(Connection con, String type, String sqliteResource)
+    {
+	NullCheck.notNull(con, "con");
+	NullCheck.notNull(type, "type");
+	NullCheck.notNull(sqliteResource, "sqliteResource");
+	if (type.trim().isEmpty())
+	    return true;
+	switch(type.trim().toLowerCase())
+	{
+	case "sqlite":
+	    try {
+		final InputStream is = type.getClass().getResourceAsStream(sqliteResource);
+		if (is == null)
+		{
+		    Log.error(LOG_COMPONENT, "no resource " + sqliteResource + " needed for sqlite initialization");
+		    return false;
+		}
+		try {
+		    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		    StringBuilder b = new StringBuilder();
+		    String line = reader.readLine();
+		    while (line != null)
+		    {
+			if (line.trim().isEmpty())
+			{
+			    execSql(con, new String(b));
+			    b = new StringBuilder();
+			} else
+			    b.append(line + " ");
+			line = reader.readLine();
+		    }
+		    execSql(con, new String(b));
+		}
+		finally {
+		    is.close();
+		}
+		//Enabling wal mode
+		final java.sql.ResultSet rs = con.createStatement().executeQuery("PRAGMA journal_mode = WAL;");
+		while (rs.next());
+		return true;
+	    }
+	    catch(IOException | SQLException e)
+	    {
+		Log.error(LOG_COMPONENT, "unable to perform sqlite initialization:" + e.getClass().getName() + ":" + e.getMessage());
+		return false;
+	    }
+	default:
+	    Log.error(LOG_COMPONENT, "unknown SQL init procedure type:" + type);
+	    return false;
+	}
+    }
+
+        static private void execSql(Connection con, String query) throws SQLException
+    {
+	NullCheck.notNull(con, "con");
+	NullCheck.notNull(query, "query");
+	if (query.trim().isEmpty())
+	    return;
+	final Statement st = con.createStatement();
+	st.executeUpdate(query);
     }
 
     static public String prepareUrl(Luwrain luwrain, String url)
@@ -73,6 +124,5 @@ public class SQL
 	String res = url;
 	res = res.replaceAll("\\$userdata", userData);
 	return res;
-	
     }
 }

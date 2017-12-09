@@ -34,7 +34,7 @@
         <include name="**/*.class"/>
       </fileset>
       <fileset dir="./src/main/resources">
-        <include name="**/*.properties"/>
+        <include name="**/*"/>
       </fileset>
     </jar>
   </target>

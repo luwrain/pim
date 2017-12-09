@@ -25,6 +25,7 @@ import org.luwrain.pim.util.*;
 public final class Factory
 {
     static private final String LOG_COMPONENT = "pim-news";
+    static private final String SQLITE_INIT_RESOURCE = "/org/luwrain/pim/news.sqlite";
 
     private final Luwrain luwrain;
     private final Registry registry;
@@ -65,9 +66,20 @@ public final class Factory
 		final String login = sett.getLogin("");
 		final String passwd = sett.getPasswd("");
 		final String initProc = sett.getInitProc("");
-		this.con = org.luwrain.pim.SQL.connect(driver, url, login, passwd, initProc);
+		this.con = org.luwrain.pim.SQL.connect(driver, url, login, passwd);
 		if (this.con == null)
 		    return null;
+		if (!org.luwrain.pim.SQL.initProc(con, initProc, SQLITE_INIT_RESOURCE))
+		{
+		    try {
+			this.con.close();
+		    }
+		    catch(SQLException e)
+		    {
+		    }
+		    this.con = null;
+		    return null;
+		}
 		return new org.luwrain.pim.news.sql.Storing(registry, this.con, execQueues, highPriority);
 	    }
 	default:
