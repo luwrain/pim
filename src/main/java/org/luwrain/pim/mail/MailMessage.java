@@ -26,7 +26,10 @@ public class MailMessage implements Comparable
 
 	@Override public int compareTo(Object o)
     {
-    	if (o == null || !(o instanceof StoredMailMessageSql)) return 0;
+	/*
+FIXME:
+    	if (o == null || !(o instanceof Message))
+	    return 0;
     	StoredMailMessageSql article = (StoredMailMessageSql)o;
     	if (state != article.state)
     	{
@@ -40,6 +43,8 @@ return 1;
     	// if receivedDate are equal, compare messages via sentDate
     	if(receivedDate==article.receivedDate&&sentDate!=null&&article.sentDate!=null) return -1 * sentDate.compareTo(article.sentDate);
     	return -1 * receivedDate.compareTo(article.receivedDate);
+	*/
+	return 0;
     }
 
     static public State intToState(int stateCode)

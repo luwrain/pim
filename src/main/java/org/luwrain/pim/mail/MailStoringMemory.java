@@ -17,6 +17,11 @@ class MailStoringMemory implements MailStoring
 	return null;
     }
 
+    @Override public MailMessages getMessages()
+    {
+	return null;
+    }
+
 	    @Override public int getFolderId(StoredMailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
@@ -94,26 +99,4 @@ class MailStoringMemory implements MailStoring
     }
 
 
-    @Override public void saveMessage(StoredMailFolder folder, MailMessage message)
-    {
-	NullCheck.notNull(folder, "folder");
-	NullCheck.notNull(message, "message");
-    }
-
-    @Override public StoredMailMessage[] loadMessages(StoredMailFolder folder)
-    {
-	NullCheck.notNull(folder, "folder");
-	return null;
-    }
-
-    @Override public void moveMessageToFolder(StoredMailMessage message, StoredMailFolder folder)
-    {
-	NullCheck.notNull(folder, "folder");
-	NullCheck.notNull(message, "message");
-    }
-
-    @Override public void deleteMessage(StoredMailMessage message)
-    {
-	NullCheck.notNull(message, "message");
-    }
 }

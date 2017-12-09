@@ -1,17 +1,19 @@
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.sql;
 
 import java.util.*;
 import java.sql.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.mail.*;
 
-class StoredMailMessageSql extends MailMessage implements StoredMailMessage
+class Message extends MailMessage implements StoredMailMessage
 {
     final Connection con;
     long id;
 
-    StoredMailMessageSql(Connection con)
+    Message(Connection con)
     {
 	NullCheck.notNull(con, "con");
     	this.con = con;

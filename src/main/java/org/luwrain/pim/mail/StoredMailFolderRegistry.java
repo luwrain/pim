@@ -4,12 +4,12 @@ package org.luwrain.pim.mail;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 
-class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder
+public class StoredMailFolderRegistry extends MailFolder implements StoredMailFolder//FIXME:not public
 {
     private final Registry registry;
     private final Settings.Folder sett;
 
-    final int id;
+    public final int id;//FIXME:not public
     int parentId = 0;
 
     StoredMailFolderRegistry(Registry registry, int id)
