@@ -1,16 +1,16 @@
 
-package org.luwrain.pim.news;
+package org.luwrain.pim.news.sql;
 
 import java.util.*;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.news.*;
 
-class StoredNewsGroupRegistry implements StoredNewsGroup, Comparable
+class Group implements StoredNewsGroup, Comparable
 {
     private Registry registry;
-    private Settings.Group settings;
+    private org.luwrain.pim.news.Settings.Group settings;
 
     int id = 0;
     String name = "";
@@ -19,12 +19,12 @@ class StoredNewsGroupRegistry implements StoredNewsGroup, Comparable
     int orderIndex = 0;
     int expireAfterDays = 30;
 
-    StoredNewsGroupRegistry(Registry registry, long id)
+    Group(Registry registry, long id)
     {
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = (int)id;
-	this.settings = Settings.createGroup(registry, getPath());
+	this.settings = org.luwrain.pim.news.Settings.createGroup(registry, getPath());
     }
 
     @Override public long getId()
@@ -125,16 +125,16 @@ old.add(path);
 
     @Override public boolean equals(Object o)
     {
-	if (o == null || !(o instanceof StoredNewsGroupRegistry))
+	if (o == null || !(o instanceof Group))
 	    return false;
-	return id == ((StoredNewsGroupRegistry)o).id;
+	return id == ((Group)o).id;
     }
 
     @Override public int compareTo(Object o)
     {
-	if (o == null || !(o instanceof StoredNewsGroupRegistry))
+	if (o == null || !(o instanceof Group))
 	    return 0;
-	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)o;
+	final Group g = (Group)o;
 	if (orderIndex < g.orderIndex)
 	    return -1;
 	if (orderIndex > g.orderIndex)
@@ -173,6 +173,6 @@ mediaContentType = settings.getMediaContentType("");
 
     private String getPath()
     {
-	return Registry.join(Settings.GROUPS_PATH, "" + id);
+	return Registry.join(org.luwrain.pim.news.Settings.GROUPS_PATH, "" + id);
     }
 }

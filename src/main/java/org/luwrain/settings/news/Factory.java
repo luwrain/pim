@@ -44,7 +44,7 @@ public class Factory implements org.luwrain.cpanel.Factory
 	if (parent.equals(groupsElement))
 	{
 	    try {
-		final StoredNewsGroup[] groups = storing.loadGroups();
+		final StoredNewsGroup[] groups = storing.getGroups().load();
 		final Element[] res = new Element[groups.length];
 		for(int i = 0;i < groups.length;++i)
 		    res[i] = new GroupElement(groupsElement, groups[i].getId(), groups[i].getName());
@@ -99,7 +99,7 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    try {
 		final NewsGroup group = new NewsGroup();
 		group.name = strings.newGroupName();
-		storing.saveGroup(group);
+		storing.getGroups().save(group);
 		luwrain.message(strings.newGroupAdded(), Luwrain.MESSAGE_OK);
 		controlPanel.refreshSectionsTree();
 		return true;
@@ -114,12 +114,12 @@ public class Factory implements org.luwrain.cpanel.Factory
 	if (ActionEvent.isAction(event, "delete-news-group"))
 	{
 	    try {
-		final StoredNewsGroup group = storing.loadGroupById(arg);
+		final StoredNewsGroup group = storing.getGroups().loadById(arg);
 		if (group == null)
 		    return false;
 		if (!Popups.confirmDefaultNo(controlPanel.getCoreInterface(), strings.deleteGroupPopupName(), strings.deleteGroupPopupQuestion(group.getName())))
 	    return true;
-		storing.deleteGroup(group);
+		storing.getGroups().delete(group);
 		controlPanel.refreshSectionsTree();
 	    return true;
 	    }

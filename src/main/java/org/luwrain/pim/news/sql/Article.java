@@ -1,12 +1,14 @@
 
-package org.luwrain.pim.news;
+package org.luwrain.pim.news.sql;
 
 import java.util.*;
 import java.sql.*;
 
+import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.news.*;
 
-class StoredNewsArticleSql implements StoredNewsArticle, Comparable
+class Article implements StoredNewsArticle, Comparable
 {
     Connection con;
     long id = 0;
@@ -26,7 +28,7 @@ java.util.Date publishedDate = new java.util.Date();
 java.util.Date updatedDate = new java.util.Date();
 String content = "";
 
-    StoredNewsArticleSql(Connection con)
+Article(Connection con)
     {
 	this.con = con;
 	if (con == null)
@@ -175,9 +177,9 @@ String content = "";
 
     @Override public int compareTo(Object o)
     {
-	if (o == null || !(o instanceof StoredNewsArticleSql))
+	if (o == null || !(o instanceof Article))
 	    return 0;
-	StoredNewsArticleSql article = (StoredNewsArticleSql)o;
+	final Article article = (Article)o;
 	if (state != article.state)
 	{
 	    if (state > article.state)

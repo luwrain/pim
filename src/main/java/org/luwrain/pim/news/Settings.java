@@ -3,12 +3,12 @@ package org.luwrain.pim.news;
 
 import org.luwrain.core.*;
 
-interface Settings
+public interface Settings
 {
-    static final String STORING_PATH = "/org/luwrain/pim/news/storing";
-    static final String GROUPS_PATH = "/org/luwrain/pim/news/groups";
+    static public final String STORING_PATH = "/org/luwrain/pim/news/storing";
+    static public final String GROUPS_PATH = "/org/luwrain/pim/news/groups";
 
-    interface Storing
+    public interface Storing
     {
 	String getType(String defValue);
 	String getDriver(String defValue);
@@ -26,7 +26,7 @@ void setSharedConnection(boolean value);
 void setInitProc(String value);
 }
 
-    interface Group
+    public interface Group
     {
 	String getName(String defValue);
 	void setName(String value);
@@ -38,14 +38,14 @@ void setInitProc(String value);
 	void setMediaContentType(String defValue);
     }
 
-    static Group createGroup(Registry registry, String path)
+    static public Group createGroup(Registry registry, String path)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(path, "path");
 	return RegistryProxy.create(registry, path, Group.class);
     }
 
-    static Storing createStoring(Registry registry)
+    static public Storing createStoring(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, STORING_PATH, Storing.class);

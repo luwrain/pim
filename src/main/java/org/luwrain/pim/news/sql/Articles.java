@@ -1,31 +1,30 @@
 
-package org.luwrain.pim.news;
+package org.luwrain.pim.news.sql;
 
 import java.sql.*;
 import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.news.*;
 
-class NewsStoringSql extends NewsStoringRegistry
+class Articles implements NewsArticles
 {
-    private Connection con;
+    private final Connection con;
 
-    public NewsStoringSql(Registry registry, Connection con)
+    Articles(Connection con)
     {
-	super(registry);
-	this.con = con;
 	NullCheck.notNull(con, "con");
+	this.con = con;
     }
 
-    @Override public void saveArticle(StoredNewsGroup newsGroup, NewsArticle article) throws PimException
+    @Override public void save(StoredNewsGroup newsGroup, NewsArticle article) throws PimException
     {
+	NullCheck.notNull(newsGroup, "newsGroup");
 	try {
-	if (newsGroup == null)
-	    throw new NullPointerException("newsGrroup may not be null");
-	if (!(newsGroup instanceof StoredNewsGroupRegistry))
+	if (!(newsGroup instanceof Group))
 	    throw new IllegalArgumentException("newsGroup is not an instance of StoredNewsGroupRegistry");
-	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
+	final Group g = (Group)newsGroup;
 	PreparedStatement st = con.prepareStatement("INSERT INTO news_article (news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
 	st.setLong(1, g.id);
 	st.setInt(2, NewsArticle.NEW);
@@ -49,17 +48,18 @@ class NewsStoringSql extends NewsStoringRegistry
 	}
     }
 
-    @Override public     StoredNewsArticle[] loadArticlesInGroup(StoredNewsGroup newsGroup) throws PimException
+    @Override public     StoredNewsArticle[] load(StoredNewsGroup newsGroup) throws PimException
     {
+	NullCheck.notNull(newsGroup, "newsGroup");
 	try {
-	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
+	final Group g = (Group)newsGroup;
 	PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content FROM news_article WHERE news_group_id = ?;");
 	st.setLong(1, g.id);
 	ResultSet rs = st.executeQuery();
-	Vector<StoredNewsArticleSql> articles = new Vector<StoredNewsArticleSql>();
+	final List<Article> articles = new LinkedList();
 	while (rs.next())
 	{
-	    StoredNewsArticleSql a = new StoredNewsArticleSql(con);
+	    final Article a = new Article(con);
 	    a.id = rs.getLong(1);
 	    a.groupId = rs.getLong(2);
 	    a.state = rs.getInt(3);
@@ -85,17 +85,18 @@ class NewsStoringSql extends NewsStoringRegistry
 	}
     }
 
-    @Override public     StoredNewsArticle[] loadArticlesInGroupWithoutRead(StoredNewsGroup newsGroup) throws PimException
+    @Override public     StoredNewsArticle[] loadWithoutRead(StoredNewsGroup newsGroup) throws PimException
     {
+	NullCheck.notNull(newsGroup, "newsGroup");
 	try {
-	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
+	final Group g = (Group)newsGroup;
 	PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content FROM news_article WHERE news_group_id = ? AND state <> 1;");
 	st.setLong(1, g.id);
 	ResultSet rs = st.executeQuery();
-	Vector<StoredNewsArticleSql> articles = new Vector<StoredNewsArticleSql>();
+	final List<Article> articles = new LinkedList();
 	while (rs.next())
 	{
-	    StoredNewsArticleSql a = new StoredNewsArticleSql(con);
+	    final Article a = new Article(con);
 	    a.id = rs.getLong(1);
 	    a.groupId = rs.getLong(2);
 	    a.state = rs.getInt(3);
@@ -121,10 +122,11 @@ class NewsStoringSql extends NewsStoringRegistry
 	}
     }
 
-    @Override public int countArticlesByUriInGroup(StoredNewsGroup newsGroup, String uri) throws PimException
+    @Override public int countByUriInGroup(StoredNewsGroup newsGroup, String uri) throws PimException
     {
+	NullCheck.notEmpty(uri, "uri");
 	try {
-	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)newsGroup;
+	final Group g = (Group)newsGroup;
 	PreparedStatement st = con.prepareStatement("SELECT count(*) FROM news_article WHERE news_group_id = ? AND uri = ?;");
 	st.setLong(1, g.id);
 	st.setString(2, uri);
@@ -139,14 +141,13 @@ class NewsStoringSql extends NewsStoringRegistry
 	}
     }
 
-    @Override public int countNewArticleInGroup(StoredNewsGroup group) throws PimException
+    @Override public int countNewInGroup(StoredNewsGroup group) throws PimException
     {
+	NullCheck.notNull(group, "group");
 	try {
-	if (group == null)
+	if (!(group instanceof Group))
 	    return 0;
-	if (!(group instanceof StoredNewsGroupRegistry))
-	    return 0;
-	StoredNewsGroupRegistry g = (StoredNewsGroupRegistry)group;
+	final Group g = (Group)group;
 	PreparedStatement st = con.prepareStatement("SELECT count(*) FROM news_article WHERE news_group_id=? AND state=?;");
 	st.setLong(1, g.id);
 	st.setLong(2, NewsArticle.NEW);
@@ -161,19 +162,18 @@ class NewsStoringSql extends NewsStoringRegistry
 	}
     }
 
-    @Override public int[] countNewArticlesInGroups(StoredNewsGroup[] groups) throws PimException
+    @Override public int[] countNewInGroups(StoredNewsGroup[] groups) throws PimException
     {
+	NullCheck.notNullItems(groups, "groups");
 	try {
-	if (groups == null)
-	    throw new NullPointerException("groups may not be null");
-	StoredNewsGroupRegistry[] g = new StoredNewsGroupRegistry[groups.length];
+	final Group[] g = new Group[groups.length];
 	for(int i =- 0;i < groups.length;++i)
 	{
 	    if (groups[i] == null)
 		throw new NullPointerException("groups[" + i + "] may not be null");
-	    if (!(groups[i] instanceof StoredNewsGroupRegistry))
+	    if (!(groups[i] instanceof Group))
 		throw new IllegalArgumentException("groups[" + i + "] must be an instance of StoredNewsGroupRegistry");
-	    g[i] = (StoredNewsGroupRegistry)groups[i];
+	    g[i] = (Group)groups[i];
 	}
 	int[] res = new int[g.length];
 	for(int i = 0;i < res.length;++i)
@@ -198,19 +198,18 @@ class NewsStoringSql extends NewsStoringRegistry
 	}
     }
 
-    @Override public int[] countMarkedArticlesInGroups(StoredNewsGroup[] groups) throws PimException
+    @Override public int[] countMarkedInGroups(StoredNewsGroup[] groups) throws PimException
     {
+	NullCheck.notNullItems(groups, "groups");
 	try {
-	if (groups == null)
-	    throw new NullPointerException("groups may not be null");
-	StoredNewsGroupRegistry[] g = new StoredNewsGroupRegistry[groups.length];
+	final Group[] g = new Group[groups.length];
 	for(int i =- 0;i < groups.length;++i)
 	{
 	    if (groups[i] == null)
 		throw new NullPointerException("groups[" + i + "] may not be null");
-	    if (!(groups[i] instanceof StoredNewsGroupRegistry))
+	    if (!(groups[i] instanceof Group))
 		throw new IllegalArgumentException("groups[" + i + "] must be an instance of StoredNewsGroupRegistry");
-	    g[i] = (StoredNewsGroupRegistry)groups[i];
+	    g[i] = (Group)groups[i];
 	}
 	int[] res = new int[g.length];
 	for(int i = 0;i < res.length;++i)
@@ -235,7 +234,7 @@ class NewsStoringSql extends NewsStoringRegistry
 	}
     }
 
-    @Override public Set<String> loadArticleUrisInGroup(StoredNewsGroup group) throws PimException
+    @Override public Set<String> loadUrisInGroup(StoredNewsGroup group) throws PimException
     {
 	NullCheck.notNull(group, "group");
 	return null;

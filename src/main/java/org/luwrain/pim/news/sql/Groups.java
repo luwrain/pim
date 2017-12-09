@@ -1,25 +1,26 @@
 
-package org.luwrain.pim.news;
+package org.luwrain.pim.news.sql;
 
 import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.news.*;
 
-abstract class NewsStoringRegistry implements NewsStoring
+class Groups implements NewsGroups
 {
-    protected Registry registry;
+    private final Registry registry;
 
-    public NewsStoringRegistry(Registry registry)
+    Groups(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
     }
 
-    @Override public StoredNewsGroup[] loadGroups() throws PimException
+    @Override public StoredNewsGroup[] load() throws PimException
     {
 	    final LinkedList<StoredNewsGroup> groups = new LinkedList<StoredNewsGroup>();
-	    for(String s: registry.getDirectories(Settings.GROUPS_PATH))
+	    for(String s: registry.getDirectories(org.luwrain.pim.news.Settings.GROUPS_PATH))
 	    {
 		if (s.isEmpty())
 		    continue;
@@ -32,7 +33,7 @@ abstract class NewsStoringRegistry implements NewsStoring
 		    Log.warning("pim", "news group with bad registry directory:" + s);
 		    continue;
 		}
-		final StoredNewsGroupRegistry g = new StoredNewsGroupRegistry(registry, id);
+		final Group g = new Group(registry, id);
 		g.load();
 		    groups.add(g);
 	    }
@@ -41,35 +42,33 @@ Arrays.sort(res);
 return res;
     }
 
-    @Override public StoredNewsGroup loadGroupById(long id) throws PimException
+    @Override public StoredNewsGroup loadById(long id) throws PimException
     {
-	final StoredNewsGroupRegistry group = new StoredNewsGroupRegistry(registry, id);
+	final Group group = new Group(registry, id);
 	group.load();
 	return group;
     }
 
-    @Override public void saveGroup(NewsGroup group) throws PimException
+    @Override public void save(NewsGroup group) throws PimException
     {
 	NullCheck.notNull(group, "group");
-	final int id = Registry.nextFreeNum(registry, Settings.GROUPS_PATH);
-	final String path = Registry.join(Settings.GROUPS_PATH, "" + id);
+	final int id = Registry.nextFreeNum(registry, org.luwrain.pim.news.Settings.GROUPS_PATH);
+	final String path = Registry.join(org.luwrain.pim.news.Settings.GROUPS_PATH, "" + id);
 	registry.addDirectory(path);
-	final Settings.Group settings = Settings.createGroup(registry, path);
+	final org.luwrain.pim.news.Settings.Group settings = org.luwrain.pim.news.Settings.createGroup(registry, path);
 	settings.setName(group.name);
 	settings.setOrderIndex(group.orderIndex);
 	settings.setExpireDays(group.expireAfterDays);
 	settings.setMediaContentType(group.mediaContentType);
     }
 
-    @Override public void deleteGroup(StoredNewsGroup group) throws PimException
+    @Override public void delete(StoredNewsGroup group) throws PimException
     {
-	if (!(group instanceof StoredNewsGroupRegistry))
+	if (!(group instanceof Group))
 	    return;
-	final StoredNewsGroupRegistry groupReg = (StoredNewsGroupRegistry)group;
+	final Group groupReg = (Group)group;
 	groupReg.delete();
     }
-
-
 
     @Override public Object clone()
     {
