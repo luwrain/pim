@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -24,6 +24,8 @@ import org.luwrain.pim.util.*;
 
 public final class Factory
 {
+    static private final String LOG_COMPONENT = "pim-news";
+
     private final Luwrain luwrain;
     private final Registry registry;
     private final Settings.Storing sett;
@@ -43,40 +45,33 @@ public final class Factory
     {
 	if (con != null)
 	    return new org.luwrain.pim.news.sql.Storing(registry, con, execQueues, highPriority);
-	final String type = sett.getType("");
-	if (type.trim().isEmpty())
+	final String type = sett.getType("").trim().toLowerCase();
+	if (type.isEmpty())
 	{
-	    Log.error("pim", "news storing type may not be empty");
+	    Log.error(LOG_COMPONENT, "news storing type may not be empty");
 	    return null;
 	}
-	if (!type.equals("jdbc"))
+	switch(type)
 	{
-	    Log.error("pim", "unknown storing type \'" + sett.getType("") + "\' for news");
-	    return null;
-	}
-	final String driver = sett.getDriver("");
-	final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, sett.getUrl(""));
-	final String login = sett.getLogin("");
-	final String passwd = sett.getPasswd("");
-	if (driver.isEmpty() || url.isEmpty())
-	{
-	    Log.error("pim", "driver and url may not be empty in news storing settings");
-	    return null;
-	}
-	try {
-	    Class.forName (driver).newInstance ();
-con = DriverManager.getConnection (url, login, passwd);
-if (sett.getInitProc("").toLowerCase().equals("sqlite-wal"))
-{
-    final java.sql.ResultSet rs = con.createStatement().executeQuery("PRAGMA journal_mode = WAL;");
-    while (rs.next());
-}
-return new org.luwrain.pim.news.sql.Storing(registry, con, execQueues, highPriority);
-	}
-	catch(ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e)
-	{
-	    Log.error("pim", "unable to get JDBC connection for news:" + e.getClass().getName() + ":" + e.getMessage());
-	    e.printStackTrace();
+	case "jdbc":
+	    {
+	    	final String driver = sett.getDriver("");
+		final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, sett.getUrl(""));
+		if (driver.isEmpty() || url.isEmpty())
+		{
+		    Log.error(LOG_COMPONENT, "in news storing settings for JDBC the driver and url values may not be empty");
+		    return null;
+		}
+		final String login = sett.getLogin("");
+		final String passwd = sett.getPasswd("");
+		final String initProc = sett.getInitProc("");
+		this.con = org.luwrain.pim.SQL.connect(driver, url, login, passwd, initProc);
+		if (this.con == null)
+		    return null;
+		return new org.luwrain.pim.news.sql.Storing(registry, this.con, execQueues, highPriority);
+	    }
+	default:
+	    Log.error(LOG_COMPONENT, "unknown news storing type \'" + type + "\'");
 	    return null;
 	}
     }
@@ -84,16 +79,16 @@ return new org.luwrain.pim.news.sql.Storing(registry, con, execQueues, highPrior
     public void close()
     {
 	execQueues.cancel();
-	if (con == null)
-	    return;
-	try {
-    con.close();
-    }
-    catch(SQLException e)
-    {
-	    Log.error("pim", "unable to close mail JDBC connection normally:" + e.getMessage());
-	    e.printStackTrace();
-    }
-	con = null;
+	if (con != null)
+	{
+	    try {
+		con.close();
+	    }
+	    catch(SQLException e)
+	    {
+		Log.error(LOG_COMPONENT, "unable to close news JDBC connection normally:" + e.getClass().getName() + ":" + e.getMessage());
+	    }
+	    con = null;
+	}
     }
 }

@@ -15,6 +15,8 @@
    General Public License for more details.
 */
 
+//LWR_API 1.0
+
 package org.luwrain.pim.news;
 
 import java.util.*;
