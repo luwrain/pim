@@ -19,11 +19,28 @@
 
 package org.luwrain.pim.news;
 
-public class NewsGroup
+public class NewsGroup implements Comparable
 {
     public String name ="";
     public String[] urls = new String[0];
     public String mediaContentType = "";
     public int orderIndex = 0;
     public int expireAfterDays = 30;
+
+    @Override public String toString()
+    {
+	return name;
+    }
+
+    @Override public int compareTo(Object o)
+    {
+	if (o == null || !(o instanceof NewsGroup))
+	    return 0;
+	final NewsGroup g = (NewsGroup)o;
+	if (orderIndex < g.orderIndex)
+	    return -1;
+	if (orderIndex > g.orderIndex)
+	    return 1;
+	return 0;
+    }
 }

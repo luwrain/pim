@@ -114,7 +114,7 @@ public class Factory implements org.luwrain.cpanel.Factory
 	if (ActionEvent.isAction(event, "delete-news-group"))
 	{
 	    try {
-		final StoredNewsGroup group = storing.getGroups().loadById(arg);
+		final StoredNewsGroup group = storing.getGroups().loadById((int)arg);
 		if (group == null)
 		    return false;
 		if (!Popups.confirmDefaultNo(controlPanel.getCoreInterface(), strings.deleteGroupPopupName(), strings.deleteGroupPopupQuestion(group.getName())))

@@ -23,20 +23,17 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
 
-class Group implements StoredNewsGroup, Comparable
+class Group extends NewsGroup implements StoredNewsGroup
 {
-    private Registry registry;
-    private org.luwrain.pim.news.Settings.Group settings;
+    private final Registry registry;
+    private final org.luwrain.pim.news.Settings.Group settings;
 
-    int id = 0;
-    String name = "";
-    String[] urls = new String[0];
-    String mediaContentType = "";
-    int orderIndex = 0;
-    int expireAfterDays = 30;
+    final int id;
 
-    Group(Registry registry, long id)
+    Group(Registry registry, int id)
     {
+	if (id < 0)
+	    throw new IllegalArgumentException("id (" + id + ") may not be negative");
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = (int)id;
@@ -73,52 +70,41 @@ class Group implements StoredNewsGroup, Comparable
 	return urls;
     }
 
-    @Override public void setName(String name) throws PimException
+    @Override public void setName(String name)
     {
 	NullCheck.notNull(name, "name");
 	    settings.setName(name);
 	    this.name = name;
     }
 
-    @Override public void setMediaContentType(String value) throws PimException
+    @Override public void setMediaContentType(String value)
     {
 	NullCheck.notNull(value, "value");
 	    settings.setMediaContentType(value);
 	    this.mediaContentType = value;
     }
 
-    @Override public void setOrderIndex(int index) throws PimException
+    @Override public void setOrderIndex(int index)
     {
-	    if (index >= 0)
-	    {
+	if (orderIndex < 0)
+	    throw new IllegalArgumentException("orderIndex (" + orderIndex + ") may not be negative");
 		settings.setOrderIndex(index);
 		this.orderIndex = index;
-	    } else
-	    {
-		settings.setOrderIndex(0);
-		this.orderIndex = 0;
-	    }
     }
 
-    @Override public void setExpireAfterDays(int count) throws PimException
+    @Override public void setExpireAfterDays(int count)
     {
-	    if (count >= 0)
-	    {
+	if (count < 0)
+	    throw new IllegalArgumentException("count (" + count + ") may not be negative");
 		settings.setExpireDays(count);
 		this.expireAfterDays = count;
-	    } else
-	    {
-		settings.setExpireDays(0);
-		this.expireAfterDays = 0;
-	    }
     }
 
     @Override public void setUrls(String[] urls) throws PimException
     {
 	NullCheck.notNullItems(urls, "urls");
-
 	final String[] values = registry.getValues(getPath());
-	final LinkedList<String> old = new LinkedList<String>();
+	final List<String> old = new LinkedList();
 	for(String s: values)
 	{
 	    final String path = Registry.join(getPath(), s);
@@ -134,10 +120,6 @@ old.add(path);
 		registry.setString(Registry.join(getPath(), "url" + (k++)), s);
     }
 
-    @Override public String toString()
-    {
-	return name;
-    }
 
     @Override public boolean equals(Object o)
     {
@@ -146,17 +128,6 @@ old.add(path);
 	return id == ((Group)o).id;
     }
 
-    @Override public int compareTo(Object o)
-    {
-	if (o == null || !(o instanceof Group))
-	    return 0;
-	final Group g = (Group)o;
-	if (orderIndex < g.orderIndex)
-	    return -1;
-	if (orderIndex > g.orderIndex)
-	    return 1;
-	return 0;
-    }
 
     void load()
     {
@@ -170,7 +141,7 @@ mediaContentType = settings.getMediaContentType("");
 	if (orderIndex < 0)
 	    orderIndex = 0;
 	final String[] values = registry.getValues(path);
-	final LinkedList<String> urls = new LinkedList<String>();
+	final List<String> urls = new LinkedList();
 	for(String s: values)
 	{
 	    if (s.indexOf("url") < 0 || registry.getTypeOf(Registry.join(path, s)) != Registry.STRING)

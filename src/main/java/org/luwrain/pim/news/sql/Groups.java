@@ -40,7 +40,7 @@ class Groups implements NewsGroups
 	    {
 		if (s.isEmpty())
 		    continue;
-		long id;
+		int id;
 		try {
 		    id = Integer.parseInt(s);
 		}
@@ -58,7 +58,7 @@ Arrays.sort(res);
 return res;
     }
 
-    @Override public StoredNewsGroup loadById(long id) throws PimException
+    @Override public StoredNewsGroup loadById(int id) throws PimException
     {
 	final Group group = new Group(registry, id);
 	group.load();

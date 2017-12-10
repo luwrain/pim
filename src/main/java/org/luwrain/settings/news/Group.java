@@ -80,7 +80,7 @@ class Group extends FormArea implements SectionArea
 	final Luwrain luwrain = controlPanel.getCoreInterface();
 	final Strings strings = (Strings)luwrain.i18n().getStrings(Strings.NAME);
 	try {
-	    return new Group(controlPanel, strings, storing, storing.getGroups().loadById(id));
+	    return new Group(controlPanel, strings, storing, storing.getGroups().loadById((int)id));
 	}
 	catch(PimException e)
 	{
