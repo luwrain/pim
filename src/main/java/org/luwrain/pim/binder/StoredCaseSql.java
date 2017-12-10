@@ -1,23 +1,9 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.binder;
 
 import java.sql.*;
+
+import org.luwrain.pim.*;
 
 class StoredCaseSql implements StoredCase, Comparable
 {
@@ -68,32 +54,32 @@ class StoredCaseSql implements StoredCase, Comparable
 	//FIXME:
     }
 
-    @Override public String[] getTags() throws Exception
+    @Override public String[] getTags() throws PimException
     {
 	return tags != null?tags:new String[0];
     }
 
-    @Override public void setTags(String[] value) throws Exception
+    @Override public void setTags(String[] value) throws PimException
     {
 	//FIXME:
     }
 
-    @Override public String[] getUniRefs() throws Exception
+    @Override public String[] getUniRefs() throws PimException
     {
 	return uniRefs != null?uniRefs:new String[0];
     }
 
-    @Override public void setUniRefs(String[] value) throws Exception
+    @Override public void setUniRefs(String[] value) throws PimException
     {
 	//FIXME:
     }
 
-    @Override public String getNotes() throws Exception
+    @Override public String getNotes() throws PimException
     {
 	return notes != null?notes:"";
     }
 
-    @Override public void setNotes(String value) throws Exception
+    @Override public void setNotes(String value) throws PimException
     {
 	//FIXME:
 

@@ -1,43 +1,30 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
-
-package org.luwrain.pim.contacts;
+package org.luwrain.pim.contacts.sql;
 
 import java.sql.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.contacts.*;
 
-class StoredContactSql extends Contact implements  StoredContact
+class Contact extends org.luwrain.pim.contacts.Contact implements  StoredContact
 {
-    Connection con;
+    private final Connection con;
+    final long id;
+    int parentId = 0;
 
-    long id;
-    int parentId;
-
-    StoredContactSql(Connection con)
+    Contact(Connection con, long id)
     {
+		NullCheck.notNull(con, "con");
+		if (id < 0)
+		    throw new IllegalArgumentException("id (" + id + ") may not be negative");
 	this.con = con;
-	NullCheck.notNull(con, "con");
+	this.id = id;
     }
 
-    @Override public String getTitle() throws PimException
+    @Override public String getTitle()
     {
-	return title != null?title:"";
+	return title;
     }
 
     @Override public void setTitle(String value) throws PimException
@@ -59,9 +46,9 @@ class StoredContactSql extends Contact implements  StoredContact
 	}
     }
 
-    @Override public ContactValue[] getValues() throws PimException
+    @Override public ContactValue[] getValues()
     {
-	return values != null?values:new ContactValue[0];
+	return values;
     }
 
     @Override public void setValues(ContactValue[] values) throws PimException
@@ -76,46 +63,52 @@ class StoredContactSql extends Contact implements  StoredContact
 	saveValues();
     }
 
-    @Override public String[] getTags() throws PimException
+    @Override public String[] getTags()
     {
-	return tags != null?tags:new String[0];
+	return tags;
     }
 
-    @Override public void setTags(String[] value) throws Exception
+    @Override public void setTags(String[] value) throws PimException
     {
 	NullCheck.notNullItems(value, "value");
 	tags = value;
 	saveValues();
     }
 
-    @Override public String[] getUniRefs() throws Exception
+    @Override public String[] getUniRefs()
     {
-	return uniRefs != null?uniRefs:new String[0];
+	return uniRefs;
     }
 
-    @Override public void setUniRefs(String[] value) throws Exception
+    @Override public void setUniRefs(String[] value) throws PimException
     {
 	NullCheck.notNullItems(value, "value");
 	uniRefs = value;
 	saveValues();
     }
 
-    @Override public String getNotes() throws Exception
+    @Override public String getNotes()
     {
-	return notes != null?notes:"";
+	return notes;
     }
 
-    @Override public void setNotes(String value) throws Exception
+    @Override public void setNotes(String value) throws PimException
     {
 	NullCheck.notNull(value, "value");
-	final PreparedStatement st = con.prepareStatement(
-"UPDATE contact SET notes=? WHERE id=?"
-);
-	st.setString(1, value);
-	st.setLong(2, id);
-	if (st.executeUpdate() != 1)
-	    throw new Exception("Unable to update the notes in contact table");
-	notes = value;
+	try {
+	    final PreparedStatement st = con.prepareStatement(
+							      "UPDATE contact SET notes=? WHERE id=?"
+							      );
+	    st.setString(1, value);
+	    st.setLong(2, id);
+	    if (st.executeUpdate() != 1)
+		throw new PimException("Unable to update the notes in contact table");
+	    notes = value;
+	}
+	catch(SQLException e)
+	{
+	    throw new PimException(e);
+	}
     }
 
     private void saveValues() throws PimException
@@ -145,7 +138,7 @@ class StoredContactSql extends Contact implements  StoredContact
 					      "INSERT INTO contact_value (contact_id,type_id,value,preferable) VALUES (?,?,?,?)"
 					      );
 		    st.setLong(1, id);
-		    st.setInt(2, ContactsStoringSql.TAG_TYPE);
+		    st.setInt(2, Contacts.TAG_TYPE);
 		    st.setString(3, s);
 		    st.setBoolean(4, false);
 		    if (st.executeUpdate() != 1)
@@ -159,7 +152,7 @@ class StoredContactSql extends Contact implements  StoredContact
 					      "INSERT INTO contact_value (contact_id,type_id,value,preferable) VALUES (?,?,?,?)"
 					      );
 		    st.setLong(1, id);
-		    st.setInt(2, ContactsStoringSql.UNIREF_TYPE);
+		    st.setInt(2, Contacts.UNIREF_TYPE);
 		    st.setString(3, s);
 		    st.setBoolean(4, false);
 		    if (st.executeUpdate() != 1)

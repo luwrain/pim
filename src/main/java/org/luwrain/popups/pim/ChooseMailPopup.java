@@ -172,8 +172,8 @@ protected Object[] items;
 	@Override public void refresh()
 	{
 	    try {
-		final StoredContactsFolder[] folders = storing.getFolders(folder);
-		final StoredContact[] contacts = storing.loadContacts(folder);
+		final StoredContactsFolder[] folders = storing.getFolders().load(folder);
+		final StoredContact[] contacts = storing.getContacts().load(folder);
 		final List res = new LinkedList();
 		for(StoredContactsFolder f: folders)
 		    res.add(f);

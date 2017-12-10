@@ -1,74 +1,41 @@
-/*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
-   This file is part of the LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
-
-package org.luwrain.pim.contacts;
+package org.luwrain.pim.contacts.sql;
 
 import java.util.*;
 import java.sql.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.contacts.*;
 
-class ContactsStoringSql extends ContactsStoringRegistry
+class Contacts implements org.luwrain.pim.contacts.Contacts
 {
     static final int TAG_TYPE = -1;
     static final int UNIREF_TYPE = -2;
 
-    static private class ValueCollecting
+    private final Connection con;
+
+    Contacts(Connection con)
     {
-	long id;
-	final LinkedList<ContactValue> values = new LinkedList<ContactValue>();
-	final LinkedList<String> tags = new LinkedList<String>();
-	final LinkedList<String> uniRefs = new LinkedList<String>();
-
-	ValueCollecting(long id)
-	{
-	    this.id = id;
-	}
-    }
-
-    private Connection con;
-
-    ContactsStoringSql(Registry registry, Connection con)
-    {
-	super(registry);
+	NullCheck.notNull(con, "con");
 	this.con = con;
-	if (con == null)
-	    throw new NullPointerException("con may not be null");
     }
 
-    @Override public StoredContact[] loadContacts(StoredContactsFolder folder) throws PimException
+    @Override public StoredContact[] load(StoredContactsFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	try {
-	if (!(folder instanceof StoredContactsFolderRegistry))
-	    throw new IllegalArgumentException("folder must be an instance of StoredContactsFolderRegistry");
-	final StoredContactsFolderRegistry folderRegistry = (StoredContactsFolderRegistry)folder;
+	final Folder folderRegistry = (Folder)folder;
 	final PreparedStatement st = con.prepareStatement(
 							  "SELECT * FROM contact WHERE contacts_folder_id=?"
 							  );
 	st.setInt(1, folderRegistry.id);
-	final LinkedList<StoredContactSql> contacts = new LinkedList<StoredContactSql>();
+	final List<Contact> contacts = new LinkedList();
 	final TreeMap<Long, ValueCollecting> valueCollecting = new TreeMap<Long, ValueCollecting>();
 	ResultSet rs = st.executeQuery();
 	while(rs.next())
 	{
-	    final StoredContactSql c = new StoredContactSql(con);
-	    c.id = rs.getLong(1);
+	    final Contact c = new org.luwrain.pim.contacts.sql.Contact(con, rs.getLong(1));
 	    c.parentId = rs.getInt(2);
 	    c.title = rs.getString(3);
 	    c.notes = rs.getString(4);
@@ -100,7 +67,7 @@ class ContactsStoringSql extends ContactsStoringRegistry
 		c.values.add(new ContactValue(typeId, value, preferable));
 	    }
 	}
-	for(StoredContactSql contact: contacts)
+	for(Contact contact: contacts)
 	{
 	    if (!valueCollecting.containsKey(new Long(contact.id)))//Should never happen
 		continue;
@@ -109,7 +76,7 @@ class ContactsStoringSql extends ContactsStoringRegistry
 	    contact.tags = v.tags.toArray(new String[v.tags.size()]);
 	    contact.uniRefs = v.uniRefs.toArray(new String[v.uniRefs.size()]);
 	}
-	return contacts.toArray(new StoredContactSql[contacts.size()]);
+	return contacts.toArray(new Contact[contacts.size()]);
 	}
 	catch(SQLException e)
 	{
@@ -117,14 +84,12 @@ class ContactsStoringSql extends ContactsStoringRegistry
 	}
     }
 
-    @Override public void saveContact(StoredContactsFolder folder, Contact contact) throws PimException
+    @Override public void save(StoredContactsFolder folder, org.luwrain.pim.contacts.Contact contact) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(contact, "contact");
 	try {
-	if (!(folder instanceof StoredContactsFolderRegistry))
-	    throw new IllegalArgumentException("folder must be an instance of StoredContactsFolderRegistry");
-	final StoredContactsFolderRegistry folderRegistry = (StoredContactsFolderRegistry)folder;
+	final Folder folderRegistry = (Folder)folder;
     	PreparedStatement st = con.prepareStatement(
 						    "INSERT INTO contact (contacts_folder_id,title,notes) VALUES (?,?,?)",
 						    Statement.RETURN_GENERATED_KEYS);
@@ -180,13 +145,11 @@ class ContactsStoringSql extends ContactsStoringRegistry
 	}
     }
 
-    @Override public void deleteContact(StoredContact contact) throws PimException
+    @Override public void delete(StoredContact contact) throws PimException
     {
 	NullCheck.notNull(contact, "contact");
 	try {
-	if (!(contact instanceof StoredContactSql))
-	    throw new IllegalArgumentException("contact must be an instance of StoredContactSql");
-	final StoredContactSql contactSql = (StoredContactSql)contact;
+	final Contact contactSql = (Contact)contact;
 	PreparedStatement st = con.prepareStatement(
 						    "DELETE from contact_value WHERE contact_id=?"
 						    );
@@ -203,4 +166,17 @@ class ContactsStoringSql extends ContactsStoringRegistry
 	throw new PimException(e);
     }
     }
-}
+
+        static private class ValueCollecting
+    {
+	final long id;
+	final List<ContactValue> values = new LinkedList();
+	final List<String> tags = new LinkedList();
+	final List<String> uniRefs = new LinkedList();
+
+	ValueCollecting(long id)
+	{
+	    this.id = id;
+	}
+    }
+  }

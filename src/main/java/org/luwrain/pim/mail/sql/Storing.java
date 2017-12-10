@@ -29,7 +29,7 @@ public final class Storing implements MailStoring
     private final Registry registry;
     private final Connection con;
 
-    public Storing(Registry registry,Connection con)
+    public Storing(Registry registry,Connection con, Object execQueues, boolean highPriority)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(con, "con");

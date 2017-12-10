@@ -3,12 +3,12 @@ package org.luwrain.pim.contacts;
 
 import org.luwrain.core.*;
 
-interface Settings
+public interface Settings
 {
-    static final String STORING_PATH = "/org/luwrain/pim/contacts/storing";
-    static final String FOLDERS_PATH = "/org/luwrain/pim/contacts/folders";
+    static public final String STORING_PATH = "/org/luwrain/pim/contacts/storing";
+    static public final String FOLDERS_PATH = "/org/luwrain/pim/contacts/folders";
 
-interface Folder
+public interface Folder
 {
     String getTitle(String defValue);
     int getOrderIndex(int defValue);
@@ -18,7 +18,7 @@ interface Folder
     void setParentId(int value);
 }
 
-    interface Storing
+    public interface Storing
     {
 	String getType(String defValue);
 	String getDriver(String defValue);
@@ -36,13 +36,13 @@ interface Folder
 	void setInitProc(String value);
     }
 
-    static Storing createStoring(Registry registry)
+    static public Storing createStoring(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, STORING_PATH, Storing.class);
     }
 
-    static Folder createFolder(Registry registry, String path)
+    static public Folder createFolder(Registry registry, String path)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notEmpty(path, "path");

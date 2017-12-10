@@ -24,7 +24,7 @@ public class Factory
     private ContactsStoring createContactsStoring()
     {
 	if (settings.getSharedConnection(false) && con != null)
-	    return new ContactsStoringSql(registry, con);
+	    return null;//new ContactsStoringSql(registry, con);
 	final String type = settings.getType("");
 	if (type.trim().isEmpty())
 	{
@@ -55,7 +55,7 @@ if (settings.getInitProc("").toLowerCase().equals("sqlite-wal"))
     final java.sql.ResultSet rs = con.createStatement().executeQuery("PRAGMA journal_mode = WAL;");
     while (rs.next());
 }
-    return new ContactsStoringSql(registry, con);
+return null;//new ContactsStoringSql(registry, con);
 	}
 	catch(ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e)
 	{

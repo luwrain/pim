@@ -55,12 +55,12 @@ public class Connections
 	return newsFactory.newNewsStoring(highPriority);
     }
 
-        static public org.luwrain.pim.mail.MailStoring getMailStoring(Luwrain luwrain)
+    static public org.luwrain.pim.mail.MailStoring getMailStoring(Luwrain luwrain, boolean highPriority)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	if (mailFactory == null)
 	    return null;
-	return mailFactory.newMailStoring();
+	return mailFactory.newMailStoring(highPriority);
     }
 
     
