@@ -1,12 +1,12 @@
 
-CREATE TABLE contact (
+CREATE TABLE IF NOT EXISTS contact (
   id integer PRIMARY KEY AUTOINCREMENT, 
   contacts_folder_id int NOT NULL,
   title text NOT NULL,
   notes text NOT NULL
 );
 
-CREATE TABLE contact_value (
+CREATE TABLE IF NOT EXISTS contact_value (
   id integer PRIMARY KEY AUTOINCREMENT, 
   contact_id int NOT NULL,
   type_id int NOT NULL,

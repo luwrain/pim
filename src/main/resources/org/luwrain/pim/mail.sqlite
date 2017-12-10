@@ -1,4 +1,5 @@
-CREATE TABLE mail_message (
+
+CREATE TABLE IF NOT EXISTS mail_message (
   id integer PRIMARY KEY AUTOINCREMENT, 
   mail_folder_id int NOT NULL,
   state int NOT NULL,
@@ -12,7 +13,8 @@ CREATE TABLE mail_message (
   raw_message blob NOT NULL,
   ext_info text NOT NULL
 );
-CREATE TABLE mail_message_field  (
+
+CREATE TABLE IF NOT EXISTS mail_message_field  (
   id  integer PRIMARY KEY AUTOINCREMENT,
   mail_message_id int NOT NULL,
   field_type int NOT NULL,
