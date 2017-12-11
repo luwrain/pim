@@ -1,3 +1,19 @@
+/*
+   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.network;
 
@@ -12,7 +28,6 @@ import javax.mail.search.ReceivedDateTerm;
 import javax.mail.internet.MimeUtility;
 
 import org.luwrain.core.*;
-import org.luwrain.pim.mail.*;
 
 import org.luwrain.util.*;
 import org.luwrain.pim.PimException;
@@ -22,21 +37,83 @@ public class MailServerConversations
     static public final int SSL = 1;
     static public final int TLS = 2;
 
-    /** max number messages count to load from big email folders when first loaded (limit for testing)*/
     static final int LIMIT_MESSAGES_LOAD = 5000;
 
     public interface Listener
     {
 	void numberOfNewMessages(int count, boolean haveMore);
-	boolean newMessage(MailMessage message, int num, int total);
+	boolean newMessage(byte[] message, int num, int total);
     }
 
     private final Properties props=new Properties();
     private Session session=Session.getDefaultInstance(new Properties(), null);
-    private Store store;
-    private Session smtpSession;
-    private Transport smtpTransport;
-    //    private Folder folder;
+    private Store store = null;
+    private Session smtpSession = null;
+    private Transport smtpTransport = null;
+
+        /** Fetching of messages from the server.
+     *
+     * @param folderName Can be "INBOX" or any other IMAP folder name
+     * @param listener The listener object to get information about fetching progress
+     * @param deleteMessagesOnServer Must be true, if successfully fetched messages must be deleted on the server
+     */
+    public void fetchPop3(String folderName, Listener listener, boolean deleteMessagesOnServer) throws IOException, InterruptedException
+    {
+	NullCheck.notEmpty(folderName, "folderName");
+	NullCheck.notNull(listener, "listener");
+	try {
+	    Folder folder = null;
+	    try {
+		folder = store.getFolder(folderName);
+		folder.open(Folder.READ_WRITE);
+		final int msgCount = folder.getMessageCount();
+		if (msgCount == 0)
+		{
+		    listener.numberOfNewMessages(0, false);
+		    return;
+		}
+		Message[] messages;
+		if (msgCount > LIMIT_MESSAGES_LOAD)
+		{
+		    listener.numberOfNewMessages(LIMIT_MESSAGES_LOAD, true);
+		    messages = folder.getMessages(1, LIMIT_MESSAGES_LOAD);
+		} else
+		{
+		    listener.numberOfNewMessages(msgCount, false);
+		    messages = folder.getMessages(1, msgCount);
+		}
+		for(int i = 0;i < messages.length;++i)
+		{
+		    if (Thread.currentThread().interrupted())
+			throw new InterruptedException();
+		    listener.newMessage(saveToByteArray(messages[i]), i, messages.length);
+		    if (deleteMessagesOnServer)
+			messages[i].setFlag(Flags.Flag.DELETED, true);
+		}
+	    }
+	    finally {
+		if (folder != null)
+		    folder.close(true);
+	    }
+	}
+	catch(MessagingException | UnsupportedEncodingException e)
+	{
+	    throw new IOException("Unable to fetch messages from the server", e);
+	}
+    }
+
+    public void send(byte[] bytes) throws IOException, PimException
+    {
+	NullCheck.notNull(smtpTransport, "smtpTransport");
+	final MailUtils util=new MailUtils(bytes);
+	try {
+	    smtpTransport.sendMessage(util.getStoredMessage(), util.getStoredMessage().getRecipients(RecipientType.TO));
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
+    }
 
     /**
      * Prepares properties, session and store objects for operations through
@@ -118,76 +195,33 @@ public class MailServerConversations
 	return result;
     }
 
-    /** Fetching of messages from the server.
-     *
-     * @param folderName Can be "INBOX" or any other IMAP folder name
-     * @param listener The listener object to get information about fetching progress
-     */
-    public void fetchMessages(String folderName, Listener listener,
-			      boolean deleteMessagesOnServer, HtmlPreview htmlPreview) throws PimException, IOException, InterruptedException
+    private byte[] saveToByteArray(Message message) throws IOException
     {
-	NullCheck.notEmpty(folderName, "folderName");
-	NullCheck.notNull(listener, "listener");
-	Log.debug("pim", "delete messages:" + deleteMessagesOnServer);
+	NullCheck.notNull(message, "message");
 	try {
-	    Folder folder = null;
+	    final File tempFile = File.createTempFile("mail-"+String.valueOf(message.hashCode()), ".tmp");
+	    InputStream is = null;
+	    OutputStream os = null;
 	    try {
-		folder = store.getFolder(folderName);
-		folder.open(Folder.READ_WRITE);
-		final int msgCount = folder.getMessageCount();
-		if (msgCount == 0)
-		{
-		    listener.numberOfNewMessages(0, false);
-		    return;
-		}
-		Message[] messages;
-		if (msgCount > LIMIT_MESSAGES_LOAD)
-		{
-		    listener.numberOfNewMessages(LIMIT_MESSAGES_LOAD, true);
-		    messages = folder.getMessages(1, LIMIT_MESSAGES_LOAD);
-		} else
-		{
-		    listener.numberOfNewMessages(msgCount, false);
-		    messages = folder.getMessages(1, msgCount);
-		}
-		if (Thread.currentThread().interrupted())
-		    throw new InterruptedException();
-		for(int i = 0;i < messages.length;++i)
-		{
-		    if (Thread.currentThread().interrupted())
-			throw new InterruptedException();
-		    final MailMessage message=new MailMessage();
-		final MailUtils util = new MailUtils(messages[i]);
-		//		    util.jmailmsg=;
-		    util.saveTo(message, htmlPreview);
-		    message.messageId = util.getMessageId();
-		    message.rawMail = util.saveToByteArray();
-		    listener.newMessage(message, i, messages.length);
-		    if (deleteMessagesOnServer)
-			messages[i].setFlag(Flags.Flag.DELETED, true);
-		}
+		os=new FileOutputStream(tempFile);
+		message.writeTo(os);
+		os.flush();
+		os.close();
+		os = null;
+		is = new FileInputStream(tempFile);
+		return org.luwrain.util.FileUtils.readAllBytes(is);
 	    }
 	    finally {
-		if (folder != null)
-		    folder.close(true);
+		if (is != null)
+		    is.close();
+		if (os != null)
+		    os.close();
+		tempFile.delete();
 	    }
-	}
-	catch(MessagingException | UnsupportedEncodingException e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
-    public void sendRawMessage(byte[] bytes) throws IOException, PimException
-    {
-	NullCheck.notNull(smtpTransport, "smtpTransport");
-	final MailUtils util=new MailUtils(bytes);
-	try {
-	    smtpTransport.sendMessage(util.getStoredMessage(), util.getStoredMessage().getRecipients(RecipientType.TO));
 	}
 	catch(MessagingException e)
 	{
-	    throw new PimException(e);
+	    throw new IOException("Unable to save a message as a byte array", e);
 	}
     }
 }
