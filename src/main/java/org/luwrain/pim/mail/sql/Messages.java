@@ -31,11 +31,14 @@ class Messages implements MailMessages
     static private final int FIELD_TYPE_BCC = 3;
     static private final int FIELD_TYPE_ATTACHMENT = 4;
 
+    private final ExecQueue queue;
     private final Connection con;
 
-    Messages(Registry registry,Connection con)
+    Messages(ExecQueue queue,Connection con)
     {
+	NullCheck.notNull(queue, "queue");
 	NullCheck.notNull(con, "con");
+	this.queue = queue;
 	this.con = con;
     }
 
@@ -43,79 +46,82 @@ class Messages implements MailMessages
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
+	final Folder folderRegistry = (Folder)folder;
 	try {
-	    final Folder folderRegistry = (Folder)folder;
-	    PreparedStatement st = con.prepareStatement(
-							"INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-							Statement.RETURN_GENERATED_KEYS);
-	    st.setLong(1, folderRegistry.id);
-	    st.setInt(2, MailMessage.stateToInt(message.state));
-	    st.setString(3, message.subject);
-	    st.setString(4, message.from);
-	    st.setString(5, message.messageId);
-	    st.setDate(6, new java.sql.Date(message.sentDate.getTime()));
-	    st.setDate(7, new java.sql.Date(message.receivedDate.getTime()));
-	    st.setString(8, message.baseContent);
-	    st.setString(9, message.mimeContentType);
-	    st.setBytes(10, message.rawMail);
-	    st.setString(11, message.extInfo);
-	    final int updatedCount=st.executeUpdate();
-	    if(updatedCount != 1)
-		throw new PimException("Unable to execute initial INSERT query");
-	    final ResultSet generatedKeys = st.getGeneratedKeys();
-	    if (!generatedKeys.next()) 
-		return;
-	    final long generatedKey = generatedKeys.getLong(1);
-	    //to
-	    if (message.to != null)
-		for(String v: message.to)
-		{
-		    st = con.prepareStatement(
-					      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-					      );
-		    st.setLong(1, generatedKey);
-		    st.setInt(2, FIELD_TYPE_TO);
-		    st.setString(3, v);
-		    st.executeUpdate();
-		}
-	    //cc
-	    if (message.cc != null)
-		for(String v: message.cc)
-		{
-		    st = con.prepareStatement(
-					      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-					      );
-		    st.setLong(1, generatedKey);
-		    st.setInt(2, FIELD_TYPE_CC);
-		    st.setString(3, v);
-		    st.executeUpdate();
-		}
-	    //bcc
-	    if (message.bcc != null)
-		for(String v: message.bcc)
-		{
-		    st = con.prepareStatement(
-					      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-					      );
-		    st.setLong(1, generatedKey);
-		    st.setInt(2, FIELD_TYPE_BCC);
-		    st.setString(3, v);
-		    st.executeUpdate();
-		}
-	    //attachment
-	    if (message.attachments != null)
-		for(String v: message.attachments)
-		{
-		    st = con.prepareStatement(
-					      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-					      );
-		    st.setLong(1, generatedKey);
-		    st.setInt(2, FIELD_TYPE_ATTACHMENT);
-		    st.setString(3, v);
-		    st.executeUpdate();
-		}
+	    queue.execInQueue(()->{
+		    PreparedStatement st = con.prepareStatement(
+								"INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+								Statement.RETURN_GENERATED_KEYS);
+		    st.setLong(1, folderRegistry.id);
+		    st.setInt(2, MailMessage.stateToInt(message.state));
+		    st.setString(3, message.subject);
+		    st.setString(4, message.from);
+		    st.setString(5, message.messageId);
+		    st.setDate(6, new java.sql.Date(message.sentDate.getTime()));
+		    st.setDate(7, new java.sql.Date(message.receivedDate.getTime()));
+		    st.setString(8, message.baseContent);
+		    st.setString(9, message.mimeContentType);
+		    st.setBytes(10, message.rawMail);
+		    st.setString(11, message.extInfo);
+		    final int updatedCount=st.executeUpdate();
+		    if(updatedCount != 1)
+			throw new PimException("Unable to execute initial INSERT query");
+		    final ResultSet generatedKeys = st.getGeneratedKeys();
+		    if (!generatedKeys.next()) 
+			return null;
+		    final long generatedKey = generatedKeys.getLong(1);
+		    //to
+		    if (message.to != null)
+			for(String v: message.to)
+			{
+			    st = con.prepareStatement(
+						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+						      );
+			    st.setLong(1, generatedKey);
+			    st.setInt(2, FIELD_TYPE_TO);
+			    st.setString(3, v);
+			    st.executeUpdate();
+			}
+		    //cc
+		    if (message.cc != null)
+			for(String v: message.cc)
+			{
+			    st = con.prepareStatement(
+						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+						      );
+			    st.setLong(1, generatedKey);
+			    st.setInt(2, FIELD_TYPE_CC);
+			    st.setString(3, v);
+			    st.executeUpdate();
+			}
+		    //bcc
+		    if (message.bcc != null)
+			for(String v: message.bcc)
+			{
+			    st = con.prepareStatement(
+						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+						      );
+			    st.setLong(1, generatedKey);
+			    st.setInt(2, FIELD_TYPE_BCC);
+			    st.setString(3, v);
+			    st.executeUpdate();
+			}
+		    //attachment
+		    if (message.attachments != null)
+			for(String v: message.attachments)
+			{
+			    st = con.prepareStatement(
+						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+						      );
+			    st.setLong(1, generatedKey);
+			    st.setInt(2, FIELD_TYPE_ATTACHMENT);
+			    st.setString(3, v);
+			    st.executeUpdate();
+			}
+		    return null;
+		});
 	}
-	catch(SQLException e)
+	catch(Exception e)
 	{
 	    throw new PimException(e);
 	}

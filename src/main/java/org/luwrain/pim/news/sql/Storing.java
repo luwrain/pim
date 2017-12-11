@@ -15,30 +15,26 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail.sql;
+package org.luwrain.pim.news.sql;
 
-import java.sql.*;
-import java.util.*;
 import java.util.concurrent.*;
+import java.sql.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail.*;
+import org.luwrain.pim.news.*;
 import org.luwrain.pim.util.*;
 
-public final class Storing implements MailStoring, ExecQueue
+public final class Storing implements NewsStoring
 {
     private final Registry registry;
     private final Connection con;
+    private final Articles articles;
+    private final Groups groups;
     private final ExecQueues execQueues;
     private final boolean highPriority;
 
-    private final Accounts accounts;
-    private final Rules rules;
-    private final Folders folders;
-    private final Messages messages;
-
-    public Storing(Registry registry,Connection con, ExecQueues execQueues, boolean highPriority)
+    public Storing(Registry registry, Connection con, ExecQueues execQueues, boolean highPriority)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(con, "con");
@@ -47,33 +43,26 @@ public final class Storing implements MailStoring, ExecQueue
 	this.con = con;
 	this.execQueues = execQueues;
 	this.highPriority = highPriority;
-	this.rules = new Rules(registry);
-	this.folders = new Folders(registry);
-	this.accounts = new Accounts(registry);
-	this.messages = new Messages(this, con);
-	    }
-
-    @Override public MailRules getRules()
-    {
-	return null;//rules;
+	this.articles = new Articles(this, con);
+	this.groups = new Groups(registry);
     }
 
-    @Override public MailFolders getFolders()
+    @Override public NewsArticles getArticles()
     {
-	return folders;
+	return articles;
     }
 
-    @Override public MailAccounts getAccounts()
+    @Override public NewsGroups getGroups()
     {
-	return accounts;
+	return groups;
     }
 
-    @Override public MailMessages getMessages()
+    @Override public Object clone()
     {
-	return messages;
+	return null;
     }
 
-    @Override public Object execInQueue(Callable callable) throws Exception
+    Object execInQueue(Callable callable) throws Exception
     {
 	NullCheck.notNull(callable, "callable");
 	return execQueues.exec(new FutureTask(callable), highPriority);

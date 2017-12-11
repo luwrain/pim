@@ -20,79 +20,76 @@ import org.luwrain.core.*;
 
 public class DummyRegistry implements Registry
 {
-
-
     @Override public boolean addDirectory(String path)
     {
 	return false;
     }
-    
+
     @Override public boolean deleteDirectory(String path)
     {
 	return false;
     }
-    
+
     @Override public boolean deleteValue(String path)
     {
 	return false;
     }
-    
+
     @Override public boolean getBoolean(String path)
     {
 	return false;
     }
-    
-	
+
     @Override public String[] getDirectories(String path)
     {
 	return new String[0];
     }
-    
+
     @Override public int getInteger(String path)
     {
 	return 0;
     }
-    
+
     @Override public String getString(String path)
     {
 	return "";
     }
-    
+
     @Override public String getStringDesignationOfType(int type)
     {
 	return "";
     }
-    
+
     @Override public int getTypeOf(String path)
     {
 	return INVALID;
     }
-    
+
     @Override public String[] getValues(String path)
     {
 	return new String[0];
     }
-    
+
     @Override public boolean hasDirectory(String path)
     {
 	return false;
     }
-    
+
     @Override public boolean hasValue(String path)
     {
 	return false;
     }
-    
+
     @Override public boolean setBoolean(String path, boolean value)
     {
 	return false;
     }
-    
+
     @Override public boolean setInteger(String path, int value)
     {
 	return false;
     }
-    
+
     @Override public boolean setString(String path, String value)
     {
 	return false;

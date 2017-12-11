@@ -26,7 +26,7 @@ class Folder extends MailFolder implements StoredMailFolder
     private final Registry registry;
     private final org.luwrain.pim.mail.Settings.Folder sett;
 
-    public final int id;//FIXME:not public
+    final int id;
     int parentId = 0;
 
     Folder(Registry registry, int id)
