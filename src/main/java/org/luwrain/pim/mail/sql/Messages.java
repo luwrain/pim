@@ -130,74 +130,101 @@ class Messages implements MailMessages
     @Override public StoredMailMessage[] load(StoredMailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
+	final Folder folderRegistry = (Folder)folder;
 	try {
-	    final Folder folderRegistry = (Folder)folder;
-	    final TreeMap<Long, StringValue> stringValues = new TreeMap<Long, StringValue>();
-	    PreparedStatement st = con.prepareStatement(
-							"SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type,ext_info FROM mail_message WHERE mail_folder_id=?"
-							);
-	    st.setLong(1, folderRegistry.id);
-	    ResultSet rs = st.executeQuery();
-	    final LinkedList<StoredMailMessage> res = new LinkedList<StoredMailMessage>();
-	    while (rs.next())
-	    {
-		final Message message=new Message(con);
-		message.id = rs.getLong(1);
-		message.messageId = rs.getString(2).trim();
-		message.state = MailMessage.intToState(rs.getInt(3));
-		message.subject = rs.getString(4);
-		message.from = rs.getString(5);
-		message.sentDate = new java.util.Date(rs.getTimestamp(6).getTime());
-		message.receivedDate = new java.util.Date(rs.getTimestamp(7).getTime());
-		message.baseContent = rs.getString(8);
-		message.mimeContentType = rs.getString(9).trim();
-		message.rawMail = null;
-		message.extInfo = rs.getString(10).trim();
-		stringValues.put(new Long(message.id), new StringValue(message.id));
-		res.add(message);
-	    }
-	    final Statement vst = con.createStatement();
-	    rs = vst.executeQuery(
-				  "SELECT mail_message_id,field_type,value FROM mail_message_field"
-				  );
-	    while (rs.next())
-	    {
-		final long id = rs.getLong(1);
-		final int fieldType = rs.getInt(2);
-		final String value = rs.getString(3);
-		if (!stringValues.containsKey(new Long(id)))
-		    continue;
-		final StringValue s = stringValues.get(new Long(id));
-		switch(fieldType)
-		{
-		case FIELD_TYPE_TO:
-		    s.to.add(value);
-		    break;
-		case FIELD_TYPE_CC:
-		    s.cc.add(value);
-		    break;
-		case FIELD_TYPE_BCC:
-		    s.bcc.add(value);
-		    break;
-		case FIELD_TYPE_ATTACHMENT:
-		    s.attachments.add(value);
-		    break;
-		}
-	    }
-	    for(StoredMailMessage message: res)
-	    {
-		final Message m = (Message)message;
-		if (!stringValues.containsKey(new Long(m.id)))//Should never happen;
-		    continue;
-		final StringValue s = stringValues.get(new Long(m.id));
-		m.to = s.to.toArray(new String[s.to.size()]);
-		m.cc = s.cc.toArray(new String[s.cc.size()]);
-		m.bcc = s.bcc.toArray(new String[s.bcc.size()]);
-		m.attachments = s.attachments.toArray(new String[s.attachments.size()]);
-	    }
-	    return res.toArray(new StoredMailMessage[res.size()]);
+	    return (StoredMailMessage[])queue.execInQueue(()->{
+		    final Map<Long, StringValue> stringValues = new HashMap();
+		    PreparedStatement st = con.prepareStatement(
+								"SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type,ext_info FROM mail_message WHERE mail_folder_id=?"
+								);
+		    st.setLong(1, folderRegistry.id);
+		    ResultSet rs = st.executeQuery();
+		    final List<StoredMailMessage> res = new LinkedList();
+		    while (rs.next())
+		    {
+			final Message message=new Message(con);
+			message.id = rs.getLong(1);
+			message.messageId = rs.getString(2).trim();
+			message.state = MailMessage.intToState(rs.getInt(3));
+			message.subject = rs.getString(4);
+			message.from = rs.getString(5);
+			message.sentDate = new java.util.Date(rs.getTimestamp(6).getTime());
+			message.receivedDate = new java.util.Date(rs.getTimestamp(7).getTime());
+			message.baseContent = rs.getString(8);
+			message.mimeContentType = rs.getString(9).trim();
+			message.rawMail = null;
+			message.extInfo = rs.getString(10).trim();
+			stringValues.put(new Long(message.id), new StringValue(message.id));
+			res.add(message);
+		    }
+		    final Statement vst = con.createStatement();
+		    rs = vst.executeQuery(
+					  "SELECT mail_message_id,field_type,value FROM mail_message_field"
+					  );
+		    while (rs.next())
+		    {
+			final long id = rs.getLong(1);
+			final int fieldType = rs.getInt(2);
+			final String value = rs.getString(3);
+			if (!stringValues.containsKey(new Long(id)))
+			    continue;
+			final StringValue s = stringValues.get(new Long(id));
+			switch(fieldType)
+			{
+			case FIELD_TYPE_TO:
+			    s.to.add(value);
+			    break;
+			case FIELD_TYPE_CC:
+			    s.cc.add(value);
+			    break;
+			case FIELD_TYPE_BCC:
+			    s.bcc.add(value);
+			    break;
+			case FIELD_TYPE_ATTACHMENT:
+			    s.attachments.add(value);
+			    break;
+			}
+		    }
+		    for(StoredMailMessage message: res)
+		    {
+			final Message m = (Message)message;
+			if (!stringValues.containsKey(new Long(m.id)))//Should never happen;
+			    continue;
+			final StringValue s = stringValues.get(new Long(m.id));
+			m.to = s.to.toArray(new String[s.to.size()]);
+			m.cc = s.cc.toArray(new String[s.cc.size()]);
+			m.bcc = s.bcc.toArray(new String[s.bcc.size()]);
+			m.attachments = s.attachments.toArray(new String[s.attachments.size()]);
+		    }
+		    return res.toArray(new StoredMailMessage[res.size()]);
+		});
 	}
-	catch(SQLException e)
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+    @Override public void delete(StoredMailMessage message) throws PimException
+    {
+	NullCheck.notNull(message, "message");
+	final Message messageSql = (Message)message;
+	try {
+	    queue.execInQueue(()->{
+		    PreparedStatement st = con.prepareStatement(
+								"DELETE FROM mail_message_field WHERE mail_message_id=?"
+								);
+		    st.setLong(1, messageSql.id);
+		    st.executeUpdate();
+		    st = con.prepareStatement(
+					      "DELETE FROM mail_message WHERE id=?"
+					      );
+		    st.setLong(1, messageSql.id);
+		    st.executeUpdate();
+		    return null;
+		});
+	}
+	catch(Exception e)
 	{
 	    throw new PimException(e);
 	}
@@ -207,39 +234,20 @@ class Messages implements MailMessages
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
+	final Folder folderRegistry = (Folder)folder;
+	final Message messageSql = (Message)message;
 	try {
-	    final Folder folderRegistry = (Folder)folder;
-	    final Message messageSql = (Message)message;
-	    final PreparedStatement st = con.prepareStatement(
-							      "UPDATE mail_message SET mail_folder_id=? WHERE id=?"
-							      );
-	    st.setLong(1, folderRegistry.id);
-	    st.setLong(2, messageSql.id);
-	    st.executeUpdate();
+	    queue.execInQueue(()->{
+		    final PreparedStatement st = con.prepareStatement(
+								      "UPDATE mail_message SET mail_folder_id=? WHERE id=?"
+								      );
+		    st.setLong(1, folderRegistry.id);
+		    st.setLong(2, messageSql.id);
+		    st.executeUpdate();
+		    return null;
+		});
 	}
-	catch(SQLException e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
-    @Override public void delete(StoredMailMessage message) throws PimException
-    {
-	NullCheck.notNull(message, "message");
-	try {
-	    final Message messageSql = (Message)message;
-	    PreparedStatement st = con.prepareStatement(
-							"DELETE FROM mail_message_field WHERE mail_message_id=?"
-							);
-	    st.setLong(1, messageSql.id);
-	    st.executeUpdate();
-	    st = con.prepareStatement(
-				      "DELETE FROM mail_message WHERE id=?"
-				      );
-	    st.setLong(1, messageSql.id);
-	    st.executeUpdate();
-	}
-	catch(SQLException e)
+	catch(Exception e)
 	{
 	    throw new PimException(e);
 	}
