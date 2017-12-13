@@ -34,6 +34,9 @@ import org.luwrain.pim.PimException;
 
 public class MailServerConversations
 {
+    static private final String TRUE = "true";
+    static private final String FALSE = "false";
+    
     static public final int SSL = 1;
     static public final int TLS = 2;
 
@@ -45,11 +48,54 @@ public class MailServerConversations
 	boolean newMessage(byte[] message, int num, int total);
     }
 
-    private final Properties props=new Properties();
-    private Session session=Session.getDefaultInstance(new Properties(), null);
+    static public final class Params
+    {
+	public boolean doAuth = false;
+	public String host = "";
+	public int port = 25;
+	public String login;
+	public String passwd;
+	public boolean ssl = false;
+	public boolean tls = false;
+	public Map<String, String> extProps = new HashMap();
+    }
+
+    private final Properties props;
+    //    private final Session session=Session.getDefaultInstance(new Properties(), null);
+    private final Session session;
     private Store store = null;
-    private Session smtpSession = null;
+    //    private Session smtpSession = null;
     private Transport smtpTransport = null;
+
+    public MailServerConversations(Params params) throws PimException
+    {
+	NullCheck.notNull(params, "params");
+	NullCheck.notEmpty(params.host, "params.host");
+	this.props = new Properties();
+        props.put("mail.smtp.auth", params.doAuth?TRUE:FALSE);
+        props.put("mail.smtp.host", params.host);
+        props.put("mail.smtp.port", "" + String.valueOf(params.port));
+	props.put("mail.smtp.ssl.enable", params.ssl?TRUE:FALSE);
+	props.put("mail.smtp.starttls.enable", params.tls?TRUE:FALSE);
+	//	final String l = login;
+	//	final String p = passwd;
+	try {
+	    this.session = Session.getInstance(props,
+					      new Authenticator(){
+						  protected PasswordAuthentication getPasswordAuthentication()
+						  {
+						      return new PasswordAuthentication(params.login, params.passwd);
+						  }
+					      });
+	    smtpTransport = session.getTransport("smtp");
+	    smtpTransport.connect();
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
+	}
+
 
         /** Fetching of messages from the server.
      *
@@ -148,7 +194,7 @@ public class MailServerConversations
 	for(Map.Entry<String,String> p: extraProps.entrySet())
 	    props.put(p.getKey(), p.getValue());
 	try {
-	    session = Session.getInstance(props,null);
+	    //	    session = Session.getInstance(props,null);
 	    store = session.getStore();
 	    store.connect(host, login, passwd);
 	}
@@ -158,33 +204,6 @@ public class MailServerConversations
 	}
     }
 
-    public void initSmtp(HashMap<String,String> settings,String host,
-		  String login, String passwd) throws PimException
-    {
-	NullCheck.notEmpty(host, "host");
-	NullCheck.notNull(login, "login");
-	NullCheck.notNull(passwd, "passwd");
-	props.clear();
-	for(Map.Entry<String,String> p:settings.entrySet())
-	    props.put(p.getKey(), p.getValue());
-	final String l = login;
-	final String p = passwd;
-	try {
-	    smtpSession = Session.getInstance(props,
-					      new Authenticator(){
-						  protected PasswordAuthentication getPasswordAuthentication()
-						  {
-						      return new PasswordAuthentication(l, p);
-						  }
-					      });
-	    smtpTransport=smtpSession.getTransport("smtp");
-	    smtpTransport.connect();
-	}
-	catch(MessagingException e)
-	{
-	    throw new PimException(e);
-	}
-	}
 
     public String[] getFolderNames() throws Exception
     {
