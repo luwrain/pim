@@ -17,47 +17,91 @@
 
 package org.luwrain.pim.mail.mem;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
 class Accounts implements MailAccounts
 {
-    @Override public StoredMailAccount[] load() throws PimException
+    private final List<Account> accounts = new LinkedList();
+
+    @Override public StoredMailAccount[] load()
     {
+	return accounts.toArray(new StoredMailAccount[accounts.size()]);
+    }
+
+    @Override public StoredMailAccount loadById(int id)
+    {
+	if (id < 0)
+	    throw new IllegalArgumentException("id (" + id + ") may not be negative");
+	for(Account a: accounts)
+	    if (a.id == id)
+		return a;
 	return null;
     }
 
-	@Override public StoredMailAccount loadById(long id) throws PimException
-    {
-	return null;
-    }
-
-    @Override public void save(MailAccount account) throws PimException
+    @Override public void save(MailAccount account)
     {
 	NullCheck.notNull(account, "account");
+	final Account newAccount = new Account(nextId());
+	newAccount.copyValues(account);
+	accounts.add(newAccount);
     }
 
-    @Override public void delete(StoredMailAccount account) throws PimException
+    @Override public void delete(StoredMailAccount account)
     {
 	NullCheck.notNull(account, "account");
+	final Account a = (Account)account;
+	final Iterator<Account> it = accounts.iterator();
+	while(it.hasNext())
+	{
+	    final Account v = it.next();
+	    if (v.id == a.id)
+	    {
+		accounts.remove(it);
+		return;
+	    }
+	}
     }
 
-    @Override public String getUniRef(StoredMailAccount account) throws PimException
+    @Override public String getUniRef(StoredMailAccount account)
     {
 	NullCheck.notNull(account, "account");
-	return "";
+	final Account a = (Account)account;
+	return MailStoring.ACCOUNT_UNIREF_PREFIX + ":" + a.id;
     }
 
     @Override public StoredMailAccount loadByUniRef(String uniRef)
     {
 	NullCheck.notEmpty(uniRef, "uniRef");
-	return null;
+	if (!uniRef.startsWith(MailStoring.ACCOUNT_UNIREF_PREFIX + ":"))
+	    return null;
+	final String numStr = uniRef.substring(MailStoring.ACCOUNT_UNIREF_PREFIX.length() + 1);
+	final int id;
+	try {
+	    id = Integer.parseInt(numStr);
+	}
+	catch(NumberFormatException e)
+	{
+	    return null;
+	}
+	return loadById(id);
     }
 
-    @Override public int getId(StoredMailAccount account) throws PimException
+    @Override public int getId(StoredMailAccount account)
     {
 	NullCheck.notNull(account, "account");
-	return 0;
+	final Account a = (Account)account;
+	return a.id;
+    }
+
+    private int nextId()
+    {
+	int value = 0;
+	for (Account a: accounts)
+	    value = Math.max(value, a.id);
+	return value + 1;
     }
 }

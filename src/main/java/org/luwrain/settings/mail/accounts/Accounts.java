@@ -44,7 +44,7 @@ MailStoring storing)
 	}
     }
 
-public Area createArea(ControlPanel controlPanel, long id)
+public Area createArea(ControlPanel controlPanel, int id)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
@@ -68,7 +68,7 @@ public Area createArea(ControlPanel controlPanel, long id)
 				     };
     }
 
-public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, long id)
+public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int id)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(event, "event");

@@ -19,5 +19,5 @@ package org.luwrain.pim.mail.sql;
 
 public class AccountUniRefProc
 {
-    static final String PREFIX = "mailaccount";
+    static final String PREFIX = org.luwrain.pim.mail.MailStoring.ACCOUNT_UNIREF_PREFIX;
 }

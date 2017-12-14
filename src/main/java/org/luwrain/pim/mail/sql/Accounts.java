@@ -57,9 +57,11 @@ class Accounts implements MailAccounts
 	return res;
     }
 
-    @Override public StoredMailAccount loadById(long id) throws PimException
+    @Override public StoredMailAccount loadById(int id) throws PimException
     {
-	final Account account = new Account(registry, (int)id);//FIXME:
+	if (id < 0)
+	    throw new IllegalArgumentException("id (" + id + ") may not be negative");
+	final Account account = new Account(registry, id);
 	return account.load()?account:null;
     }
 

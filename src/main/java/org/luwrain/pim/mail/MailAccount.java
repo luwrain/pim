@@ -19,6 +19,8 @@ package org.luwrain.pim.mail;
 
 import java.util.*;
 
+import org.luwrain.core.*;
+
 public class MailAccount implements Comparable
 {
     public enum Type {POP3, SMTP};
@@ -34,6 +36,21 @@ public class MailAccount implements Comparable
     public Set<Flags> flags = EnumSet.noneOf(Flags.class);
     public String substName = "";
     public String substAddress = "";
+
+    public void copyValues(MailAccount account)
+    {
+	NullCheck.notNull(account, "account");
+	this.type = account.type;
+	this.title = account.title;
+	this.host = account.host;
+	this.port = account.port;
+	this.login = account.login;
+	this.passwd = account.passwd;
+	this.trustedHosts = account.trustedHosts;
+	this.flags = account.flags;
+	this.substName = account.substName;
+	this.substAddress = account.substAddress;
+    }
 
     @Override public int compareTo(Object o)
     {

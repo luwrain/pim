@@ -25,28 +25,36 @@ import org.luwrain.pim.mail.*;
 
 class Storing implements MailStoring
 {
+    private final Accounts accounts;
+    private final Folders folders;
+    private final Rules rules;
+    private final Messages messages;
+
     Storing()
-		      {
-		      }
+    {
+	this.accounts = new Accounts();
+	this.folders = new Folders();
+	this.rules = new Rules();
+	this.messages = new Messages();
+    }
 
     @Override public MailRules getRules()
     {
-	return null;
+	return rules;
     }
 
     @Override public MailMessages getMessages()
     {
-	return null;
+	return messages;
     }
 
     @Override public MailFolders getFolders()
     {
-	return null;
+	return folders;
     }
 
     @Override public MailAccounts getAccounts()
     {
-	return null;
+	return accounts;
     }
-
 }

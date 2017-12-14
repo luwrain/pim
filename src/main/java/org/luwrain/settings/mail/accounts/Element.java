@@ -7,13 +7,15 @@ import org.luwrain.cpanel.*;
 public class Element implements org.luwrain.cpanel.Element
 {
 public final org.luwrain.cpanel.Element parent;
-public final long id;
+public final int id;
 public final String title;
 
-Element(org.luwrain.cpanel.Element parent, long id, String title)
+Element(org.luwrain.cpanel.Element parent, int id, String title)
     {
 	NullCheck.notNull(parent, "parent");
 	NullCheck.notNull(title, "title");
+	if (id < 0)
+	    throw new IllegalArgumentException("id (" + id + ") may not be empty");
 	this.parent = parent;
 	this.id = id;
 	this.title = title;
