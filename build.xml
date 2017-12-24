@@ -53,6 +53,9 @@
       <fileset dir="./build/tests">
         <include name="**/*.class"/>
       </fileset>
+            <fileset dir="./src/tests/resources">
+        <include name="**/*"/>
+      </fileset>
     </jar>
   </target>
   <target name="junit" depends="jar-tests">

@@ -83,19 +83,6 @@ return null;//new ContactsStoringSql(registry, con);
 
     static public ContactsStoring getContactsStoring(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	final Object o = luwrain.getSharedObject(Extension.CONTACTS_SHARED_OBJECT);
-	if (o == null)
-	{
-	    Log.error("pim", "unable to get contacts storing:no shared object " + Extension.CONTACTS_SHARED_OBJECT);
-	    return null;
-	}
-	if (!(o instanceof Factory))
-	{
-	    Log.error("pim", "unable to get mail storing:shared object " + Extension.CONTACTS_SHARED_OBJECT + " is not an instance of " + Factory.class.getName());
-	    return null;
-	}
-	final Factory factory = (Factory)o;
-	return factory.createContactsStoring();
+	return null;
     }
 }
