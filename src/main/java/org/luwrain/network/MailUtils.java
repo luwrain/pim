@@ -86,7 +86,7 @@ public class MailUtils
 	}
     }
 
-    Message getStoredMessage()
+    public Message getStoredMessage()
     {
 	return storedMsg;
     }

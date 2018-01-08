@@ -100,7 +100,7 @@ public class Factory implements org.luwrain.cpanel.Factory
 		final NewsGroup group = new NewsGroup();
 		group.name = strings.newGroupName();
 		storing.getGroups().save(group);
-		luwrain.message(strings.newGroupAdded(), Luwrain.MESSAGE_OK);
+		luwrain.message(strings.newGroupAdded(), Luwrain.MessageType.OK);
 		controlPanel.refreshSectionsTree();
 		return true;
 	    }

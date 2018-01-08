@@ -77,12 +77,12 @@ public class Area extends FormArea implements SectionArea
 	}
 	catch(NumberFormatException e)
 	{
-	    luwrain.message(strings.portNotNumber(), Luwrain.MESSAGE_ERROR);
+	    luwrain.message(strings.portNotNumber(), Luwrain.MessageType.ERROR);
 	    return false;
 	}
 	if (port <= 0)
 	{
-	    luwrain.message(strings.portMustBeGreaterZero(), Luwrain.MESSAGE_ERROR);
+	    luwrain.message(strings.portMustBeGreaterZero(), Luwrain.MessageType.ERROR);
 	    return false;
 	}
 	try {

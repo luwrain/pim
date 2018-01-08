@@ -54,7 +54,7 @@ class Area extends FormArea implements SectionArea
 	    }
 	    catch(NumberFormatException e)
 	    {
-		luwrain.message(strings.mailFolderFormBadOrderIndex(getEnteredText("order-index")), Luwrain.MESSAGE_ERROR);
+		luwrain.message(strings.mailFolderFormBadOrderIndex(getEnteredText("order-index")), Luwrain.MessageType.ERROR);
 		return false;
 	    }
 	    folder.setTitle(getEnteredText("title"));

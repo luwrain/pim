@@ -17,36 +17,60 @@
 
 package org.luwrain.pim.mail.mem;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
 class Folders implements MailFolders
 {
+    private final List<Folder> folders = new LinkedList();
+
     	    @Override public int getId(StoredMailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
-	return 0;
+	final Folder f = (Folder)folder;
+	return f.id;
     }
 
     @Override public StoredMailFolder loadById(int id)
     {
+	if (id < 0)
+	    throw new IllegalArgumentException("id (" + id + ") may not be negative");
+	for(Folder f: folders)
+	    if (f.id == id)
+		return f;
 	return null;
     }
 
     @Override public void save(StoredMailFolder parentFolder, MailFolder newFolder)
     {
+	/*
 	NullCheck.notNull(parentFolder, "parentFolder");
 	NullCheck.notNull(parentFolder, "parentFolder");
+	final Folder pf = (Folder)parentFolder;
+	final Folder newFolder = new Folder(nextId());
+	newFolder.copyValues(folder);
+	folder.parentId = pf.id;
+	folders.add(newFolder);
+	*/
     }
 
     @Override public StoredMailFolder getRoot()
     {
-	return null;
+	for(Folder f: folders)
+	    if (f.id == f.parentId)
+		return f;
+		return null;
     }
 
     @Override public StoredMailFolder[] load(StoredMailFolder folder)
     {
+	NullCheck.notNull(folder, "folder");
+	final Folder f = (Folder)folder;
+	final List<Folder> res = new LinkedList();
+	
 	return null;
     }
 
