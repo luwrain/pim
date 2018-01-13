@@ -17,15 +17,17 @@
 
 package org.luwrain.pim;
 
+import java.util.*;
+
 import org.luwrain.base.*;
 import org.luwrain.core.*;
+
+import org.luwrain.app.fetch.Base.Type;
 
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
     static public final String CONTACTS_SHARED_OBJECT = "luwrain.pim.contacts";
     static public final String MAIL_SHARED_OBJECT = "luwrain.pim.mail";
-
-
 
     private org.luwrain.pim.mail.sql.FolderUniRefProc mailFolderUniRefProc;
 
@@ -54,7 +56,70 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	    };
     }
 
-    @Override public void close()
+    @Override public Command[] getCommands(Luwrain luwrain)
+    {
+	return new Command[]{
+
+	    new Command(){
+		@Override public String getName()
+		{
+		    return "fetch";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    luwrain.launchApp("fetch");
+		}
+	    },
+
+	};
+    }
+
+    @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
+    {
+	return new ExtensionObject[]{
+	    
+	    new Shortcut() {
+		@Override public String getExtObjName()
+		{
+		    return "fetch";
+		}
+		@Override public Application[] prepareApp(String[] args)
+		{
+		    NullCheck.notNull(args, "args");
+		    if (args.length == 0)
+			return new Application[]{new org.luwrain.app.fetch.App(EnumSet.of(Type.NEWS, Type.INCOMING_MAIL, Type.OUTGOING_MAIL))};
+		    if (args.length > 1)
+			return null;
+		    final String arg = args[0];
+		    Set<Type> type;
+		    switch(arg)
+		    {
+		    case "--ALL":
+			type = EnumSet.of(Type.NEWS, Type.INCOMING_MAIL, Type.OUTGOING_MAIL);
+			break;
+		    case "--NEWS":
+			type = EnumSet.of(Type.NEWS);
+			break;
+		    case "--MAIL":
+			type = EnumSet.of(Type.INCOMING_MAIL, Type.OUTGOING_MAIL);
+			break;
+		    case "--INCOMING-MAIL":
+			type = EnumSet.of(Type.INCOMING_MAIL);
+			break;
+		    case "--OUTGOING-MAIL":
+			type = EnumSet.of(Type.OUTGOING_MAIL);
+			break;
+		    default:
+			return new Application[0];
+		    };
+		    return new Application[]{new org.luwrain.app.fetch.App(type)};
+		}
+	    },
+
+	};
+    }
+
+@Override public void close()
     {
 	Connections.close();
     }
