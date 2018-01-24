@@ -25,6 +25,8 @@ public class News implements Worker
 {
     static public String NAME = "luwrain.pim.workers.news";
 
+    static protected final String LOG_COMPONENT = "pim-workers";
+
     protected final Luwrain luwrain;
     protected final org.luwrain.pim.fetching.Control control;
 
@@ -44,8 +46,21 @@ public class News implements Worker
 
     @Override public void run()
     {
-	final org.luwrain.pim.fetching.News newsFetching = new org.luwrain.pim.fetching.News(control, null);//FIXME:
-	
+	final org.luwrain.pim.fetching.Strings strings = (org.luwrain.pim.fetching.Strings)luwrain.i18n().getStrings(org.luwrain.pim.fetching.Strings.NAME);
+	if (strings == null)
+	{
+	    Log.error(LOG_COMPONENT, "unable to launch the worker \'" + NAME + "\' since there is no strings object with the name \'" + org.luwrain.pim.fetching.Strings.NAME + "\'");
+	    return;
+	}
+	final org.luwrain.pim.fetching.News newsFetching = new org.luwrain.pim.fetching.News(control, strings);
+	try {
+	    newsFetching.fetch();
+	}
+	catch(InterruptedException e)
+	{
+	    Log.debug(LOG_COMPONENT, "the worker \'" + NAME + "\' has been interrupted");
+	    return;
+	}
     }
 
     @Override public String getExtObjName()

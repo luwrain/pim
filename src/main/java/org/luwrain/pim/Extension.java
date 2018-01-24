@@ -26,15 +26,14 @@ import org.luwrain.app.fetch.Base.Type;
 
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
-    static public final String CONTACTS_SHARED_OBJECT = "luwrain.pim.contacts";
-    static public final String MAIL_SHARED_OBJECT = "luwrain.pim.mail";
-
+    private org.luwrain.pim.workers.News newsWorker = null;
     private org.luwrain.pim.mail.sql.FolderUniRefProc mailFolderUniRefProc;
 
     @Override public String init(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	Connections.init(luwrain);
+	this.newsWorker = new org.luwrain.pim.workers.News(luwrain);
 	return null;
     }
 
@@ -77,7 +76,9 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
 	return new ExtensionObject[]{
-	    
+
+	    newsWorker,
+
 	    new Shortcut() {
 		@Override public String getExtObjName()
 		{
