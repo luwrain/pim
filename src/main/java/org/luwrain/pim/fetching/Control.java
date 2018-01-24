@@ -16,14 +16,13 @@
 
 //LWR_API 1.0
 
-package org.luwrain.network.fetching;
+package org.luwrain.pim.fetching;
 
-import org.luwrain.pim.*;
+import org.luwrain.core.Luwrain;
 
-public class FetchingException extends PimException
+public interface Control
 {
-    public FetchingException(String message)
-    {
-	super(message);
-    }
+    void message(String text);
+    Luwrain luwrain();
+    void checkInterrupted() throws InterruptedException;
 }

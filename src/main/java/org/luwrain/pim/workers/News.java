@@ -19,14 +19,14 @@
 package org.luwrain.pim.workers;
 
 import org.luwrain.core.*;
-import org.luwrain.network.fetching.*;
+import org.luwrain.pim.fetching.*;
 
 public class News implements Worker
 {
     static public String NAME = "luwrain.pim.workers.news";
 
     protected final Luwrain luwrain;
-    protected final org.luwrain.network.fetching.Control control;
+    protected final org.luwrain.pim.fetching.Control control;
 
     public News(Luwrain luwrain)
     {
@@ -35,7 +35,7 @@ public class News implements Worker
 	this.control = new DefaultControl(luwrain);
     }
 
-        public News(org.luwrain.network.fetching.Control control)
+        public News(org.luwrain.pim.fetching.Control control)
     {
 	NullCheck.notNull(control, "control");
 	this.control = control;
@@ -44,7 +44,7 @@ public class News implements Worker
 
     @Override public void run()
     {
-	final org.luwrain.network.fetching.News newsFetching = new org.luwrain.network.fetching.News(control, null);//FIXME:
+	final org.luwrain.pim.fetching.News newsFetching = new org.luwrain.pim.fetching.News(control, null);//FIXME:
 	
     }
 

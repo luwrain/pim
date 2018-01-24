@@ -16,10 +16,12 @@
 
 //LWR_API 1.0
 
-package org.luwrain.network.fetching;
+package org.luwrain.pim.fetching;
 
 public interface Strings
 {
+    static public final String NAME = "luwrain.pim.fetching";
+    
     String actionFetchAll();
     String actionFetchIncomingMail();
     String actionFetchMail();

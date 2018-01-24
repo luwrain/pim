@@ -16,7 +16,7 @@
 
 //LWR_API 1.0
 
-package org.luwrain.network.fetching;
+package org.luwrain.pim.fetching;
 
 import java.util.*;
 import java.io.*;
@@ -27,13 +27,13 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.network.*;
 
-class Smtp extends Base
+public class Smtp extends Base
 {
     private MailStoring storing;
     private StoredMailFolder pending;
     private StoredMailFolder sent;
 
-    Smtp(MailStoring storing, Control control, Strings strings,
+    public Smtp(MailStoring storing, Control control, Strings strings,
 	 String pendingUniRef, String sentUniRef) throws PimException
     {
 	super(control, strings);

@@ -20,7 +20,7 @@ package org.luwrain.pim.workers;
 
 import org.luwrain.core.*;
 
-public class DefaultControl implements org.luwrain.network.fetching.Control
+public class DefaultControl implements org.luwrain.pim.fetching.Control
 {
     protected final Luwrain luwrain;
 

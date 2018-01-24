@@ -16,18 +16,18 @@
 
 //LWR_API 1.0
 
-package org.luwrain.network.fetching;
+package org.luwrain.pim.fetching;
 
 import org.luwrain.core.*;
 
-class Base
+public class Base
 {
     protected final Control control;
     protected final Luwrain luwrain;
     protected final Registry registry;
     protected final Strings strings;
 
-    Base(Control control, Strings strings)
+    public Base(Control control, Strings strings)
     {
 	NullCheck.notNull(control, "control");
 	NullCheck.notNull(strings, "strings");
@@ -43,7 +43,7 @@ class Base
 	control.message(text);
     }
 
-    void checkInterrupted() throws InterruptedException
+    protected void checkInterrupted() throws InterruptedException
     {
 	control.checkInterrupted();
     }

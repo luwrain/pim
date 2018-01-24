@@ -16,7 +16,7 @@
 
 //LWR_API 1.0
 
-package org.luwrain.network.fetching;
+package org.luwrain.pim.fetching;
 
 import java.util.*;
 import java.io.*;
@@ -27,11 +27,11 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.network.*;
 
-class Mail extends Base
+public class Mail extends Base
 {
     private MailStoring storing;
 
-    Mail(Luwrain luwrain, Control control, Strings strings)
+    public Mail(Luwrain luwrain, Control control, Strings strings)
     {
 	super(control, strings);
     }

@@ -16,7 +16,7 @@
 
 //LWR_API 1.0
 
-package org.luwrain.network.fetching;
+package org.luwrain.pim.fetching;
 
 import java.util.*;
 import java.io.*;
@@ -27,13 +27,13 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.network.*;
 
-class Pop3 extends Base implements MailServerConversations.Listener
+public class Pop3 extends Base implements MailServerConversations.Listener
 {
     private final MailStoring storing;
     private final Rule[] rules;
     private final StoredMailFolder inbox;
 
-    Pop3(Control control, Strings strings, MailStoring storing) throws PimException, InterruptedException
+    public Pop3(Control control, Strings strings, MailStoring storing) throws PimException, InterruptedException
     {
 	super(control, strings);
 	NullCheck.notNull(storing, "storing");

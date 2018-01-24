@@ -16,7 +16,7 @@
 
 //LWR_API 1.0
 
-package org.luwrain.network.fetching;
+package org.luwrain.pim.fetching;
 
 import java.net.*;
 import java.util.*;

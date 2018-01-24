@@ -14,9 +14,7 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
-package org.luwrain.network.fetching;
+package org.luwrain.pim.fetching;
 
 import java.net.URL;
 import java.util.*;
