@@ -61,7 +61,7 @@ public class MailServerConversations
 
     private final Properties props;
     //    private final Session session=Session.getDefaultInstance(new Properties(), null);
-    private final Session session;
+final Session session;
     private Store store = null;
     //    private Session smtpSession = null;
     private Transport smtpTransport = null;
@@ -213,37 +213,21 @@ public class MailServerConversations
 	return result;
     }
 
-    private byte[] saveToByteArray(Message message) throws IOException
+    byte[] saveToByteArray(Message message) throws MessagingException, IOException
     {
 	NullCheck.notNull(message, "message");
+	final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 	try {
-	    final File tempFile = File.createTempFile("mail-"+String.valueOf(message.hashCode()), ".tmp");
-	    InputStream is = null;
-	    OutputStream os = null;
-	    try {
-		os=new FileOutputStream(tempFile);
-		message.writeTo(os);
-		os.flush();
-		os.close();
-		os = null;
-		is = new FileInputStream(tempFile);
-		return org.luwrain.util.FileUtils.readAllBytes(is);
-	    }
-	    finally {
-		if (is != null)
-		    is.close();
-		if (os != null)
-		    os.close();
-		tempFile.delete();
-	    }
+	    message.writeTo(byteStream);
+	    byteStream.flush();
+	    return byteStream.toByteArray();
 	}
-	catch(MessagingException e)
-	{
-	    throw new IOException("Unable to save a message as a byte array", e);
+	finally {
+	    byteStream.close();
 	}
     }
 
-    private Message loadFromByteArray(byte[] bytes) throws MessagingException, IOException
+    Message loadFromByteArray(byte[] bytes) throws MessagingException, IOException
     {
 	NullCheck.notNull(bytes, "bytes");
 	final InputStream is = new ByteArrayInputStream(bytes);
