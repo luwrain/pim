@@ -31,6 +31,7 @@ import javax.mail.Message.RecipientType;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
+import org.luwrain.util.*;
 
 public final class BinaryMessage
 {
@@ -38,11 +39,11 @@ public final class BinaryMessage
     {
 	NullCheck.notNull(message, "message");
 	NullCheck.notNull(extraHeaders, "extraHeaders");
-	final javax.mail.internet.MimeMessage mimeMessage = convert(message, extraHeaders);
+	final javax.mail.internet.MimeMessage mimeMessage = convertToMimeMessage(message, extraHeaders);
 	return toByteArray(mimeMessage);
     }
 
-    static private javax.mail.internet.MimeMessage convert(MailMessage srcMsg, Map<String, String> headers) throws MessagingException, UnsupportedEncodingException
+    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws MessagingException, UnsupportedEncodingException
     {
 	NullCheck.notNull(srcMsg, "srcMsg");
 	NullCheck.notNull(headers, "headers");
@@ -95,6 +96,31 @@ public final class BinaryMessage
 	return message;
     }
 
+    static public void convertFromMimeMessage(MimeMessage srcMsg, MailMessage dest, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
+    {
+	NullCheck.notNull(srcMsg, "srcMsg");
+	NullCheck.notNull(dest, "dest");
+	NullCheck.notNull(htmlPreview, "htmlPreview");
+	dest.subject = srcMsg.getSubject();
+	if (dest.subject == null)
+	    dest.subject = "";
+	if(srcMsg.getFrom() != null)
+	    dest.from = MimeUtility.decodeText(srcMsg.getFrom()[0].toString()); else
+	    dest.from = "";
+	dest.to = decodeAddrs(srcMsg.getRecipients(RecipientType.TO));
+	dest.cc = decodeAddrs(srcMsg.getRecipients(RecipientType.CC));
+	dest.bcc = decodeAddrs(srcMsg.getRecipients(RecipientType.BCC));
+	dest.sentDate = srcMsg.getSentDate();
+	dest.receivedDate = srcMsg.getReceivedDate();
+	if (dest.receivedDate == null)
+	    dest.receivedDate = new java.util.Date();
+	final MimePartCollector collector = new MimePartCollector(htmlPreview);
+	dest.baseContent = collector.run(srcMsg.getContent(), srcMsg.getContentType(), "", "");
+	dest.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
+	dest.mimeContentType = srcMsg.getContentType();
+    }
+
+
     static private byte[] toByteArray(javax.mail.Message message) throws MessagingException, IOException
     {
 	NullCheck.notNull(message, "message");
@@ -106,6 +132,93 @@ public final class BinaryMessage
 	}
 	finally {
 	    byteStream.close();
+	}
+    }
+
+    static private String[] decodeAddrs(Address[] addrs) throws UnsupportedEncodingException
+    {
+	if (addrs == null)
+	    return new String[0];
+	final List<String> res=new LinkedList();
+	for(int i = 0;i < addrs.length;++i)
+	    if (addrs[i] != null)
+		res.add(MimeUtility.decodeText(addrs[i].toString()));
+	return res.toArray(new String[res.size()]);
+    }
+
+    static class MimePartCollector
+    {
+	final LinkedList<String> attachments = new LinkedList<String>();
+	private HtmlPreview htmlPreview = null;
+	//    final StringBuilder body = new StringBuilder();
+
+	MimePartCollector()
+	{
+	    htmlPreview = null;
+	}
+
+	MimePartCollector(HtmlPreview htmlPreview)
+	{
+	    this.htmlPreview = htmlPreview;
+	}
+
+	String run(Object o, String contentType,
+		   String fileName, String disposition) throws IOException, MessagingException
+	{
+	    if(o instanceof MimeMultipart)
+	    {
+		final Multipart content =(Multipart)o;
+		//	    System.out.println("multipart " + contentType);
+		final boolean alternative = (contentType.toLowerCase().indexOf("alternative") >= 0);
+		//	    System.out.println("alternative " + alternative);
+		final StringBuilder textRes = new StringBuilder();
+		final StringBuilder htmlRes = new StringBuilder();
+		for(int i=0;i<content.getCount();i++)
+		{
+		    final MimeBodyPart part = (MimeBodyPart) content.getBodyPart(i);
+		    if (part == null || part.getContent() == null)
+			continue;
+		    final String partContentType = part.getContentType() != null?part.getContentType():"";
+		    final boolean html = (partContentType.toLowerCase().indexOf("html") >= 0);
+		    if (html)
+			htmlRes.append(run(part.getContent(), partContentType, 
+					   part.getFileName() != null?part.getFileName():"", 
+					   part.getDisposition() != null?part.getDisposition():"")); else
+			textRes.append(run(part.getContent(), partContentType, 
+					   part.getFileName() != null?part.getFileName():"" , 
+					   part.getDisposition() != null?part.getDisposition():""));
+		}
+		final String textStr = textRes.toString();
+		final String htmlStr = htmlRes.toString();
+		if (!alternative)
+		    return textStr + "\n" + htmlStr;
+		if (!textStr.trim().isEmpty())
+		    return textStr;
+		return htmlStr;
+	    }
+
+	    if ((disposition != null && disposition.toLowerCase().indexOf("attachment") >= 0) ||
+		contentType.toLowerCase().indexOf("text") < 0)
+	    {
+		if (fileName != null && !fileName.trim().isEmpty())
+		{
+		    attachments.add(MimeUtility.decodeText(fileName));
+		    onAttachment(MimeUtility.decodeText(fileName), o);
+		} else
+		{
+		    attachments.add(contentType);
+		    onAttachment(contentType, o);
+		}
+		return "";
+	    }
+	    if (contentType != null && contentType.toLowerCase().indexOf("html") >= 0)
+		return htmlPreview.generateHtmlTextPreview(o.toString());
+	    return o.toString();
+	}
+
+	protected void onAttachment(String fileName, Object obj) throws IOException
+	{
+	    //	System.out.println(fileName + ":" + obj.getClass().getName());
 	}
     }
 }

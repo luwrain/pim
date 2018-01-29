@@ -27,27 +27,48 @@ import org.luwrain.core.*;
 
 class AddressUtils
 {
-    static public String makeEncodedAddress(String name, String addr) throws UnsupportedEncodingException
+    static String getPersonal(String addr)
     {
-	NullCheck.notNull(name, "name");
 	NullCheck.notNull(addr, "addr");
-	if (name.trim().isEmpty())
-	    return addr;
-	return MimeUtility.encodeText(name) + " <" + addr + ">";
+	if (addr.trim().isEmpty())
+	    return "";
+	try {
+	    final javax.mail.internet.InternetAddress inetAddr = new javax.mail.internet.InternetAddress(addr, false);
+	    final String personal = inetAddr.getPersonal();
+	    return personal != null?personal.trim():"";
+	}
+	catch (javax.mail.internet.AddressException e)
+	{
+	    return "";
+	}
     }
 
-    static String[] decodeAddrs(Address[] addrs) throws UnsupportedEncodingException
+        static String getAddress(String addr)
     {
-	if (addrs == null)
-	    return new String[0];
-	final List<String> res=new LinkedList();
-	for(int i = 0;i < addrs.length;++i)
-	    if (addrs[i] != null)
-		res.add(MimeUtility.decodeText(addrs[i].toString()));
-	return res.toArray(new String[res.size()]);
+	NullCheck.notNull(addr, "addr");
+	if (addr.trim().isEmpty())
+	    return "";
+	try {
+	    final javax.mail.internet.InternetAddress inetAddr = new javax.mail.internet.InternetAddress(addr, false);
+	    final String address = inetAddr.getAddress();
+	    return address != null?address.trim():addr;
+	}
+	catch (javax.mail.internet.AddressException e)
+	{
+	    return addr;
+	}
     }
 
-    static public InternetAddress[] makeInternetAddrs(String[] addrs) throws AddressException
+    static public String combinePersonalAndAddress(String personal, String addr)
+    {
+	NullCheck.notNull(personal, "personal");
+	NullCheck.notNull(addr, "addr");
+	if (personal.trim().isEmpty())
+	    return addr.trim();
+	return personal.trim() + " <" + addr.trim() + ">";
+    }
+
+    static InternetAddress[] makeInternetAddrs(String[] addrs) throws AddressException
     {
 	NullCheck.notNullItems(addrs, "addrs");
 	final InternetAddress[] res =new InternetAddress[addrs.length];

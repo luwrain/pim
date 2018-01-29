@@ -45,29 +45,7 @@ public class MailUtils
     private final Session session=Session.getDefaultInstance(new Properties(), null); // by default was used empty session for working .eml files
     private final Message storedMsg;
 
-    public MailUtils()
-    {
-	storedMsg = new MimeMessage(session);
-    }
-
-    MailUtils(Message message)
-    {
-	NullCheck.notNull(message, "message");
-	storedMsg = message;
-    }
-
-    public MailUtils(InputStream fs) throws PimException, IOException
-    {
-	NullCheck.notNull(fs, "fs");
-	try {
-	    storedMsg = new MimeMessage(session, fs);
-	}
-	catch(MessagingException e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
+    //needed in app mail
     public MailUtils(byte[] bytes) throws PimException, IOException
     {
 	NullCheck.notNull(bytes, "bytes");
@@ -84,82 +62,6 @@ public class MailUtils
 	{
 	    throw new PimException(e);
 	}
-    }
-
-    public Message getStoredMessage()
-    {
-	return storedMsg;
-    }
-
-    public void saveTo(MailMessage msg, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
-    {
-	NullCheck.notNull(msg, "msg");
-	NullCheck.notNull(htmlPreview, "htmlPreview");
-	msg.subject = storedMsg.getSubject();
-	if (msg.subject == null)
-	    msg.subject = "";
-	if(storedMsg.getFrom()!=null)
-	    msg.from = MimeUtility.decodeText(storedMsg.getFrom()[0].toString()); else
-	    msg.from = "";
-	msg.to = decodeAddrs(storedMsg.getRecipients(RecipientType.TO));
-	msg.cc = decodeAddrs(storedMsg.getRecipients(RecipientType.CC));
-	msg.bcc = decodeAddrs(storedMsg.getRecipients(RecipientType.BCC));
-	msg.sentDate=storedMsg.getSentDate();
-	msg.receivedDate=storedMsg.getReceivedDate();
-	if (msg.receivedDate == null)
-	    msg.receivedDate = new java.util.Date();
-	final MimePartCollector collector = new MimePartCollector(htmlPreview);
-	msg.baseContent = collector.run(storedMsg.getContent(), storedMsg.getContentType(), "", "");
-	msg.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
-	msg.mimeContentType = storedMsg.getContentType();
-    }
-
-    public void saveTo(FileOutputStream fs) throws MessagingException, IOException
-    {
-	NullCheck.notNull(fs, "fs");
-	try {
-	    storedMsg.writeTo(fs);
-	}
-	finally {
-	    fs.flush();
-	    fs.close();
-	}
-    }
-
-    public byte[] saveToByteArray() throws IOException, PimException
-    {
-	try {
-	    final File temp = File.createTempFile("email-"+String.valueOf(storedMsg.hashCode()), ".tmp");
-	    try {
-		FileOutputStream fs=new FileOutputStream(temp);
-		storedMsg.writeTo(fs);
-		fs.flush();
-		fs.close();
-		return Files.readAllBytes(temp.toPath());
-	    }
-	    finally {
-		temp.delete();
-	    }
-	}
-	catch(MessagingException e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
-    public String getMessageId() throws PimException, MessagingException
-    {
-	if(storedMsg instanceof IMAPMessage)
-	{
-	    final IMAPMessage imessage=((IMAPMessage)storedMsg);
-	    return imessage.getMessageID();
-	} else 
-	    if(storedMsg instanceof POP3Message)
-	    {
-		final POP3Message pmessage=((POP3Message)storedMsg);
-		return pmessage.getMessageID();
-	    } else
-		throw new PimException("Unknown email Message class "+storedMsg.getClass().getName());
     }
 
     public String[] getReplyTo(boolean decode) throws PimException
@@ -245,6 +147,7 @@ public class MailUtils
 	}
     }
 
+    //needed by app-mail 
     static public String extractNameFromAddr(String addr)
     {
 	NullCheck.notNull(addr, "addr");
@@ -263,16 +166,4 @@ public class MailUtils
 	    return addr;
 	}
     }
-
-        static private String[] decodeAddrs(Address[] addrs) throws UnsupportedEncodingException
-    {
-	if (addrs == null)
-	    return new String[0];
-	final LinkedList<String> res=new LinkedList<String>();
-	for(int i = 0;i < addrs.length;++i)
-	    if (addrs[i] != null)
-		res.add(MimeUtility.decodeText(addrs[i].toString()));
-	return res.toArray(new String[res.size()]);
-    }
-
 }

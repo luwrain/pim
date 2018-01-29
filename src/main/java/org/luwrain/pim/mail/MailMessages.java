@@ -28,4 +28,5 @@ public interface MailMessages
     void moveToFolder(StoredMailMessage message, StoredMailFolder folder) throws PimException;
     void delete(StoredMailMessage message) throws PimException;
     byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException;
+    MailMessage fromByteArray(byte[] bytes, org.luwrain.util.HtmlPreview htmlPreview) throws PimException;
 }
