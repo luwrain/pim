@@ -26,4 +26,9 @@ public class FetchingException extends PimException
     {
 	super(message);
     }
+
+    public FetchingException(Exception e)
+    {
+	super(e.getMessage(), e);
+    }
 }

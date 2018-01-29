@@ -1,16 +1,36 @@
+/*
+Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.pim.contacts;
 
 import java.sql.*;
 
 import org.luwrain.core.*;
-import org.luwrain.pim.*;
+import org.luwrain.pim.util.*;
 
-public class Factory
+public final class Factory
 {
+    static private final String LOG_COMPONENT = "pim-contacts";
+    static private final String SQLITE_INIT_RESOURCE = "/org/luwrain/pim/contacts.sqlite";
+
     private final Luwrain luwrain;
     private final Registry registry;
-    private final Settings.Storing settings;
+    private final Settings.Storing sett;
+    private final ExecQueues execQueues = new ExecQueues();
     private Connection con = null;
 
     public Factory(Luwrain luwrain)
@@ -18,71 +38,69 @@ public class Factory
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.registry = luwrain.getRegistry();
-	this.settings = Settings.createStoring(registry);
+	this.sett = Settings.createStoring(registry);
+	this.execQueues.start();
     }
 
-    private ContactsStoring createContactsStoring()
+    public ContactsStoring newContactsStoring(boolean highPriority)
     {
-	if (settings.getSharedConnection(false) && con != null)
-	    return null;//new ContactsStoringSql(registry, con);
-	final String type = settings.getType("");
-	if (type.trim().isEmpty())
+	if (con != null)
+	    return new org.luwrain.pim.contacts.sql.Storing(registry, con, execQueues, highPriority);
+	final String type = sett.getType("").trim().toLowerCase();
+	if (type.isEmpty())
 	{
-	    Log.error("pim", "contacts storing type may not be empty");
+	    Log.error(LOG_COMPONENT, "contacts storing type may not be empty");
 	    return null;
 	}
-	if (!type.equals("jdbc"))
+	switch(type)
 	{
-	    Log.error("pim", "unknown storing type \'" + settings.getType("") + "\' for contacts");
-	    return null;
-	}
-	final String driver = settings.getDriver("");
-	final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, settings.getUrl(""));
-	final String login = settings.getLogin("");
-	final String passwd = settings.getPasswd("");
-	if (driver.isEmpty() || url.isEmpty())
-	{
-	    Log.error("pim", "driver and url may not be empty in contacts storing settings");
-	    return null;
-	}
-	Log.debug("pim", "opening connection for contacts:URL=" + url + ",driver=" + driver + ",login=" + login);
-	try {
-	    Class.forName (driver).newInstance ();
-con = DriverManager.getConnection (url, login, passwd);
-if (settings.getInitProc("").toLowerCase().equals("sqlite-wal"))
-{
-    Log.debug("pim", "performing sqlite-wal init procedure for contacts storing");
-    final java.sql.ResultSet rs = con.createStatement().executeQuery("PRAGMA journal_mode = WAL;");
-    while (rs.next());
-}
-return null;//new ContactsStoringSql(registry, con);
-	}
-	catch(ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e)
-	{
-	    Log.error("pim", "unable to get JDBC connection for contacts:" + e.getClass().getName() + ":" + e.getMessage());
-	    e.printStackTrace();
+	case "jdbc":
+	    {
+	    	final String driver = sett.getDriver("");
+		final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, sett.getUrl(""));
+		if (driver.isEmpty() || url.isEmpty())
+		{
+		    Log.error(LOG_COMPONENT, "in contacts storing settings for JDBC the driver and url values may not be empty");
+		    return null;
+		}
+		final String login = sett.getLogin("");
+		final String passwd = sett.getPasswd("");
+		final String initProc = sett.getInitProc("");
+		this.con = org.luwrain.pim.SQL.connect(driver, url, login, passwd);
+		if (this.con == null)
+		    return null;
+		if (!org.luwrain.pim.SQL.initProc(con, initProc, SQLITE_INIT_RESOURCE))
+		{
+		    try {
+			this.con.close();
+		    }
+		    catch(SQLException e)
+		    {
+		    }
+		    this.con = null;
+		    return null;
+		}
+		return new org.luwrain.pim.contacts.sql.Storing(registry, this.con, execQueues, highPriority);
+	    }
+	default:
+	    Log.error(LOG_COMPONENT, "unknown contacts storing type \'" + type + "\'");
 	    return null;
 	}
     }
 
     public void close()
     {
-	if (con == null)
-	    return;
-	Log.debug("pim", "closing JDBC connection for contacts");
-	try {
-	    con.close();
-	}
-	catch (SQLException e)
+	execQueues.cancel();
+	if (con != null)
 	{
-	    Log.error("pim", "unable to close contacts JDBC connection normally:" + e.getMessage());
-	    e.printStackTrace();
+	    try {
+		con.close();
+	    }
+	    catch(SQLException e)
+	    {
+		Log.error(LOG_COMPONENT, "unable to close contacts JDBC connection normally:" + e.getClass().getName() + ":" + e.getMessage());
+	    }
+	    con = null;
 	}
-	con = null;
-    }
-
-    static public ContactsStoring getContactsStoring(Luwrain luwrain)
-    {
-	return null;
     }
 }

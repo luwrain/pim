@@ -15,7 +15,7 @@ public class Storing implements ContactsStoring
     private final ExecQueues execQueues;
     private final boolean highPriority;
 
-    Storing(Registry registry, Connection con, ExecQueues execQueues, boolean highPriority)
+    public Storing(Registry registry, Connection con, ExecQueues execQueues, boolean highPriority)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(con, "con");

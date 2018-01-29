@@ -63,5 +63,11 @@ public class Connections
 	return mailFactory.newMailStoring(highPriority);
     }
 
-    
+        static public org.luwrain.pim.contacts.ContactsStoring getContactsStoring(Luwrain luwrain, boolean highPriority)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	if (contactsFactory == null)
+	    return null;
+	return contactsFactory.newContactsStoring(highPriority);
+    }
 }

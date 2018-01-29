@@ -29,20 +29,19 @@ import org.luwrain.network.*;
 
 public class Smtp extends Base
 {
-    private MailStoring storing;
-    private StoredMailFolder pending;
+    private final MailStoring storing;
+    private final StoredMailFolder pending;
     private StoredMailFolder sent;
 
-    public Smtp(MailStoring storing, Control control, Strings strings,
-	 String pendingUniRef, String sentUniRef) throws PimException
+    public Smtp(Control control, Strings strings) throws PimException
     {
 	super(control, strings);
-	NullCheck.notNull(storing, "storing");
-	NullCheck.notEmpty(pendingUniRef, "pendingUniRef");
-	NullCheck.notEmpty(sentUniRef, "sentUniRef");
-	this.storing = storing;
-	    this.pending = storing.getFolders().loadByUniRef(pendingUniRef);
-	    this.sent = storing.getFolders().loadByUniRef(sentUniRef);
+	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
+	if (storing == null)
+	    throw new FetchingException("Отсутствует соединение");
+	final org.luwrain.pim.Settings.MailFolders sett = org.luwrain.pim.Settings.createMailFolders(luwrain.getRegistry());
+	this.pending = storing.getFolders().loadByUniRef(sett.getFolderPending(""));
+	this.sent = storing.getFolders().loadByUniRef(sett.getFolderSent(""));
 	if (this.pending == null || this.sent == null)
 throw new FetchingException("Не удалось подготовить почтовые группы, доставка сообщений отменена");
     }
@@ -50,7 +49,7 @@ throw new FetchingException("Не удалось подготовить почт
     void send() throws Exception
     {
 	final StoredMailMessage[] messages = storing.getMessages().load(pending);
-	if (messages == null || messages.length < 1)
+	if (messages.length == 0)
 	{
 	    message("Нет сообщений для отправки");//FIXME :
 	    return;
@@ -72,8 +71,7 @@ throw new FetchingException("Не удалось подготовить почт
 		queue.messages.add(m);
 		continue;
 	    }
-	    queue = new PendingQueue();
-	    queue.accountUniRef = uniRef;
+	    queue = new PendingQueue(uniRef);
 	    queue.messages.add(m);
 	    queues.add(queue);
 	}
@@ -101,6 +99,7 @@ throw new FetchingException("Не удалось подготовить почт
 	if (account == null)
 	{
 	    message(strings.errorLoadingMailAccount(queue.accountUniRef));
+	    return;
 	}
 	if (!account.getFlags().contains(MailAccount.Flags.ENABLED))
 	{
@@ -108,27 +107,15 @@ throw new FetchingException("Не удалось подготовить почт
 	    return;
 	}
 	message(strings.messagesInQueueForAccount(account.getTitle(), "" + queue.messages.size()));
-	final HashMap<String, String> settings = new HashMap();
-        settings.put("mail.smtp.auth", "true");
-        settings.put("mail.smtp.host", account.getHost());
-        settings.put("mail.smtp.port", "" + account.getPort());
-	Log.debug("fetch", "connecting " + account.getHost() + ":" + account.getPort());
-	if (account.getFlags().contains(MailAccount.Flags.SSL))
-	{
-	    Log.debug("fetch", "activating SSL");
-	    settings.put("mail.smtp.ssl.enable", "true"); 
-	} else
-	    settings.put("mail.smtp.ssl.enable", "false");
-	if (account.getFlags().contains(MailAccount.Flags.TLS))
-	{
-	    Log.debug("fetch", "activating TLS");
-	    settings.put("mail.smtp.starttls.enable", "true"); 
-	}else
-	    settings.put("mail.smtp.starttls.enable", "false");
 	final MailServerConversations.Params params = new MailServerConversations.Params();
+	params.host = account.getHost();
+	params.port = account.getPort();
+	params.ssl = account.getFlags().contains(MailAccount.Flags.SSL);
+	params.tls = account.getFlags().contains(MailAccount.Flags.TLS);
+	params.login = account.getLogin();
+	params.passwd = account.getPasswd();
 	final MailServerConversations conversation = new MailServerConversations(params);
 	message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
-	Log.debug("fetch", "login:" + account.getLogin());
 	//	conversation.initSmtp(settings, account.getHost(), 
 	//			      account.getLogin(), account.getPasswd());
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
@@ -139,13 +126,18 @@ throw new FetchingException("Не удалось подготовить почт
 	    message(strings.sendingMessage("" + count, "" + queue.messages.size()));
 	    conversation.send(message.getRawMessage());
 	    storing.getMessages().moveToFolder(message, sent);
-	    checkInterrupted();
 	}
     }
 
-    static private class PendingQueue
+    static private final class PendingQueue
     {
-	String accountUniRef; 
+	final String accountUniRef; 
 	final List<StoredMailMessage> messages = new LinkedList();
+
+	PendingQueue(String accountUniRef)
+	{
+	    NullCheck.notEmpty(accountUniRef, "accountUniRef");
+	    this.accountUniRef = accountUniRef;
+	}
     }
 }

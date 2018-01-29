@@ -147,16 +147,16 @@ public class MailServerConversations
 	}
     }
 
-    public void send(byte[] bytes) throws IOException, PimException
+    public void send(byte[] bytes) throws FetchingException
     {
 	NullCheck.notNull(smtpTransport, "smtpTransport");
-	final MailUtils util = null;//FIXME:new MailUtils(bytes);
 	try {
-	    smtpTransport.sendMessage(util.getStoredMessage(), util.getStoredMessage().getRecipients(RecipientType.TO));
+	    final Message message = loadFromByteArray(bytes);
+	    smtpTransport.sendMessage(message, message.getRecipients(RecipientType.TO));
 	}
-	catch(MessagingException e)
+	catch(MessagingException | IOException e)
 	{
-	    throw new PimException(e);
+	    throw new FetchingException(e);
 	}
     }
 
@@ -240,6 +240,18 @@ public class MailServerConversations
 	catch(MessagingException e)
 	{
 	    throw new IOException("Unable to save a message as a byte array", e);
+	}
+    }
+
+    private Message loadFromByteArray(byte[] bytes) throws MessagingException, IOException
+    {
+	NullCheck.notNull(bytes, "bytes");
+	final InputStream is = new ByteArrayInputStream(bytes);
+	try {
+	    return new javax.mail.internet.MimeMessage(session, is);
+	}
+	finally {
+	    is.close();
 	}
     }
 }
