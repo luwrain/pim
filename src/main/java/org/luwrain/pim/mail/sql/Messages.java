@@ -253,6 +253,18 @@ class Messages implements MailMessages
 	}
     }
 
+        @Override public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException
+    {
+	NullCheck.notNull(message, "message");
+	try {
+	    return org.luwrain.pim.mail.BinaryMessage.toByteArray(message, extraHeaders);
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+	    }
+
     static private class StringValue
     {
 	final long messageId;

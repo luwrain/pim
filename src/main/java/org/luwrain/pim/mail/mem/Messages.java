@@ -17,6 +17,8 @@
 
 package org.luwrain.pim.mail.mem;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
@@ -45,4 +47,16 @@ class Messages implements MailMessages
     {
 	NullCheck.notNull(message, "message");
     }
+
+    @Override public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException
+    {
+	NullCheck.notNull(message, "message");
+	try {
+	    return org.luwrain.pim.mail.BinaryMessage.toByteArray(message, extraHeaders);
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+	    }
 }

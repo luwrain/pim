@@ -91,62 +91,6 @@ public class MailUtils
 	return storedMsg;
     }
 
-    public void loadFrom(MailMessage msg, Map<String, String> headers) throws PimException
-    {
-	NullCheck.notNull(msg, "msg");
-	NullCheck.notNull(headers, "headers");
-	NullCheck.notNull(msg.subject, "msg.subject");
-	NullCheck.notEmpty(msg.from, "msg.from");
-	NullCheck.notEmptyArray(msg.to, "msg.to");
-	NullCheck.notEmptyItems(msg.to, "msg.to");
-	NullCheck.notEmptyItems(msg.cc, "msg.cc");
-	NullCheck.notEmptyItems(msg.bcc, "msg.bcc");
-	NullCheck.notEmptyItems(msg.attachments, "msg.attachments");
-	try {
-	    for(Map.Entry<String,String> e: headers.entrySet())
-		storedMsg.addHeader(e.getKey(), e.getValue());
-	    storedMsg.setSubject(msg.subject);
-	    storedMsg.setFrom(new InternetAddress(msg.from));
-	    storedMsg.setRecipients(RecipientType.TO, MailAddress.makeInternetAddrs(msg.to));
-	    if(msg.cc.length>0)
-		storedMsg.setRecipients(RecipientType.CC, MailAddress.makeInternetAddrs(msg.cc));
-	    if(msg.bcc.length>0)
-		storedMsg.setRecipients(RecipientType.BCC, MailAddress.makeInternetAddrs(msg.bcc));
-	    if(msg.sentDate!=null)
-		storedMsg.setSentDate(msg.sentDate);
-	    if(msg.attachments.length > 0)
-	    {
-		final Multipart mp = new MimeMultipart();
-		MimeBodyPart part = new MimeBodyPart();
-		part.setText(msg.baseContent);
-		mp.addBodyPart(part);
-		for(String fn:msg.attachments)
-		{
-		    part = new MimeBodyPart();
-		    final Path pfn = Paths.get(fn);
-		    part.setFileName(MimeUtility.encodeText(pfn.getFileName().toString()));
-		    final FileDataSource fds = new FileDataSource(fn);
-		    part.setDataHandler(new DataHandler(fds));
-		    mp.addBodyPart(part);
-		}
-		storedMsg.setContent(mp);
-	    } else
-	    {
-		if(msg.mimeContentType==null)
-		{ // simple text email body
-		    storedMsg.setText(msg.baseContent);
-		} else
-		{ // for example utf8 html - mimeContentType="text/html; charset=utf-8"
-		    storedMsg.setContent(msg.baseContent,msg.mimeContentType);
-		}
-	    }
-	}
-	catch(MessagingException | UnsupportedEncodingException e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
     public void saveTo(MailMessage msg, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
     {
 	NullCheck.notNull(msg, "msg");
@@ -157,9 +101,9 @@ public class MailUtils
 	if(storedMsg.getFrom()!=null)
 	    msg.from = MimeUtility.decodeText(storedMsg.getFrom()[0].toString()); else
 	    msg.from = "";
-	msg.to = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.TO));
-	msg.cc = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.CC));
-	msg.bcc = MailAddress.decodeAddrs(storedMsg.getRecipients(RecipientType.BCC));
+	msg.to = decodeAddrs(storedMsg.getRecipients(RecipientType.TO));
+	msg.cc = decodeAddrs(storedMsg.getRecipients(RecipientType.CC));
+	msg.bcc = decodeAddrs(storedMsg.getRecipients(RecipientType.BCC));
 	msg.sentDate=storedMsg.getSentDate();
 	msg.receivedDate=storedMsg.getReceivedDate();
 	if (msg.receivedDate == null)
@@ -319,4 +263,16 @@ public class MailUtils
 	    return addr;
 	}
     }
+
+        static private String[] decodeAddrs(Address[] addrs) throws UnsupportedEncodingException
+    {
+	if (addrs == null)
+	    return new String[0];
+	final LinkedList<String> res=new LinkedList<String>();
+	for(int i = 0;i < addrs.length;++i)
+	    if (addrs[i] != null)
+		res.add(MimeUtility.decodeText(addrs[i].toString()));
+	return res.toArray(new String[res.size()]);
+    }
+
 }

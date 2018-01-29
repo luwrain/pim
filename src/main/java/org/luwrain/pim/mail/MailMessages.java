@@ -17,6 +17,8 @@
 
 package org.luwrain.pim.mail;
 
+import java.util.*;
+
 import org.luwrain.pim.*;
 
 public interface MailMessages
@@ -25,4 +27,5 @@ public interface MailMessages
     StoredMailMessage[] load(StoredMailFolder folder) throws PimException;
     void moveToFolder(StoredMailMessage message, StoredMailFolder folder) throws PimException;
     void delete(StoredMailMessage message) throws PimException;
+    byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException;
 }

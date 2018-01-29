@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.network;
+package org.luwrain.pim.mail;
 
 import java.util.*;
 import java.io.*;
@@ -25,7 +25,7 @@ import javax.mail.internet.*;
 
 import org.luwrain.core.*;
 
-public class MailAddress
+class AddressUtils
 {
     static public String makeEncodedAddress(String name, String addr) throws UnsupportedEncodingException
     {
@@ -36,11 +36,11 @@ public class MailAddress
 	return MimeUtility.encodeText(name) + " <" + addr + ">";
     }
 
-    static public String[] decodeAddrs(Address[] addrs) throws UnsupportedEncodingException
+    static String[] decodeAddrs(Address[] addrs) throws UnsupportedEncodingException
     {
 	if (addrs == null)
 	    return new String[0];
-	final LinkedList<String> res=new LinkedList<String>();
+	final List<String> res=new LinkedList();
 	for(int i = 0;i < addrs.length;++i)
 	    if (addrs[i] != null)
 		res.add(MimeUtility.decodeText(addrs[i].toString()));
