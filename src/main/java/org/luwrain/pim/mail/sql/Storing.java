@@ -78,4 +78,11 @@ public final class Storing implements MailStoring, ExecQueue
 	NullCheck.notNull(callable, "callable");
 	return execQueues.exec(new FutureTask(callable), highPriority);
     }
+
+        @Override public     String combinePersonalAndAddr(String personal, String addr)
+    {
+	NullCheck.notNull(personal, "personal");
+	NullCheck.notNull(addr, "addr");
+	return AddressUtils.combinePersonalAndAddr(personal, addr);
+    }
 }

@@ -60,11 +60,11 @@ public final class BinaryMessage
 	    message.addHeader(e.getKey(), e.getValue());
 	message.setSubject(srcMsg.subject);
 	message.setFrom(new InternetAddress(srcMsg.from));
-	message.setRecipients(RecipientType.TO, AddressUtils.makeInternetAddrs(srcMsg.to));
+	message.setRecipients(RecipientType.TO, encodeAddrs(srcMsg.to));
 	if(srcMsg.cc.length>0)
-	    message.setRecipients(RecipientType.CC, AddressUtils.makeInternetAddrs(srcMsg.cc));
+	    message.setRecipients(RecipientType.CC, encodeAddrs(srcMsg.cc));
 	if(srcMsg.bcc.length>0)
-	    message.setRecipients(RecipientType.BCC, AddressUtils.makeInternetAddrs(srcMsg.bcc));
+	    message.setRecipients(RecipientType.BCC, encodeAddrs(srcMsg.bcc));
 	if(srcMsg.sentDate!=null)
 	    message.setSentDate(srcMsg.sentDate);
 	if(srcMsg.attachments.length > 0)
@@ -120,7 +120,6 @@ public final class BinaryMessage
 	dest.mimeContentType = srcMsg.getContentType();
     }
 
-
     static private byte[] toByteArray(javax.mail.Message message) throws MessagingException, IOException
     {
 	NullCheck.notNull(message, "message");
@@ -145,6 +144,19 @@ public final class BinaryMessage
 		res.add(MimeUtility.decodeText(addrs[i].toString()));
 	return res.toArray(new String[res.size()]);
     }
+
+    static InternetAddress[] encodeAddrs(String[] addrs) throws AddressException
+    {
+	NullCheck.notNullItems(addrs, "addrs");
+	final List<InternetAddress> res = new LinkedList();
+	for(String s: addrs)
+	    if (!s.trim().isEmpty())
+		res.add(new InternetAddress(s));
+	return res.toArray(new InternetAddress[res.size()]);
+    }
+
+
+    
 
     static class MimePartCollector
     {

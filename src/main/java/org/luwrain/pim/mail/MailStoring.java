@@ -28,4 +28,6 @@ public interface MailStoring extends Cloneable
    MailFolders getFolders();
     MailRules getRules();
     MailMessages getMessages();
+
+    String combinePersonalAndAddr(String personal, String addr);
 }

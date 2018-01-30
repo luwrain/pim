@@ -25,7 +25,7 @@ import javax.mail.internet.*;
 
 import org.luwrain.core.*;
 
-class AddressUtils
+public class AddressUtils
 {
     static String getPersonal(String addr)
     {
@@ -59,21 +59,12 @@ class AddressUtils
 	}
     }
 
-    static public String combinePersonalAndAddress(String personal, String addr)
+    static public String combinePersonalAndAddr(String personal, String addr)
     {
 	NullCheck.notNull(personal, "personal");
 	NullCheck.notNull(addr, "addr");
 	if (personal.trim().isEmpty())
 	    return addr.trim();
 	return personal.trim() + " <" + addr.trim() + ">";
-    }
-
-    static InternetAddress[] makeInternetAddrs(String[] addrs) throws AddressException
-    {
-	NullCheck.notNullItems(addrs, "addrs");
-	final InternetAddress[] res =new InternetAddress[addrs.length];
-	for(int i = 0;i < addrs.length;++i)
-	    res[i] = new InternetAddress(addrs[i]);
-	return res;
     }
 }

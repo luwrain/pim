@@ -57,4 +57,11 @@ class Storing implements MailStoring
     {
 	return accounts;
     }
+
+    @Override public     String combinePersonalAndAddr(String personal, String addr)
+    {
+	NullCheck.notNull(personal, "personal");
+	NullCheck.notNull(addr, "addr");
+	return AddressUtils.combinePersonalAndAddr(personal, addr);
+    }
 }

@@ -70,6 +70,19 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		}
 	    },
 
+	    	    new Command(){
+		@Override public String getName()
+		{
+		    return "wizard-mail";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    NullCheck.notNull(luwrain, "luwrain");
+		    new org.luwrain.pim.wizards.Mail(luwrain).start();
+		}
+	    },
+
+
 	};
     }
 
