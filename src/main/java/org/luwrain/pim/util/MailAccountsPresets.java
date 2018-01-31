@@ -24,7 +24,7 @@ import org.luwrain.core.*;
 public final class MailAccountsPresets
 {
     static private final String LOG_COMPONENT = "pim";
-    static private final String PROPERTIES_PATH = "org/luwrain/pim/presets.mail.properties";
+    static private final String PROPERTIES_PATH = "/org/luwrain/pim/presets.mail.properties";
 
     static public final class Smtp
     {
@@ -86,14 +86,14 @@ public final class MailAccountsPresets
 	if (host == null || host.trim().isEmpty())
 	    return null;
 	final String portStr = prop.getProperty(prefix + "port");
-	final String sslStr = prop.getProperty(prop + "ssl");
+	final String sslStr = prop.getProperty(prefix + "ssl");
 	final String tlsStr = prop.getProperty(prefix + "tls");
 	if (portStr == null || portStr.trim().isEmpty() ||
 	    sslStr == null || tlsStr == null)
 	    return null;
 	final int port;
 	try {
-	    port = Integer.parseInt(portStr);
+	    port = Integer.parseInt(portStr.trim());
 	}
 	catch(NumberFormatException e)
 	{
