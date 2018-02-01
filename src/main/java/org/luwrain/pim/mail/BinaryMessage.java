@@ -59,7 +59,7 @@ public final class BinaryMessage
 	for(Map.Entry<String,String> e: headers.entrySet())
 	    message.addHeader(e.getKey(), e.getValue());
 	message.setSubject(srcMsg.subject);
-	message.setFrom(new InternetAddress(srcMsg.from));
+	message.setFrom(encodeAddr(srcMsg.from));
 	message.setRecipients(RecipientType.TO, encodeAddrs(srcMsg.to));
 	if(srcMsg.cc.length>0)
 	    message.setRecipients(RecipientType.CC, encodeAddrs(srcMsg.cc));
@@ -145,13 +145,24 @@ public final class BinaryMessage
 	return res.toArray(new String[res.size()]);
     }
 
+    static InternetAddress encodeAddr(String addr) throws AddressException, UnsupportedEncodingException
+    {
+	NullCheck.notNull(addr, "addr");
+	final String personal = AddressUtils.getPersonal(addr);
+	final String mail = AddressUtils.getAddress(addr);
+	if (personal.trim().isEmpty())
+	    return new InternetAddress(addr);
+	return new InternetAddress(AddressUtils.combinePersonalAndAddr(MimeUtility.encodeText(personal), mail));
+
+	    }
+
     static InternetAddress[] encodeAddrs(String[] addrs) throws AddressException
     {
 	NullCheck.notNullItems(addrs, "addrs");
 	final List<InternetAddress> res = new LinkedList();
 	for(String s: addrs)
 	    if (!s.trim().isEmpty())
-		res.add(new InternetAddress(s));
+		res.add(new InternetAddress(s));//FIXME:encoding???
 	return res.toArray(new InternetAddress[res.size()]);
     }
 
