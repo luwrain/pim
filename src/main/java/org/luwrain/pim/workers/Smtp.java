@@ -53,8 +53,13 @@ public class Smtp implements Worker
 	}
 	try {
 	    	final org.luwrain.pim.fetching.Smtp smtpFetching = new org.luwrain.pim.fetching.Smtp(control, strings);
-	    smtpFetching.fetch();
-	    luwrain.message("Прикольно", Luwrain.MessageType.DONE);
+	    final org.luwrain.pim.fetching.Smtp.Result res = smtpFetching.fetch();
+	    if (res.total > 0)
+	    {
+		if (res.total == res.sent)
+	    luwrain.message("Отправлено сообщений: " + res.sent, Luwrain.MessageType.DONE); else
+		    luwrain.message("Произошла ошибка при отправке сообщений", Luwrain.MessageType.ERROR);
+	    }
 	}
 	catch(InterruptedException e)
 	{
@@ -64,7 +69,7 @@ public class Smtp implements Worker
 	catch(Throwable e)
 	{
 	    Log.error(LOG_COMPONENT, "the worker \'" + NAME + "\' failed:" + e.getClass().getName() + ":" + e.getMessage());
-luwrain.message("Неприкольно " + e.getClass().getName() + ":" + e.getMessage(), Luwrain.MessageType.ERROR);
+	    luwrain.message("Произошла ошибка при отправке сообщений", Luwrain.MessageType.ERROR);
 	    return;
 	}
     }

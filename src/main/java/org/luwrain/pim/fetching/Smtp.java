@@ -30,7 +30,7 @@ import org.luwrain.network.*;
 public class Smtp extends Base
 {
     static private final String LOG_COMPONENT = "pim-smtp";
-    
+
     private final MailStoring storing;
     private final StoredMailFolder pending;
     private StoredMailFolder sent;
@@ -48,20 +48,25 @@ public class Smtp extends Base
 throw new FetchingException("Не удалось подготовить почтовые группы, доставка сообщений отменена");
     }
 
-    public void fetch() throws Exception
+    public Result fetch() throws PimException, InterruptedException
     {
 	final StoredMailMessage[] messages = storing.getMessages().load(pending);
 	Log.debug(LOG_COMPONENT, "loading " + messages.length + " message(s) to send");
 	if (messages.length == 0)
 	{
 	    message("Нет сообщений для отправки");//FIXME :
-	    return;
+	    return new Result();
 	}
 	final List<PendingQueue> queues = new LinkedList();
 	for(StoredMailMessage m: messages)
 	{
 	    checkInterrupted();
 	    final String uniRef = m.getExtInfo();
+	    if (uniRef.trim().isEmpty())
+	    {
+		Log.warning(LOG_COMPONENT, "encountering the message without associated mail account, skipping");
+		continue;
+	    }
 	    PendingQueue queue = null;
 	    for(PendingQueue q: queues)
 		if (q.accountUniRef.equals(uniRef))
@@ -79,13 +84,15 @@ throw new FetchingException("Не удалось подготовить почт
 	    queues.add(queue);
 	}
 	Log.debug(LOG_COMPONENT, "prepared " + queues.size() + " queue(s)");
+	final Map<String, Throwable> errors = new HashMap();
 			for(PendingQueue q: queues)
 		    Log.debug(LOG_COMPONENT, q.accountUniRef + " with " + q.messages.size() + " message(s)");
+			int sentCount = 0;
 		    	for(PendingQueue queue: queues)
 	{
 	    checkInterrupted();
 	    try {
-		sendQueue(queue);
+		sentCount += sendQueue(queue);
 	    }
 	    catch(InterruptedException e)
 	    {
@@ -93,25 +100,27 @@ throw new FetchingException("Не удалось подготовить почт
 	    }
 	    catch (Throwable e)
 	    {
+				Log.error(LOG_COMPONENT, "unable to send the messages from the queue \'" + queue.accountUniRef + "\':" + e.getClass().getName() + ":" + e.getMessage());
+		errors.put(queue.accountUniRef, e);
 		message("Произошла ошибка отправки очереди для учётной записи " + queue.accountUniRef);
-		Log.error(LOG_COMPONENT, "unable to send the messages from the queue \'" + queue.accountUniRef + "\':" + e.getClass().getName() + ":" + e.getMessage());
 	    }
 	}
+			return new Result(messages.length, sentCount, errors);
     }
 
-    private void sendQueue(PendingQueue queue) throws IOException, PimException, InterruptedException
+    private int sendQueue(PendingQueue queue) throws IOException, PimException, InterruptedException
     {
 	NullCheck.notNull(queue, "queue");
 	final StoredMailAccount account = storing.getAccounts().loadByUniRef(queue.accountUniRef);
 	if (account == null)
 	{
 	    message(strings.errorLoadingMailAccount(queue.accountUniRef));
-	    return;
+	    throw new FetchingException("No mail account for the uniref \'" + queue.accountUniRef + "\'");
 	}
 	if (!account.getFlags().contains(MailAccount.Flags.ENABLED))
 	{
 	    message(strings.mailAccountDisabled(account.getTitle()));
-	    return;
+	    throw new FetchingException("The mail account \'" + account.getTitle() + "\' is disabled");
 	}
 	message(strings.messagesInQueueForAccount(account.getTitle(), "" + queue.messages.size()));
 	final MailServerConversations.Params params = new MailServerConversations.Params();
@@ -124,16 +133,42 @@ throw new FetchingException("Не удалось подготовить почт
 	params.passwd = account.getPasswd();
 	final MailServerConversations conversation = new MailServerConversations(params);
 	message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
-	//	conversation.initSmtp(settings, account.getHost(), 
-	//			      account.getLogin(), account.getPasswd());
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
-	int count = 1;
+	int count = 0;
 	for(StoredMailMessage message: queue.messages)
 	{
 	    checkInterrupted();
 	    message(strings.sendingMessage("" + count, "" + queue.messages.size()));
 	    conversation.send(message.getRawMessage());
 	    storing.getMessages().moveToFolder(message, sent);
+	    ++count;
+	}
+	return count;
+    }
+
+    static public final class Result
+    {
+	public final int total;
+	public final int sent;
+	public final Map<String, Throwable> errors;
+
+	Result()
+	{
+	    this.total = 0;
+	    this.sent = 0;
+	    this.errors = new HashMap();
+	}
+
+	Result(int total, int sent, Map<String, Throwable> errors)
+	{
+	    NullCheck.notNull(errors, "errors");
+	    if (total < 0)
+		throw new IllegalArgumentException("total (" + total + ") may not be negative");
+	    if (sent < 0)
+		throw new IllegalArgumentException("sent (" + sent + ") may not be negative");
+	    this.total = total;
+	    this.sent = sent;
+	    this.errors = errors;
 	}
     }
 
