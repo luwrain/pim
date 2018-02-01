@@ -29,6 +29,8 @@ import org.luwrain.network.*;
 
 public class Smtp extends Base
 {
+    static private final String LOG_COMPONENT = "pim-smtp";
+    
     private final MailStoring storing;
     private final StoredMailFolder pending;
     private StoredMailFolder sent;
@@ -46,9 +48,10 @@ public class Smtp extends Base
 throw new FetchingException("Не удалось подготовить почтовые группы, доставка сообщений отменена");
     }
 
-    void send() throws Exception
+    public void fetch() throws Exception
     {
 	final StoredMailMessage[] messages = storing.getMessages().load(pending);
+	Log.debug(LOG_COMPONENT, "loading " + messages.length + " message(s) to send");
 	if (messages.length == 0)
 	{
 	    message("Нет сообщений для отправки");//FIXME :
@@ -75,7 +78,10 @@ throw new FetchingException("Не удалось подготовить почт
 	    queue.messages.add(m);
 	    queues.add(queue);
 	}
-	for(PendingQueue queue: queues)
+	Log.debug(LOG_COMPONENT, "prepared " + queues.size() + " queue(s)");
+			for(PendingQueue q: queues)
+		    Log.debug(LOG_COMPONENT, q.accountUniRef + " with " + q.messages.size() + " message(s)");
+		    	for(PendingQueue queue: queues)
 	{
 	    checkInterrupted();
 	    try {
@@ -85,9 +91,10 @@ throw new FetchingException("Не удалось подготовить почт
 	    {
 		throw e;
 	    }
-	    catch (Exception e)
+	    catch (Throwable e)
 	    {
 		message("Произошла ошибка отправки очереди для учётной записи " + queue.accountUniRef);
+		Log.error(LOG_COMPONENT, "unable to send the messages from the queue \'" + queue.accountUniRef + "\':" + e.getClass().getName() + ":" + e.getMessage());
 	    }
 	}
     }
@@ -108,6 +115,7 @@ throw new FetchingException("Не удалось подготовить почт
 	}
 	message(strings.messagesInQueueForAccount(account.getTitle(), "" + queue.messages.size()));
 	final MailServerConversations.Params params = new MailServerConversations.Params();
+	params.doAuth = !account.getLogin().isEmpty();
 	params.host = account.getHost();
 	params.port = account.getPort();
 	params.ssl = account.getFlags().contains(MailAccount.Flags.SSL);

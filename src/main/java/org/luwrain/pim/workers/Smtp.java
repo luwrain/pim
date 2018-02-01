@@ -21,23 +21,22 @@ package org.luwrain.pim.workers;
 import org.luwrain.core.*;
 import org.luwrain.pim.fetching.*;
 
-public class News implements Worker
+public class Smtp implements Worker
 {
-    static public String NAME = "luwrain.pim.workers.news";
-
     static protected final String LOG_COMPONENT = "pim-workers";
+    static public String NAME = "luwrain.pim.workers.smtp";
 
     protected final Luwrain luwrain;
     protected final org.luwrain.pim.fetching.Control control;
 
-    public News(Luwrain luwrain)
+    public Smtp(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.control = new DefaultControl(luwrain);
     }
 
-        public News(org.luwrain.pim.fetching.Control control)
+        public Smtp(org.luwrain.pim.fetching.Control control)
     {
 	NullCheck.notNull(control, "control");
 	this.control = control;
@@ -53,17 +52,19 @@ public class News implements Worker
 	    return;
 	}
 	try {
-	    	final org.luwrain.pim.fetching.News newsFetching = new org.luwrain.pim.fetching.News(control, strings);
-	    newsFetching.fetch();
+	    	final org.luwrain.pim.fetching.Smtp smtpFetching = new org.luwrain.pim.fetching.Smtp(control, strings);
+	    smtpFetching.fetch();
+	    luwrain.message("Прикольно", Luwrain.MessageType.DONE);
 	}
 	catch(InterruptedException e)
 	{
 	    Log.debug(LOG_COMPONENT, "the worker \'" + NAME + "\' has been interrupted");
 	    return;
 	}
-		catch(Throwable e)
+	catch(Throwable e)
 	{
 	    Log.error(LOG_COMPONENT, "the worker \'" + NAME + "\' failed:" + e.getClass().getName() + ":" + e.getMessage());
+luwrain.message("Неприкольно " + e.getClass().getName() + ":" + e.getMessage(), Luwrain.MessageType.ERROR);
 	    return;
 	}
     }

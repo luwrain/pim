@@ -137,4 +137,23 @@ class Accounts implements MailAccounts
 	    throw new PimException("account must be an instance of StoredMailAccountRegistry");
 	return ((Account)account).id;
     }
+
+        @Override public StoredMailAccount getDefault(MailAccount.Type type) throws PimException
+    {
+	NullCheck.notNull(type, "type");
+	final StoredMailAccount[] accounts = load();
+	StoredMailAccount anyEnabled = null;
+	for(StoredMailAccount a: accounts)
+	{
+	    if (a.getType() != type)
+		continue;
+	    	    if (!a.getFlags().contains(MailAccount.Flags.ENABLED))
+		continue;
+		    anyEnabled = a;
+    	    if (!a.getFlags().contains(MailAccount.Flags.DEFAULT))
+		continue;
+	    return a;
+	}
+	return anyEnabled;
+    }
 }

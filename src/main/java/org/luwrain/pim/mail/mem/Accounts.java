@@ -97,6 +97,25 @@ class Accounts implements MailAccounts
 	return a.id;
     }
 
+    @Override public StoredMailAccount getDefault(MailAccount.Type type) throws PimException
+    {
+	NullCheck.notNull(type, "type");
+	final StoredMailAccount[] accounts = load();
+	StoredMailAccount anyEnabled = null;
+	for(StoredMailAccount a: accounts)
+	{
+	    if (a.getType() != type)
+		continue;
+	    	    if (!a.getFlags().contains(MailAccount.Flags.ENABLED))
+		continue;
+		    anyEnabled = a;
+    	    if (!a.getFlags().contains(MailAccount.Flags.DEFAULT))
+		continue;
+	    return a;
+	}
+	return anyEnabled;
+    }
+
     private int nextId()
     {
 	int value = 0;

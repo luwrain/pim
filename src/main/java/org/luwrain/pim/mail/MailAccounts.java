@@ -28,4 +28,5 @@ public interface MailAccounts
     StoredMailAccount loadByUniRef(String uniRef) throws PimException;
     void save(MailAccount account) throws PimException;
     void delete(StoredMailAccount account) throws PimException;
+    StoredMailAccount getDefault(MailAccount.Type type) throws PimException;
 }
