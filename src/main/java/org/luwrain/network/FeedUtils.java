@@ -60,6 +60,8 @@ public class FeedUtils
 			article.updatedDate = entry.getUpdatedDate();
 		    if (entry.getAuthor() != null)
 			article.author = /*MlTagStrip.run(*/entry.getAuthor();
+		    if (article.uri.isEmpty())
+			article.uri = article.url;
 		    List contents = entry.getContents();
 		    if (contents != null)
 		    {
