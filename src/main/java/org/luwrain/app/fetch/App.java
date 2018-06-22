@@ -118,11 +118,11 @@ area = new ProgressArea(new DefaultControlEnvironment(luwrain), strings.appName(
 		    return super.onKeyboardEvent(event);
 		}
 
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
@@ -131,7 +131,7 @@ area = new ProgressArea(new DefaultControlEnvironment(luwrain), strings.appName(
 		    case ACTION:
 			return onAreaAction(event);
 		    default:
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    }
 		}
 
