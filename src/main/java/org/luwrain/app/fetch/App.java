@@ -104,7 +104,7 @@ boolean interrupt()
 area = new ProgressArea(new DefaultControlEnvironment(luwrain), strings.appName(),
 			base.prepareIntroduction(fetchType)){
 
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())
@@ -115,7 +115,7 @@ area = new ProgressArea(new DefaultControlEnvironment(luwrain), strings.appName(
 			case ESCAPE:
 			    return interrupt();
 			}
-		    return super.onKeyboardEvent(event);
+		    return super.onInputEvent(event);
 		}
 
 		@Override public boolean onSystemEvent(EnvironmentEvent event)

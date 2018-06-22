@@ -41,7 +41,7 @@ Popups.DEFAULT_POPUP_FLAGS);
 	this.strings = strings;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() && !event.isModified())
@@ -51,10 +51,10 @@ Popups.DEFAULT_POPUP_FLAGS);
 	    case ENTER:
 		if (openSubfolder())
 		    return true;
-		return super.onKeyboardEvent(event);
+		return super.onInputEvent(event);
 		*/
 	    }
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     /*
