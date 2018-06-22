@@ -99,7 +99,7 @@ class News
 	    }
 	    if (freshNews.size() > 0 )
 		control.message(group.getName() + ": " + freshNews.size() + "/" + totalCount);
-	    control.luwrain().enqueueEvent(new EnvironmentEvent(EnvironmentEvent.Type.BROADCAST, EnvironmentEvent.Code.REFRESH, "", "newsgroup:"));
+	    control.luwrain().sendBroadcastEvent(new EnvironmentEvent(EnvironmentEvent.Type.BROADCAST, EnvironmentEvent.Code.REFRESH, "", "newsgroup:"));
 	    return true;
 	}
 	catch(PimException e)

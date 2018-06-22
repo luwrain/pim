@@ -108,7 +108,7 @@ return true;
 			if (fetchType.contains(Type.NEWS))
 			    new News(this, strings).work();
 			message(strings.fetchingCompleted());
-			luwrain.runInMainThread(()->{
+			luwrain.runUiSafely(()->{
 				luwrain.onAreaNewBackgroundSound(messageArea);
 				luwrain.message(strings.fetchingCompleted(), Luwrain.MessageType.DONE);
 			    });
@@ -116,7 +116,7 @@ return true;
 		    catch(InterruptedException e)
 		    {
 			message(strings.interrupted());
-			luwrain.runInMainThread(()->luwrain.message(strings.interrupted(), Luwrain.MessageType.DONE));
+			luwrain.runUiSafely(()->luwrain.message(strings.interrupted(), Luwrain.MessageType.DONE));
 		    }
 		    catch(Exception e)
 		    {
@@ -126,7 +126,7 @@ return true;
 		@Override public void message(String text)
 		{
 		    if (text != null && !text.trim().isEmpty())
-			luwrain.runInMainThread(()->messageArea.addProgressLine(text));
+			luwrain.runUiSafely(()->messageArea.addProgressLine(text));
 		}
 		@Override public Luwrain luwrain()
 		{
