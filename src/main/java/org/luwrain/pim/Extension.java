@@ -44,7 +44,6 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	return new org.luwrain.cpanel.Factory[]{
-	    new org.luwrain.settings.news.Factory(luwrain),
 	    new org.luwrain.settings.mail.Factory(luwrain),
 	};
     }
