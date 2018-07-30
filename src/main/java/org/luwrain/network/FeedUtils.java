@@ -20,6 +20,7 @@ package org.luwrain.network;
 import java.net.URL;
 import java.util.*;
 import java.io.*;
+
 import com.sun.syndication.feed.synd.*;
 import com.sun.syndication.io.*;
 
@@ -33,7 +34,7 @@ public class FeedUtils
     static public NewsArticle[] readFeed(URL url) throws PimException, InterruptedException
     {
 	NullCheck.notNull(url, "url");
-	final LinkedList<NewsArticle> articles = new LinkedList<NewsArticle>();
+	final List<NewsArticle> articles = new LinkedList();
 	XmlReader reader = null;
 	try {
 	    try {
@@ -43,8 +44,14 @@ public class FeedUtils
 		{
 		    if (Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
-		    SyndEntry entry = (SyndEntry) i.next();
-		    NewsArticle article = new NewsArticle();
+		    final SyndEntry entry = (SyndEntry) i.next();
+		    final NewsArticle article = new NewsArticle();
+		    /*
+		    final List<SyndEnclosure> enclosures = entry.getEnclosures();
+		    if (enclosures != null)
+			for(SyndEnclosure e: enclosures)
+			    Log.debug("podcast", e.getUrl());
+		    */
 		    if (feed.getTitle() != null)
 			//FIXME:		    article.sourceTitle = MlTagStrip.run(feed.getTitle());
 			article.sourceTitle = MlTagStrip.run(feed.getTitle());
