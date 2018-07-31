@@ -24,7 +24,7 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
 
-class Articles implements NewsArticles
+final class Articles implements NewsArticles
 {
     private final Storing storing;
     private final Connection con;
@@ -43,7 +43,7 @@ class Articles implements NewsArticles
 	final Group g = (Group)newsGroup;
 	try {
 	    storing.execInQueue(()->{
-		    final PreparedStatement st = con.prepareStatement("INSERT INTO news_article (news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
+		    final PreparedStatement st = con.prepareStatement("INSERT INTO news_article (news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content,ext_data) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
 		    st.setLong(1, g.id);
 		    st.setInt(2, NewsArticle.NEW);
 		    st.setString(3, article.sourceUrl);
@@ -58,6 +58,7 @@ class Articles implements NewsArticles
 		    st.setDate(12, new java.sql.Date(article.publishedDate.getTime()));
 		    st.setDate(13, new java.sql.Date(article.updatedDate.getTime()));
 		    st.setString(14, article.content);
+		    st.setString(15, "");//FIXME:
 		    st.executeUpdate();
 		    return null;
 		});
@@ -74,7 +75,7 @@ class Articles implements NewsArticles
 	try {
 	    return (StoredNewsArticle[])storing.execInQueue(()->{
 		    final Group g = (Group)newsGroup;
-		    final PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content FROM news_article WHERE news_group_id = ?;");
+		    final PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content,ext_data FROM news_article WHERE news_group_id = ?;");
 		    st.setLong(1, g.id);
 		    final ResultSet rs = st.executeQuery();
 		    final List<Article> articles = new LinkedList();
@@ -96,6 +97,7 @@ class Articles implements NewsArticles
 			a.publishedDate = new java.util.Date(rs.getTimestamp(13).getTime());
 			a.updatedDate = new java.util.Date(rs.getTimestamp(14).getTime());
 			a.content = rs.getString(15).trim();
+			rs.getString(16);//FIXME:
 			articles.add(a);
 		    }
 		    return articles.toArray(new StoredNewsArticle[articles.size()]);
@@ -113,7 +115,7 @@ class Articles implements NewsArticles
 	final Group g = (Group)newsGroup;
 	try {
 	    return (StoredNewsArticle[])storing.execInQueue(()->{
-		    final PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content FROM news_article WHERE news_group_id = ? AND state <> 1;");
+		    final PreparedStatement st = con.prepareStatement("SELECT id,news_group_id,state,source_url,source_title,uri,title,ext_title,url,descr,author,categories,published_date,updated_date,content,ext_data FROM news_article WHERE news_group_id = ? AND state <> 1;");
 		    st.setLong(1, g.id);
 		    final ResultSet rs = st.executeQuery();
 		    final List<Article> articles = new LinkedList();
@@ -135,6 +137,7 @@ class Articles implements NewsArticles
 			a.publishedDate = new java.util.Date(rs.getTimestamp(13).getTime());
 			a.updatedDate = new java.util.Date(rs.getTimestamp(14).getTime());
 			a.content = rs.getString(15).trim();
+			rs.getString(16);//FIXME:
 			articles.add(a);
 		    }
 		    return articles.toArray(new StoredNewsArticle[articles.size()]);
