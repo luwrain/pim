@@ -31,7 +31,7 @@ import org.luwrain.network.*;
 import org.luwrain.util.*;
 import org.luwrain.pim.PimException;
 
-public class MailServerConversations
+public final class MailServerConversations
 {
     static private final String TRUE = "true";
     static private final String FALSE = "false";
@@ -61,7 +61,7 @@ public class MailServerConversations
 
     private final Properties props;
     //    private final Session session=Session.getDefaultInstance(new Properties(), null);
-final Session session;
+public final Session session;
     private Store store = null;
     //    private Session smtpSession = null;
     private Transport smtpTransport = null;
@@ -213,7 +213,7 @@ final Session session;
 	return result;
     }
 
-    byte[] saveToByteArray(Message message) throws MessagingException, IOException
+    public byte[] saveToByteArray(Message message) throws MessagingException, IOException
     {
 	NullCheck.notNull(message, "message");
 	final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
