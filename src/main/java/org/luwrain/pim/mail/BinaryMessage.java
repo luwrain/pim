@@ -43,7 +43,7 @@ public final class BinaryMessage
 	return toByteArray(mimeMessage);
     }
 
-    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws MessagingException, UnsupportedEncodingException
+    static public javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws MessagingException, UnsupportedEncodingException
     {
 	NullCheck.notNull(srcMsg, "srcMsg");
 	NullCheck.notNull(headers, "headers");
@@ -120,6 +120,13 @@ public final class BinaryMessage
 	dest.mimeContentType = srcMsg.getContentType();
     }
 
+        static public void convertFromBytes(byte[] bytes, MailMessage dest, HtmlPreview htmlPreview) throws PimException, UnsupportedEncodingException, IOException
+    {
+	NullCheck.notNull(bytes, "bytes");
+	NullCheck.notNull(dest, "dest");
+	NullCheck.notNull(htmlPreview, "htmlPreview");
+    }
+
     static private byte[] toByteArray(javax.mail.Message message) throws MessagingException, IOException
     {
 	NullCheck.notNull(message, "message");
@@ -153,7 +160,6 @@ public final class BinaryMessage
 	if (personal.trim().isEmpty())
 	    return new InternetAddress(addr);
 	return new InternetAddress(AddressUtils.combinePersonalAndAddr(MimeUtility.encodeText(personal), mail));
-
 	    }
 
     static InternetAddress[] encodeAddrs(String[] addrs) throws AddressException
@@ -166,25 +172,19 @@ public final class BinaryMessage
 	return res.toArray(new InternetAddress[res.size()]);
     }
 
-
-    
-
     static class MimePartCollector
     {
 	final LinkedList<String> attachments = new LinkedList<String>();
 	private HtmlPreview htmlPreview = null;
 	//    final StringBuilder body = new StringBuilder();
-
 	MimePartCollector()
 	{
 	    htmlPreview = null;
 	}
-
 	MimePartCollector(HtmlPreview htmlPreview)
 	{
 	    this.htmlPreview = htmlPreview;
 	}
-
 	String run(Object o, String contentType,
 		   String fileName, String disposition) throws IOException, MessagingException
 	{
@@ -219,7 +219,6 @@ public final class BinaryMessage
 		    return textStr;
 		return htmlStr;
 	    }
-
 	    if ((disposition != null && disposition.toLowerCase().indexOf("attachment") >= 0) ||
 		contentType.toLowerCase().indexOf("text") < 0)
 	    {
@@ -238,7 +237,6 @@ public final class BinaryMessage
 		return htmlPreview.generateHtmlTextPreview(o.toString());
 	    return o.toString();
 	}
-
 	protected void onAttachment(String fileName, Object obj) throws IOException
 	{
 	    //	System.out.println(fileName + ":" + obj.getClass().getName());

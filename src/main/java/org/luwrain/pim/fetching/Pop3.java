@@ -95,14 +95,11 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	Log.debug(LOG_COMPONENT, "connecting to POP3 server:" + account.getHost() + ":" + account.getPort());
 	control.message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
-	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES)/*, (text)->{
-													      return org.luwrain.util.MlTagStrip.run(text);
-													      }*/);
+	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES));
     }
 
     @Override public void numberOfNewMessages(int count, boolean haveMore)
     {
-	//			Log.debug("fetch", "" + count + (haveMore?"+":"") + " new messages in " + title);
 	if (count <= 0)
 	{
 	    //			    control.message(strings.noNewMailInAccount(title));
@@ -113,31 +110,26 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	    control.message(strings.noAllMessagesToBeFetched());
     }
 
-    @Override public boolean newMessage(/*MailMessage*/byte[] message, int num, int total)
+    @Override public boolean newMessage(byte[] bytes, int num, int total)
     {
-	/*
-			final String folderTitle = saveIncomingMessage(message);
-			if (folderTitle != null)
-			{
-			    control.message(strings.fetchedMessageSaved("" + (num + 1), "" + total, folderTitle));
-			    return true;
-			}
-			control.message(strings.errorSavingFetchedMessage()); 
-			Log.error("fetch", "unable to save the message");
-			*/
-	return false;
-    }
-
-    private void saveIncomingMessage(MailMessage message)
-    {
-	NullCheck.notNull(message, "message");
+	NullCheck.notNull(bytes, "bytes");
+	final MailMessage message = new MailMessage();
+	try {
+	BinaryMessage.convertFromBytes(bytes, message, null);
+	}
+	catch(PimException | IOException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to create a message object:" + e.getMessage());
+	    return false;
+	}
 	final MessageHookObject hookObj = new MessageHookObject(message);
 	try {
-	    luwrain.xRunHooks("luwrain.message.new.save", new Object[]{null, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
+return luwrain.xRunHooks("luwrain.message.new.save", new Object[]{null, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
 	}
 	catch(RuntimeException e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to save a message:" + e.getClass().getName() + ":" + e.getMessage());
+	    return false;
 	}
     }
 

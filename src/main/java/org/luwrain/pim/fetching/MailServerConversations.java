@@ -33,12 +33,6 @@ import org.luwrain.pim.PimException;
 
 public final class MailServerConversations
 {
-    static private final String TRUE = "true";
-    static private final String FALSE = "false";
-    
-    static public final int SSL = 1;
-    static public final int TLS = 2;
-
     static final int LIMIT_MESSAGES_LOAD = 5000;
 
     public interface Listener
@@ -60,11 +54,9 @@ public final class MailServerConversations
     }
 
     private final Properties props;
-    //    private final Session session=Session.getDefaultInstance(new Properties(), null);
-public final Session session;
-    private Store store = null;
-    //    private Session smtpSession = null;
-    private Transport smtpTransport = null;
+    private final Session session;
+    private final Store store;
+    private final Transport smtpTransport;
 
     public MailServerConversations(Params params, boolean pop3) throws PimException
     {
@@ -72,54 +64,54 @@ public final Session session;
 	NullCheck.notEmpty(params.host, "params.host");
 	NullCheck.notNull(params.login, "params.login");
 	NullCheck.notNull(params.passwd, "params.passwd");
-		    	this.props = new Properties();
+	this.props = new Properties();
 	if (pop3)
 	{
-	    	props.put("mail.store.protocol", "pop3");
-	props.put( "mail.pop3.auth", params.doAuth?"true":"false");
-	props.put( "mail.pop3.host", params.host);
-	props.put( "mail.pop3.user", params.login);
-	props.put( "mail.pop3.password", params.passwd);
-	props.put( "mail.pop3.port", "" + params.port);
-	props.put( "mail.pop3.ssl.enable", params.ssl?"true":"false");
-	props.put("mail.pop3.starttls.enable", params.tls?"true":"false");
-	for(Map.Entry<String,String> p: params.extProps.entrySet())
-	    props.put(p.getKey(), p.getValue());
-	try {
-	    	    this.session = Session.getInstance(props,null);
-	    this.store = session.getStore();
-	    store.connect(params.host, params.login, params.passwd);
-	}
-	catch(MessagingException e)
-	{
-	    throw new PimException(e);
-	}
+	    props.put("mail.store.protocol", "pop3");
+	    props.put( "mail.pop3.auth", new Boolean(params.doAuth).toString());
+	    props.put( "mail.pop3.host", params.host);
+	    props.put( "mail.pop3.user", params.login);
+	    props.put( "mail.pop3.password", params.passwd);
+	    props.put( "mail.pop3.port", new Integer(params.port).toString());
+	    props.put( "mail.pop3.ssl.enable", new Boolean(params.ssl).toString());
+	    props.put("mail.pop3.starttls.enable", new Boolean(params.tls));
+	    for(Map.Entry<String,String> p: params.extProps.entrySet())
+		props.put(p.getKey(), p.getValue());
+	    try {
+		this.session = Session.getInstance(props,null);
+		this.store = session.getStore();
+		store.connect(params.host, params.login, params.passwd);
+	    }
+	    catch(MessagingException e)
+	    {
+		throw new PimException(e);
+	    }
+	    this.smtpTransport = null;
 	} else
 	{
-        props.put("mail.smtp.auth", params.doAuth?TRUE:FALSE);
-        props.put("mail.smtp.host", params.host);
-        props.put("mail.smtp.port", "" + String.valueOf(params.port));
-	props.put("mail.smtp.ssl.enable", params.ssl?TRUE:FALSE);
-	props.put("mail.smtp.starttls.enable", params.tls?TRUE:FALSE);
-	//	final String l = login;
-	//	final String p = passwd;
-	try {
-	    this.session = Session.getInstance(props,
-					      new Authenticator(){
-						  protected PasswordAuthentication getPasswordAuthentication()
-						  {
-						      return new PasswordAuthentication(params.login, params.passwd);
-						  }
-					      });
-	    smtpTransport = session.getTransport("smtp");
-	    smtpTransport.connect();
+	    props.put("mail.smtp.auth", new Boolean(params.doAuth));
+	    props.put("mail.smtp.host", params.host);
+	    props.put("mail.smtp.port", new Integer(params.port).toString());
+		      props.put("mail.smtp.ssl.enable", new Boolean(params.ssl).toString());
+		      props.put("mail.smtp.starttls.enable", new Boolean(params.tls).toString());
+	    try {
+		this.session = Session.getInstance(props,
+						   new Authenticator(){
+						       protected PasswordAuthentication getPasswordAuthentication()
+						       {
+							   return new PasswordAuthentication(params.login, params.passwd);
+						       }
+						   });
+		smtpTransport = session.getTransport("smtp");
+		smtpTransport.connect();
+	    }
+	    catch(MessagingException e)
+	    {
+		throw new PimException(e);
+	    }
+	    this.store = null;
 	}
-	catch(MessagingException e)
-	{
-	    throw new PimException(e);
-	}
-	}
-	}
+    }
 
 
         /** Fetching of messages from the server.
