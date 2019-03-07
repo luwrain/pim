@@ -113,9 +113,9 @@ public class Pop3 extends Base implements MailServerConversations.Listener
     @Override public boolean newMessage(byte[] bytes, int num, int total)
     {
 	NullCheck.notNull(bytes, "bytes");
-	final MailMessage message = new MailMessage();
+	final MailMessage message;
 	try {
-	BinaryMessage.convertFromBytes(bytes, message, null);
+	    message = BinaryMessage.fromByteArray(bytes, null);
 	}
 	catch(PimException | IOException e)
 	{
@@ -124,7 +124,7 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	}
 	final MessageHookObject hookObj = new MessageHookObject(message);
 	try {
-return luwrain.xRunHooks("luwrain.message.new.save", new Object[]{null, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
+	    return luwrain.xRunHooks("luwrain.message.new.save", new Object[]{null, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
 	}
 	catch(RuntimeException e)
 	{

@@ -35,15 +35,35 @@ import org.luwrain.util.*;
 
 public final class BinaryMessage
 {
-    static public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws MessagingException, UnsupportedEncodingException, IOException
+    static public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException, IOException
     {
 	NullCheck.notNull(message, "message");
 	NullCheck.notNull(extraHeaders, "extraHeaders");
-	final javax.mail.internet.MimeMessage mimeMessage = convertToMimeMessage(message, extraHeaders);
-	return toByteArray(mimeMessage);
+	try {
+	    return mimeToByteArray(convertToMimeMessage(message, extraHeaders));
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
     }
 
-    static public javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws MessagingException, UnsupportedEncodingException
+    static public MailMessage fromByteArray(byte[] bytes, HtmlPreview preview) throws PimException, IOException
+    {
+	NullCheck.notNull(bytes, "bytes");
+	NullCheck.notNull(preview, "preview");
+	final MailMessage message = new MailMessage();
+	try {
+	    convertFromMimeMessage(mimeFromByteArray(bytes), message, preview);
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
+	return message;
+    }
+
+    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws MessagingException, UnsupportedEncodingException
     {
 	NullCheck.notNull(srcMsg, "srcMsg");
 	NullCheck.notNull(headers, "headers");
@@ -96,7 +116,7 @@ public final class BinaryMessage
 	return message;
     }
 
-    static public void convertFromMimeMessage(MimeMessage srcMsg, MailMessage dest, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
+    static private void convertFromMimeMessage(MimeMessage srcMsg, MailMessage dest, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
     {
 	NullCheck.notNull(srcMsg, "srcMsg");
 	NullCheck.notNull(dest, "dest");
@@ -120,14 +140,7 @@ public final class BinaryMessage
 	dest.mimeContentType = srcMsg.getContentType();
     }
 
-        static public void convertFromBytes(byte[] bytes, MailMessage dest, HtmlPreview htmlPreview) throws PimException, UnsupportedEncodingException, IOException
-    {
-	NullCheck.notNull(bytes, "bytes");
-	NullCheck.notNull(dest, "dest");
-	NullCheck.notNull(htmlPreview, "htmlPreview");
-    }
-
-    static private byte[] toByteArray(javax.mail.Message message) throws MessagingException, IOException
+    static private byte[] mimeToByteArray(javax.mail.internet.MimeMessage message) throws MessagingException, IOException
     {
 	NullCheck.notNull(message, "message");
 	final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -135,6 +148,19 @@ public final class BinaryMessage
 	    message.writeTo(byteStream);
 	    byteStream.flush();
 	    return byteStream.toByteArray();
+	}
+	finally {
+	    byteStream.close();
+	}
+    }
+
+    static private javax.mail.internet.MimeMessage mimeFromByteArray( byte[] bytes) throws MessagingException, IOException
+    {
+	NullCheck.notNull(bytes, "bytes");
+	final ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
+	final Session session = Session.getDefaultInstance(new Properties(), null);
+	try {
+	    return new MimeMessage(session, byteStream);
 	}
 	finally {
 	    byteStream.close();
@@ -160,7 +186,7 @@ public final class BinaryMessage
 	if (personal.trim().isEmpty())
 	    return new InternetAddress(addr);
 	return new InternetAddress(AddressUtils.combinePersonalAndAddr(MimeUtility.encodeText(personal), mail));
-	    }
+    }
 
     static InternetAddress[] encodeAddrs(String[] addrs) throws AddressException
     {
