@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 //LWR_API 1.0
 
@@ -123,15 +108,7 @@ throw new FetchingException("Не удалось подготовить почт
 	    throw new FetchingException("The mail account \'" + account.getTitle() + "\' is disabled");
 	}
 	message(strings.messagesInQueueForAccount(account.getTitle(), "" + queue.messages.size()));
-	final MailServerConversations.Params params = new MailServerConversations.Params();
-	params.doAuth = !account.getLogin().isEmpty();
-	params.host = account.getHost();
-	params.port = account.getPort();
-	params.ssl = account.getFlags().contains(MailAccount.Flags.SSL);
-	params.tls = account.getFlags().contains(MailAccount.Flags.TLS);
-	params.login = account.getLogin();
-	params.passwd = account.getPasswd();
-	final MailServerConversations conversation = new MailServerConversations(params);
+	final MailServerConversations conversation = new MailServerConversations(createMailServerParams(account), false);
 	message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	int count = 0;

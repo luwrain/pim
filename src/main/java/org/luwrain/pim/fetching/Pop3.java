@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 //LWR_API 1.0
 
@@ -25,7 +10,7 @@ import java.util.regex.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.network.*;
+import org.luwrain.pim.mail.script.*;
 
 public class Pop3 extends Base implements MailServerConversations.Listener
 {
@@ -33,11 +18,12 @@ public class Pop3 extends Base implements MailServerConversations.Listener
     private final Rule[] rules;
     private final StoredMailFolder inbox;
 
-    public Pop3(Control control, Strings strings, MailStoring storing) throws PimException, InterruptedException
+    public Pop3(Control control, Strings strings) throws FetchingException, PimException, InterruptedException
     {
 	super(control, strings);
-	NullCheck.notNull(storing, "storing");
-	this.storing = storing;
+	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
+	if (storing == null)
+	    throw new FetchingException("Отсутствует соединение");
 	final org.luwrain.pim.Settings.MailFolders sett = org.luwrain.pim.Settings.createMailFolders(registry);
 	final String inboxUniRef = sett.getFolderInbox("");
 	if (inboxUniRef.trim().isEmpty())
@@ -53,7 +39,7 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	}
     }
 
-    void fetch() throws PimException, InterruptedException
+    public void fetch() throws PimException, InterruptedException
     {
 	final StoredMailAccount[] accounts;
 	try {
@@ -63,7 +49,7 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	{
 	    throw new FetchingException(strings.errorLoadingMailAccounts(e.getClass().getName() + ":" + e.getMessage()));
 	}
-	Log.debug("fetch", "loaded " + accounts.length + " accounts for fetching mail");
+	Log.debug(LOG_COMPONENT, "loaded " + accounts.length + " accounts for fetching mail");
 	int used = 0;
 	for(StoredMailAccount a: accounts)
 	{
@@ -98,33 +84,16 @@ public class Pop3 extends Base implements MailServerConversations.Listener
     {
 	NullCheck.notNull(account, "account");
 	final String title = account.getTitle();
-	Log.debug("fetch", "fetching POP3 mail from account \"" + account.getTitle() + "\", flags " + account.getFlags());
+	Log.debug(LOG_COMPONENT, "fetching POP3 mail from account \"" + account.getTitle() + "\", flags " + account.getFlags());
 	if (!account.getFlags().contains(MailAccount.Flags.ENABLED))
 	{
 	    control.message(strings.skippingFetchingFromDisabledAccount(title));
 	    return;
 	}
 	control.message(strings.fetchingMailFromAccount(title));
-	final MailServerConversations.Params params = new MailServerConversations.Params();
-	final MailServerConversations conversation = new MailServerConversations(params);
-	final TreeMap<String, String> props = new TreeMap();
-	props.put( "mail.pop3.ssl.trust", account.getTrustedHosts());
-	Log.debug("fetch", "connecting to POP3 server:" + account.getHost() + ":" + account.getPort());
-	int flags = 0;
-	if (account.getFlags().contains(MailAccount.Flags.SSL))
-	{
-	    Log.debug("fetch", "activating SSL");
-	    flags |= MailServerConversations.SSL;
-	}
-	if (account.getFlags().contains(MailAccount.Flags.TLS))
-	{
-	    Log.debug("fetch", "activating TLS");
-	    flags |= MailServerConversations.TLS;
-	}
+	final MailServerConversations conversation = new MailServerConversations(createMailServerParams(account), true);
+	Log.debug(LOG_COMPONENT, "connecting to POP3 server:" + account.getHost() + ":" + account.getPort());
 	control.message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
-	conversation.initPop3(account.getHost(), account.getPort(), 
-			      account.getLogin(), account.getPasswd(), 
-			      flags, props);
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES)/*, (text)->{
 													      return org.luwrain.util.MlTagStrip.run(text);
@@ -151,7 +120,6 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 			if (folderTitle != null)
 			{
 			    control.message(strings.fetchedMessageSaved("" + (num + 1), "" + total, folderTitle));
-			    Log.debug("fetch", "fetching message " + (num + 1) + "/" + total + " (goes to " + folderTitle + ")");
 			    return true;
 			}
 			control.message(strings.errorSavingFetchedMessage()); 
@@ -160,23 +128,16 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	return false;
     }
 
-    private String saveIncomingMessage(MailMessage message)
+    private void saveIncomingMessage(MailMessage message)
     {
+	NullCheck.notNull(message, "message");
+	final MessageHookObject hookObj = new MessageHookObject(message);
 	try {
-	    final String[] headers = extractHeaders(message.rawMail);
-	    for(int i = 0;i < rules.length;++i)
-		if (regexMatch(rules[i].pattern, headers))
-		{
-		    storing.getMessages().save(rules[i].destFolder, message);
-		    return rules[i].destFolder.getTitle();
-		}
-	    storing.getMessages().save(inbox, message);
-	    return inbox.getTitle();
+	    luwrain.xRunHooks("luwrain.message.new.save", new Object[]{null, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
 	}
-	catch(PimException e)
+	catch(RuntimeException e)
 	{
-	    e.printStackTrace();
-	    return null;
+	    Log.error(LOG_COMPONENT, "unable to save a message:" + e.getClass().getName() + ":" + e.getMessage());
 	}
     }
 

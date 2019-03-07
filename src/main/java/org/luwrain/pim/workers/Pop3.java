@@ -6,22 +6,22 @@ package org.luwrain.pim.workers;
 import org.luwrain.core.*;
 import org.luwrain.pim.fetching.*;
 
-public class Smtp implements Worker
+public class Pop3 implements Worker
 {
-    static protected final String LOG_COMPONENT = "pim-workers";
-    static public String NAME = "luwrain.pim.workers.smtp";
+    static protected final String LOG_COMPONENT = "pim";
+    static public String NAME = "luwrain.pim.fetch.pop3";
 
     protected final Luwrain luwrain;
     protected final org.luwrain.pim.fetching.Control control;
 
-    public Smtp(Luwrain luwrain)
+    public Pop3(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.control = new DefaultControl(luwrain);
     }
 
-        public Smtp(org.luwrain.pim.fetching.Control control)
+        public Pop3(org.luwrain.pim.fetching.Control control)
     {
 	NullCheck.notNull(control, "control");
 	this.control = control;
@@ -37,14 +37,8 @@ public class Smtp implements Worker
 	    return;
 	}
 	try {
-	    	final org.luwrain.pim.fetching.Smtp smtpFetching = new org.luwrain.pim.fetching.Smtp(control, strings);
-	    final org.luwrain.pim.fetching.Smtp.Result res = smtpFetching.fetch();
-	    if (res.total > 0)
-	    {
-		if (res.total == res.sent)
-	    luwrain.message("Отправлено сообщений: " + res.sent, Luwrain.MessageType.DONE); else
-		    luwrain.message("Произошла ошибка при отправке сообщений", Luwrain.MessageType.ERROR);
-	    }
+	    	final org.luwrain.pim.fetching.Pop3 pop3Fetching = new org.luwrain.pim.fetching.Pop3(control, strings);
+		//pop3Fetch.fetch();
 	}
 	catch(InterruptedException e)
 	{

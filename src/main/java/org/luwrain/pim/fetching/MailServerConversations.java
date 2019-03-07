@@ -66,11 +66,36 @@ public final Session session;
     //    private Session smtpSession = null;
     private Transport smtpTransport = null;
 
-    public MailServerConversations(Params params) throws PimException
+    public MailServerConversations(Params params, boolean pop3) throws PimException
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notEmpty(params.host, "params.host");
-	this.props = new Properties();
+	NullCheck.notNull(params.login, "params.login");
+	NullCheck.notNull(params.passwd, "params.passwd");
+		    	this.props = new Properties();
+	if (pop3)
+	{
+	    	props.put("mail.store.protocol", "pop3");
+	props.put( "mail.pop3.auth", params.doAuth?"true":"false");
+	props.put( "mail.pop3.host", params.host);
+	props.put( "mail.pop3.user", params.login);
+	props.put( "mail.pop3.password", params.passwd);
+	props.put( "mail.pop3.port", "" + params.port);
+	props.put( "mail.pop3.ssl.enable", params.ssl?"true":"false");
+	props.put("mail.pop3.starttls.enable", params.tls?"true":"false");
+	for(Map.Entry<String,String> p: params.extProps.entrySet())
+	    props.put(p.getKey(), p.getValue());
+	try {
+	    	    this.session = Session.getInstance(props,null);
+	    this.store = session.getStore();
+	    store.connect(params.host, params.login, params.passwd);
+	}
+	catch(MessagingException e)
+	{
+	    throw new PimException(e);
+	}
+	} else
+	{
         props.put("mail.smtp.auth", params.doAuth?TRUE:FALSE);
         props.put("mail.smtp.host", params.host);
         props.put("mail.smtp.port", "" + String.valueOf(params.port));
@@ -92,6 +117,7 @@ public final Session session;
 	catch(MessagingException e)
 	{
 	    throw new PimException(e);
+	}
 	}
 	}
 
@@ -159,50 +185,6 @@ public final Session session;
 	    throw new FetchingException(e);
 	}
     }
-
-    /**
-     * Prepares properties, session and store objects for operations through
-     * POP3 protocol.
-     *
-     * @param host The host to connect to
-     * @param port port Port number to use for connection
-     * @param login The login to be used for authorizing
-     * @param passwd The password to be used for authorizing
-     * @param flags The flags to be used for filling the properties (SSL, TLS, etc)
-     * @param extraProps The extra properties to be used for connection
-     */
-    public void initPop3(String host, int port,
-			 String login, String passwd,
-			 int flags, TreeMap<String,String> extraProps) throws PimException
-    {
-	NullCheck.notEmpty(host, "host");
-	NullCheck.notNull(login, "login");
-	NullCheck.notNull(passwd, "passwd");
-	NullCheck.notNull(extraProps, "extraProps");
-	final boolean ssl = (flags & SSL) != 0;
-	final boolean tls = (flags & TLS) > 0;
-	props.clear();
-	props.put("mail.store.protocol", "pop3");
-	props.put( "mail.pop3.auth", "true");
-	props.put( "mail.pop3.host", host);
-	props.put( "mail.pop3.user", login);
-	props.put( "mail.pop3.password", passwd);
-	props.put( "mail.pop3.port", "" + port);
-	props.put( "mail.pop3.ssl.enable", ssl?"true":"false");
-	props.put("mail.pop3.starttls.enable", tls?"true":"false");
-	for(Map.Entry<String,String> p: extraProps.entrySet())
-	    props.put(p.getKey(), p.getValue());
-	try {
-	    //	    session = Session.getInstance(props,null);
-	    store = session.getStore();
-	    store.connect(host, login, passwd);
-	}
-	catch(MessagingException e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
 
     public String[] getFolderNames() throws Exception
     {
