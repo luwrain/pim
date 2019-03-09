@@ -59,6 +59,7 @@ public final class BinaryMessage
 	{
 	    throw new PimException(e);
 	}
+	message.rawMail = bytes;
 	return message;
     }
 
@@ -254,7 +255,6 @@ public final class BinaryMessage
 	}
 	protected void onAttachment(String fileName, Object obj) throws IOException
 	{
-	    //	System.out.println(fileName + ":" + obj.getClass().getName());
 	}
     }
 }

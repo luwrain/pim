@@ -89,23 +89,22 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	Log.debug(LOG_COMPONENT, "connection established");
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES));
+	Log.debug(LOG_COMPONENT, "fetching from the account finished");
     }
 
     @Override public void numberOfNewMessages(int count, boolean haveMore)
     {
+	Log.debug(LOG_COMPONENT, String.valueOf(count) + " messages");
 	if (count <= 0)
-	{
-	    //			    control.message(strings.noNewMailInAccount(title));
 	    return;
-	}
 	//			control.message(strings.numberOfNewMessages("" + count, title));
 	if (haveMore)
 	    control.message(strings.noAllMessagesToBeFetched());
     }
 
-    @Override public boolean newMessage(byte[] bytes, int num, int total)
+    @Override public void newMessage(byte[] bytes, int num, int total)
     {
-	NullCheck.notNull(bytes, "bytes");
+		NullCheck.notNull(bytes, "bytes");
 	final MailMessage message;
 	try {
 	    message = BinaryMessage.fromByteArray(bytes);
@@ -113,100 +112,15 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	catch(PimException | IOException e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to create a message object:" + e.getMessage());
-	    return false;
+	    return;
 	}
 	final MessageHookObject hookObj = new MessageHookObject(message);
 	try {
-	    return luwrain.xRunHooks("luwrain.message.new.save", new Object[]{null, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
+	    luwrain.xRunHooks("luwrain.pim.message.new.save", new Object[]{null, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
 	}
 	catch(RuntimeException e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to save a message:" + e.getClass().getName() + ":" + e.getMessage());
-	    return false;
-	}
-    }
-
-    private Rule initRule(StoredMailRule storedRule) throws PimException, InterruptedException
-    {
-	control.checkInterrupted();
-	final String regex = storedRule.getHeaderRegex();
-	if (regex == null || regex.trim().isEmpty())
-	{
-	    control.message("Обнаружено почтовое правило с пустым условием, доставка почты отменена");
-	    return null;
-	}
-	final Pattern pattern;
-	try {
-	    pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-	}
-	catch(PatternSyntaxException e)
-	{
-	    e.printStackTrace();
-	    control.message("Регулярное выражение в правиле \"" + regex + "\" не является правильным регулярным выражением");
-	    return null;
-	}
-	final String uniRef = storedRule.getDestFolderUniRef();
-	if (uniRef == null || uniRef.trim().isEmpty())
-	{
-	    control.message("Почтовое правило с условием \"" + regex + "\" не имеет заданной целевой почтовой группы, доставка почты отменена");
-	    return null;
-	}
-	final StoredMailFolder folder = storing.getFolders().loadByUniRef(uniRef);
-	if (folder == null)
-	{control.message("Невозможно получить доступ к группе сообщений по ссылке: " + uniRef);
-	    return null;
-	}
-	return new Rule(regex, folder, pattern);
-    }
-
-    static private String[] extractHeaders(byte[] raw)
-    {
-	String str;
-	try {
-	    str = new String(raw, "US-ASCII");
-	}
-	catch(java.io.UnsupportedEncodingException e)
-	{
-	    e.printStackTrace();
-	    return new String[0];
-	}
-	final String[] lines = str.split("\n");
-	final LinkedList<String> res = new LinkedList<String>();
-	for(String s: lines)
-	{
-	    if (s.trim().isEmpty())
-		break;
-	    res.add(s);
-	}
-	return res.toArray(new String[res.size()]);
-    }
-
-    static private boolean regexMatch(Pattern pattern, String[] lines)
-    {
-	for(int i = 0;i < lines.length;++i)
-	{
-	    final Matcher matcher = pattern.matcher(lines[i]);
-	    if (matcher.find())
-		return true;
-	}
-	return false;
-    }
-
-    static private class Rule
-    {
-	final String regex;
-	final StoredMailFolder destFolder;
-	final Pattern pattern;
-
-	Rule(String regex, StoredMailFolder destFolder,
-	     Pattern pattern)
-	{
-	    NullCheck.notNull(regex, "regex");
-	    NullCheck.notNull(destFolder, "destFolder");
-	    NullCheck.notNull(pattern, "pattern");
-	    this.regex = regex;
-	    this.destFolder = destFolder;
-	    this.pattern = pattern;
 	}
     }
 }

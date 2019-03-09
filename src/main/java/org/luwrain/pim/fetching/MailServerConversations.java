@@ -38,7 +38,7 @@ public final class MailServerConversations
     public interface Listener
     {
 	void numberOfNewMessages(int count, boolean haveMore);
-	boolean newMessage(byte[] message, int num, int total);
+	void newMessage(byte[] message, int num, int total);
     }
 
     static public final class Params

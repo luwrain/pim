@@ -25,9 +25,9 @@ import javax.mail.internet.*;
 
 import org.luwrain.core.*;
 
-public class AddressUtils
+public final class AddressUtils
 {
-    static String getPersonal(String addr)
+    static public String getPersonal(String addr)
     {
 	NullCheck.notNull(addr, "addr");
 	if (addr.trim().isEmpty())
@@ -43,7 +43,7 @@ public class AddressUtils
 	}
     }
 
-        static String getAddress(String addr)
+        static public String getAddress(String addr)
     {
 	NullCheck.notNull(addr, "addr");
 	if (addr.trim().isEmpty())
@@ -59,6 +59,7 @@ public class AddressUtils
 	}
     }
 
+    //Does not make any encoding
     static public String combinePersonalAndAddr(String personal, String addr)
     {
 	NullCheck.notNull(personal, "personal");
