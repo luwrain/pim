@@ -15,7 +15,7 @@ import org.luwrain.pim.mail.script.*;
 public class Pop3 extends Base implements MailServerConversations.Listener
 {
     private final MailStoring storing;
-    private final Rule[] rules;
+    //private final Rule[] rules;
     private final StoredMailFolder inbox;
 
     public Pop3(Control control, Strings strings) throws FetchingException, PimException, InterruptedException
@@ -29,14 +29,6 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	if (inboxUniRef.trim().isEmpty())
 	    throw new FetchingException("Ошибка конфигурации электронной почты: не указаны базовые группы для хранения (исходящие, отправленные и т. д.)");//FIXME:
 	inbox = storing.getFolders().loadByUniRef(inboxUniRef);
-	final StoredMailRule[] storedRules = storing.getRules().load();
-	this.rules = new Rule[storedRules.length];
-	for(int i = 0;i < storedRules.length;++i)
-	{
-	    rules[i] = initRule(storedRules[i]);
-	    if (rules[i] == null)
-		throw new FetchingException("Ошибочное почтовое правило");
-	}
     }
 
     public void fetch() throws PimException, InterruptedException
@@ -91,9 +83,10 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	    return;
 	}
 	control.message(strings.fetchingMailFromAccount(title));
-	final MailServerConversations conversation = new MailServerConversations(createMailServerParams(account), true);
 	Log.debug(LOG_COMPONENT, "connecting to POP3 server:" + account.getHost() + ":" + account.getPort());
 	control.message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
+	final MailServerConversations conversation = new MailServerConversations(createMailServerParams(account), true);
+	Log.debug(LOG_COMPONENT, "connection established");
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES));
     }
@@ -115,7 +108,7 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	NullCheck.notNull(bytes, "bytes");
 	final MailMessage message;
 	try {
-	    message = BinaryMessage.fromByteArray(bytes, null);
+	    message = BinaryMessage.fromByteArray(bytes);
 	}
 	catch(PimException | IOException e)
 	{

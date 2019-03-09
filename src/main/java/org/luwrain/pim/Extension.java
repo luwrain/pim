@@ -24,10 +24,11 @@ import org.luwrain.core.*;
 
 import org.luwrain.app.fetch.Base.Type;
 
-public class Extension extends org.luwrain.core.extensions.EmptyExtension
+public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
     private org.luwrain.pim.workers.News newsWorker = null;
         private org.luwrain.pim.workers.Smtp smtpWorker = null;
+            private org.luwrain.pim.workers.Pop3 pop3Worker = null;
 
     private org.luwrain.pim.mail.sql.FolderUniRefProc mailFolderUniRefProc;
 
@@ -37,6 +38,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	Connections.init(luwrain);
 	this.newsWorker = new org.luwrain.pim.workers.News(luwrain);
 		this.smtpWorker = new org.luwrain.pim.workers.Smtp(luwrain);
+				this.pop3Worker = new org.luwrain.pim.workers.Pop3(luwrain);
 	return null;
     }
 
@@ -60,17 +62,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     @Override public Command[] getCommands(Luwrain luwrain)
     {
 	return new Command[]{
-
-	    new Command(){
-		@Override public String getName()
-		{
-		    return "fetch";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    luwrain.launchApp("fetch");
-		}
-	    },
+	    new SimpleShortcutCommand("fetch"),
 
 	    	    new Command(){
 		@Override public String getName()
@@ -84,7 +76,6 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		}
 	    },
 
-
 	};
     }
 
@@ -92,8 +83,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     {
 	return new ExtensionObject[]{
 
-	    newsWorker,
-	    smtpWorker,
+	    newsWorker, smtpWorker, pop3Worker,
 
 	    new Shortcut() {
 		@Override public String getExtObjName()

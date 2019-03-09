@@ -48,13 +48,12 @@ public final class BinaryMessage
 	}
     }
 
-    static public MailMessage fromByteArray(byte[] bytes, HtmlPreview preview) throws PimException, IOException
+    static public MailMessage fromByteArray(byte[] bytes) throws PimException, IOException
     {
 	NullCheck.notNull(bytes, "bytes");
-	NullCheck.notNull(preview, "preview");
 	final MailMessage message = new MailMessage();
 	try {
-	    convertFromMimeMessage(mimeFromByteArray(bytes), message, preview);
+	    convertFromMimeMessage(mimeFromByteArray(bytes), message);
 	}
 	catch(MessagingException e)
 	{
@@ -116,11 +115,10 @@ public final class BinaryMessage
 	return message;
     }
 
-    static private void convertFromMimeMessage(MimeMessage srcMsg, MailMessage dest, HtmlPreview htmlPreview) throws MessagingException, UnsupportedEncodingException, IOException
+    static private void convertFromMimeMessage(MimeMessage srcMsg, MailMessage dest) throws MessagingException, UnsupportedEncodingException, IOException
     {
 	NullCheck.notNull(srcMsg, "srcMsg");
 	NullCheck.notNull(dest, "dest");
-	NullCheck.notNull(htmlPreview, "htmlPreview");
 	dest.subject = srcMsg.getSubject();
 	if (dest.subject == null)
 	    dest.subject = "";
@@ -134,7 +132,7 @@ public final class BinaryMessage
 	dest.receivedDate = srcMsg.getReceivedDate();
 	if (dest.receivedDate == null)
 	    dest.receivedDate = new java.util.Date();
-	final MimePartCollector collector = new MimePartCollector(htmlPreview);
+	final MimePartCollector collector = new MimePartCollector();
 	dest.baseContent = collector.run(srcMsg.getContent(), srcMsg.getContentType(), "", "");
 	dest.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
 	dest.mimeContentType = srcMsg.getContentType();
@@ -200,17 +198,8 @@ public final class BinaryMessage
 
     static class MimePartCollector
     {
-	final LinkedList<String> attachments = new LinkedList<String>();
-	private HtmlPreview htmlPreview = null;
+	final List<String> attachments = new LinkedList();
 	//    final StringBuilder body = new StringBuilder();
-	MimePartCollector()
-	{
-	    htmlPreview = null;
-	}
-	MimePartCollector(HtmlPreview htmlPreview)
-	{
-	    this.htmlPreview = htmlPreview;
-	}
 	String run(Object o, String contentType,
 		   String fileName, String disposition) throws IOException, MessagingException
 	{
@@ -260,7 +249,7 @@ public final class BinaryMessage
 		return "";
 	    }
 	    if (contentType != null && contentType.toLowerCase().indexOf("html") >= 0)
-		return htmlPreview.generateHtmlTextPreview(o.toString());
+		return o.toString();
 	    return o.toString();
 	}
 	protected void onAttachment(String fileName, Object obj) throws IOException

@@ -38,7 +38,7 @@ public class Pop3 implements Worker
 	}
 	try {
 	    	final org.luwrain.pim.fetching.Pop3 pop3Fetching = new org.luwrain.pim.fetching.Pop3(control, strings);
-		//pop3Fetch.fetch();
+		pop3Fetching.fetch();
 	}
 	catch(InterruptedException e)
 	{
@@ -48,7 +48,8 @@ public class Pop3 implements Worker
 	catch(Throwable e)
 	{
 	    Log.error(LOG_COMPONENT, "the worker \'" + NAME + "\' failed:" + e.getClass().getName() + ":" + e.getMessage());
-	    luwrain.message("Произошла ошибка при отправке сообщений", Luwrain.MessageType.ERROR);
+	    e.printStackTrace();
+	    luwrain.message("Произошла ошибка", Luwrain.MessageType.ERROR);
 	    return;
 	}
     }

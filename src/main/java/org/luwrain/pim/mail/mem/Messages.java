@@ -60,7 +60,7 @@ class Messages implements MailMessages
 	}
 	    }
 
-    @Override public     MailMessage fromByteArray(byte[] bytes, org.luwrain.util.HtmlPreview htmlPreview) throws PimException
+    @Override public     MailMessage fromByteArray(byte[] bytes) throws PimException
     {
 	throw new RuntimeException("not implemented");
     }
