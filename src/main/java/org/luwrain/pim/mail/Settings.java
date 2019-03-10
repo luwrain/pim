@@ -79,11 +79,14 @@ public interface Settings
 public interface Folder
 {
     String getTitle(String defValue);
+    	void setTitle(String value);
     int getOrderIndex(int defValue);
+        void setOrderIndex(int defValue);
     int getParentId(int defValue);
-	void setTitle(String value);
-    void setOrderIndex(int defValue);
+
     void setParentId(int defValue);
+    String getProperties(String defValue);
+    void setProperties(String value);
 }
 
 public interface Rule

@@ -17,12 +17,17 @@
 
 package org.luwrain.pim.mail.sql;
 
+import java.io.*;
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-class Folder extends MailFolder implements StoredMailFolder
+final class Folder extends MailFolder implements StoredMailFolder
 {
+    static private final String LOG_COMPONENT = Storing.LOG_COMPONENT;
+
     private final Registry registry;
     private final org.luwrain.pim.mail.Settings.Folder sett;
 
@@ -34,30 +39,39 @@ class Folder extends MailFolder implements StoredMailFolder
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = id;
+	if (id < 0)
+	    throw new IllegalArgumentException("id (" + id + ") may not be negative");
 	this.sett = org.luwrain.pim.mail.Settings.createFolder(registry, Registry.join(org.luwrain.pim.mail.Settings.FOLDERS_PATH, "" + id));
     }
 
-    @Override public String getTitle() throws PimException
+    @Override public String getTitle()
     {
 	return title;
     }
 
-    @Override public void setTitle(String value) throws PimException
+    @Override public void setTitle(String value)
     {
 	NullCheck.notNull(value, "value");
 	sett.setTitle(value);
 	this.title = value;
     }
 
-    @Override public int getOrderIndex() throws PimException
+    @Override public int getOrderIndex()
     {
 	return orderIndex;
     }
 
-    @Override public void setOrderIndex(int value) throws PimException
+    @Override public void setOrderIndex(int value)
     {
+	if (value < 0)
+	    throw new IllegalArgumentException("value (" + value + ") may not be negative");
 	sett.setOrderIndex(value);
 	this.orderIndex = value;
+    }
+
+    @Override public Properties getProperties()
+    {
+	return props;
     }
 
     @Override public boolean equals(Object o)
@@ -73,7 +87,15 @@ class Folder extends MailFolder implements StoredMailFolder
 	this.title = sett.getTitle("");
 	this.orderIndex = sett.getOrderIndex(0);
 	this.parentId = sett.getParentId(0);
-	if (title.isEmpty() || parentId < 0)
+	try {
+	    setPropertiesFromString(sett.getProperties(""));
+	}
+	catch(IOException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to load properties from the registry:" + e.getClass().getName() + ":" + e.getMessage());
+	    return false;
+	}
+	if (parentId < 0)
 	    return false;
 	if (orderIndex < 0)
 	    orderIndex = 0;

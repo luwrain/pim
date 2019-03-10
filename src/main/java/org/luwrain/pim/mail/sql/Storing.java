@@ -28,6 +28,8 @@ import org.luwrain.pim.util.*;
 
 public final class Storing implements MailStoring, ExecQueue
 {
+    static final String LOG_COMPONENT = "pim";
+    
     private final Registry registry;
     private final Connection con;
     private final ExecQueues execQueues;

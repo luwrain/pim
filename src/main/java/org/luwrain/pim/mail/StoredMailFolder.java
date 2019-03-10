@@ -17,6 +17,8 @@
 
 package org.luwrain.pim.mail;
 
+import java.util.*;
+
 import org.luwrain.pim.*;
 
 public interface StoredMailFolder
@@ -25,4 +27,5 @@ public interface StoredMailFolder
     void setTitle(String value) throws PimException;
     int getOrderIndex() throws PimException;
     void setOrderIndex(int value) throws PimException;
+    Properties getProperties();
 }

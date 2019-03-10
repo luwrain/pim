@@ -17,14 +17,17 @@
 
 package org.luwrain.pim.mail.sql;
 
+import java.io.*;
 import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-class Folders implements MailFolders
+final class Folders implements MailFolders
 {
+    static private final String LOG_COMPONENT = Storing.LOG_COMPONENT;
+    
     private final Registry registry;
 
     Folders(Registry registry)
@@ -32,12 +35,12 @@ class Folders implements MailFolders
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
     }
-    
+
     @Override public int getId(StoredMailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
 	if (!(folder instanceof Folder))
-	    throw new IllegalArgumentException("folder must be an instance of StoredMailFolderRegistry");
+	    throw new IllegalArgumentException("folder must be an instance of org.luwrain.pim.mail.sql.Folder");
 	return ((Folder)folder).id;
     }
 
@@ -47,13 +50,14 @@ class Folders implements MailFolders
 	return folder.load()?folder:null;
     }
 
-    @Override public void save(StoredMailFolder parentFolder, MailFolder newFolder)
+    @Override public void save(StoredMailFolder parentFolder, MailFolder newFolder) throws PimException
     {
 	NullCheck.notNull(parentFolder, "parentFolder");
-	NullCheck.notNull(parentFolder, "parentFolder");
+	NullCheck.notNull(newFolder, "newFolder");
 	if (!(parentFolder instanceof Folder))
-	    throw new IllegalArgumentException("parentFolder must be an instance of StoredMailFolderRegistry");
+	    throw new IllegalArgumentException("parentFolder must be an instance of org.luwrain.pim.mail.sql.Folder");
 	final Folder parent = (Folder)parentFolder;
+	registry.addDirectory(org.luwrain.pim.mail.Settings.FOLDERS_PATH);
 	final int newId = Registry.nextFreeNum(registry, org.luwrain.pim.mail.Settings.FOLDERS_PATH);
 	final String path = Registry.join(org.luwrain.pim.mail.Settings.FOLDERS_PATH, "" + newId);
 	registry.addDirectory(path);
@@ -61,6 +65,13 @@ class Folders implements MailFolders
 	sett.setTitle(newFolder.title);
 	sett.setOrderIndex(newFolder.orderIndex);
 	sett.setParentId(parent.id);
+	try {
+	    sett.setProperties(newFolder.getPropertiesAsString());
+	}
+	catch(IOException e)
+	{
+	    throw new PimException(e);
+	}
     }
 
     @Override public StoredMailFolder getRoot()
@@ -116,8 +127,9 @@ class Folders implements MailFolders
 
     private Folder[] loadAllFolders()
     {
+	registry.addDirectory(org.luwrain.pim.mail.Settings.FOLDERS_PATH);
 	final String[] subdirs = registry.getDirectories(org.luwrain.pim.mail.Settings.FOLDERS_PATH);
-	if (subdirs == null || subdirs.length < 1)
+	if (subdirs.length == 0)
 	    return new Folder[0];
 	final List<Folder> folders = new LinkedList();
 	for(String s: subdirs)
@@ -130,7 +142,7 @@ class Folders implements MailFolders
 	    }
 	    catch (NumberFormatException e)
 	    {
-		e.printStackTrace();
+		Log.warning(LOG_COMPONENT, "the mail folder with unparsable name \'" + s + "\'");
 		continue;
 	    }
 	    final Folder f = new Folder(registry, id);

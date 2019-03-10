@@ -17,10 +17,32 @@
 
 package org.luwrain.pim.mail;
 
+import java.io.*;
+import java.util.*;
+
+import org.luwrain.core.*;
+
 public class MailFolder implements Comparable
 {
     public String title = "";
     public int orderIndex = 0;
+    public final Properties props = new Properties();
+
+    public String getPropertiesAsString() throws IOException
+    {
+	final StringWriter writer = new StringWriter();
+	props.store(writer, "");
+	writer.flush();
+	return writer.toString();
+    }
+
+    public void setPropertiesFromString(String text) throws IOException
+    {
+	NullCheck.notNull(text, "text");
+	final StringReader reader = new StringReader(text);
+	props.clear();
+	props.load(reader);
+    }
 
     @Override public String toString()
     {

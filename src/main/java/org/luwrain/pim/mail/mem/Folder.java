@@ -17,6 +17,8 @@
 
 package org.luwrain.pim.mail.mem;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
@@ -54,6 +56,11 @@ class Folder extends MailFolder implements StoredMailFolder
 	if (value < 0)
 	    throw new IllegalArgumentException("value (" + value + ") may not be negative");
 	this.orderIndex = value;
+    }
+
+    @Override public Properties getProperties()
+    {
+	return props;
     }
 
     @Override public boolean equals(Object o)
