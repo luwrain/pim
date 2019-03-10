@@ -70,6 +70,15 @@ public final class StoredFolderHookObject extends EmptyHookObject
 	    }
 	case "saveMessage":
 	    return (Predicate)this::saveMessage;
+	case "properties":
+	    try {
+		return new PropertiesHookObject(folder.getProperties(), "");
+		}
+		catch(PimException e)
+		{
+		    Log.error(LOG_COMPONENT, "unable to get properties of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
+		    return null;
+		}
 	    	default:
 	    return super.getMember(name);
 	}

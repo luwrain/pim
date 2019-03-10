@@ -27,6 +27,14 @@ class Folders implements MailFolders
 {
     private final List<Folder> folders = new LinkedList();
 
+    @Override public StoredMailFolder findFirstByProperty(String propName, String propValue)
+    {
+	NullCheck.notEmpty(propName, "propName");
+	NullCheck.notNull(propValue, "propValue");
+	//FIXME:
+	return null;
+    }
+
     	    @Override public int getId(StoredMailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");

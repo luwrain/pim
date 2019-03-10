@@ -36,6 +36,15 @@ final class Folders implements MailFolders
 	this.registry = registry;
     }
 
+        @Override public StoredMailFolder findFirstByProperty(String propName, String propValue)
+    {
+	NullCheck.notEmpty(propName, "propName");
+	NullCheck.notNull(propValue, "propValue");
+	//FIXME:
+	return null;
+    }
+
+
     @Override public int getId(StoredMailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
