@@ -27,8 +27,9 @@ import org.luwrain.pim.mail.*;
 final class Folders implements MailFolders
 {
     static private final String LOG_COMPONENT = Storing.LOG_COMPONENT;
-    
+
     private final Registry registry;
+    private Folder[] cache = null;
 
     Folders(Registry registry)
     {
@@ -40,10 +41,15 @@ final class Folders implements MailFolders
     {
 	NullCheck.notEmpty(propName, "propName");
 	NullCheck.notNull(propValue, "propValue");
-	//FIXME:
+	final Folder[] folders = loadAllFolders();
+	for(Folder f: folders)
+	{
+	    final String value = f.getProperties().getProperty(propName);
+	    if (value != null && value.equals(propValue))
+		return f;
+	}
 	return null;
     }
-
 
     @Override public int getId(StoredMailFolder folder)
     {
@@ -66,6 +72,7 @@ final class Folders implements MailFolders
 	if (!(parentFolder instanceof Folder))
 	    throw new IllegalArgumentException("parentFolder must be an instance of org.luwrain.pim.mail.sql.Folder");
 	final Folder parent = (Folder)parentFolder;
+	this.cache = null;
 	registry.addDirectory(org.luwrain.pim.mail.Settings.FOLDERS_PATH);
 	final int newId = Registry.nextFreeNum(registry, org.luwrain.pim.mail.Settings.FOLDERS_PATH);
 	final String path = Registry.join(org.luwrain.pim.mail.Settings.FOLDERS_PATH, "" + newId);
@@ -94,7 +101,8 @@ final class Folders implements MailFolders
 
     @Override public StoredMailFolder[] load(StoredMailFolder folder)
     {
-	if (folder == null || !(folder instanceof Folder))
+	NullCheck.notNull(folder, "folder");
+	if (!(folder instanceof Folder))
 	    return null;
 	final Folder parent = (Folder)folder;
 	final List<Folder> res = new LinkedList();
@@ -136,6 +144,8 @@ final class Folders implements MailFolders
 
     private Folder[] loadAllFolders()
     {
+	if (cache != null)
+	    return cache;
 	registry.addDirectory(org.luwrain.pim.mail.Settings.FOLDERS_PATH);
 	final String[] subdirs = registry.getDirectories(org.luwrain.pim.mail.Settings.FOLDERS_PATH);
 	if (subdirs.length == 0)
@@ -143,9 +153,9 @@ final class Folders implements MailFolders
 	final List<Folder> folders = new LinkedList();
 	for(String s: subdirs)
 	{
-	    if (s == null || s.isEmpty())
+	    if (s.isEmpty())
 		continue;
-	    int id = 0;
+	    final int id;
 	    try {
 		id = Integer.parseInt(s);
 	    }
@@ -158,8 +168,8 @@ final class Folders implements MailFolders
 	    if (f.load())
 		folders.add(f);
 	}
-	final Folder[] res = folders.toArray(new Folder[folders.size()]);
-	Arrays.sort(res);
-	return res;
+	cache = folders.toArray(new Folder[folders.size()]);
+	Arrays.sort(cache);
+	return cache;
     }
     }
