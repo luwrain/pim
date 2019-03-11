@@ -63,7 +63,7 @@ public final class BinaryMessage
 	return message;
     }
 
-    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws MessagingException, UnsupportedEncodingException
+    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws IOException, MessagingException
     {
 	NullCheck.notNull(srcMsg, "srcMsg");
 	NullCheck.notNull(headers, "headers");
@@ -166,18 +166,24 @@ public final class BinaryMessage
 	}
     }
 
-    static private String[] decodeAddrs(Address[] addrs) throws UnsupportedEncodingException
+    static public String decodeText(String text) throws IOException
+    {
+	NullCheck.notNull(text, "text");
+	return MimeUtility.decodeText(text);
+    }
+
+    static private String[] decodeAddrs(Address[] addrs) throws IOException
     {
 	if (addrs == null)
 	    return new String[0];
 	final List<String> res=new LinkedList();
 	for(int i = 0;i < addrs.length;++i)
 	    if (addrs[i] != null)
-		res.add(MimeUtility.decodeText(addrs[i].toString()));
+		res.add(decodeText(addrs[i].toString()));
 	return res.toArray(new String[res.size()]);
     }
 
-    static InternetAddress encodeAddr(String addr) throws AddressException, UnsupportedEncodingException
+    static InternetAddress encodeAddr(String addr) throws IOException, AddressException
     {
 	NullCheck.notNull(addr, "addr");
 	final String personal = AddressUtils.getPersonal(addr);

@@ -17,6 +17,8 @@
 
 package org.luwrain.pim.mail.script;
 
+import java.io.*;
+
 import org.luwrain.core.*;
 import org.luwrain.script.*;
 import org.luwrain.pim.*;
@@ -36,15 +38,23 @@ final class ListHookObject extends EmptyHookObject
 	String idValue = null;
 	for(String s: headers)
 	    if (s.toLowerCase().startsWith(HEADER_ID))
-	{
-	    idValue = s.substring(HEADER_ID.length());
-	    break;
-	}
+	    {
+		idValue = s.substring(HEADER_ID.length());
+		break;
+	    }
 	if (idValue == null || idValue.trim().isEmpty())
 	{
 	    this.id = "";
 	    this.name = "";
 	    return;
+	}
+
+	try {
+	    idValue = BinaryMessage.decodeText(idValue);
+	}
+	catch(IOException e)
+	{
+	    Log.warning(LOG_COMPONENT, "unable to decode the list ID name:" + e.getClass().getName() + ":" + e.getMessage());
 	}
 	final String idStr = AddressUtils.getAddress(idValue).trim();
 	if (!idStr.isEmpty())
@@ -53,7 +63,7 @@ final class ListHookObject extends EmptyHookObject
 	this.name = AddressUtils.getPersonal(idValue);
     }
 
-        @Override public Object getMember(String name)
+    @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
 	switch(name)
@@ -62,7 +72,7 @@ final class ListHookObject extends EmptyHookObject
 	    return this.id;
 	case "name":
 	    return this.name;
-	    	default:
+	default:
 	    return super.getMember(name);
 	}
     }
