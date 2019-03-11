@@ -74,6 +74,17 @@ final class Folder extends MailFolder implements StoredMailFolder
 	return props;
     }
 
+    @Override public void saveProperties() throws PimException
+    {
+	try {
+	    sett.setProperties(getPropertiesAsString());
+	}
+	catch(IOException e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
     @Override public boolean equals(Object o)
     {
 	if (o == null || !(o instanceof Folder))

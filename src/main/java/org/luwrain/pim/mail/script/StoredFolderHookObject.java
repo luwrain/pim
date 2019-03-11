@@ -79,8 +79,35 @@ final class StoredFolderHookObject extends EmptyHookObject
 		    Log.error(LOG_COMPONENT, "unable to get properties of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
 		    return null;
 		}
+	    	case "saveProperties":
+		    return (Supplier)this::saveProperties;
+	case "newSubfolder":
+	    return (Supplier)this::newSubfolder;
 	    	default:
 	    return super.getMember(name);
+	}
+    }
+
+    @Override public void setMember(String name, Object obj)
+    {
+	NullCheck.notNull(name, "name");
+	final String value = ScriptUtils.getStringValue(obj);
+	if (name.isEmpty() || value == null)
+	    return;
+	switch(name)
+	{
+	    case "title":
+		try {
+		    folder.setTitle(value);
+		    return;
+		}
+		catch(PimException e)
+		{
+		    Log.error(LOG_COMPONENT, "unable to set the title of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
+		    return;
+		}
+	default:
+	    return;
 	}
     }
 
@@ -96,6 +123,31 @@ final class StoredFolderHookObject extends EmptyHookObject
 	{
 	    Log.error(LOG_COMPONENT, "unable to save the message in the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;
+	}
+    }
+
+    private Object saveProperties()
+    {
+		    try {
+		folder.saveProperties();
+		return new Boolean(true);
+		}
+		catch(PimException e)
+		{
+		    Log.error(LOG_COMPONENT, "unable to save properties of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
+		    return new Boolean(false);
+		}
+    }
+
+    private Object newSubfolder()
+    {
+	try {
+	    return new StoredFolderHookObject(storing, storing.getFolders().save(folder, new MailFolder()));
+	}
+	catch(PimException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to create a mail subfolder:" + e.getClass().getName() + ":" + e.getMessage());
+	    return null;
 	}
     }
 }

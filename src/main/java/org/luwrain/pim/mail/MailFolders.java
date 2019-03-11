@@ -25,7 +25,7 @@ public interface MailFolders
     StoredMailFolder[] load(StoredMailFolder folder) throws PimException;
     StoredMailFolder loadByUniRef(String uniRef) throws PimException;
     StoredMailFolder loadById(int id) throws PimException;
-    void save(StoredMailFolder parentFolder, MailFolder newFolder) throws PimException;
+    StoredMailFolder save(StoredMailFolder parentFolder, MailFolder newFolder) throws PimException;
     String getUniRef(StoredMailFolder folder) throws PimException;
     int getId(StoredMailFolder folder) throws PimException;
     StoredMailFolder findFirstByProperty(String propName, String propValue);

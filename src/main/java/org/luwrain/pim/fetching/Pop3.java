@@ -5,7 +5,6 @@ package org.luwrain.pim.fetching;
 
 import java.util.*;
 import java.io.*;
-//import java.util.regex.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -16,7 +15,6 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 {
     private final MailStoring storing;
     private final MailHookObject mailHookObject;
-    private final StoredMailFolder inbox;
 
     public Pop3(Control control, Strings strings) throws FetchingException, PimException, InterruptedException
     {
@@ -25,11 +23,6 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	if (storing == null)
 	    throw new FetchingException("Отсутствует соединение");
 	this.mailHookObject = new MailHookObject(storing);
-	final org.luwrain.pim.Settings.MailFolders sett = org.luwrain.pim.Settings.createMailFolders(registry);
-	final String inboxUniRef = sett.getFolderInbox("");
-	if (inboxUniRef.trim().isEmpty())
-	    throw new FetchingException("Ошибка конфигурации электронной почты: не указаны базовые группы для хранения (исходящие, отправленные и т. д.)");//FIXME:
-	inbox = storing.getFolders().loadByUniRef(inboxUniRef);
     }
 
     public void fetch() throws PimException, InterruptedException

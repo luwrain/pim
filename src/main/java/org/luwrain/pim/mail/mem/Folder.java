@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-class Folder extends MailFolder implements StoredMailFolder
+final class Folder extends MailFolder implements StoredMailFolder
 {
     final int id;
     int parentId = 0;
@@ -61,6 +61,11 @@ class Folder extends MailFolder implements StoredMailFolder
     @Override public Properties getProperties()
     {
 	return props;
+    }
+
+    @Override public void saveProperties() throws PimException
+    {
+	//FIXME:
     }
 
     @Override public boolean equals(Object o)

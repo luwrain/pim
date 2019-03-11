@@ -52,7 +52,7 @@ class Folders implements MailFolders
 	return null;
     }
 
-    @Override public void save(StoredMailFolder parentFolder, MailFolder newFolder)
+    @Override public StoredMailFolder save(StoredMailFolder parentFolder, MailFolder newFolder)
     {
 	/*
 	NullCheck.notNull(parentFolder, "parentFolder");
@@ -63,6 +63,7 @@ class Folders implements MailFolders
 	folder.parentId = pf.id;
 	folders.add(newFolder);
 	*/
+	return null;
     }
 
     @Override public StoredMailFolder getRoot()

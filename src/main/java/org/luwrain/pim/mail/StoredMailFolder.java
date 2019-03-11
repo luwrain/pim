@@ -28,4 +28,5 @@ public interface StoredMailFolder
     int getOrderIndex() throws PimException;
     void setOrderIndex(int value) throws PimException;
     Properties getProperties() throws PimException;
+    void saveProperties() throws PimException;
 }

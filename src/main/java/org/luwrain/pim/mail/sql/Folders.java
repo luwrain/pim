@@ -65,7 +65,7 @@ final class Folders implements MailFolders
 	return folder.load()?folder:null;
     }
 
-    @Override public void save(StoredMailFolder parentFolder, MailFolder newFolder) throws PimException
+    @Override public StoredMailFolder save(StoredMailFolder parentFolder, MailFolder newFolder) throws PimException
     {
 	NullCheck.notNull(parentFolder, "parentFolder");
 	NullCheck.notNull(newFolder, "newFolder");
@@ -88,6 +88,7 @@ final class Folders implements MailFolders
 	{
 	    throw new PimException(e);
 	}
+	return loadById(newId);
     }
 
     @Override public StoredMailFolder getRoot()
