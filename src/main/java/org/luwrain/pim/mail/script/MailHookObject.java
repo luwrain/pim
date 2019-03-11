@@ -17,51 +17,33 @@
 
 package org.luwrain.pim.mail.script;
 
+import java.util.*;
+import java.util.function.*;
+
 import org.luwrain.core.*;
 import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-final class ListHookObject extends EmptyHookObject
+public final class MailHookObject extends EmptyHookObject
 {
-    static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
-    static private final String HEADER_ID = "list-id:";
+    static final String LOG_COMPONENT = "pim";
 
-    private final String id;
-    private final String name;
+    private final MailStoring storing;
 
-    ListHookObject(String[] headers)
+    public MailHookObject(MailStoring storing)
     {
-	NullCheck.notNullItems(headers, "headers");
-	String idValue = null;
-	for(String s: headers)
-	    if (s.toLowerCase().startsWith(HEADER_ID))
-	{
-	    idValue = s.substring(HEADER_ID.length());
-	    break;
-	}
-	if (idValue == null || idValue.trim().isEmpty())
-	{
-	    this.id = "";
-	    this.name = "";
-	    return;
-	}
-	final String idStr = AddressUtils.getAddress(idValue).trim();
-	if (!idStr.isEmpty())
-	    this.id = idStr; else
-	    this.id = idValue.trim();
-	this.name = AddressUtils.getPersonal(idValue);
+	NullCheck.notNull(storing, "storing");
+	this.storing = storing;
     }
 
-        @Override public Object getMember(String name)
+    @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
 	switch(name)
 	{
-	case "id":
-	    return this.id;
-	case "name":
-	    return this.name;
+	case "folders":
+	    return new FoldersHookObject(storing);
 	    	default:
 	    return super.getMember(name);
 	}

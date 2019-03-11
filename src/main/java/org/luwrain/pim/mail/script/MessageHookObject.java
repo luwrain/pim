@@ -26,7 +26,7 @@ import org.luwrain.pim.mail.*;
 
 public final class MessageHookObject extends EmptyHookObject
 {
-    static final String LOG_COMPONENT = "pim";
+    static final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
 
     final MailMessage message;
     private String[] headers = null;

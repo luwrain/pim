@@ -5,7 +5,7 @@ package org.luwrain.pim.fetching;
 
 import java.util.*;
 import java.io.*;
-import java.util.regex.*;
+//import java.util.regex.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -15,7 +15,7 @@ import org.luwrain.pim.mail.script.*;
 public class Pop3 extends Base implements MailServerConversations.Listener
 {
     private final MailStoring storing;
-    //private final Rule[] rules;
+    private final MailHookObject mailHookObject;
     private final StoredMailFolder inbox;
 
     public Pop3(Control control, Strings strings) throws FetchingException, PimException, InterruptedException
@@ -24,6 +24,7 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
 	if (storing == null)
 	    throw new FetchingException("Отсутствует соединение");
+	this.mailHookObject = new MailHookObject(storing);
 	final org.luwrain.pim.Settings.MailFolders sett = org.luwrain.pim.Settings.createMailFolders(registry);
 	final String inboxUniRef = sett.getFolderInbox("");
 	if (inboxUniRef.trim().isEmpty())
@@ -116,7 +117,7 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	}
 	final MessageHookObject hookObj = new MessageHookObject(message);
 	try {
-	    luwrain.xRunHooks("luwrain.pim.message.new.save", new Object[]{null, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
+	    luwrain.xRunHooks("luwrain.pim.message.new.save", new Object[]{mailHookObject, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
 	}
 	catch(RuntimeException e)
 	{

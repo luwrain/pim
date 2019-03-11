@@ -22,9 +22,9 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-public final class AddressHookObject extends EmptyHookObject
+final class AddressHookObject extends EmptyHookObject
 {
-    static private final String LOG_COMPONENT = MessageHookObject.LOG_COMPONENT;
+    static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
 
     private final String full;
     private final String personal;

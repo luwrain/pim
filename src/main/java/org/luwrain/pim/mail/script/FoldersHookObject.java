@@ -25,13 +25,13 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-public final class FoldersHookObject extends EmptyHookObject
+final class FoldersHookObject extends EmptyHookObject
 {
-    static private final String LOG_COMPONENT = MessageHookObject.LOG_COMPONENT;
+    static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
 
     private final MailStoring storing;
 
-    public FoldersHookObject(MailStoring storing)
+    FoldersHookObject(MailStoring storing)
     {
 	NullCheck.notNull(storing, "storing");
 	this.storing = storing;
