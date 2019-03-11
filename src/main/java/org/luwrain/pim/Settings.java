@@ -27,7 +27,6 @@ public interface Settings
     {
 	String getFolderPending(String defValue);
 	String getFolderSent(String defValue);
-	String getFolderInbox(String defValue);
     }
 
     static public MailFolders createMailFolders(Registry registry)
