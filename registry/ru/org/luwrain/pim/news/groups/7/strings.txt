@@ -1,2 +1,0 @@
-"name" = "Русская служба Би-Би-Си"
-"url1" = "http://www.bbc.co.uk/russian/index.xml"

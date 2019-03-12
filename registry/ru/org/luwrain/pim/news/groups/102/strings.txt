@@ -1,2 +1,0 @@
-"name" = "Тифлокомп.ру"
-"url1" = "http://www.tiflocomp.ru/index.php?mod=news&act=rss"

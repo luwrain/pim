@@ -1,5 +1,0 @@
-"type" = "jdbc"
-"driver" = "org.hsqldb.jdbc.JDBCDriver"
-"url" = "jdbc:hsqldb:file:/luwrain/news"
-"login" = "sa"
-"passwd" = ""

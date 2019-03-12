@@ -1,2 +1,0 @@
-"name" = "Коммерсант"
-"url1" = "http://www.kommersant.ru/RSS/main.xml"

@@ -1,2 +1,0 @@
-"name" = "Лента.ру"
-"url1" = "http://lenta.ru/rss/"

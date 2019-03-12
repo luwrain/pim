@@ -1,2 +1,0 @@
-"name" = "Reuters"
-"url1" = "http://feeds.reuters.com/reuters/MostRead"

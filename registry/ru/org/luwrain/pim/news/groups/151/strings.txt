@@ -1,2 +1,0 @@
-"name" = "Tech in Asia"
-"url1" = "http://feeds2.feedburner.com/PennOlson"

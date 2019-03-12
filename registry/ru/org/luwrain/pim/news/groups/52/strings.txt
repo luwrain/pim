@@ -1,2 +1,0 @@
-"name" = "New York Times"
-"url1" = "http://rss.nytimes.com/services/xml/rss/nyt/InternationalHome.xml"

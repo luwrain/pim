@@ -1,2 +1,0 @@
-"name" = "CNEWS"
-"url1" = "http://www.cnews.ru/news.xml"
