@@ -27,7 +27,7 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
 
-public class Pop3 extends Base implements MailServerConversations.Listener
+public class Pop3 extends Base implements MailConversations.Listener
 {
     private final MailStoring storing;
     private final MailHookObject mailHookObject;
@@ -95,7 +95,7 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	control.message(strings.fetchingMailFromAccount(title));
 	Log.debug(LOG_COMPONENT, "connecting to POP3 server:" + account.getHost() + ":" + account.getPort());
 	control.message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
-	final MailServerConversations conversation = new MailServerConversations(createMailServerParams(account), true);
+	final MailConversations conversation = new MailConversations(createMailServerParams(account), true);
 	Log.debug(LOG_COMPONENT, "connection established");
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES));
@@ -112,7 +112,7 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	    control.message(strings.noAllMessagesToBeFetched());
     }
 
-    @Override public void newMessage(byte[] bytes, int num, int total)
+    @Override public boolean saveMessage(byte[] bytes, int num, int total)
     {
 		NullCheck.notNull(bytes, "bytes");
 	final MailMessage message;
@@ -122,15 +122,16 @@ public class Pop3 extends Base implements MailServerConversations.Listener
 	catch(PimException | IOException e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to create a message object:" + e.getMessage());
-	    return;
+	    return false;
 	}
 	final MessageHookObject hookObj = new MessageHookObject(message);
 	try {
-	    luwrain.xRunHooks("luwrain.pim.message.new.save", new Object[]{mailHookObject, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
+	    return luwrain.xRunHooks("luwrain.pim.message.new.save", new Object[]{mailHookObject, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
 	}
 	catch(RuntimeException e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to save a message:" + e.getClass().getName() + ":" + e.getMessage());
+	    return false;
 	}
     }
 }

@@ -1,5 +1,4 @@
 
-
 # Personal information manager
 
 This repository is a part of the LUWRAIN project.

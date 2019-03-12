@@ -32,14 +32,14 @@ import org.luwrain.network.*;
 import org.luwrain.util.*;
 import org.luwrain.pim.PimException;
 
-public final class MailServerConversations
+public final class MailConversations
 {
     static final int LIMIT_MESSAGES_LOAD = 5000;
 
     public interface Listener
     {
 	void numberOfNewMessages(int count, boolean haveMore);
-	void newMessage(byte[] message, int num, int total);
+	boolean saveMessage(byte[] message, int num, int total);
     }
 
     static public final class Params
@@ -59,7 +59,7 @@ public final class MailServerConversations
     private final Store store;
     private final Transport smtpTransport;
 
-    public MailServerConversations(Params params, boolean pop3) throws PimException
+    public MailConversations(Params params, boolean pop3) throws PimException
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notEmpty(params.host, "params.host");
@@ -121,7 +121,7 @@ public final class MailServerConversations
      * @param listener The listener object to get information about fetching progress
      * @param deleteMessagesOnServer Must be true, if successfully fetched messages must be deleted on the server
      */
-    public void fetchPop3(String folderName, Listener listener, boolean deleteMessagesOnServer) throws IOException, InterruptedException
+    public boolean fetchPop3(String folderName, Listener listener, boolean deleteMessagesOnServer) throws IOException, InterruptedException
     {
 	NullCheck.notEmpty(folderName, "folderName");
 	NullCheck.notNull(listener, "listener");
@@ -134,7 +134,7 @@ public final class MailServerConversations
 		if (msgCount == 0)
 		{
 		    listener.numberOfNewMessages(0, false);
-		    return;
+		    return true;
 		}
 		Message[] messages;
 		if (msgCount > LIMIT_MESSAGES_LOAD)
@@ -150,17 +150,19 @@ public final class MailServerConversations
 		{
 		    if (Thread.currentThread().interrupted())
 			throw new InterruptedException();
-		    listener.newMessage(saveToByteArray(messages[i]), i, messages.length);
+		    if (!listener.saveMessage(saveToByteArray(messages[i]), i, messages.length))
+			return false;
 		    if (deleteMessagesOnServer)
 			messages[i].setFlag(Flags.Flag.DELETED, true);
 		}
+		return true;
 	    }
 	    finally {
 		if (folder != null)
 		    folder.close(true);
 	    }
 	}
-	catch(MessagingException | UnsupportedEncodingException e)
+	catch(MessagingException e)
 	{
 	    throw new IOException("Unable to fetch messages from the server", e);
 	}
