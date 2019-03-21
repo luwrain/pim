@@ -40,6 +40,15 @@ public final class MessageHookObject extends EmptyHookObject
 	this.message = message;
     }
 
+        public MessageHookObject(StoredMailMessage message)
+    {
+	NullCheck.notNull(message, "message");
+	if (!(message instanceof MailMessage))
+	    throw new IllegalArgumentException("Unsupported message instance: " + message.getClass().getName());
+	this.message = (MailMessage)message;
+    }
+
+
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
