@@ -32,7 +32,7 @@ class Rule extends FormArea implements SectionArea
 	 MailStoring storing, 
 	 StoredMailRule rule) throws Exception
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()));
+	super(new DefaultControlContext(controlPanel.getCoreInterface()));
 	this.storing = storing;
 	this.rule = rule;
 	this.controlPanel = controlPanel;

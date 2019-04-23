@@ -23,7 +23,7 @@ class Area extends FormArea implements SectionArea
     Area(ControlPanel controlPanel, Strings strings,
 	 MailStoring storing, StoredMailFolder folder) throws PimException
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), strings.folderFormName(folder.getTitle()));
+	super(new DefaultControlContext(controlPanel.getCoreInterface()), strings.folderFormName(folder.getTitle()));
 	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(strings, "strings");
 	NullCheck.notNull(storing, "storing");

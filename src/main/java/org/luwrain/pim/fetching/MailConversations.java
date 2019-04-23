@@ -204,6 +204,11 @@ public final class MailConversations
 	}
     }
 
+    public Session getSession()
+    {
+	return session;
+    }
+
     Message loadFromByteArray(byte[] bytes) throws MessagingException, IOException
     {
 	NullCheck.notNull(bytes, "bytes");

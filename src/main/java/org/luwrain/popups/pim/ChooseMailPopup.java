@@ -137,7 +137,7 @@ protected void onContactEntry(StoredContact contact)
 	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(folder, "folder");
 	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
 params.model = new Model(storing, folder);
 params.appearance = new Appearance(luwrain, strings);

@@ -113,7 +113,7 @@ protected boolean openSubfolder()
 	NullCheck.notNull(storing, "storing");
 	NullCheck.notNullItems(initialList, "initialList");
 	final EditableListArea.Params params = new EditableListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
 	params.model = new ListUtils.DefaultEditableModel();
 	params.appearance = new ListUtils.DefaultAppearance(params.context);

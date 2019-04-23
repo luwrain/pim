@@ -101,7 +101,7 @@ boolean interrupt()
 
     private void createArea()
     {
-area = new ProgressArea(new DefaultControlEnvironment(luwrain), strings.appName(),
+area = new ProgressArea(new DefaultControlContext(luwrain), strings.appName(),
 			base.prepareIntroduction(fetchType)){
 
 		@Override public boolean onInputEvent(KeyboardEvent event)
