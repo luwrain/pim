@@ -212,7 +212,7 @@ protected final Strings strings;
 		final StoredContactsFolder folder = (StoredContactsFolder)item;
 		try {
 		    final String title = folder.getTitle();
-		    luwrain.say(title + " группа");
+		    luwrain.speak(title + " группа");
 		    return;
 		}
 		catch(PimException e)
@@ -221,7 +221,7 @@ protected final Strings strings;
 		    return;
 		}
 	    }
-	    luwrain.say(item.toString());
+	    luwrain.speak(item.toString());
 	}
 
 	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
