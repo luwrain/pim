@@ -33,7 +33,7 @@ public class SQL
 	NullCheck.notNull(login, "login");
 	NullCheck.notNull(passwd, "passwd");
 	try {
-	    Class.forName (driver).newInstance ();
+	    Class.forName (driver, true, Thread.currentThread().getContextClassLoader()).newInstance ();
 return  DriverManager.getConnection (url, login, passwd);
 	}
 	catch(Throwable e)
@@ -54,7 +54,7 @@ return  DriverManager.getConnection (url, login, passwd);
 	{
 	case "sqlite":
 	    try {
-		final InputStream is = type.getClass().getResourceAsStream(sqliteResource);
+		final InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(sqliteResource);
 		if (is == null)
 		{
 		    Log.error(LOG_COMPONENT, "no resource " + sqliteResource + " needed for sqlite initialization");
