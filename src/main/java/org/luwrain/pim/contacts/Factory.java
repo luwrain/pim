@@ -25,7 +25,7 @@ import org.luwrain.pim.util.*;
 public final class Factory
 {
     static private final String LOG_COMPONENT = "pim-contacts";
-    static private final String SQLITE_INIT_RESOURCE = "/org/luwrain/pim/contacts.sqlite";
+    static private final String SQLITE_INIT_RESOURCE = "org/luwrain/pim/contacts.sqlite";
 
     private final Luwrain luwrain;
     private final Registry registry;
