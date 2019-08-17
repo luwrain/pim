@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -27,6 +27,11 @@ public final class Factory
     static private final String LOG_COMPONENT = "pim-contacts";
     static private final String SQLITE_INIT_RESOURCE = "org/luwrain/pim/contacts.sqlite";
 
+    static public final String DEFAULT_TYPE = "jdbc";
+    static public final String DEFAULT_DRIVER = "org.sqlite.JDBC";
+    static public final String DEFAULT_URL = "jdbc:sqlite:$userdata/sqlite/contacts.db";
+    static public final String DEFAULT_INIT_PROC = "sqlite";
+
     private final Luwrain luwrain;
     private final Registry registry;
     private final Settings.Storing sett;
@@ -46,7 +51,7 @@ public final class Factory
     {
 	if (con != null)
 	    return new org.luwrain.pim.contacts.sql.Storing(registry, con, execQueues, highPriority);
-	final String type = sett.getType("").trim().toLowerCase();
+	final String type = sett.getType(DEFAULT_TYPE).trim().toLowerCase();
 	if (type.isEmpty())
 	{
 	    Log.error(LOG_COMPONENT, "contacts storing type may not be empty");
@@ -56,8 +61,8 @@ public final class Factory
 	{
 	case "jdbc":
 	    {
-	    	final String driver = sett.getDriver("");
-		final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, sett.getUrl(""));
+	    	final String driver = sett.getDriver(DEFAULT_DRIVER);
+		final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, sett.getUrl(DEFAULT_URL));
 		if (driver.isEmpty() || url.isEmpty())
 		{
 		    Log.error(LOG_COMPONENT, "in contacts storing settings for JDBC the driver and url values may not be empty");
@@ -65,7 +70,7 @@ public final class Factory
 		}
 		final String login = sett.getLogin("");
 		final String passwd = sett.getPasswd("");
-		final String initProc = sett.getInitProc("");
+		final String initProc = sett.getInitProc(DEFAULT_INIT_PROC);
 		this.con = org.luwrain.pim.SQL.connect(driver, url, login, passwd);
 		if (this.con == null)
 		    return null;
