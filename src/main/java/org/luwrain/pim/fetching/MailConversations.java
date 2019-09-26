@@ -28,7 +28,6 @@ import javax.mail.search.ReceivedDateTerm;
 import javax.mail.internet.MimeUtility;
 
 import org.luwrain.core.*;
-import org.luwrain.network.*;
 import org.luwrain.util.*;
 import org.luwrain.pim.PimException;
 

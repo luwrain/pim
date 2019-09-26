@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -15,9 +15,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.network;
+package org.luwrain.pim.fetching;
 
-import java.net.URL;
+import java.net.*;
 import java.util.*;
 import java.io.*;
 
@@ -29,7 +29,7 @@ import org.luwrain.util.*;
 import org.luwrain.pim.news.NewsArticle;
 import org.luwrain.pim.PimException;
 
-public class FeedUtils
+public final class FeedUtils
 {
     static public NewsArticle[] readFeed(URL url) throws PimException, InterruptedException
     {
@@ -37,8 +37,12 @@ public class FeedUtils
 	final List<NewsArticle> articles = new LinkedList();
 	XmlReader reader = null;
 	try {
+	    URLConnection con = null;
+	    InputStream is = null;
 	    try {
-		reader = new XmlReader(url);
+		con = org.luwrain.util.Connections.connect(url.toURI(), 0);
+		is = con.getInputStream();
+		reader = new XmlReader(is);
 		SyndFeed feed = new SyndFeedInput().build(reader);
 		for (Iterator i = feed.getEntries().iterator(); i.hasNext();)
 		{
@@ -96,9 +100,11 @@ public class FeedUtils
 	    finally {
 		if (reader != null)
 		    reader.close();
+		if (is != null)
+		    is.close();
 	    }
 	}
-	catch(IOException | FeedException e)
+	catch(IOException | FeedException | URISyntaxException e)
 	{
 	    throw new PimException(e);
 	}

@@ -26,7 +26,6 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.EnvironmentEvent;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
-import org.luwrain.network.*;
 
 public class News extends Base
 {

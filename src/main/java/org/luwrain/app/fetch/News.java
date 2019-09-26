@@ -23,7 +23,6 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.EnvironmentEvent;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
-import org.luwrain.network.*;
 
 class News
 {
@@ -79,7 +78,7 @@ class News
 		control.checkInterrupted();
 		NewsArticle[] articles = null;
 		try {
-		    articles = FeedUtils.readFeed(new URL(urls[k]));
+		    articles = org.luwrain.pim.fetching.FeedUtils.readFeed(new URL(urls[k]));
 		}
 		catch(PimException  | MalformedURLException e)
 		{
