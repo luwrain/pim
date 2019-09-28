@@ -37,7 +37,7 @@ final class Folders implements MailFolders
 	this.registry = registry;
     }
 
-        @Override public MailFolder findFirstByProperty(String propName, String propValue) throws PimException
+    @Override public MailFolder findFirstByProperty(String propName, String propValue) throws PimException
     {
 	NullCheck.notEmpty(propName, "propName");
 	NullCheck.notNull(propValue, "propValue");
@@ -54,8 +54,6 @@ final class Folders implements MailFolders
     @Override public int getId(MailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
-	if (!(folder instanceof Folder))
-	    throw new IllegalArgumentException("folder must be an instance of org.luwrain.pim.mail.sql.Folder");
 	return ((Folder)folder).id;
     }
 
@@ -69,8 +67,6 @@ final class Folders implements MailFolders
     {
 	NullCheck.notNull(parentFolder, "parentFolder");
 	NullCheck.notNull(newFolder, "newFolder");
-	if (!(parentFolder instanceof Folder))
-	    throw new IllegalArgumentException("parentFolder must be an instance of org.luwrain.pim.mail.sql.Folder");
 	final Folder parent = (Folder)parentFolder;
 	this.cache = null;
 	registry.addDirectory(org.luwrain.pim.mail.Settings.FOLDERS_PATH);
@@ -95,7 +91,7 @@ final class Folders implements MailFolders
     {
 	final Folder[] folders = loadAllFolders();
 	for(Folder f: folders)
-	    if (f.id == f.parentId)
+	    if (f.id == f.getParentId())
 		return f;
 	return null;
     }
@@ -103,54 +99,46 @@ final class Folders implements MailFolders
     @Override public MailFolder[] load(MailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
-	if (!(folder instanceof Folder))
-	    return null;
 	final Folder parent = (Folder)folder;
 	final List<Folder> res = new LinkedList();
 	final Folder[] folders = loadAllFolders();
 	for(Folder f: folders)
-	    if (f.parentId == parent.id && f.id != f.parentId)
+	    if (f.getParentId() == parent.id && f.id != f.getParentId())
 		res.add(f);
 	return res.toArray(new MailFolder[res.size()]);
     }
 
     @Override public String getUniRef(MailFolder folder) throws PimException
     {
-	if (folder == null || !(folder instanceof Folder))
-	    return "";
-	final Folder folderRegistry = (Folder)folder;
-	return FolderUniRefProc.PREFIX + ":" + folderRegistry.id;
+	NullCheck.notNull(folder, "folder");
+	final Folder folderReg = (Folder)folder;
+	return FolderUniRefProc.PREFIX + ":" + folderReg.id;
     }
 
     @Override public MailFolder loadByUniRef(String uniRef) throws PimException
     {
-	if (uniRef == null || uniRef.length() < FolderUniRefProc.PREFIX.length() + 2)
-	    return null;
+	NullCheck.notEmpty(uniRef, "uniRef");
 	if (!uniRef.startsWith(FolderUniRefProc.PREFIX + ":"))
 	    return null;
-	int id = 0;
+	final int id;
 	try {
 	    id = Integer.parseInt(uniRef.substring(FolderUniRefProc.PREFIX.length() + 1));
 	}
 	catch (NumberFormatException e)
 	{
-	    e.printStackTrace();
+	    Log.warning(LOG_COMPONENT, "parsing an invalid mail folder uniref: " + uniRef);
 	    return null;
 	}
 	final Folder folder = new Folder(registry, id);
-	if (folder.load())
-	    return folder;
-	return null;
+	return folder.load()?folder:null;
     }
 
     private Folder[] loadAllFolders() throws PimException
     {
-	if (cache != null)
-	    return cache;
+	if (this.cache != null)
+	    return this.cache;
 	registry.addDirectory(org.luwrain.pim.mail.Settings.FOLDERS_PATH);
 	final String[] subdirs = registry.getDirectories(org.luwrain.pim.mail.Settings.FOLDERS_PATH);
-	if (subdirs.length == 0)
-	    return new Folder[0];
 	final List<Folder> folders = new LinkedList();
 	for(String s: subdirs)
 	{
@@ -169,8 +157,8 @@ final class Folders implements MailFolders
 	    if (f.load())
 		folders.add(f);
 	}
-	cache = folders.toArray(new Folder[folders.size()]);
+	this.cache = folders.toArray(new Folder[folders.size()]);
 	Arrays.sort(cache);
-	return cache;
+	return this.cache;
     }
-    }
+}
