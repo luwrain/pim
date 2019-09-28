@@ -59,9 +59,9 @@ protected boolean openSubfolder()
 	final Object sel = selected();
 	if (sel == null)
 	    return false;
-	if (sel instanceof StoredContact)
+	if (sel instanceof Contact)
 	{
-	    onContactEntry((StoredContact)sel);
+	    onContactEntry((Contact)sel);
 	    return true;
 	}
 	if (!(sel instanceof StoredContactsFolder))
@@ -93,7 +93,7 @@ protected boolean openSubfolder()
 	return result.toString();
     }
 
-protected void onContactEntry(StoredContact contact)
+protected void onContactEntry(Contact contact)
     {
 	try {
 	    final LinkedList<String> addrs = new LinkedList<String>();
@@ -173,11 +173,11 @@ protected Object[] items;
 	{
 	    try {
 		final StoredContactsFolder[] folders = storing.getFolders().load(folder);
-		final StoredContact[] contacts = storing.getContacts().load(folder);
+		final Contact[] contacts = storing.getContacts().load(folder);
 		final List res = new LinkedList();
 		for(StoredContactsFolder f: folders)
 		    res.add(f);
-		for(StoredContact c: contacts)
+		for(Contact c: contacts)
 		    res.add(c);
 		items = res.toArray(new Object[res.size()]);
 	    }

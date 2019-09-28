@@ -1,19 +1,3 @@
-/*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.contacts.sql;
 
@@ -23,7 +7,7 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.contacts.*;
 
-class Contact extends org.luwrain.pim.contacts.Contact implements  StoredContact
+final class Contact extends org.luwrain.pim.contacts.Contact
 {
     private final Connection con;
     final long id;
@@ -38,33 +22,23 @@ class Contact extends org.luwrain.pim.contacts.Contact implements  StoredContact
 	this.id = id;
     }
 
-    @Override public String getTitle()
+    @Override public void setTitle(String title) throws PimException
     {
-	return title;
-    }
-
-    @Override public void setTitle(String value) throws PimException
-    {
-	NullCheck.notNull(value, "value");
+	NullCheck.notNull(title, "title");
 	try {
 	final PreparedStatement st = con.prepareStatement(
 "UPDATE contact SET title=? WHERE id=?"
 );
-	st.setString(1, value);
+	st.setString(1, title);
 	st.setLong(2, id);
 	if (st.executeUpdate() != 1)
 	    throw new PimException("Unable to update the title in contact table");
-	title = value;
+	super.setTitle(title);
 	}
 	catch(SQLException e)
 	{
 	    throw new PimException(e);
 	}
-    }
-
-    @Override public ContactValue[] getValues()
-    {
-	return values;
     }
 
     @Override public void setValues(ContactValue[] values) throws PimException
@@ -75,66 +49,52 @@ class Contact extends org.luwrain.pim.contacts.Contact implements  StoredContact
 	    NullCheck.notNull(values[i], "values[" + i + "]");
 	    NullCheck.notNull(values[i].value, "values[" + i + "].value");
 	}
-	this.values = values;
+	super.setValues(values);
 	saveValues();
     }
 
-    @Override public String[] getTags()
+    @Override public void setTags(String[] tags) throws PimException
     {
-	return tags;
-    }
-
-    @Override public void setTags(String[] value) throws PimException
-    {
-	NullCheck.notNullItems(value, "value");
-	tags = value;
+	NullCheck.notNullItems(tags, "tags");
+	super.setTags(tags);
 	saveValues();
     }
 
-    @Override public String[] getUniRefs()
+    @Override public void setUniRefs(String[] uniRefs) throws PimException
     {
-	return uniRefs;
-    }
-
-    @Override public void setUniRefs(String[] value) throws PimException
-    {
-	NullCheck.notNullItems(value, "value");
-	uniRefs = value;
+	NullCheck.notNullItems(uniRefs, "uniRefs");
+	super.setUniRefs(uniRefs);
 	saveValues();
     }
 
-    @Override public String getNotes()
+    @Override public void setNotes(String notes) throws PimException
     {
-	return notes;
-    }
-
-    @Override public void setNotes(String value) throws PimException
-    {
-	NullCheck.notNull(value, "value");
+	NullCheck.notNull(notes, "notes");
 	try {
 	    final PreparedStatement st = con.prepareStatement(
 							      "UPDATE contact SET notes=? WHERE id=?"
 							      );
-	    st.setString(1, value);
+	    st.setString(1, notes);
 	    st.setLong(2, id);
 	    if (st.executeUpdate() != 1)
 		throw new PimException("Unable to update the notes in contact table");
-	    notes = value;
 	}
 	catch(SQLException e)
 	{
 	    throw new PimException(e);
 	}
+	super.setNotes(notes);
     }
 
     private void saveValues() throws PimException
     {
 	try {
-	PreparedStatement st = con.prepareStatement("DELETE FROM contact_value WHERE contact_id=?");
+	PreparedStatement st = con.prepareStatement(
+						    "DELETE FROM contact_value WHERE contact_id=?"
+						    );
 	st.setLong(1, id);
 	st.executeUpdate();
-	if (values != null)
-	    for(ContactValue v: values)
+	for(ContactValue v: getValues())
 	    {
 		st = con.prepareStatement(
 					  "INSERT INTO contact_value (contact_id,type_id,value,preferable) VALUES (?,?,?,?)"
@@ -146,8 +106,7 @@ class Contact extends org.luwrain.pim.contacts.Contact implements  StoredContact
 		if (st.executeUpdate() != 1)
 		    throw new PimException("Unable to save a contact value");
 	    }
-	if (tags != null)
-	    for(String s: tags)
+	for(String s: getTags())
 		if (!s.trim().isEmpty())
 		{
 		    st = con.prepareStatement(
@@ -160,8 +119,7 @@ class Contact extends org.luwrain.pim.contacts.Contact implements  StoredContact
 		    if (st.executeUpdate() != 1)
 			throw new PimException("Unable to save a contact tag");
 		}
-	if (uniRefs != null)
-	    for(String s: uniRefs)
+	for(String s: getUniRefs())
 		if (!s.trim().isEmpty())
 		{
 		    st = con.prepareStatement(

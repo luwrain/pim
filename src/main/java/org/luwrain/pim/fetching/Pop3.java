@@ -1,19 +1,3 @@
-/*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 //LWR_API 1.0
 
@@ -27,8 +11,10 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
 
-public class Pop3 extends Base implements MailConversations.Listener
+public final class Pop3 extends Base implements MailConversations.Listener
 {
+    static private final String HOOK_NAME_SAVE = "luwrain.pim.message.new.save";
+
     private final MailStoring storing;
     private final MailHookObject mailHookObject;
 
@@ -55,7 +41,7 @@ public class Pop3 extends Base implements MailConversations.Listener
 	int used = 0;
 	for(StoredMailAccount a: accounts)
 	{
-	    control.checkInterrupted();
+	    checkInterrupted();
 	    final MailAccount.Type type;
 	    try {
 		type = a.getType();
@@ -74,12 +60,12 @@ public class Pop3 extends Base implements MailConversations.Listener
 		{
 		    //FIXME:
 		}
-		control.checkInterrupted();
+		checkInterrupted();
 		++used;
 	    }
 	}
 	if (used <= 0)
-	    control.message(strings.noMailAccountsForFetching());
+	    message(strings.noMailAccountsForFetching());
     }
 
     private void processAccount(StoredMailAccount account) throws IOException, PimException, InterruptedException
@@ -89,7 +75,7 @@ public class Pop3 extends Base implements MailConversations.Listener
 	Log.debug(LOG_COMPONENT, "fetching POP3 mail from account \"" + account.getTitle() + "\", flags " + account.getFlags());
 	if (!account.getFlags().contains(MailAccount.Flags.ENABLED))
 	{
-	    control.message(strings.skippingFetchingFromDisabledAccount(title));
+	    message(strings.skippingFetchingFromDisabledAccount(title));
 	    return;
 	}
 	control.message(strings.fetchingMailFromAccount(title));
@@ -97,7 +83,7 @@ public class Pop3 extends Base implements MailConversations.Listener
 	control.message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
 	final MailConversations conversation = new MailConversations(createMailServerParams(account), true);
 	Log.debug(LOG_COMPONENT, "connection established");
-	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
+	message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES));
 	Log.debug(LOG_COMPONENT, "fetching from the account finished");
     }
@@ -118,6 +104,7 @@ public class Pop3 extends Base implements MailConversations.Listener
 	final MailMessage message;
 	try {
 	    message = BinaryMessage.fromByteArray(bytes);
+	    Log.debug(LOG_COMPONENT, "saving the message with ID " + message.getMessageId());
 	}
 	catch(PimException | IOException e)
 	{
@@ -126,7 +113,7 @@ public class Pop3 extends Base implements MailConversations.Listener
 	}
 	final MessageHookObject hookObj = new MessageHookObject(message);
 	try {
-	    return luwrain.xRunHooks("luwrain.pim.message.new.save", new Object[]{mailHookObject, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
+	    return luwrain.xRunHooks(HOOK_NAME_SAVE, new Object[]{mailHookObject, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
 	}
 	catch(RuntimeException e)
 	{
