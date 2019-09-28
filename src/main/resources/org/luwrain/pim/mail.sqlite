@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS mail_message (
   received_date timestamp NOT NULL,
   base_content text NOT NULL,
   mime_content_type text NOT NULL,
-  raw_message blob NOT NULL,
   ext_info text NOT NULL
 );
 

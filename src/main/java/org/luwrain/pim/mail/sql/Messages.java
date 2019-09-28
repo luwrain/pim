@@ -130,14 +130,14 @@ final class Messages implements MailMessages
     @Override public MailMessage[] load(StoredMailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
-	final Folder folderRegistry = (Folder)folder;
+	final Folder folderReg = (Folder)folder;
 	try {
 	    return (MailMessage[])queue.execInQueue(()->{
 		    final Map<Long, StringValue> stringValues = new HashMap();
 		    PreparedStatement st = con.prepareStatement(
 								"SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type,ext_info FROM mail_message WHERE mail_folder_id=?"
 								);
-		    st.setLong(1, folderRegistry.id);
+		    st.setLong(1, folderReg.id);
 		    ResultSet rs = st.executeQuery();
 		    final List<MailMessage> res = new LinkedList();
 		    while (rs.next())
@@ -193,6 +193,7 @@ final class Messages implements MailMessages
 			m.setCc(s.cc.toArray(new String[s.cc.size()]));
 			m.setBcc(s.bcc.toArray(new String[s.bcc.size()]));
 			m.setAttachments(s.attachments.toArray(new String[s.attachments.size()]));
+			m.commit();
 		    }
 		    return res.toArray(new MailMessage[res.size()]);
 		});
