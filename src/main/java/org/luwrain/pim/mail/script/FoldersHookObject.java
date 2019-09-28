@@ -28,7 +28,7 @@ final class FoldersHookObject extends EmptyHookObject
 	{
 	case "local":
 	    try{ 
-		return new StoredFolderHookObject(storing, storing.getFolders().getRoot());
+		return new FolderHookObject(storing, storing.getFolders().getRoot());
 	    }
 	    catch(PimException e)
 	    {
@@ -44,11 +44,18 @@ final class FoldersHookObject extends EmptyHookObject
 
     private Object findFirstByProperty(Object nameObj, Object valueObj)
     {
-	final String name = ScriptUtils.getStringValue(nameObj);
-	final String value = ScriptUtils.getStringValue(valueObj);
-	if (name == null || value == null || name.trim().isEmpty())
+	try {
+	    final String name = ScriptUtils.getStringValue(nameObj);
+	    final String value = ScriptUtils.getStringValue(valueObj);
+	    if (name == null || value == null || name.trim().isEmpty())
+		return null;
+	    final MailFolder res = storing.getFolders().findFirstByProperty(name, value);
+	    return res != null?new FolderHookObject(storing, res):null;
+	}
+	catch (PimException e)
+	{
+	    //FIXME:
 	    return null;
-	final StoredMailFolder res = storing.getFolders().findFirstByProperty(name, value);
-	return res != null?new StoredFolderHookObject(storing, res):null;
+	}
     }
 }

@@ -31,15 +31,15 @@ public class Folders
     public org.luwrain.cpanel.Element[] getElements(org.luwrain.cpanel.Element parent)
     {
 	try {
-	    final StoredMailFolder[] folders;
+	    final MailFolder[] folders;
 	    if (parent instanceof Element)
 	    {
 		final Element el = (Element)parent;
-		final StoredMailFolder parentFolder = storing.getFolders().loadById(el.id);
+		final MailFolder parentFolder = storing.getFolders().loadById(el.id);
 		folders = storing.getFolders().load(parentFolder);
 	    } else
 	    {
-		final StoredMailFolder rootFolder = storing.getFolders().getRoot();
+		final MailFolder rootFolder = storing.getFolders().getRoot();
 		folders = storing.getFolders().load(rootFolder);
 	    }
 	    final Element[] res = new Element[folders.length];
@@ -91,14 +91,14 @@ public class Folders
 	    if (newFolderName == null || newFolderName.isEmpty())
 		return true;
 	    try {
-		final StoredMailFolder parentFolder;
+		final MailFolder parentFolder;
 		if (id < 0)
 		    parentFolder = storing.getFolders().getRoot(); else
 		    parentFolder = storing.getFolders().loadById(id);
 		if (parentFolder == null)
 		    throw new PimException("No parent folder");
 		final MailFolder newFolder = new MailFolder();
-		newFolder.title = newFolderName;
+		newFolder.setTitle(newFolderName);
 		storing.getFolders().save(parentFolder, newFolder);
 		controlPanel.refreshSectionsTree();
 		return true;

@@ -1,19 +1,3 @@
-/*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 //LWR_API 1.0
 
@@ -23,14 +7,47 @@ import java.io.*;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.pim.*;
 
 public class MailFolder implements Comparable
 {
-    public String title = "";
-    public int orderIndex = 0;
-    public final Properties props = new Properties();
+    private String title = "";
+    private int orderIndex = 0;
+    private final Properties props = new Properties();
 
-    public String getPropertiesAsString() throws IOException
+    public void setTitle(String title) throws PimException
+    {
+	NullCheck.notNull(title, "title");
+	this.title = title;
+    }
+
+    public String getTitle() throws PimException
+    {
+	return this.title;
+    }
+
+    public void setOrderIndex(int orderIndex) throws PimException
+    {
+	if (orderIndex < 0)
+	    throw new IllegalArgumentException("orderIndex (" + String.valueOf(orderIndex) + ") may not be negative");
+	this.orderIndex = orderIndex;
+    }
+
+    public int getOrderIndex() throws PimException
+    {
+	return this.orderIndex;
+    }
+
+    public Properties getProperties() throws PimException
+    {
+	return this.props;
+    }
+
+    public void saveProperties() throws PimException
+    {
+    }
+
+    public final String getPropertiesAsString() throws IOException
     {
 	final StringWriter writer = new StringWriter();
 	props.store(writer, "");
@@ -38,7 +55,7 @@ public class MailFolder implements Comparable
 	return writer.toString();
     }
 
-    public void setPropertiesFromString(String text) throws IOException
+    public final void setPropertiesFromString(String text) throws IOException
     {
 	NullCheck.notNull(text, "text");
 	final StringReader reader = new StringReader(text);

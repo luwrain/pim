@@ -24,7 +24,7 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-final class Folder extends MailFolder implements StoredMailFolder
+final class Folder extends MailFolder
 {
     static private final String LOG_COMPONENT = Storing.LOG_COMPONENT;
 
@@ -44,34 +44,24 @@ final class Folder extends MailFolder implements StoredMailFolder
 	this.sett = org.luwrain.pim.mail.Settings.createFolder(registry, Registry.join(org.luwrain.pim.mail.Settings.FOLDERS_PATH, "" + id));
     }
 
-    @Override public String getTitle()
+    @Override public void setTitle(String title) throws PimException
     {
-	return title;
+	NullCheck.notNull(title, "title");
+	sett.setTitle(title);
+	super.setTitle(title);
     }
 
-    @Override public void setTitle(String value)
+    @Override public void setOrderIndex(int orderIndex) throws PimException
     {
-	NullCheck.notNull(value, "value");
-	sett.setTitle(value);
-	this.title = value;
+	if (orderIndex < 0)
+	    throw new IllegalArgumentException("value (" + String.valueOf(orderIndex) + ") may not be negative");
+	sett.setOrderIndex(orderIndex);
+	super.setOrderIndex(orderIndex);
     }
 
-    @Override public int getOrderIndex()
+    @Override public Properties getProperties() throws PimException
     {
-	return orderIndex;
-    }
-
-    @Override public void setOrderIndex(int value)
-    {
-	if (value < 0)
-	    throw new IllegalArgumentException("value (" + value + ") may not be negative");
-	sett.setOrderIndex(value);
-	this.orderIndex = value;
-    }
-
-    @Override public Properties getProperties()
-    {
-	return props;
+	return super.getProperties();
     }
 
     @Override public void saveProperties() throws PimException
@@ -93,10 +83,10 @@ final class Folder extends MailFolder implements StoredMailFolder
 	return id == folder.id;
     }
 
-    boolean load()
+    boolean load() throws PimException
     {
-	this.title = sett.getTitle("");
-	this.orderIndex = sett.getOrderIndex(0);
+	super.setTitle(sett.getTitle(""));
+	super.setOrderIndex(sett.getOrderIndex(0) >= 0?sett.getOrderIndex(0):0);
 	this.parentId = sett.getParentId(0);
 	try {
 	    setPropertiesFromString(sett.getProperties(""));
@@ -108,8 +98,6 @@ final class Folder extends MailFolder implements StoredMailFolder
 	}
 	if (parentId < 0)
 	    return false;
-	if (orderIndex < 0)
-	    orderIndex = 0;
 	return true;
     }
 }

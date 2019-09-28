@@ -46,7 +46,7 @@ final class Messages implements MailMessages
 	this.messagesDir = messagesDir;
     }
 
-    @Override public void save(StoredMailFolder folder, MailMessage message) throws PimException
+    @Override public void save(MailFolder folder, MailMessage message) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
@@ -127,7 +127,7 @@ final class Messages implements MailMessages
 	}
     }
 
-    @Override public MailMessage[] load(StoredMailFolder folder) throws PimException
+    @Override public MailMessage[] load(MailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	final Folder folderReg = (Folder)folder;
@@ -229,7 +229,7 @@ final class Messages implements MailMessages
 	}
     }
 
-    @Override public void moveToFolder(MailMessage message, StoredMailFolder folder) throws PimException
+    @Override public void moveToFolder(MailMessage message, MailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");

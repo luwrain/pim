@@ -16,8 +16,8 @@ public final class Smtp extends Base
     static private final String LOG_COMPONENT = "pim-smtp";
 
     private final MailStoring storing;
-    private final StoredMailFolder pending;
-    private StoredMailFolder sent;
+    private final MailFolder pending;
+    private MailFolder sent;
 
     public Smtp(Control control, Strings strings) throws PimException
     {
