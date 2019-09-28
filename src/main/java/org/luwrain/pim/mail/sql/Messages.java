@@ -50,13 +50,13 @@ final class Messages implements MailMessages
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
-	final Folder folderRegistry = (Folder)folder;
+	final Folder folderReg = (Folder)folder;
 	try {
 	    queue.execInQueue(()->{
 		    PreparedStatement st = con.prepareStatement(
-								"INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+								"INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?)",
 								Statement.RETURN_GENERATED_KEYS);
-		    st.setLong(1, folderRegistry.id);
+		    st.setLong(1, folderReg.id);
 		    st.setInt(2, MailMessage.stateToInt(message.getState()));
 		    st.setString(3, message.getSubject());
 		    st.setString(4, message.getFrom());
@@ -65,59 +65,59 @@ final class Messages implements MailMessages
 		    st.setDate(7, new java.sql.Date(message.getReceivedDate().getTime()));
 		    st.setString(8, message.getText());
 		    st.setString(9, message.getContentType());
-		    st.setBytes(10, message.getRawMessage());
-		    st.setString(11, message.getExtInfo());
+		    st.setString(10, message.getExtInfo());
 		    final int updatedCount=st.executeUpdate();
 		    if(updatedCount != 1)
-			throw new PimException("Unable to execute initial INSERT query");
+			throw new PimException("Unable to execute the initial INSERT query");
 		    final ResultSet generatedKeys = st.getGeneratedKeys();
-		    if (!generatedKeys.next()) 
-			return null;
+		    if (!generatedKeys.next())
+			throw new PimException("The used back-end does not support the retrieving of the automatically generated keys");
 		    final long generatedKey = generatedKeys.getLong(1);
+		    Message.saveRawMessage(message.getRawMessage(), messagesDir, generatedKey);
 		    //to
 		    for(String v: message.getTo())
-			{
-			    st = con.prepareStatement(
-						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-						      );
-			    st.setLong(1, generatedKey);
-			    st.setInt(2, FIELD_TYPE_TO);
-			    st.setString(3, v);
-			    st.executeUpdate();
-			}
+		    {
+			st = con.prepareStatement(
+						  "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+						  );
+			st.setLong(1, generatedKey);
+			st.setInt(2, FIELD_TYPE_TO);
+			st.setString(3, v);
+			st.executeUpdate();
+		    }
 		    //cc
 		    for(String v: message.getCc())
-			{
-			    st = con.prepareStatement(
-						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-						      );
-			    st.setLong(1, generatedKey);
-			    st.setInt(2, FIELD_TYPE_CC);
-			    st.setString(3, v);
-			    st.executeUpdate();
-			}
+		    {
+			st = con.prepareStatement(
+						  "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+						  );
+			st.setLong(1, generatedKey);
+			st.setInt(2, FIELD_TYPE_CC);
+			st.setString(3, v);
+			st.executeUpdate();
+		    }
 		    //bcc
 		    for(String v: message.getBcc())
-			{
-			    st = con.prepareStatement(
-						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-						      );
-			    st.setLong(1, generatedKey);
-			    st.setInt(2, FIELD_TYPE_BCC);
-			    st.setString(3, v);
-			    st.executeUpdate();
-			}
+		    {
+			st = con.prepareStatement(
+						  "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+						  );
+			st.setLong(1, generatedKey);
+			st.setInt(2, FIELD_TYPE_BCC);
+			st.setString(3, v);
+			st.executeUpdate();
+		    }
 		    //attachment
 		    for(String v: message.getAttachments())
-			{
-			    st = con.prepareStatement(
-						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
-						      );
-			    st.setLong(1, generatedKey);
-			    st.setInt(2, FIELD_TYPE_ATTACHMENT);
-			    st.setString(3, v);
-			    st.executeUpdate();
-			}
+		    {
+			st = con.prepareStatement(
+						  "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
+						  );
+			st.setLong(1, generatedKey);
+			st.setInt(2, FIELD_TYPE_ATTACHMENT);
+			st.setString(3, v);
+			st.executeUpdate();
+		    }
 		    return null;
 		});
 	}
@@ -251,7 +251,7 @@ final class Messages implements MailMessages
 	}
     }
 
-        @Override public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException
+    @Override public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException
     {
 	NullCheck.notNull(message, "message");
 	try {
@@ -263,11 +263,10 @@ final class Messages implements MailMessages
 	}
     }
 
-        @Override public     MailMessage fromByteArray(byte[] bytes) throws PimException
+    @Override public     MailMessage fromByteArray(byte[] bytes) throws PimException
     {
 	throw new RuntimeException("not implemented");
     }
-
 
     static private class StringValue
     {
@@ -276,7 +275,6 @@ final class Messages implements MailMessages
 	final List<String> cc = new LinkedList();
 	final List<String> bcc = new LinkedList();
 	final List<String> attachments = new LinkedList();
-
 	StringValue(long messageId)
 	{
 	    this.messageId = messageId;
