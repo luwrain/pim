@@ -17,9 +17,7 @@
 
 package org.luwrain.pim.binder;
 
-import org.luwrain.pim.CommonAttr;
-
-public class Case extends CommonAttr
+public class Case
 {
     public static final int ACTUAL = 0;
 

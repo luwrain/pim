@@ -12,12 +12,13 @@ final class Contact extends org.luwrain.pim.contacts.Contact
     private final Connection con;
     final long id;
     int parentId = 0;
+    private boolean committed = false;
 
     Contact(Connection con, long id)
     {
-		NullCheck.notNull(con, "con");
-		if (id < 0)
-		    throw new IllegalArgumentException("id (" + id + ") may not be negative");
+	NullCheck.notNull(con, "con");
+	if (id < 0)
+	    throw new IllegalArgumentException("id (" + id + ") may not be negative");
 	this.con = con;
 	this.id = id;
     }
@@ -25,6 +26,7 @@ final class Contact extends org.luwrain.pim.contacts.Contact
     @Override public void setTitle(String title) throws PimException
     {
 	NullCheck.notNull(title, "title");
+	if (!committed)
 	try {
 	final PreparedStatement st = con.prepareStatement(
 "UPDATE contact SET title=? WHERE id=?"
@@ -33,12 +35,12 @@ final class Contact extends org.luwrain.pim.contacts.Contact
 	st.setLong(2, id);
 	if (st.executeUpdate() != 1)
 	    throw new PimException("Unable to update the title in contact table");
-	super.setTitle(title);
 	}
 	catch(SQLException e)
 	{
 	    throw new PimException(e);
 	}
+		super.setTitle(title);
     }
 
     @Override public void setValues(ContactValue[] values) throws PimException
@@ -70,6 +72,7 @@ final class Contact extends org.luwrain.pim.contacts.Contact
     @Override public void setNotes(String notes) throws PimException
     {
 	NullCheck.notNull(notes, "notes");
+	if (!committed)
 	try {
 	    final PreparedStatement st = con.prepareStatement(
 							      "UPDATE contact SET notes=? WHERE id=?"
@@ -86,8 +89,15 @@ final class Contact extends org.luwrain.pim.contacts.Contact
 	super.setNotes(notes);
     }
 
+    void commit()
+    {
+	this.committed = true;
+    }
+
     private void saveValues() throws PimException
     {
+	if (!committed)
+	    return;
 	try {
 	PreparedStatement st = con.prepareStatement(
 						    "DELETE FROM contact_value WHERE contact_id=?"

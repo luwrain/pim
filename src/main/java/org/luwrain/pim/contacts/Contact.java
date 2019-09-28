@@ -41,31 +41,31 @@ public class Contact
     }
 
     public String[] getTags() throws PimException
-     {
-	 return this.tags.clone();
-     }
+    {
+	return this.tags.clone();
+    }
 
-     public void setUniRefs(String[] uniRefs) throws PimException
-      {
-	  NullCheck.notNullItems(uniRefs, "uniRefs");
-	  this.uniRefs = uniRefs.clone();
-      }
+    public void setUniRefs(String[] uniRefs) throws PimException
+    {
+	NullCheck.notNullItems(uniRefs, "uniRefs");
+	this.uniRefs = uniRefs.clone();
+    }
 
-      public String[] getUniRefs() throws PimException
-      {
-	  return this.uniRefs.clone();
-      }
+    public String[] getUniRefs() throws PimException
+    {
+	return this.uniRefs.clone();
+    }
 
-      public void setNotes(String notes) throws PimException
-      {
-	  NullCheck.notNull(notes, "notes");
-	  this.notes = notes;
-      }
+    public void setNotes(String notes) throws PimException
+    {
+	NullCheck.notNull(notes, "notes");
+	this.notes = notes;
+    }
 
-      public String getNotes() throws PimException
-      {
-	  return this.notes;
-      }
+    public String getNotes() throws PimException
+    {
+	return this.notes;
+    }
 
     @Override public String toString()
     {

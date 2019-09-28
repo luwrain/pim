@@ -31,7 +31,7 @@ final class Contacts implements org.luwrain.pim.contacts.Contacts
 							  );
 	st.setInt(1, folderRegistry.id);
 	final List<Contact> contacts = new LinkedList();
-	final TreeMap<Long, ValueCollecting> valueCollecting = new TreeMap<Long, ValueCollecting>();
+	final Map<Long, ValueCollecting> valueCollecting = new HashMap();
 	ResultSet rs = st.executeQuery();
 	while(rs.next())
 	{
@@ -75,6 +75,7 @@ final class Contacts implements org.luwrain.pim.contacts.Contacts
 	    contact.setValues(v.values.toArray(new ContactValue[v.values.size()]));
 	    contact.setTags(v.tags.toArray(new String[v.tags.size()]));
 	    contact.setUniRefs(v.uniRefs.toArray(new String[v.uniRefs.size()]));
+	    contact.commit();
 	}
 	return contacts.toArray(new Contact[contacts.size()]);
 	}
