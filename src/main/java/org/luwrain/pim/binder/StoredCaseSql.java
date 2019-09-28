@@ -54,32 +54,32 @@ class StoredCaseSql implements StoredCase, Comparable
 	//FIXME:
     }
 
-    @Override public String[] getTags() throws PimException
+    public String[] getTags() throws PimException
     {
 	return tags != null?tags:new String[0];
     }
 
-    @Override public void setTags(String[] value) throws PimException
+    public void setTags(String[] value) throws PimException
     {
 	//FIXME:
     }
 
-    @Override public String[] getUniRefs() throws PimException
+    public String[] getUniRefs() throws PimException
     {
 	return uniRefs != null?uniRefs:new String[0];
     }
 
-    @Override public void setUniRefs(String[] value) throws PimException
+    public void setUniRefs(String[] value) throws PimException
     {
 	//FIXME:
     }
 
-    @Override public String getNotes() throws PimException
+    public String getNotes() throws PimException
     {
 	return notes != null?notes:"";
     }
 
-    @Override public void setNotes(String value) throws PimException
+    public void setNotes(String value) throws PimException
     {
 	//FIXME:
 

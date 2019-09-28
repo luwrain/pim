@@ -17,9 +17,8 @@
 
 package org.luwrain.pim.binder;
 
-import org.luwrain.pim.StoredCommonAttr;
 
-public interface StoredCase extends StoredCommonAttr
+public interface StoredCase
 {
     String getTitle() throws Exception;
     void setTitle(String value) throws Exception;
