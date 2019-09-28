@@ -61,36 +61,6 @@ final class Message extends MailMessage
 	super.setState(state);
     }
 
-    @Override public void setMessageId(String messageId) throws PimException
-    {
-	//FIXME:
-    }
-
-    @Override public void setSubject(String subject) throws PimException
-    {
-	//FIXME:
-    }
-
-    @Override public void setFrom(String from) throws PimException
-    {
-	//FIXME:
-    }
-
-    @Override public void setTo(String[] to) throws PimException
-    {
-	//FIXME:
-    }
-
-    @Override public void setCc(String[] cc) throws PimException
-    {
-	//FIXME:
-    }
-
-    @Override public void setBcc(String[] bcc) throws PimException
-    {
-	//FIXME:
-    }
-
     @Override public void setSentDate(java.util.Date sentDate) throws PimException
     {
 	if (committed)
@@ -187,11 +157,6 @@ final class Message extends MailMessage
 	}
     }
 
-    @Override public void setExtInfo(String value) throws PimException
-    {
-	//FIXME:
-    }
-
     void commit()
     {
 	this.committed = true;
@@ -215,6 +180,6 @@ final class Message extends MailMessage
 	String s = String.valueOf(id);
 	while(s.length() < 4)
 	    s = "0" + s;
-	return s;
+	return "message" + s + ".eml";
     }
 }
