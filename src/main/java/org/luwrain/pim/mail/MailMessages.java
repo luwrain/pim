@@ -26,9 +26,9 @@ import org.luwrain.pim.*;
 public interface MailMessages
 {
     void save(StoredMailFolder folder, MailMessage message) throws PimException;
-    StoredMailMessage[] load(StoredMailFolder folder) throws PimException;
-    void moveToFolder(StoredMailMessage message, StoredMailFolder folder) throws PimException;
-    void delete(StoredMailMessage message) throws PimException;
+    MailMessage[] load(StoredMailFolder folder) throws PimException;
+    void moveToFolder(MailMessage message, StoredMailFolder folder) throws PimException;
+    void delete(MailMessage message) throws PimException;
     byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException;
     MailMessage fromByteArray(byte[] bytes) throws PimException;
 }

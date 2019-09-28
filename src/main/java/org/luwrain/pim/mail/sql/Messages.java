@@ -57,16 +57,16 @@ final class Messages implements MailMessages
 								"INSERT INTO mail_message (mail_folder_id,state,subject,from_addr,message_id,sent_date,received_date,base_content,mime_content_type,raw_message,ext_info) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
 								Statement.RETURN_GENERATED_KEYS);
 		    st.setLong(1, folderRegistry.id);
-		    st.setInt(2, MailMessage.stateToInt(message.state));
-		    st.setString(3, message.subject);
-		    st.setString(4, message.from);
-		    st.setString(5, message.messageId);
-		    st.setDate(6, new java.sql.Date(message.sentDate.getTime()));
-		    st.setDate(7, new java.sql.Date(message.receivedDate.getTime()));
-		    st.setString(8, message.baseContent);
-		    st.setString(9, message.mimeContentType);
+		    st.setInt(2, MailMessage.stateToInt(message.getState()));
+		    st.setString(3, message.getSubject());
+		    st.setString(4, message.getFrom());
+		    st.setString(5, message.getMessageId());
+		    st.setDate(6, new java.sql.Date(message.getSentDate().getTime()));
+		    st.setDate(7, new java.sql.Date(message.getReceivedDate().getTime()));
+		    st.setString(8, message.getText());
+		    st.setString(9, message.getContentType());
 		    st.setBytes(10, message.getRawMessage());
-		    st.setString(11, message.extInfo);
+		    st.setString(11, message.getExtInfo());
 		    final int updatedCount=st.executeUpdate();
 		    if(updatedCount != 1)
 			throw new PimException("Unable to execute initial INSERT query");
@@ -75,8 +75,7 @@ final class Messages implements MailMessages
 			return null;
 		    final long generatedKey = generatedKeys.getLong(1);
 		    //to
-		    if (message.to != null)
-			for(String v: message.to)
+		    for(String v: message.getTo())
 			{
 			    st = con.prepareStatement(
 						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
@@ -87,8 +86,7 @@ final class Messages implements MailMessages
 			    st.executeUpdate();
 			}
 		    //cc
-		    if (message.cc != null)
-			for(String v: message.cc)
+		    for(String v: message.getCc())
 			{
 			    st = con.prepareStatement(
 						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
@@ -99,8 +97,7 @@ final class Messages implements MailMessages
 			    st.executeUpdate();
 			}
 		    //bcc
-		    if (message.bcc != null)
-			for(String v: message.bcc)
+		    for(String v: message.getBcc())
 			{
 			    st = con.prepareStatement(
 						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
@@ -111,8 +108,7 @@ final class Messages implements MailMessages
 			    st.executeUpdate();
 			}
 		    //attachment
-		    if (message.attachments != null)
-			for(String v: message.attachments)
+		    for(String v: message.getAttachments())
 			{
 			    st = con.prepareStatement(
 						      "INSERT INTO mail_message_field (mail_message_id,field_type,value) VALUES (?,?,?)"
@@ -131,31 +127,31 @@ final class Messages implements MailMessages
 	}
     }
 
-    @Override public StoredMailMessage[] load(StoredMailFolder folder) throws PimException
+    @Override public MailMessage[] load(StoredMailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	final Folder folderRegistry = (Folder)folder;
 	try {
-	    return (StoredMailMessage[])queue.execInQueue(()->{
+	    return (MailMessage[])queue.execInQueue(()->{
 		    final Map<Long, StringValue> stringValues = new HashMap();
 		    PreparedStatement st = con.prepareStatement(
 								"SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type,ext_info FROM mail_message WHERE mail_folder_id=?"
 								);
 		    st.setLong(1, folderRegistry.id);
 		    ResultSet rs = st.executeQuery();
-		    final List<StoredMailMessage> res = new LinkedList();
+		    final List<MailMessage> res = new LinkedList();
 		    while (rs.next())
 		    {
 			final Message message=new Message(con, rs.getLong(1), messagesDir);
-			message.messageId = rs.getString(2).trim();
-			message.state = MailMessage.intToState(rs.getInt(3));
-			message.subject = rs.getString(4);
-			message.from = rs.getString(5);
-			message.sentDate = new java.util.Date(rs.getTimestamp(6).getTime());
-			message.receivedDate = new java.util.Date(rs.getTimestamp(7).getTime());
-			message.baseContent = rs.getString(8);
-			message.mimeContentType = rs.getString(9).trim();
-			message.extInfo = rs.getString(10).trim();
+			message.setMessageId(rs.getString(2).trim());
+			message.setState(MailMessage.intToState(rs.getInt(3)));
+			message.setSubject(rs.getString(4));
+			message.setFrom(rs.getString(5));
+			message.setSentDate(new java.util.Date(rs.getTimestamp(6).getTime()));
+			message.setReceivedDate(new java.util.Date(rs.getTimestamp(7).getTime()));
+			message.setText(rs.getString(8));
+			message.setContentType(rs.getString(9).trim());
+			message.setExtInfo(rs.getString(10).trim());
 			stringValues.put(new Long(message.id), new StringValue(message.id));
 			res.add(message);
 		    }
@@ -187,18 +183,18 @@ final class Messages implements MailMessages
 			    break;
 			}
 		    }
-		    for(StoredMailMessage message: res)
+		    for(MailMessage message: res)
 		    {
 			final Message m = (Message)message;
 			if (!stringValues.containsKey(new Long(m.id)))//Should never happen;
 			    continue;
 			final StringValue s = stringValues.get(new Long(m.id));
-			m.to = s.to.toArray(new String[s.to.size()]);
-			m.cc = s.cc.toArray(new String[s.cc.size()]);
-			m.bcc = s.bcc.toArray(new String[s.bcc.size()]);
-			m.attachments = s.attachments.toArray(new String[s.attachments.size()]);
+			m.setTo(s.to.toArray(new String[s.to.size()]));
+			m.setCc(s.cc.toArray(new String[s.cc.size()]));
+			m.setBcc(s.bcc.toArray(new String[s.bcc.size()]));
+			m.setAttachments(s.attachments.toArray(new String[s.attachments.size()]));
 		    }
-		    return res.toArray(new StoredMailMessage[res.size()]);
+		    return res.toArray(new MailMessage[res.size()]);
 		});
 	}
 	catch(Exception e)
@@ -207,7 +203,7 @@ final class Messages implements MailMessages
 	}
     }
 
-    @Override public void delete(StoredMailMessage message) throws PimException
+    @Override public void delete(MailMessage message) throws PimException
     {
 	NullCheck.notNull(message, "message");
 	final Message messageSql = (Message)message;
@@ -232,7 +228,7 @@ final class Messages implements MailMessages
 	}
     }
 
-    @Override public void moveToFolder(StoredMailMessage message, StoredMailFolder folder) throws PimException
+    @Override public void moveToFolder(MailMessage message, StoredMailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");

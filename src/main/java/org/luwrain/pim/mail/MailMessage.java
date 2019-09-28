@@ -55,7 +55,7 @@ public class MailMessage implements Comparable
 	this.from = from;
     }
 
-    public String getFrom(String from) throws PimException
+    public String getFrom() throws PimException
     {
 	return this.from;
     }
@@ -149,7 +149,7 @@ public class MailMessage implements Comparable
 
     public void setAttachments(String[] attachments) throws PimException
     {
-	NullCheck.notNullItems(attachments, "attachments);
+	NullCheck.notNullItems(attachments, "attachments");
 this.attachments = attachments.clone();
     }
 

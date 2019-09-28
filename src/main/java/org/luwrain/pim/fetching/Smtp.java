@@ -50,7 +50,7 @@ throw new FetchingException("Не удалось подготовить почт
 
     public Result fetch() throws PimException, InterruptedException
     {
-	final StoredMailMessage[] messages = storing.getMessages().load(pending);
+	final MailMessage[] messages = storing.getMessages().load(pending);
 	Log.debug(LOG_COMPONENT, "loading " + messages.length + " message(s) to send");
 	if (messages.length == 0)
 	{
@@ -58,7 +58,7 @@ throw new FetchingException("Не удалось подготовить почт
 	    return new Result();
 	}
 	final List<PendingQueue> queues = new LinkedList();
-	for(StoredMailMessage m: messages)
+	for(MailMessage m: messages)
 	{
 	    checkInterrupted();
 	    final String uniRef = m.getExtInfo();
@@ -127,7 +127,7 @@ throw new FetchingException("Не удалось подготовить почт
 	message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	int count = 0;
-	for(StoredMailMessage message: queue.messages)
+	for(MailMessage message: queue.messages)
 	{
 	    checkInterrupted();
 	    message(strings.sendingMessage("" + count, "" + queue.messages.size()));
@@ -167,7 +167,7 @@ throw new FetchingException("Не удалось подготовить почт
     static private final class PendingQueue
     {
 	final String accountUniRef; 
-	final List<StoredMailMessage> messages = new LinkedList();
+	final List<MailMessage> messages = new LinkedList();
 
 	PendingQueue(String accountUniRef)
 	{

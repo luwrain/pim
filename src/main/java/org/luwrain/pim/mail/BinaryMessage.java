@@ -63,37 +63,35 @@ public final class BinaryMessage
 	return message;
     }
 
-    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws IOException, MessagingException
+    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws PimException, IOException, MessagingException
     {
 	NullCheck.notNull(srcMsg, "srcMsg");
 	NullCheck.notNull(headers, "headers");
-	NullCheck.notNull(srcMsg.subject, "srcMsg.subject");
-	NullCheck.notEmpty(srcMsg.from, "srcMsg.from");
-	NullCheck.notEmptyArray(srcMsg.to, "srcMsg.to");
-	NullCheck.notEmptyItems(srcMsg.to, "srcMsg.to");
-	NullCheck.notEmptyItems(srcMsg.cc, "srcMsg.cc");
-	NullCheck.notEmptyItems(srcMsg.bcc, "srcMsg.bcc");
-	NullCheck.notEmptyItems(srcMsg.attachments, "srcMsg.attachments");
+	//	NullCheck.notEmpty(srcMsg.getFrom(), "srcMsg.getFrom()");
+	//	NullCheck.notEmptyArray(srcMsg.to, "srcMsg.to");
+	//	NullCheck.notEmptyItems(srcMsg.to, "srcMsg.to");
+	//	NullCheck.notEmptyItems(srcMsg.cc, "srcMsg.cc");
+	//	NullCheck.notEmptyItems(srcMsg.bcc, "srcMsg.bcc");
+	//	NullCheck.notEmptyItems(srcMsg.attachments, "srcMsg.attachments");
 	final Session session = Session.getDefaultInstance(new Properties(), null);
 	final javax.mail.internet.MimeMessage message = new MimeMessage(session);;
 	for(Map.Entry<String,String> e: headers.entrySet())
 	    message.addHeader(e.getKey(), e.getValue());
-	message.setSubject(srcMsg.subject);
-	message.setFrom(encodeAddr(srcMsg.from));
-	message.setRecipients(RecipientType.TO, encodeAddrs(srcMsg.to));
-	if(srcMsg.cc.length>0)
-	    message.setRecipients(RecipientType.CC, encodeAddrs(srcMsg.cc));
-	if(srcMsg.bcc.length>0)
-	    message.setRecipients(RecipientType.BCC, encodeAddrs(srcMsg.bcc));
-	if(srcMsg.sentDate!=null)
-	    message.setSentDate(srcMsg.sentDate);
-	if(srcMsg.attachments.length > 0)
+	message.setSubject(srcMsg.getSubject());
+	message.setFrom(encodeAddr(srcMsg.getFrom()));
+	message.setRecipients(RecipientType.TO, encodeAddrs(srcMsg.getTo()));
+	if(srcMsg.getCc().length>0)
+	    message.setRecipients(RecipientType.CC, encodeAddrs(srcMsg.getCc()));
+	if(srcMsg.getBcc().length>0)
+	    message.setRecipients(RecipientType.BCC, encodeAddrs(srcMsg.getBcc()));
+	message.setSentDate(srcMsg.getSentDate());
+	if(srcMsg.getAttachments().length > 0)
 	{
 	    final Multipart mp = new MimeMultipart();
 	    MimeBodyPart part = new MimeBodyPart();
-	    part.setText(srcMsg.baseContent);
+	    part.setText(srcMsg.getText());
 	    mp.addBodyPart(part);
-	    for(String fn:srcMsg.attachments)
+	    for(String fn:srcMsg.getAttachments())
 	    {
 		part = new MimeBodyPart();
 		final File pfn = new File(fn);
@@ -105,38 +103,37 @@ public final class BinaryMessage
 	    message.setContent(mp);
 	} else
 	{
-	    if(srcMsg.mimeContentType==null)
+	    if(srcMsg.getContentType().isEmpty())
 	    { // simple text email body
-		message.setText(srcMsg.baseContent);
+		message.setText(srcMsg.getText());
 	    } else
 	    { // for example utf8 html - mimeContentType="text/html; charset=utf-8"
-		message.setContent(srcMsg.baseContent,srcMsg.mimeContentType);
+		message.setContent(srcMsg.getText(), srcMsg.getContentType());
 	    }
 	}
 	return message;
     }
 
-    static private void convertFromMimeMessage(MimeMessage srcMsg, MailMessage dest) throws MessagingException, UnsupportedEncodingException, IOException
+    static private void convertFromMimeMessage(MimeMessage srcMsg, MailMessage dest) throws PimException, MessagingException, UnsupportedEncodingException, IOException
     {
 	NullCheck.notNull(srcMsg, "srcMsg");
 	NullCheck.notNull(dest, "dest");
-	dest.subject = srcMsg.getSubject();
-	if (dest.subject == null)
-	    dest.subject = "";
+	if (srcMsg.getSubject() != null)
+	dest.setSubject(srcMsg.getSubject());
 	if(srcMsg.getFrom() != null)
-	    dest.from = MimeUtility.decodeText(srcMsg.getFrom()[0].toString()); else
-	    dest.from = "";
-	dest.to = decodeAddrs(srcMsg.getRecipients(RecipientType.TO));
-	dest.cc = decodeAddrs(srcMsg.getRecipients(RecipientType.CC));
-	dest.bcc = decodeAddrs(srcMsg.getRecipients(RecipientType.BCC));
-	dest.sentDate = srcMsg.getSentDate();
-	dest.receivedDate = srcMsg.getReceivedDate();
-	if (dest.receivedDate == null)
-	    dest.receivedDate = new java.util.Date();
+	    dest.setFrom(MimeUtility.decodeText(srcMsg.getFrom()[0].toString()));
+	if (srcMsg.getRecipients(RecipientType.TO) != null)
+	dest.setTo(decodeAddrs(srcMsg.getRecipients(RecipientType.TO)));
+	if (srcMsg.getRecipients(RecipientType.CC) != null)
+	    dest.setCc(decodeAddrs(srcMsg.getRecipients(RecipientType.CC)));
+	if (srcMsg.getRecipients(RecipientType.BCC) != null)
+	    dest.setBcc(decodeAddrs(srcMsg.getRecipients(RecipientType.BCC)));
+	dest.setSentDate(srcMsg.getSentDate());
+	dest.setReceivedDate(srcMsg.getReceivedDate());
 	final MimePartCollector collector = new MimePartCollector();
-	dest.baseContent = collector.run(srcMsg.getContent(), srcMsg.getContentType(), "", "");
-	dest.attachments = collector.attachments.toArray(new String[collector.attachments.size()]);
-	dest.mimeContentType = srcMsg.getContentType();
+	dest.setText(collector.run(srcMsg.getContent(), srcMsg.getContentType(), "", ""));
+	dest.setAttachments(collector.attachments.toArray(new String[collector.attachments.size()]));
+	dest.setContentType(srcMsg.getContentType());
     }
 
     static private byte[] mimeToByteArray(javax.mail.internet.MimeMessage message) throws MessagingException, IOException
@@ -206,16 +203,13 @@ public final class BinaryMessage
     static class MimePartCollector
     {
 	final List<String> attachments = new LinkedList();
-	//    final StringBuilder body = new StringBuilder();
 	String run(Object o, String contentType,
-		   String fileName, String disposition) throws IOException, MessagingException
+		   String fileName, String disposition) throws PimException, IOException, MessagingException
 	{
 	    if(o instanceof MimeMultipart)
 	    {
 		final Multipart content =(Multipart)o;
-		//	    System.out.println("multipart " + contentType);
 		final boolean alternative = (contentType.toLowerCase().indexOf("alternative") >= 0);
-		//	    System.out.println("alternative " + alternative);
 		final StringBuilder textRes = new StringBuilder();
 		final StringBuilder htmlRes = new StringBuilder();
 		for(int i=0;i<content.getCount();i++)

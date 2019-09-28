@@ -22,60 +22,44 @@ public final class MessageHookObject extends EmptyHookObject
 	this.message = message;
     }
 
-        public MessageHookObject(StoredMailMessage message)
-    {
-	NullCheck.notNull(message, "message");
-	if (!(message instanceof MailMessage))
-	    throw new IllegalArgumentException("Unsupported message instance: " + message.getClass().getName());
-	this.message = (MailMessage)message;
-    }
-
-
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
-	switch(name)
-	{
-	case "subject":
-	    return message.subject != null?message.subject:"";
-	    	case "from":
-		    return message.from != null?new AddressHookObject(message.from):"";
-	case "cc":
+	try {
+	    switch(name)
 	    {
-		final List<HookObject> res = new LinkedList();
-		if (message.cc != null)
-		    for(String s: message.cc)
+	    case "subject":
+		return message.getSubject ();
+	    case "from":
+		return new AddressHookObject(message.getFrom());
+	    case "cc":
+		{
+		    final List<HookObject> res = new LinkedList();
+		    for(String s: message.getCc())
 			if (s != null)
 			    res.add(new AddressHookObject(s));
-		return ScriptUtils.createReadOnlyArray(res.toArray(new HookObject[res.size()]));
-	    }
-	case "headers":
-	    try {
+		    return ScriptUtils.createReadOnlyArray(res.toArray(new HookObject[res.size()]));
+		}
+	    case "headers":
 		if (headers == null)
 		    headers = extractHeaders(message.getRawMessage());
-	    }
-	    catch(PimException e)
-	    {
-		return null;
-	    }
-	    return ScriptUtils.createReadOnlyArray(headers);
-	case "list":
-	    if (this.listHookObj == null)
-	    {
-		try {
-	    if (headers == null)
-		headers = extractHeaders(message.getRawMessage());
-		}
-		catch(PimException e)
+		return ScriptUtils.createReadOnlyArray(headers);
+	    case "list":
+		if (this.listHookObj == null)
 		{
-		    return null;
+		    if (headers == null)
+			headers = extractHeaders(message.getRawMessage());
+		    this.listHookObj = new ListHookObject(headers);
 		}
-	    this.listHookObj = new ListHookObject(headers);
+		return listHookObj;
+	    default:
+		return super.getMember(name);
 	    }
-	    return listHookObj;
-	    
-	default:
-	    return super.getMember(name);
+	}
+	catch(PimException e)
+	{
+	    Log.warning(LOG_COMPONENT, "unable to get the \'" + name + "\' member of the message hook object:" + e.getClass().getName() + ":" + e.getMessage());
+	    return null;
 	}
     }
 
