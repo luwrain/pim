@@ -1,19 +1,3 @@
-/*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 //LWR_API 1.0
 
@@ -22,27 +6,181 @@ package org.luwrain.pim.mail;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.pim.*;
 
 public class MailMessage implements Comparable
 {
     public enum State {NEW, READ, MARKED, DELETED};
 
-    public String messageId = "";
-	public String subject = "";
-    public String from = "";
-    public String[] to = new String[0];
-    public String[] cc = new String[0];
-    public String[] bcc = new String[0];
-    public State state = State.NEW;
-    public Date sentDate = new Date();
-    public Date receivedDate = new Date();
-    public String baseContent = "";
-    public String mimeContentType = "";
-    public String[] attachments = new String[0];
-    public byte[] rawMail = new byte[0];
-    public String extInfo = "";
+    private String messageId = "";
+    private String subject = "";
+    private String from = "";
+    private String[] to = new String[0];
+    private String[] cc = new String[0];
+    private String[] bcc = new String[0];
+    private State state = State.NEW;
+    private Date sentDate = new Date();
+    private Date receivedDate = new Date();
+    private String text = "";
+    private String contentType = "";
+    private String[] attachments = new String[0];
+    private byte[] rawMessage = new byte[0];
+    private String extInfo = "";
 
-	@Override public int compareTo(Object o)
+    public void setMessageId(String messageId) throws PimException
+    {
+	NullCheck.notNull(messageId, "messageId");
+	this.messageId = messageId;
+    }
+
+    public String getMessageId() throws PimException
+    {
+	return this.messageId;
+    }
+
+    public void setSubject(String subject) throws PimException
+    {
+	NullCheck.notNull(subject, "subject");
+	this.subject = subject;
+    }
+
+    public String getSubject() throws PimException
+    {
+	return this.subject;
+    }
+
+    public void setFrom(String from) throws PimException
+    {
+	NullCheck.notNull(from, "from");
+	this.from = from;
+    }
+
+    public String getFrom(String from) throws PimException
+    {
+	return this.from;
+    }
+
+    public void setTo(String[] to) throws PimException
+    {
+	NullCheck.notNullItems(to, "to");
+	this.to = to.clone();
+    }
+
+    public String[] getTo() throws PimException
+    {
+	return this.to.clone();
+    }
+
+    public void setCc(String[] cc) throws PimException
+    {
+	NullCheck.notNullItems(cc, "cc");
+	this.cc = cc.clone();
+    }
+
+    public String[] getCc() throws PimException
+    {
+	return cc.clone();
+    }
+
+    public void setBcc(String[] bcc) throws PimException
+    {
+	NullCheck.notNullItems(bcc, "bcc");
+	this.bcc = bcc.clone();
+    }
+
+    public String[] getBcc() throws PimException
+    {
+	return this.bcc.clone();
+    }
+
+    public void setState(State state) throws PimException
+    {
+	NullCheck.notNull(state, "state");
+	this.state = state;
+    }
+
+    public State getState() throws PimException
+    {
+	return this.state;
+    }
+
+    public void setSentDate(Date date) throws PimException
+    {
+	NullCheck.notNull(sentDate, "sentDate");
+	this.sentDate = sentDate;
+    }
+
+    public Date getSentDate() throws PimException
+    {
+	return this.sentDate;
+    }
+
+    public void setReceivedDate(Date date) throws PimException
+    {
+	NullCheck.notNull(receivedDate, "receivedDate");
+	this.receivedDate = receivedDate;
+    }
+
+    public Date getReceivedDate() throws PimException
+    {
+	return this.receivedDate;
+    }
+
+    public void setText(String text) throws PimException
+    {
+	NullCheck.notNull(text, "text");
+	this.text = text;
+    }
+
+    public String getText() throws PimException
+    {
+	return this.text;
+    }
+
+    public void setContentType(String contentType) throws PimException
+    {
+	this.contentType = contentType;
+    }
+
+    public String getContentType() throws PimException
+    {
+	return this.contentType;
+    }
+
+    public void setAttachments(String[] attachments) throws PimException
+    {
+	NullCheck.notNullItems(attachments, "attachments);
+this.attachments = attachments.clone();
+    }
+
+    public String[] getAttachments() throws PimException
+    {
+	return this.attachments.clone();
+    }
+
+        public void setRawMessage(byte[] rawMessage) throws PimException
+    {
+NullCheck.notNull(rawMessage, "rawMessage");
+this.rawMessage = rawMessage.clone();
+    }
+
+    public byte[] getRawMessage() throws PimException
+    {
+	return this.rawMessage.clone();
+    }
+
+    public void setExtInfo(String extInfo) throws PimException
+    {
+NullCheck.notNull(extInfo, "extInfo");
+this.extInfo = extInfo;
+    }
+
+    public String getExtInfo() throws PimException
+    {
+	return this.extInfo;
+    }
+
+    	@Override public int compareTo(Object o)
     {
 	/*
 FIXME:

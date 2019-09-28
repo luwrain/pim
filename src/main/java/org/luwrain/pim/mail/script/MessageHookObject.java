@@ -50,14 +50,26 @@ public final class MessageHookObject extends EmptyHookObject
 		return ScriptUtils.createReadOnlyArray(res.toArray(new HookObject[res.size()]));
 	    }
 	case "headers":
-	    if (headers == null)
-		headers = extractHeaders(message.rawMail);
+	    try {
+		if (headers == null)
+		    headers = extractHeaders(message.getRawMessage());
+	    }
+	    catch(PimException e)
+	    {
+		return null;
+	    }
 	    return ScriptUtils.createReadOnlyArray(headers);
 	case "list":
 	    if (this.listHookObj == null)
 	    {
+		try {
 	    if (headers == null)
-		headers = extractHeaders(message.rawMail);
+		headers = extractHeaders(message.getRawMessage());
+		}
+		catch(PimException e)
+		{
+		    return null;
+		}
 	    this.listHookObj = new ListHookObject(headers);
 	    }
 	    return listHookObj;

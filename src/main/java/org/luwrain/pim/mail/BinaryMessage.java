@@ -59,7 +59,7 @@ public final class BinaryMessage
 	{
 	    throw new PimException(e);
 	}
-	message.rawMail = bytes;
+	message.setRawMessage(bytes);
 	return message;
     }
 

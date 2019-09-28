@@ -17,6 +17,7 @@
 
 package org.luwrain.pim.mail.sql;
 
+import java.io.*;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
@@ -29,7 +30,7 @@ import org.luwrain.pim.util.*;
 public final class Storing implements MailStoring, ExecQueue
 {
     static final String LOG_COMPONENT = "pim";
-    
+
     private final Registry registry;
     private final Connection con;
     private final ExecQueues execQueues;
@@ -40,11 +41,12 @@ public final class Storing implements MailStoring, ExecQueue
     private final Folders folders;
     private final Messages messages;
 
-    public Storing(Registry registry,Connection con, ExecQueues execQueues, boolean highPriority)
+    public Storing(Registry registry,Connection con, ExecQueues execQueues, boolean highPriority, File messagesDir)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(con, "con");
 	NullCheck.notNull(execQueues, "execQueues");
+	NullCheck.notNull(messagesDir, "messagesDir");
 	this.registry = registry;
 	this.con = con;
 	this.execQueues = execQueues;
@@ -52,7 +54,7 @@ public final class Storing implements MailStoring, ExecQueue
 	this.rules = new Rules(registry);
 	this.folders = new Folders(registry);
 	this.accounts = new Accounts(registry);
-	this.messages = new Messages(this, con);
+	this.messages = new Messages(this, con, messagesDir);
 	    }
 
     @Override public MailRules getRules()

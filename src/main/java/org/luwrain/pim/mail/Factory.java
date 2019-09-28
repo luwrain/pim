@@ -27,6 +27,8 @@ public final class Factory
     static private final String LOG_COMPONENT = "pim-mail";
     static private final String SQLITE_INIT_RESOURCE = "org/luwrain/pim/mail.sqlite";
 
+    static public final String MESSAGES_DIR_NAME = "luwrain.pim.mail.messages";
+
     static public final String DEFAULT_TYPE = "jdbc";
     static public final String DEFAULT_DRIVER = "org.sqlite.JDBC";
     static public final String DEFAULT_URL = "jdbc:sqlite:$userdata/sqlite/mail.db";
@@ -50,7 +52,7 @@ public final class Factory
     public MailStoring newMailStoring(boolean highPriority)
     {
 	if (con != null)
-	    return new org.luwrain.pim.mail.sql.Storing(registry, con, execQueues, highPriority);
+	    return new org.luwrain.pim.mail.sql.Storing(registry, con, execQueues, highPriority, luwrain.getAppDataDir(MESSAGES_DIR_NAME).toFile());
 	final String type = sett.getType(DEFAULT_TYPE).trim().toLowerCase();
 	if (type.isEmpty())
 	{
@@ -85,7 +87,7 @@ public final class Factory
 		    this.con = null;
 		    return null;
 		}
-		return new org.luwrain.pim.mail.sql.Storing(registry, this.con, execQueues, highPriority);
+		return new org.luwrain.pim.mail.sql.Storing(registry, this.con, execQueues, highPriority, luwrain.getAppDataDir(MESSAGES_DIR_NAME).toFile());
 	    }
 	default:
 	    Log.error(LOG_COMPONENT, "unknown mail storing type \'" + type + "\'");

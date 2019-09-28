@@ -17,6 +17,7 @@
 
 package org.luwrain.pim.mail.sql;
 
+import java.io.*;
 import java.util.*;
 import java.sql.*;
 
@@ -24,15 +25,21 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-class Message extends MailMessage implements StoredMailMessage
+final class Message extends MailMessage implements StoredMailMessage
 {
     final Connection con;
-    long id;
+    final long id;
+    private final File messagesDir;
 
-    Message(Connection con)
+    Message(Connection con, long id, File messagesDir)
     {
 	NullCheck.notNull(con, "con");
+	NullCheck.notNull(messagesDir, "messagesDir");
+	if (id < 0)
+	    throw new IllegalArgumentException("id (" + String.valueOf(id) + " may not be negative");
     	this.con = con;
+	this.id = id;
+	this.messagesDir = messagesDir;
     }
 
     @Override public MailMessage.State getState()
@@ -204,21 +211,21 @@ return mimeContentType;
     @Override public byte[] getRawMessage() throws PimException
     {
 	try {
-	    if(rawMail==null)
-	    {
-        	final PreparedStatement st = con.prepareStatement("SELECT raw_message FROM mail_message WHERE id = ?;");
-        	st.setLong(1, this.id);
-        	final ResultSet rs = st.executeQuery();
-        	if(rs.next()) 
-		    this.rawMail=rs.getBytes(1);
+	    final InputStream is = new FileInputStream(new File("") );
+	    try {
+		final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		org.luwrain.util.StreamUtils.copyAllBytes(is, bytes);
+		return bytes.toByteArray();
 	    }
-	    return rawMail;
+	    finally {
+		is.close();
+	    }
 	}
-	catch(SQLException e)
+	catch(IOException e)
 	{
 	    throw new PimException(e);
 	}
-	}
+    }
 
     @Override public void setRawMessage(byte[] rawMail) throws PimException
     {
@@ -227,7 +234,7 @@ return mimeContentType;
 	    st.setBytes(1, rawMail);
 	    st.setLong(2, id);
 	    st.executeUpdate();
-	    this.rawMail = rawMail;
+	    super.setRawMessage(rawMail);
 	}
 	catch(SQLException e)
 	{

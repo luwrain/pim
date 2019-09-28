@@ -17,6 +17,7 @@
 
 package org.luwrain.pim.mail.sql;
 
+import java.io.*;
 import java.sql.*;
 import java.util.*;
 
@@ -24,7 +25,7 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-class Messages implements MailMessages
+final class Messages implements MailMessages
 {
     static private final int FIELD_TYPE_TO = 1;
     static private final int FIELD_TYPE_CC = 2;
@@ -33,13 +34,16 @@ class Messages implements MailMessages
 
     private final ExecQueue queue;
     private final Connection con;
+    private final File messagesDir;
 
-    Messages(ExecQueue queue,Connection con)
+    Messages(ExecQueue queue,Connection con, File messagesDir)
     {
 	NullCheck.notNull(queue, "queue");
 	NullCheck.notNull(con, "con");
+	NullCheck.notNull(messagesDir, "messagesDir");
 	this.queue = queue;
 	this.con = con;
+	this.messagesDir = messagesDir;
     }
 
     @Override public void save(StoredMailFolder folder, MailMessage message) throws PimException
@@ -61,7 +65,7 @@ class Messages implements MailMessages
 		    st.setDate(7, new java.sql.Date(message.receivedDate.getTime()));
 		    st.setString(8, message.baseContent);
 		    st.setString(9, message.mimeContentType);
-		    st.setBytes(10, message.rawMail);
+		    st.setBytes(10, message.getRawMessage());
 		    st.setString(11, message.extInfo);
 		    final int updatedCount=st.executeUpdate();
 		    if(updatedCount != 1)
@@ -142,8 +146,7 @@ class Messages implements MailMessages
 		    final List<StoredMailMessage> res = new LinkedList();
 		    while (rs.next())
 		    {
-			final Message message=new Message(con);
-			message.id = rs.getLong(1);
+			final Message message=new Message(con, rs.getLong(1), messagesDir);
 			message.messageId = rs.getString(2).trim();
 			message.state = MailMessage.intToState(rs.getInt(3));
 			message.subject = rs.getString(4);
@@ -152,7 +155,6 @@ class Messages implements MailMessages
 			message.receivedDate = new java.util.Date(rs.getTimestamp(7).getTime());
 			message.baseContent = rs.getString(8);
 			message.mimeContentType = rs.getString(9).trim();
-			message.rawMail = null;
 			message.extInfo = rs.getString(10).trim();
 			stringValues.put(new Long(message.id), new StringValue(message.id));
 			res.add(message);
