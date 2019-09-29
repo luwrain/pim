@@ -37,7 +37,7 @@ final class Contacts implements org.luwrain.pim.contacts.Contacts
 	this.con = con;
     }
 
-    @Override public org.luwrain.pim.contacts.Contact[] load(StoredContactsFolder folder) throws PimException
+    @Override public org.luwrain.pim.contacts.Contact[] load(ContactsFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	try {
@@ -101,7 +101,7 @@ final class Contacts implements org.luwrain.pim.contacts.Contacts
 	}
     }
 
-    @Override public void save(StoredContactsFolder folder, org.luwrain.pim.contacts.Contact contact) throws PimException
+    @Override public void save(ContactsFolder folder, org.luwrain.pim.contacts.Contact contact) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(contact, "contact");

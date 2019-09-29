@@ -21,8 +21,10 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.contacts.*;
 
-class Folder extends ContactsFolder implements StoredContactsFolder
+final class Folder extends ContactsFolder
 {
+    static private final String LOG_COMPONENT = "pim-contacts";
+    
     private final Registry registry;
     private final org.luwrain.pim.contacts.Settings.Folder sett;
 
@@ -37,32 +39,22 @@ class Folder extends ContactsFolder implements StoredContactsFolder
 	this.sett = org.luwrain.pim.contacts.Settings.createFolder(registry, Registry.join(org.luwrain.pim.contacts.Settings.FOLDERS_PATH, "" + id));
     }
 
-    @Override public String getTitle()
+    @Override public void setTitle(String title) throws PimException
     {
-	return title;
+	NullCheck.notNull(title, "title");
+	sett.setTitle(title);
+	super.setTitle(title);
     }
 
-    @Override public void setTitle(String value)
+    @Override public void setOrderIndex(int orderIndex) throws PimException
     {
-	NullCheck.notNull(value, "value");
-	sett.setTitle(value);
-	this.title = value;
-    }
-
-    @Override public int getOrderIndex()
-    {
-	return orderIndex;
-    }
-
-    @Override public void setOrderIndex(int value)
-    {
-	if (value < 0)
-	    throw new IllegalArgumentException("value (" + value + ") may not be negative");
-	sett.setOrderIndex(value);
-	this.orderIndex = value;
+	if (orderIndex < 0)
+	    throw new IllegalArgumentException("orderIndex (" + String.valueOf(orderIndex) + ") may not be negative");
+	sett.setOrderIndex(orderIndex);
+	super.setOrderIndex(orderIndex);
 }
 
-    @Override public boolean isRoot()
+public boolean isRoot()
     {
 	return id == parentId;
     }
@@ -75,14 +67,30 @@ class Folder extends ContactsFolder implements StoredContactsFolder
 
     boolean load()
     {
-	title = sett.getTitle("");
-	orderIndex = sett.getOrderIndex(0);
-	parentId = sett.getParentId(-1);
-	if (title.isEmpty() || parentId < 0)
+	try {
+	    super.setTitle(sett.getTitle(""));
+	    if (getTitle().isEmpty() || parentId < 0)
+		return false;
+	    final int orderIndex = sett.getOrderIndex(0);
+	    if (orderIndex < 0)
+	    {
+		Log.warning(LOG_COMPONENT, "the contacts folder with ID=" + String.valueOf(id) + " has a negative order index (" + String.valueOf(orderIndex) + ")");
+		return false;
+	    }
+	    super.setOrderIndex(orderIndex);
+	    final int parentId = sett.getParentId(0);
+	    if (parentId < 0)
+	    {
+		Log.warning(LOG_COMPONENT, "the contacts folder with ID=" + String.valueOf(id) + " has a negative parent ID (" + String.valueOf(parentId) + ")");
+		return false;
+	    }
+	    return true;
+	}
+	catch(PimException e)
+	{
+	    Log.warning(LOG_COMPONENT, "unable to load the contacts folder with ID=" + String.valueOf(id) + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;
-	if (orderIndex < 0)
-	    orderIndex = 0;
-	return true;
+	}
     }
 
     @Override public boolean equals(Object o)

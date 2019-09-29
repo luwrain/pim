@@ -30,7 +30,7 @@ public class ChooseMailPopup extends ListPopup2
 protected final ContactsStoring storing;
 protected final Strings strings;
 
-    public ChooseMailPopup(Luwrain luwrain, Strings strings, ContactsStoring storing, StoredContactsFolder folder) throws PimException
+    public ChooseMailPopup(Luwrain luwrain, Strings strings, ContactsStoring storing, ContactsFolder folder) throws PimException
     {
 	super(luwrain, 
 	      constructParams(luwrain, strings.chooseMailPopupName(folder.toString()), strings, storing, folder),Popups.DEFAULT_POPUP_FLAGS);
@@ -64,9 +64,9 @@ protected boolean openSubfolder()
 	    onContactEntry((Contact)sel);
 	    return true;
 	}
-	if (!(sel instanceof StoredContactsFolder))
+	if (!(sel instanceof ContactsFolder))
 	    return false;
-	final StoredContactsFolder folder = (StoredContactsFolder)sel;
+	final ContactsFolder folder = (ContactsFolder)sel;
 	try {
 	    final ChooseMailPopup popup = new ChooseMailPopup(luwrain, strings, storing, folder);
 	    luwrain.popup(popup);
@@ -129,7 +129,7 @@ protected void onContactEntry(Contact contact)
     }
 
     static protected ListArea.Params constructParams(Luwrain luwrain, String name, Strings strings,
-						     ContactsStoring storing, StoredContactsFolder folder)
+						     ContactsStoring storing, ContactsFolder folder)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
@@ -147,10 +147,10 @@ params.appearance = new Appearance(luwrain, strings);
     static protected class Model implements ListArea.Model
     {
 protected final ContactsStoring storing;
-protected final StoredContactsFolder folder;
+protected final ContactsFolder folder;
 protected Object[] items;
 
-	Model(ContactsStoring storing, StoredContactsFolder folder)
+	Model(ContactsStoring storing, ContactsFolder folder)
 	{
 	    NullCheck.notNull(storing, "storing");
 	    NullCheck.notNull(folder, "folder");
@@ -172,10 +172,10 @@ protected Object[] items;
 	@Override public void refresh()
 	{
 	    try {
-		final StoredContactsFolder[] folders = storing.getFolders().load(folder);
+		final ContactsFolder[] folders = storing.getFolders().load(folder);
 		final Contact[] contacts = storing.getContacts().load(folder);
 		final List res = new LinkedList();
-		for(StoredContactsFolder f: folders)
+		for(ContactsFolder f: folders)
 		    res.add(f);
 		for(Contact c: contacts)
 		    res.add(c);
@@ -207,9 +207,9 @@ protected final Strings strings;
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
 	    luwrain.playSound(Sounds.LIST_ITEM);
-	    if (item instanceof StoredContactsFolder)
+	    if (item instanceof ContactsFolder)
 	    {
-		final StoredContactsFolder folder = (StoredContactsFolder)item;
+		final ContactsFolder folder = (ContactsFolder)item;
 		try {
 		    final String title = folder.getTitle();
 		    luwrain.speak(title + " группа");

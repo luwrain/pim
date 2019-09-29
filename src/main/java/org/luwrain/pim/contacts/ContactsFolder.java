@@ -17,10 +17,36 @@
 
 package org.luwrain.pim.contacts;
 
+import org.luwrain.core.*;
+import org.luwrain.pim.*;
+
 public class ContactsFolder implements Comparable
 {
-    public String title = "";
-    public int orderIndex = 0;
+    private String title = "";
+    private int orderIndex = 0;
+
+    public void setTitle(String title) throws PimException
+    {
+	NullCheck.notNull(title, "title");
+	this.title = title;
+    }
+
+    public String getTitle() throws PimException
+    {
+	return this.title;
+    }
+
+    public void setOrderIndex(int orderIndex) throws PimException
+    {
+	if (orderIndex < 0)
+	    throw new IllegalArgumentException("orderIndex (" + String.valueOf(orderIndex) + ") may not be negative");
+	this.orderIndex = orderIndex;
+    }
+
+    public int getOrderIndex() throws PimException
+    {
+	return this.orderIndex;
+    }
 
     @Override public String toString()
     {
@@ -45,5 +71,5 @@ public class ContactsFolder implements Comparable
 	    return false;
 	final ContactsFolder folder = (ContactsFolder)o;
 	return title.equals(folder.title);
-}
+    }
 }
