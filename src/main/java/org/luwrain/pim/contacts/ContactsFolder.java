@@ -48,6 +48,11 @@ public class ContactsFolder implements Comparable
 	return this.orderIndex;
     }
 
+    public boolean isRoot()
+    {
+	return false;
+    }
+
     @Override public String toString()
     {
 	return title;

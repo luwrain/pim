@@ -54,7 +54,7 @@ final class Folder extends ContactsFolder
 	super.setOrderIndex(orderIndex);
 }
 
-public boolean isRoot()
+@Override public boolean isRoot()
     {
 	return id == parentId;
     }
