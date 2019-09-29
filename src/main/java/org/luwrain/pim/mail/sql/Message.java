@@ -164,7 +164,13 @@ final class Message extends MailMessage
 
     static void saveRawMessage(byte[] bytes, File messagesDir, long id) throws IOException
     {
-	final OutputStream os = new FileOutputStream(new File(messagesDir, getRawMessageFileName(id)));
+	final File file = new File(messagesDir, getRawMessageFileName(id));
+	final File parent = file.getParentFile();
+	if (!parent.exists())
+	    parent.mkdir(); else
+	    if (!parent.isDirectory())
+		throw new IOException(parent.getAbsolutePath() + " exists is not a directory");
+	final OutputStream os = new FileOutputStream(file);
 	try {
 	    final ByteArrayInputStream is = new ByteArrayInputStream(bytes);
 	    org.luwrain.util.StreamUtils.copyAllBytes(is, os);
@@ -180,6 +186,9 @@ final class Message extends MailMessage
 	String s = String.valueOf(id);
 	while(s.length() < 4)
 	    s = "0" + s;
-	return "message" + s + ".eml";
+	String d = String.valueOf(id/ 1000);
+	while (d.length() < 3)
+	    d = "0" + d;
+	return new File(new File(d), "message" + s + ".eml").getPath();
     }
 }
