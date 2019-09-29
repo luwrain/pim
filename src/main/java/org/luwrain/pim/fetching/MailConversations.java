@@ -33,7 +33,7 @@ import org.luwrain.pim.PimException;
 
 public final class MailConversations
 {
-    static final int LIMIT_MESSAGES_LOAD = 5000;
+    static final int LIMIT_MESSAGES_LOAD = 500;
 
     public interface Listener
     {

@@ -43,48 +43,34 @@ final class FolderHookObject extends EmptyHookObject
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
-	switch(name)
-	{
-	case "title":
-	    try{ 
+	try {
+	    switch(name)
+	    {
+	    case "title":
 		return folder.getTitle();
-	    }
-	    catch(PimException e)
-	    {
-		Log.error(LOG_COMPONENT, "unable to get a title of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
-		return null;
-	    }
-	case "subfolders":
-	    {
-		final List<HookObject> res = new LinkedList();
-		try {
+	    case "subfolders":
+		{
+		    final List<HookObject> res = new LinkedList();
 		    for(MailFolder f: storing.getFolders().load(folder))
 			res.add(new FolderHookObject(storing, f));
+		    return ScriptUtils.createReadOnlyArray(res.toArray(new HookObject[res.size()]));
 		}
-		catch(PimException e)
-		{
-		    Log.error(LOG_COMPONENT, "unable to get subfolders of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
-		    return null;
-		}
-		return ScriptUtils.createReadOnlyArray(res.toArray(new HookObject[res.size()]));
-	    }
-	case "saveMessage":
-	    return (Predicate)this::saveMessage;
-	case "properties":
-	    try {
+	    case "saveMessage":
+		return (Predicate)this::saveMessage;
+	    case "properties":
 		return new PropertiesHookObject(folder.getProperties(), "");
-		}
-		catch(PimException e)
-		{
-		    Log.error(LOG_COMPONENT, "unable to get properties of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
-		    return null;
-		}
-	    	case "saveProperties":
-		    return (Supplier)this::saveProperties;
-	case "newSubfolder":
-	    return (Supplier)this::newSubfolder;
-	    	default:
-	    return super.getMember(name);
+	    case "saveProperties":
+		return (Supplier)this::saveProperties;
+	    case "newSubfolder":
+		return (Supplier)this::newSubfolder;
+	    default:
+		return super.getMember(name);
+	    }
+	}
+	catch(PimException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to get the member \'" + name + "\' of the mail folder:" + e.getClass().getName() + ":" + e.getMessage());
+	    return null;
 	}
     }
 
@@ -96,7 +82,7 @@ final class FolderHookObject extends EmptyHookObject
 	    return;
 	switch(name)
 	{
-	    case "title":
+	case "title":
 		try {
 		    folder.setTitle(value);
 		    return;

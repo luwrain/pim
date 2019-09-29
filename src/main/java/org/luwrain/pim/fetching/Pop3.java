@@ -120,7 +120,6 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	final MailMessage message;
 	try {
 	    message = BinaryMessage.fromByteArray(bytes);
-	    Log.debug(LOG_COMPONENT, "saving the message with ID " + message.getMessageId());
 	}
 	catch(PimException | IOException e)
 	{
@@ -129,6 +128,7 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	}
 	final MessageHookObject hookObj = new MessageHookObject(message);
 	try {
+	    Log.debug(LOG_COMPONENT, "saving the message " + num + "/" + total);
 	    return luwrain.xRunHooks(HOOK_NAME_SAVE, new Object[]{mailHookObject, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
 	}
 	catch(RuntimeException e)

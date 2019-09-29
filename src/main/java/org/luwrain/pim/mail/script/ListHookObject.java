@@ -48,7 +48,6 @@ final class ListHookObject extends EmptyHookObject
 	    this.name = "";
 	    return;
 	}
-
 	try {
 	    idValue = BinaryMessage.decodeText(idValue);
 	}
