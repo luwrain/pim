@@ -46,6 +46,8 @@ public final class MessageHookObject extends EmptyHookObject
 	    {
 	    case "subject":
 		return message.getSubject ();
+	    case "text":
+		return message.getText();
 	    case "from":
 		return new AddressHookObject(message.getFrom());
 	    case "cc":
@@ -100,5 +102,10 @@ public final class MessageHookObject extends EmptyHookObject
 	    res.add(s.replaceAll("\r", ""));
 	}
 	return res.toArray(new String[res.size()]);
+    }
+
+    public MailMessage getNativeMessageObj()
+    {
+	return message;
     }
 }
