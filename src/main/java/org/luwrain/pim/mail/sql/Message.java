@@ -52,20 +52,20 @@ final class Message extends MailMessage
 	NullCheck.notNull(state, "state");
 	if (committed)
 	    try {
-	    queue.execInQueue(()->{
-		final PreparedStatement st = con.prepareStatement(
-								  "UPDATE mail_message SET state=? WHERE id=?;"
-								  );
-		st.setInt(1, MailMessage.stateToInt(state));
-		st.setLong(2, id);
-		st.executeUpdate();
-		return null;
-		});
-    }
-    catch(Exception e)
-    {
-	throw new PimException(e);
-    }
+		queue.execInQueue(()->{
+			final PreparedStatement st = con.prepareStatement(
+									  "UPDATE mail_message SET state=? WHERE id=?;"
+									  );
+			st.setInt(1, MailMessage.stateToInt(state));
+			st.setLong(2, id);
+			st.executeUpdate();
+			return null;
+		    });
+	    }
+	    catch(Exception e)
+	    {
+		throw new PimException(e);
+	    }
 	super.setState(state);
     }
 
