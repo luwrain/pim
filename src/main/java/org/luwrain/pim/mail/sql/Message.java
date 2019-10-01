@@ -29,16 +29,19 @@ final class Message extends MailMessage
 {
     final long id;
     private final Connection con;
+    private final ExecQueue queue;
 
     private final File messagesDir;
     private boolean committed = false;
 
-    Message(Connection con, long id, File messagesDir)
+    Message(ExecQueue queue, Connection con, long id, File messagesDir)
     {
+	NullCheck.notNull(queue, "queue");
 	NullCheck.notNull(con, "con");
 	NullCheck.notNull(messagesDir, "messagesDir");
 	if (id < 0)
 	    throw new IllegalArgumentException("id (" + String.valueOf(id) + " may not be negative");
+	this.queue = queue;
     	this.con = con;
 	this.id = id;
 	this.messagesDir = messagesDir;
@@ -49,15 +52,20 @@ final class Message extends MailMessage
 	NullCheck.notNull(state, "state");
 	if (committed)
 	    try {
-		final PreparedStatement st = con.prepareStatement("UPDATE mail_message SET state=? WHERE id=?;");
+	    queue.execInQueue(()->{
+		final PreparedStatement st = con.prepareStatement(
+								  "UPDATE mail_message SET state=? WHERE id=?;"
+								  );
 		st.setInt(1, MailMessage.stateToInt(state));
 		st.setLong(2, id);
 		st.executeUpdate();
-	    }
-	    catch(SQLException e)
-	    {
-		throw new PimException(e);
-	    }
+		return null;
+		});
+    }
+    catch(Exception e)
+    {
+	throw new PimException(e);
+    }
 	super.setState(state);
     }
 

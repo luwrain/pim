@@ -27,6 +27,7 @@ public interface MailMessages
 {
     void save(MailFolder folder, MailMessage message) throws PimException;
     MailMessage[] load(MailFolder folder) throws PimException;
+    MailMessage[] loadNoDeleted(MailFolder folder) throws PimException;
     void moveToFolder(MailMessage message, MailFolder folder) throws PimException;
     void delete(MailMessage message) throws PimException;
     byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException;

@@ -130,19 +130,33 @@ final class Messages implements MailMessages
     @Override public MailMessage[] load(MailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
+	return loadWithFilter(folder, "");
+								  }
+
+        @Override public MailMessage[] loadNoDeleted(MailFolder folder) throws PimException
+    {
+	NullCheck.notNull(folder, "folder");
+	return loadWithFilter(folder, "mail_message.state <> " + MailMessage.stateToInt(MailMessage.State.DELETED));
+								  }
+
+    private MailMessage[] loadWithFilter(MailFolder folder, String filter) throws PimException
+    {
+	NullCheck.notNull(folder, "folder");
+	NullCheck.notNull(filter, "filter");
 	final Folder folderReg = (Folder)folder;
+	final String filterExp = !filter.isEmpty()?" AND " + filter:"";
 	try {
 	    return (MailMessage[])queue.execInQueue(()->{
 		    final Map<Long, StringValue> stringValues = new HashMap();
-		    PreparedStatement st = con.prepareStatement(
-								"SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type,ext_info FROM mail_message WHERE mail_folder_id=?"
+		    final PreparedStatement st = con.prepareStatement(
+								"SELECT id,message_id,state,subject,from_addr,sent_date,received_date,base_content,mime_content_type,ext_info FROM mail_message WHERE mail_message.mail_folder_id=?" + filterExp
 								);
 		    st.setLong(1, folderReg.id);
 		    ResultSet rs = st.executeQuery();
 		    final List<MailMessage> res = new LinkedList();
 		    while (rs.next())
 		    {
-			final Message message=new Message(con, rs.getLong(1), messagesDir);
+			final Message message=new Message(queue, con, rs.getLong(1), messagesDir);
 			message.setMessageId(rs.getString(2).trim());
 			message.setState(MailMessage.intToState(rs.getInt(3)));
 			message.setSubject(rs.getString(4));
@@ -155,10 +169,11 @@ final class Messages implements MailMessages
 			stringValues.put(new Long(message.id), new StringValue(message.id));
 			res.add(message);
 		    }
-		    final Statement vst = con.createStatement();
-		    rs = vst.executeQuery(
-					  "SELECT mail_message_id,field_type,value FROM mail_message_field"
-					  );
+		    final PreparedStatement vst = con.prepareStatement(
+								       "SELECT mail_message_field.mail_message_id,mail_message_field.field_type,mail_message_field.value FROM mail_message_field,mail_message WHERE mail_message_field.mail_message_id = mail_message.id" + filterExp
+								       );
+		    		    st.setLong(1, folderReg.id);
+		    rs = vst.executeQuery();
 		    while (rs.next())
 		    {
 			final long id = rs.getLong(1);
@@ -220,6 +235,7 @@ final class Messages implements MailMessages
 					      );
 		    st.setLong(1, messageSql.id);
 		    st.executeUpdate();
+		    //FIXME:delete the message file
 		    return null;
 		});
 	}
