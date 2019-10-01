@@ -61,12 +61,7 @@ final class Contact extends org.luwrain.pim.contacts.Contact
 
     @Override public void setValues(ContactValue[] values) throws PimException
     {
-	NullCheck.notNull(values, "values");
-	for(int i = 0;i < values.length;++i)
-	{
-	    NullCheck.notNull(values[i], "values[" + i + "]");
-	    NullCheck.notNull(values[i].value, "values[" + i + "].value");
-	}
+	NullCheck.notNullItems(values, "values");
 	super.setValues(values);
 	saveValues();
     }
@@ -126,9 +121,9 @@ final class Contact extends org.luwrain.pim.contacts.Contact
 					  "INSERT INTO contact_value (contact_id,type_id,value,preferable) VALUES (?,?,?,?)"
 					  );
 		st.setLong(1, id);
-		st.setInt(2, v.type);
-		st.setString(3, v.value);
-		st.setBoolean(4, v.preferable);
+		st.setInt(2, v.getType());
+		st.setString(3, v.getValue());
+		st.setBoolean(4, v.isPreferable());
 		if (st.executeUpdate() != 1)
 		    throw new PimException("Unable to save a contact value");
 	    }

@@ -125,9 +125,9 @@ final class Contacts implements org.luwrain.pim.contacts.Contacts
 					  "INSERT INTO contact_value (contact_id,type_id,value,preferable) VALUES (?,?,?,?)"
 					  );
 		st.setLong(1, generatedKey);
-		st.setInt(2, value.type);
-		st.setString(3, value.value);
-		st.setBoolean(4, value.preferable);
+		st.setInt(2, value.getType());
+		st.setString(3, value.getValue());
+		st.setBoolean(4, value.isPreferable());
 		st.executeUpdate();
 	    }
 	for(String tag: contact.getTags())
