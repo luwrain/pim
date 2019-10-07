@@ -22,7 +22,6 @@ import java.sql.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.contacts.*;
-import org.luwrain.pim.util.*;
 
 public class Storing implements ContactsStoring
 {

@@ -20,7 +20,7 @@ package org.luwrain.pim.news;
 import java.sql.*;
 
 import org.luwrain.core.*;
-import org.luwrain.pim.util.*;
+import org.luwrain.pim.*;
 
 public final class Factory
 {

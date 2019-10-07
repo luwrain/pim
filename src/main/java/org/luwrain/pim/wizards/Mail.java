@@ -8,7 +8,6 @@ import org.luwrain.core.*;
 import org.luwrain.popups.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.pim.util.*;
 
 public final class Mail
 {

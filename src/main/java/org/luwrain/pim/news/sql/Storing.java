@@ -23,7 +23,6 @@ import java.sql.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
-import org.luwrain.pim.util.*;
 
 public final class Storing implements NewsStoring
 {

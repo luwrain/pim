@@ -25,7 +25,6 @@ import java.util.concurrent.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.pim.util.*;
 
 public final class Storing implements MailStoring, ExecQueue
 {
