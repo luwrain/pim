@@ -25,11 +25,14 @@ import java.util.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
+import org.luwrain.script.hooks.*;
 
 import org.luwrain.app.fetch.Base.Type;
 
 public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
+    static private final String MAIL_ACCOUNT_WIZARD_HOOK_NAME = "luwrain.wizards.mail.account";
+
     private org.luwrain.pim.workers.News newsWorker = null;
         private org.luwrain.pim.workers.Smtp smtpWorker = null;
             private org.luwrain.pim.workers.Pop3 pop3Worker = null;
@@ -68,15 +71,21 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 	return new Command[]{
 	    new SimpleShortcutCommand("fetch"),
 
-	    	    new Command(){
+	    new Command(){
 		@Override public String getName()
 		{
-		    return "wizard-mail";
+		    return "wizard-mail-account";
 		}
 		@Override public void onCommand(Luwrain luwrain)
 		{
 		    NullCheck.notNull(luwrain, "luwrain");
-		    new org.luwrain.pim.wizards.Mail(luwrain).start();
+		    try {
+			new ChainOfResponsibilityHook(luwrain).run(MAIL_ACCOUNT_WIZARD_HOOK_NAME, new Object[0]);
+		    }
+		    catch(Exception e)
+		    {
+			luwrain.crash(e);
+		    }
 		}
 	    },
 
