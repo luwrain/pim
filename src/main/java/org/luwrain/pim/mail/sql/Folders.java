@@ -29,12 +29,15 @@ final class Folders implements MailFolders
     static private final String LOG_COMPONENT = Storing.LOG_COMPONENT;
 
     private final Registry registry;
+    private final Messages messages;
     private Folder[] cache = null;
 
-    Folders(Registry registry)
+    Folders(Registry registry, Messages messages)
     {
 	NullCheck.notNull(registry, "registry");
+	NullCheck.notNull(messages, "messages");
 	this.registry = registry;
+	this.messages = messages;
     }
 
     @Override public MailFolder findFirstByProperty(String propName, String propValue) throws PimException

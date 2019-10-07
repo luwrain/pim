@@ -94,23 +94,25 @@ public final class Mail
 	    return false;
 	}
 	luwrain.message(service.title);
-	final MailAccount account = new MailAccount();
-	account.type = MailAccount.Type.SMTP;
-	account.title = addr.trim() + " (исходящая почта через " + service.title + ")";
-	account.host = service.host;
-	account.port = service.port;
-	account.login = addr.trim();
-	account.passwd = passwd;
-	//trusted hosts
-	account.flags.add(MailAccount.Flags.ENABLED);
-	account.flags.add(MailAccount.Flags.DEFAULT);
-	if (service.ssl)
-	    account.flags.add(MailAccount.Flags.SSL);
-	if (service.tls)
-	    account.flags.add(MailAccount.Flags.TLS);
-	account.substName = name.trim();
-	account.substAddress = addr.trim();
 	try {
+	final MailAccount account = new MailAccount();
+	account.setType(MailAccount.Type.SMTP);
+	account.setTitle(addr.trim() + " (исходящая почта через " + service.title + ")");
+	account.setHost(service.host);
+	account.setPort(service.port);
+	account.setLogin(addr.trim());
+	account.setPasswd(passwd);
+	//trusted hosts
+	final Set<MailAccount.Flags> flags = EnumSet.noneOf(MailAccount.Flags.class);
+	flags.add(MailAccount.Flags.ENABLED);
+	flags.add(MailAccount.Flags.DEFAULT);
+	if (service.ssl)
+	    flags.add(MailAccount.Flags.SSL);
+	if (service.tls)
+	    flags.add(MailAccount.Flags.TLS);
+	account.setFlags(flags);
+	account.setSubstName(name.trim());
+	account.setSubstAddress(addr.trim());
 	    storing.getAccounts().save(account);
 	}
 	catch(PimException e)

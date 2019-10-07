@@ -23,12 +23,12 @@ import org.luwrain.pim.*;
 
 public interface MailAccounts
 {
-    int getId(StoredMailAccount account) throws PimException;
-    StoredMailAccount[] load() throws PimException;
-    String getUniRef(StoredMailAccount account) throws PimException;
-    StoredMailAccount loadById(int id) throws PimException;
-    StoredMailAccount loadByUniRef(String uniRef) throws PimException;
+    int getId(MailAccount account) throws PimException;
+    MailAccount[] load() throws PimException;
+    String getUniRef(MailAccount account) throws PimException;
+    MailAccount loadById(int id) throws PimException;
+    MailAccount loadByUniRef(String uniRef) throws PimException;
     void save(MailAccount account) throws PimException;
-    void delete(StoredMailAccount account) throws PimException;
-    StoredMailAccount getDefault(MailAccount.Type type) throws PimException;
+    void delete(MailAccount account) throws PimException;
+    MailAccount getDefault(MailAccount.Type type) throws PimException;
 }

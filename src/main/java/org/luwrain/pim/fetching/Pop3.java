@@ -45,7 +45,7 @@ public final class Pop3 extends Base implements MailConversations.Listener
 
     public void fetch() throws PimException, InterruptedException
     {
-	final StoredMailAccount[] accounts;
+	final MailAccount[] accounts;
 	try {
 	    accounts = storing.getAccounts().load();
 	}
@@ -55,7 +55,7 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	}
 	Log.debug(LOG_COMPONENT, "loaded " + accounts.length + " accounts for fetching mail");
 	int used = 0;
-	for(StoredMailAccount a: accounts)
+	for(MailAccount a: accounts)
 	{
 	    checkInterrupted();
 	    final MailAccount.Type type;
@@ -84,7 +84,7 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	    message(strings.noMailAccountsForFetching());
     }
 
-    private void processAccount(StoredMailAccount account) throws IOException, PimException, InterruptedException
+    private void processAccount(MailAccount account) throws IOException, PimException, InterruptedException
     {
 	NullCheck.notNull(account, "account");
 	final String title = account.getTitle();

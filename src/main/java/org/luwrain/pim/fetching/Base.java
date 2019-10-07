@@ -21,8 +21,7 @@ package org.luwrain.pim.fetching;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail.MailAccount;
-import org.luwrain.pim.mail.StoredMailAccount;
+import org.luwrain.pim.mail.*;
 
 public class Base
 {
@@ -60,7 +59,7 @@ public class Base
 	luwrain.crash(e);
     }
 
-    protected MailConversations.Params createMailServerParams(StoredMailAccount account) throws PimException
+    protected MailConversations.Params createMailServerParams(MailAccount account) throws PimException
     {
 	final MailConversations.Params params = new MailConversations.Params();
 	params.doAuth = !account.getLogin().isEmpty();

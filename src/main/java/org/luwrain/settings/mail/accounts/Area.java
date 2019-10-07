@@ -20,11 +20,11 @@ public class Area extends FormArea implements SectionArea
     private ControlPanel controlPanel;
     private Luwrain luwrain;
     private MailStoring storing;
-    private StoredMailAccount account;
+    private MailAccount account;
     private Strings strings;
 
     Area(ControlPanel controlPanel, Strings strings,
-	    MailStoring storing, StoredMailAccount account) throws PimException
+	    MailStoring storing, MailAccount account) throws PimException
     {
 	super(new DefaultControlContext(controlPanel.getCoreInterface()), strings.accountFormName());
 	NullCheck.notNull(controlPanel, "controlPanel");

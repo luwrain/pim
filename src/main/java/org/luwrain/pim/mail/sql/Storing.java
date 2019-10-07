@@ -52,9 +52,9 @@ public final class Storing implements MailStoring, ExecQueue
 	this.execQueues = execQueues;
 	this.highPriority = highPriority;
 	this.rules = new Rules(registry);
-	this.folders = new Folders(registry);
+		this.messages = new Messages(this, con, messagesDir);
+		this.folders = new Folders(registry, messages);
 	this.accounts = new Accounts(registry);
-	this.messages = new Messages(this, con, messagesDir);
 	    }
 
     @Override public MailRules getRules()

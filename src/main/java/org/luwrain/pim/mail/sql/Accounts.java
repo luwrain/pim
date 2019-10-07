@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-class Accounts implements MailAccounts
+final class Accounts implements MailAccounts
 {
     private final Registry registry;
 
@@ -33,7 +33,7 @@ class Accounts implements MailAccounts
 	this.registry = registry;
     }
 
-    @Override public StoredMailAccount[] load() throws PimException
+    @Override public MailAccount[] load() throws PimException
     {
 	registry.addDirectory(org.luwrain.pim.mail.Settings.ACCOUNTS_PATH);
 	final List<Account> accounts = new LinkedList();
@@ -57,10 +57,10 @@ class Accounts implements MailAccounts
 	return res;
     }
 
-    @Override public StoredMailAccount loadById(int id) throws PimException
+    @Override public MailAccount loadById(int id) throws PimException
     {
 	if (id < 0)
-	    throw new IllegalArgumentException("id (" + id + ") may not be negative");
+	    throw new IllegalArgumentException("id (" + String.valueOf(id) + ") may not be negative");
 	final Account account = new Account(registry, id);
 	return account.load()?account:null;
     }
@@ -71,21 +71,21 @@ class Accounts implements MailAccounts
 	final int newId = Registry.nextFreeNum(registry, org.luwrain.pim.mail.Settings.ACCOUNTS_PATH);
 	final String path = Registry.join(org.luwrain.pim.mail.Settings.ACCOUNTS_PATH, "" + newId);
 	registry.addDirectory(path);
-	final boolean enabled = account.flags.contains(MailAccount.Flags.ENABLED);
-	final boolean ssl = account.flags.contains(MailAccount.Flags.SSL);
-	final boolean tls = account.flags.contains(MailAccount.Flags.TLS);
-	final boolean def = account.flags.contains(MailAccount.Flags.DEFAULT);
-	final boolean leaveMessages = account.flags.contains(MailAccount.Flags.LEAVE_MESSAGES);
+	final boolean enabled = account.getFlags().contains(MailAccount.Flags.ENABLED);
+	final boolean ssl = account.getFlags().contains(MailAccount.Flags.SSL);
+	final boolean tls = account.getFlags().contains(MailAccount.Flags.TLS);
+	final boolean def = account.getFlags().contains(MailAccount.Flags.DEFAULT);
+	final boolean leaveMessages = account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES);
 	final org.luwrain.pim.mail.Settings.Account s = org.luwrain.pim.mail.Settings.createAccount(registry, path);
-	s.setType(Account.getTypeStr(account.type));
-	s.setTitle(account.title);
-	s.setHost(account.host);
-	s.setPort(account.port);
-	s.setLogin(account.login);
-	s.setPasswd(account.passwd);
-	s.setTrustedHosts(account.trustedHosts);
-	s.setSubstName(account.substName);
-	s.setSubstAddress(account.substAddress);
+	s.setType(Account.getTypeStr(account.getType()));
+	s.setTitle(account.getTitle());
+	s.setHost(account.getHost());
+	s.setPort(account.getPort());
+	s.setLogin(account.getLogin());
+	s.setPasswd(account.getPasswd());
+	s.setTrustedHosts(account.getTrustedHosts());
+	s.setSubstName(account.getSubstName());
+	s.setSubstAddress(account.getSubstAddress());
 	s.setEnabled(enabled);
 	s.setSsl(ssl);
 	s.setTls(tls);
@@ -93,27 +93,23 @@ class Accounts implements MailAccounts
 	s.setLeaveMessages(leaveMessages);
     }
 
-    @Override public void delete(StoredMailAccount account) throws PimException
+    @Override public void delete(MailAccount account) throws PimException
     {
 	NullCheck.notNull(account, "account");
-	if (!(account instanceof Account))
-	    throw new PimException("account must be an instance of StoredMailAccountRegistry");
-	final Account accountRegistry = (Account)account;
-	final String path = Registry.join(org.luwrain.pim.mail.Settings.ACCOUNTS_PATH, "" + accountRegistry.id);
+	final Account accountReg = (Account)account;
+	final String path = Registry.join(org.luwrain.pim.mail.Settings.ACCOUNTS_PATH, String.valueOf(accountReg.id));
 	if (!registry.deleteDirectory(path))
 	    throw new PimException("Unable to delete the registry directory " + path);
     }
 
-    @Override public String getUniRef(StoredMailAccount account) throws PimException
+    @Override public String getUniRef(MailAccount account) throws PimException
     {
 	NullCheck.notNull(account, "account");
-	if (!(account instanceof Account))
-	    throw new PimException("account must be an instance of StoredMailAccountRegistry");
-	final Account accountRegistry = (Account)account;
-	return AccountUniRefProc.PREFIX + ":" + accountRegistry.id;
+	final Account accountReg = (Account)account;
+	return AccountUniRefProc.PREFIX + ":" + String.valueOf(accountReg.id);
     }
 
-    @Override public StoredMailAccount loadByUniRef(String uniRef)
+    @Override public MailAccount loadByUniRef(String uniRef)
     {
 	NullCheck.notEmpty(uniRef, "uniRef");
 	if (!uniRef.startsWith(AccountUniRefProc.PREFIX + ":"))
@@ -130,20 +126,18 @@ class Accounts implements MailAccounts
 	return account.load()?account:null;
     }
 
-    @Override public int getId(StoredMailAccount account) throws PimException
+    @Override public int getId(MailAccount account) throws PimException
     {
 	NullCheck.notNull(account, "account");
-	if (!(account instanceof Account))
-	    throw new PimException("account must be an instance of StoredMailAccountRegistry");
 	return ((Account)account).id;
     }
 
-        @Override public StoredMailAccount getDefault(MailAccount.Type type) throws PimException
+        @Override public MailAccount getDefault(MailAccount.Type type) throws PimException
     {
 	NullCheck.notNull(type, "type");
-	final StoredMailAccount[] accounts = load();
-	StoredMailAccount anyEnabled = null;
-	for(StoredMailAccount a: accounts)
+	final MailAccount[] accounts = load();
+	MailAccount anyEnabled = null;
+	for(MailAccount a: accounts)
 	{
 	    if (a.getType() != type)
 		continue;

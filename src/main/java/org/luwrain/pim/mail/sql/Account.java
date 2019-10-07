@@ -23,8 +23,10 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-class Account extends MailAccount implements StoredMailAccount
+final class Account extends MailAccount
 {
+    static private final String LOG_COMPONENT = "pim-mail";//FIXME:
+    
 private final Registry registry;
     private final org.luwrain.pim.mail.Settings.Account settings;
     final int id;
@@ -37,172 +39,131 @@ private final Registry registry;
 	this.settings = org.luwrain.pim.mail.Settings.createAccount(registry, Registry.join(org.luwrain.pim.mail.Settings.ACCOUNTS_PATH, "" + id));
     }
 
-    @Override public Type getType()
+    @Override public void setType(Type type) throws PimException
     {
-	return type;
+	NullCheck.notNull(type, "type");
+	settings.setType(getTypeStr(type));
+	super.setType(type);
     }
 
-    @Override public void setType(Type value)
+    @Override public void setTitle(String title) throws PimException
     {
-	NullCheck.notNull(value, "value");
-	settings.setType(getTypeStr(value));
-	type = value;
+	NullCheck.notNull(title, "title");
+	settings.setTitle(title);
+	super.setTitle(title);
     }
 
-    @Override public String getTitle()
+    @Override public void setHost(String host) throws PimException
     {
-	return title;
+	NullCheck.notNull(host, "host");
+	settings.setHost(host);
+	super.setHost(host);
     }
 
-    @Override public void setTitle(String value)
+    @Override public void setPort(int port) throws PimException
     {
-	NullCheck.notNull(value, "value");
-	settings.setTitle(value);
-	title = value;
+	if (port < 0)
+	    throw new IllegalArgumentException("port (" + String.valueOf(port) + ") may not be negative");
+	settings.setPort(port);
+	super.setPort(port);
     }
 
-    @Override public String getHost()
+    @Override public void setLogin(String login) throws PimException
     {
-	return host;
+	NullCheck.notNull(login, "login");
+	settings.setLogin(login);
+	super.setLogin(login);
     }
 
-    @Override public void setHost(String value)
+    @Override public void setPasswd(String passwd) throws PimException
     {
-	NullCheck.notNull(value, "value");
-	settings.setHost(value);
-	host = value;
+	NullCheck.notNull(passwd, "passwd");
+	settings.setPasswd(passwd);
+	super.setPasswd(passwd);
     }
 
-    @Override public int getPort()
+    @Override public void setTrustedHosts(String trustedHosts) throws PimException
     {
-	return port;
+	NullCheck.notNull(trustedHosts, "trustedHosts");
+	settings.setTrustedHosts(trustedHosts);
+	super.setTrustedHosts(trustedHosts);
     }
 
-    @Override public void setPort(int value)
+    @Override public void setFlags(Set<Flags> flags) throws PimException
     {
-	settings.setPort(value);
-	port = value;
-    }
-
-    @Override public String getLogin()
-    {
-	return login;
-    }
-
-    @Override public void setLogin(String value)
-    {
-	NullCheck.notNull(value, "value");
-	settings.setLogin(value);
-	login = value;
-    }
-
-    @Override public String getPasswd()
-    {
-	return passwd;
-    }
-
-    @Override public void setPasswd(String value)
-    {
-	NullCheck.notNull(value, "value");
-	settings.setPasswd(value);
-	passwd = value;
-    }
-
-    @Override public String getTrustedHosts()
-    {
-	return trustedHosts;
-    }
-
-    @Override public void setTrustedHosts(String value)
-    {
-	NullCheck.notNull(value, "value");
-	settings.setTrustedHosts(value);
-	trustedHosts = value;
-    }
-
-    @Override public Set<Flags> getFlags()
-    {
-	return flags;
-    } 
-
-    @Override public void setFlags(Set<Flags> value)
-    {
-	NullCheck.notNull(value, "value");
-	final boolean enabled = value.contains(Flags.ENABLED);
-	final boolean ssl =  value.contains(Flags.SSL);
-	final boolean tls =  value.contains(Flags.TLS);
-	final boolean def =  value.contains(Flags.DEFAULT);
-	final boolean leaveMessages =  value.contains(Flags.LEAVE_MESSAGES);
+	NullCheck.notNull(flags, "flags");
+	final boolean enabled = flags.contains(Flags.ENABLED);
+	final boolean ssl = flags.contains(Flags.SSL);
+	final boolean tls =  flags.contains(Flags.TLS);
+	final boolean def =  flags.contains(Flags.DEFAULT);
+	final boolean leaveMessages =  flags.contains(Flags.LEAVE_MESSAGES);
 	settings.setEnabled(enabled);
 	settings.setSsl(ssl);
 	settings.setTls(tls);
 	settings.setDefault(def);
 	settings.setLeaveMessages(leaveMessages);
-	flags = value;
+	super.setFlags(flags);
     }
 
-    @Override public String getSubstName()
+    @Override public void setSubstName(String substName) throws PimException
     {
-	return substName;
+	NullCheck.notNull(substName, "substName");
+	settings.setSubstName(substName);
+	super.setSubstName(substName);
     }
 
-    @Override public void setSubstName(String value)
+    @Override public void setSubstAddress(String substAddress) throws PimException
     {
-	NullCheck.notNull(value, "value");
-	settings.setSubstName(value);
-	substName = value;
-    }
-
-    @Override public String getSubstAddress()
-    {
-	return substAddress;
-    }
-
-    @Override public void setSubstAddress(String value)
-    {
-	NullCheck.notNull(value, "value");
-	settings.setSubstAddress(value);
-	substAddress = value;
+	NullCheck.notNull(substAddress, "substAddress");
+	settings.setSubstAddress(substAddress);
+	super.setSubstAddress(substAddress);
     }
 
     boolean load()
     {
-	final String typeStr = settings.getType("").trim().toLowerCase();
-	title = settings.getTitle("");
-	host = settings.getHost("").trim();
-	port = settings.getPort(port);
-	login = settings.getLogin("");
-	passwd = settings.getPasswd("");
-	trustedHosts = settings.getTrustedHosts("");
-	substName = settings.getSubstName("");
-	substAddress = settings.getSubstAddress("");
-	final LinkedList<Flags> f = new LinkedList<Flags>();
-	if (settings.getEnabled(true))
-	    f.add(Flags.ENABLED);
-	if (settings.getSsl(false))
-	    f.add(Flags.SSL);
-	if (settings.getTls(false))
-	    f.add(Flags.TLS);
-	if (settings.getDefault(true))
-	    f.add(Flags.DEFAULT);
-	if (settings.getLeaveMessages(true))
-	    f.add(Flags.LEAVE_MESSAGES);
-	flags = EnumSet.copyOf(f);
-	switch(typeStr)
+	try {
+	    final String typeStr = settings.getType("").trim().toLowerCase();
+	    super.setTitle(settings.getTitle(""));
+	    super.setHost(settings.getHost("").trim());
+	    super.setPort(settings.getPort(getPort()));
+	    super.setLogin(settings.getLogin(""));
+	    super.setPasswd(settings.getPasswd(""));
+	    super.setTrustedHosts(settings.getTrustedHosts(""));
+	    super.setSubstName(settings.getSubstName(""));
+	    super.setSubstAddress(settings.getSubstAddress(""));
+	    final List<Flags> f = new LinkedList();
+	    if (settings.getEnabled(true))
+		f.add(Flags.ENABLED);
+	    if (settings.getSsl(false))
+		f.add(Flags.SSL);
+	    if (settings.getTls(false))
+		f.add(Flags.TLS);
+	    if (settings.getDefault(true))
+		f.add(Flags.DEFAULT);
+	    if (settings.getLeaveMessages(true))
+		f.add(Flags.LEAVE_MESSAGES);
+	    super.setFlags(EnumSet.copyOf(f));
+	    switch(typeStr)
+	    {
+	    case "pop3":
+		super.setType(Type.POP3);
+		break;
+	    case "smtp":
+		super.setType(Type.SMTP);
+		break;
+	    default:
+		return false;
+	    }
+	    Log.debug(LOG_COMPONENT, "mail account \'" + getTitle() + "\' loaded, type " + getType() + ", flags " + getFlags());
+	    return true;
+	}
+	catch(PimException e)
 	{
-	case "pop3":
-	    type = Type.POP3;
-	    break;
-	case "smtp":
-	    type = Type.SMTP;
-	    break;
-	default:
+	    Log.warning(LOG_COMPONENT, "unable to load the mail account with ID=" + String.valueOf(id) + ": "+ e.getClass().getName() + ":" + e.getMessage());
 	    return false;
 	}
-	Log.debug("pim", "mail group \"" + title + "\" loaded, type " + type + ", flags " + flags);
-	return true;
-    }
-
+	}
+	
     static String getTypeStr(Type type)
     {
 	NullCheck.notNull(type, "type");

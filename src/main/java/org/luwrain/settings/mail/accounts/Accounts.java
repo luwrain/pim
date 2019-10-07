@@ -31,7 +31,7 @@ MailStoring storing)
     public org.luwrain.cpanel.Element[] getElements(org.luwrain.cpanel.Element parent)
     {
 	try {
-	    final StoredMailAccount[] accounts = storing.getAccounts().load();
+	    final MailAccount[] accounts = storing.getAccounts().load();
 	    final Element[] res = new Element[accounts.length];
 	    for(int i = 0;i < accounts.length;++i)
 		res[i] = new Element(parent, storing.getAccounts().getId(accounts[i]), accounts[i].getTitle());
@@ -77,8 +77,8 @@ public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int i
 	{
 	    try {
 		final MailAccount account = new MailAccount();
-		account.title = "Новая";
-		account.flags = EnumSet.of(MailAccount.Flags.ENABLED);
+		account.setTitle("Новая");
+		//		account.flags = EnumSet.of(MailAccount.Flags.ENABLED);
 		storing.getAccounts().save(account);
 		controlPanel.refreshSectionsTree();
 		return true;
@@ -96,7 +96,7 @@ public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int i
 	    if (id < 0)
 		return false;
 	    try {
-		final StoredMailAccount account = storing.getAccounts().loadById(id);
+		final MailAccount account = storing.getAccounts().loadById(id);
 		if (account == null)
 		    return false;
 		if (Popups.confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + account.getTitle() + "\"?"))
@@ -113,103 +113,6 @@ public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int i
 	    }
 	}
 
-	if (ActionEvent.isAction(event, "add-mail-account-predefined"))
-	{
-
-	    final String google = "gmail.com";
-	    final String yandex = "yandex.ru";
-	    final String mailRu = "mail.ru";
-
-	    final Object res = Popups.fixedList(luwrain, "Выберите почтовую службу:", new String[]{google, mailRu, yandex});
-
-	    try {
-		if (res == google)
-		    return addAccountGoogle(controlPanel);
-		if (res == yandex)
-		    return addAccountYandex(controlPanel);
-		return true;
-
-	    }
-	    catch (PimException e)
-	    {
-		controlPanel.getCoreInterface().crash(e);
-	    }
-	    return false;
-	}
-
-
 	return false;
     }
-
-private boolean addAccountGoogle(ControlPanel controlPanel) throws PimException
-{
-	    final String title = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourGoogleAccountQuestion(), "");
-	    if (title == null)
-		return true;
-	    final String fullName = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourFullNameQuestion(), "");
-	    if (fullName == null)
-		return true;
-	    final String passwd = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourGooglePasswordQuestion(title), "");
-	    if (passwd == null)
-		return true;
-		final MailAccount account = new MailAccount();
-		account.title = title.trim() + "@gmail.com(" + strings.incomingMailSuffix() + ")";
-		account.flags = EnumSet.of(MailAccount.Flags.ENABLED, MailAccount.Flags.LEAVE_MESSAGES, MailAccount.Flags.SSL);
-		account.type = MailAccount.Type.POP3;
-		account.host = "pop.gmail.com";
-		account.port = 995;
-		account.login = title.trim() + "@gmail.com";
-		account.passwd = passwd;
-		account.substAddress = "";
-		account.substName = "";
-		storing.getAccounts().save(account);
-
-		account.type = MailAccount.Type.SMTP;
-		account.title = title.trim() + "@gmail.com (" + strings.outgoingMailSuffix() + ")";
-		account.flags = EnumSet.of(MailAccount.Flags.ENABLED, MailAccount.Flags.DEFAULT, MailAccount.Flags.TLS);
-		account.host = "smtp.gmail.com";
-		account.port = 587;
-		account.substAddress = account.login;
-		account.substName = fullName;
-		storing.getAccounts().save(account);
-
-		controlPanel.refreshSectionsTree();
-		return true;
-}
-
-	    private boolean addAccountYandex(ControlPanel controlPanel) throws PimException
-	    {
-	    final String title = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourYandexAccountQuestion(), "");
-	    if (title == null)
-		return true;
-	    final String fullName = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourFullNameQuestion(), "");
-	    if (fullName == null)
-		return true;
-	    final String passwd = Popups.simple(luwrain, strings.addAccountPopupName(), strings.yourYandexPasswordQuestion(title), "");
-	    if (passwd == null)
-		return true;
-		final MailAccount account = new MailAccount();
-		account.title = title.trim() + "@yandex.ru (" + strings.incomingMailSuffix() + ")";
-		account.flags = EnumSet.of(MailAccount.Flags.ENABLED, MailAccount.Flags.LEAVE_MESSAGES, MailAccount.Flags.SSL);
-		account.type = MailAccount.Type.POP3;
-		account.host = "pop3.yandex.ru";
-		account.port = 995;
-		account.login = title.trim() + "@yandex.ru";
-		account.passwd = passwd;
-		account.substAddress = "";
-		account.substName = "";
-		storing.getAccounts().save(account);
-
-		account.type = MailAccount.Type.SMTP;
-		account.title = title.trim() + "@yandex.ru (" + strings.outgoingMailSuffix() + ")";
-		account.flags = EnumSet.of(MailAccount.Flags.ENABLED, MailAccount.Flags.DEFAULT, MailAccount.Flags.TLS);
-		account.host = "smtp.yandex.ru";
-		account.port = 587;
-		account.substAddress = account.login;
-		account.substName = fullName;
-		storing.getAccounts().save(account);
-
-		controlPanel.refreshSectionsTree();
-		return true;
-	    }
 }

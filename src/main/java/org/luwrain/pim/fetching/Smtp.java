@@ -111,7 +111,7 @@ throw new FetchingException("Не удалось подготовить почт
     private int sendQueue(PendingQueue queue) throws IOException, PimException, InterruptedException
     {
 	NullCheck.notNull(queue, "queue");
-	final StoredMailAccount account = storing.getAccounts().loadByUniRef(queue.accountUniRef);
+	final MailAccount account = storing.getAccounts().loadByUniRef(queue.accountUniRef);
 	if (account == null)
 	{
 	    message(strings.errorLoadingMailAccount(queue.accountUniRef));
