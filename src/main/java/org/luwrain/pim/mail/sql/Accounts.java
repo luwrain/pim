@@ -132,7 +132,7 @@ final class Accounts implements MailAccounts
 	return ((Account)account).id;
     }
 
-        @Override public MailAccount getDefault(MailAccount.Type type) throws PimException
+    @Override public MailAccount getDefault(MailAccount.Type type) throws PimException
     {
 	NullCheck.notNull(type, "type");
 	final MailAccount[] accounts = load();
@@ -141,9 +141,9 @@ final class Accounts implements MailAccounts
 	{
 	    if (a.getType() != type)
 		continue;
-	    	    if (!a.getFlags().contains(MailAccount.Flags.ENABLED))
+	    if (!a.getFlags().contains(MailAccount.Flags.ENABLED))
 		continue;
-		    anyEnabled = a;
+	    anyEnabled = a;
     	    if (!a.getFlags().contains(MailAccount.Flags.DEFAULT))
 		continue;
 	    return a;
