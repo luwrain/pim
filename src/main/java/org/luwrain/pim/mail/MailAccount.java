@@ -28,17 +28,128 @@ public class MailAccount implements Comparable
     public enum Type {POP3, SMTP};
     public enum Flags {ENABLED, SSL, TLS, DEFAULT, LEAVE_MESSAGES};
 
-    public Type type = Type.POP3;
-    public String title = "";
-    public String host = "";
-    public int port = 995;
-    public String login = "";
-    public String passwd = "";
-    public String trustedHosts = "*";
-    public Set<Flags> flags = EnumSet.noneOf(Flags.class);
-    public String substName = "";
-    public String substAddress = "";
+    private Type type = Type.POP3;
+    private String title = "";
+    private String host = "";
+    private int port = 995;
+    private String login = "";
+    private String passwd = "";
+    private String trustedHosts = "*";
+    private Set<Flags> flags = EnumSet.noneOf(Flags.class);
+    private String substName = "";
+    private String substAddress = "";
 
+    public void setType(Type type)
+    {
+	NullCheck.notNull(type, "type");
+	this.type = type;
+    }
+
+    public Type getType()
+    {
+	return this.type;
+    }
+
+    public void setTitle(String title)
+    {
+	NullCheck.notNull(title, "title");
+	this.title = title;
+    }
+
+    public String getTitle()
+    {
+	return this.title;
+    }
+
+    public void setHost(String host)
+    {
+	NullCheck.notNull(host, "host");
+	this.host = host;
+    }
+
+    public String getHost()
+    {
+	return this.host;
+    }
+
+    public void setPort(int port)
+    {
+	if (port < 0)
+	    throw new IllegalArgumentException("port (" + String.valueOf(port) + ") may not be negative");
+	this.port = port;
+    }
+
+    public int getPort()
+    {
+	return this.port;
+    }
+
+    public void setLogin(String login)
+    {
+	NullCheck.notNull(login, "login");
+	this.login = login;
+    }
+
+    public String getLogin()
+    {
+	return this.login;
+    }
+
+    public void setPasswd(String passwd)
+    {
+	NullCheck.notNull(passwd, "passwd");
+	this.passwd = passwd;
+    }
+
+    public string getPasswd()
+    {
+	return this.passwd;
+    }
+
+    public void setTrustedHosts(String trustedHosts)
+    {
+	NullCheck.notNull(trustedHosts, "trustedHosts");
+	this.trustedHosts = trustedHosts;
+    }
+
+    public String getTrustedHosts()
+    {
+	return this.trustedHosts;
+    }
+
+    public void setFlags(Set<Flags> flags)
+    {
+	NullCheck.notNull(flags, "flags");
+	this.flags = flags;
+    }
+
+    public Set<Flags> getFlags()
+    {
+	return this.flags;
+    }
+
+    public void setSubstNamString substNamee
+    {
+	NullCheck.notNUll(substName, "substName");
+	this.substName = substName;
+    }
+
+    public String getSubstName()
+    {
+	return this.substName;
+    }
+
+    public void setSubstAddress(String substAddress)
+    {
+	NullChekc.notNull(substAddress, "substAddress");
+	this.substAddress = substAddress;
+    }
+
+    public String getSubstAddress()
+    {
+	this.substAddress = substAddress;
+    }
+    
     public void copyValues(MailAccount account)
     {
 	NullCheck.notNull(account, "account");
