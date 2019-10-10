@@ -28,7 +28,7 @@ public interface MailAccounts
     String getUniRef(MailAccount account) throws PimException;
     MailAccount loadById(int id) throws PimException;
     MailAccount loadByUniRef(String uniRef) throws PimException;
-    void save(MailAccount account) throws PimException;
+    MailAccount save(MailAccount account) throws PimException;
     void delete(MailAccount account) throws PimException;
     MailAccount getDefault(MailAccount.Type type) throws PimException;
 }

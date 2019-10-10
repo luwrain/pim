@@ -235,7 +235,8 @@ final class Messages implements MailMessages
 					      );
 		    st.setLong(1, messageSql.id);
 		    st.executeUpdate();
-		    //FIXME:delete the message file
+		    final File messageFile = new File(messagesDir, Message.getRawMessageFileName(messageSql.id));
+		    messageFile.delete();
 		    return null;
 		});
 	}

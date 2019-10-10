@@ -30,7 +30,7 @@ public final class MessageHookObject extends EmptyHookObject
 
     final MailMessage message;
     private String[] headers = null;
-    private ListHookObject listHookObj = null;
+    private MailingListHookObject listHookObj = null;
 
     public MessageHookObject(MailMessage message)
     {
@@ -67,7 +67,7 @@ public final class MessageHookObject extends EmptyHookObject
 		{
 		    if (headers == null)
 			headers = extractHeaders(message.getRawMessage());
-		    this.listHookObj = new ListHookObject(headers);
+		    this.listHookObj = new MailingListHookObject(headers);
 		}
 		return listHookObj;
 	    default:

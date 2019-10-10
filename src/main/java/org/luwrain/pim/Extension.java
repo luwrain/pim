@@ -27,6 +27,9 @@ import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.script.hooks.*;
 
+import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail.script.*;
+
 import org.luwrain.app.fetch.Base.Type;
 
 public final class Extension extends org.luwrain.core.extensions.EmptyExtension
@@ -80,7 +83,9 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 		{
 		    NullCheck.notNull(luwrain, "luwrain");
 		    try {
-			new ChainOfResponsibilityHook(luwrain).run(MAIL_ACCOUNT_WIZARD_HOOK_NAME, new Object[0]);
+			final MailStoring storing = org.luwrain.pim.Connections.getMailStoring(luwrain, true);
+			if (!(new ChainOfResponsibilityHook(luwrain).run(MAIL_ACCOUNT_WIZARD_HOOK_NAME, new Object[]{new MailHookObject(storing)})))
+			    luwrain.playSound(Sounds.ERROR);
 		    }
 		    catch(Exception e)
 		    {

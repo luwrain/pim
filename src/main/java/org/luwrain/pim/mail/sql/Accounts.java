@@ -65,7 +65,7 @@ final class Accounts implements MailAccounts
 	return account.load()?account:null;
     }
 
-    @Override public void save(MailAccount account) throws PimException
+    @Override public MailAccount save(MailAccount account) throws PimException
     {
 	NullCheck.notNull(account, "account");
 	final int newId = Registry.nextFreeNum(registry, org.luwrain.pim.mail.Settings.ACCOUNTS_PATH);
@@ -91,6 +91,7 @@ final class Accounts implements MailAccounts
 	s.setTls(tls);
 	s.setDefault(def);
 	s.setLeaveMessages(leaveMessages);
+	return loadById(newId);
     }
 
     @Override public void delete(MailAccount account) throws PimException
