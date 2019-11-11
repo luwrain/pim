@@ -103,12 +103,22 @@ public final class BinaryMessage
 	    message.setContent(mp);
 	} else
 	{
+	    /*
 	    if(srcMsg.getContentType().isEmpty())
 	    { // simple text email body
-		message.setText(srcMsg.getText());
+		message.setText(MimeUtility.encodeText(srcMsg.getText(), "UTF-8", "Q"));
 	    } else
+	    */
 	    { // for example utf8 html - mimeContentType="text/html; charset=utf-8"
-		message.setContent(srcMsg.getText(), srcMsg.getContentType());
+		//		message.setContent(MimeUtility.encodeText(srcMsg.getText(), "UTF-8", "B"), srcMsg.getContentType());
+		//				message.setText(srcMsg.getText());
+
+			    final Multipart mp = new MimeMultipart();
+	    MimeBodyPart part = new MimeBodyPart();
+	    part.setText(srcMsg.getText());
+	    mp.addBodyPart(part);
+	    message.setContent(mp);
+
 	    }
 	}
 	return message;
