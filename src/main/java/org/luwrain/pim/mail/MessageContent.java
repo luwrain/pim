@@ -18,6 +18,7 @@
 package org.luwrain.pim.mail;
 
 import java.util.*;
+import com.google.gson.*;
 import com.google.gson.annotations.*;
 
 import org.luwrain.core.*;
@@ -112,14 +113,54 @@ final class MessageContent
 	return attachments.toArray(new Attachment[attachments.size()]);
     }
 
-    
+    public void setAttachments(Attachment[] attachments)
+    {
+	NullCheck.notNullItems(attachments, "attachments");
+	this.attachments = new LinkedList();
+	for(Attachment a: attachments)
+	    this.attachments.add(a);
+    }
+
+    @Override public String toString()
+    {
+	return new Gson().toJson(this);
+    }
+
+    static public MessageContent fromString(String str)
+    {
+	NullCheck.notNull(str, "str");
+	try {
+	    return new Gson().fromJson(str, MessageContent.class);
+	}
+	catch(Exception e)
+	{
+	    throw new IllegalArgumentException(e);
+	}
+    }
 
 static public final class Attachment
 {
     @SerializedName("path")
 private String path = null;
-
     @SerializedName("fileName")
 private String fileName = null;
+    public String getPath()
+    {
+	return path;
+    }
+    public void setPath(String path)
+    {
+	NullCheck.notNull(path, "path");
+	this.path = path;
+    }
+    public String ggetFileName()
+    {
+	return fileName;
+    }
+    public void setFileName(String fileName)
+    {
+	NullCheck.notNull(fileName, "fileName");
+	this.fileName = fileName;
+    }
 }
 }
