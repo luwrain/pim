@@ -52,7 +52,7 @@ class Rule extends FormArea implements SectionArea
 	    rule.setDestFolderUniRef("");
     }
 
-    @Override public boolean onInputEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (controlPanel.onInputEvent(event))

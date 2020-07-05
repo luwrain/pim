@@ -62,9 +62,9 @@ public Area createArea(ControlPanel controlPanel, int id)
     public Action[] getActions()
     {
 				     return new Action[]{
-					 new Action("add-mail-account", strings.addMailAccount(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
+					 new Action("add-mail-account", strings.addMailAccount(), new InputEvent(InputEvent.Special.INSERT)),
 					 new Action("add-mail-account-predefined", strings.addAccountPredefined()),
-					 new Action("delete-mail-account", strings.deleteAccount(), new KeyboardEvent(KeyboardEvent.Special.DELETE)),
+					 new Action("delete-mail-account", strings.deleteAccount(), new InputEvent(InputEvent.Special.DELETE)),
 				     };
     }
 

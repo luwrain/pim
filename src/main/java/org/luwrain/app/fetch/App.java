@@ -65,10 +65,10 @@ private Action[] getFetchAreaActions()
 	    return new Action[0];
 	return new Action[]{
 	    new Action("fetch-all", strings.actionFetchAll()),
-	    new Action("fetch-mail", strings.actionFetchMail(), new KeyboardEvent(KeyboardEvent.Special.F5)),
-	    new Action("fetch-incoming-mail", strings.actionFetchIncomingMail(), new KeyboardEvent(KeyboardEvent.Special.F6)),
-	    new Action("fetch-outgoing-mail", strings.actionFetchOutgoingMail(), new KeyboardEvent(KeyboardEvent.Special.F7)),
-	    new Action("fetch-news", strings.actionFetchNews(), new KeyboardEvent(KeyboardEvent.Special.F8)),
+	    new Action("fetch-mail", strings.actionFetchMail(), new InputEvent(InputEvent.Special.F5)),
+	    new Action("fetch-incoming-mail", strings.actionFetchIncomingMail(), new InputEvent(InputEvent.Special.F6)),
+	    new Action("fetch-outgoing-mail", strings.actionFetchOutgoingMail(), new InputEvent(InputEvent.Special.F7)),
+	    new Action("fetch-news", strings.actionFetchNews(), new InputEvent(InputEvent.Special.F8)),
 	};
     }
 
@@ -104,7 +104,7 @@ boolean interrupt()
 area = new ProgressArea(new DefaultControlContext(luwrain), strings.appName(),
 			base.prepareIntroduction(fetchType)){
 
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())

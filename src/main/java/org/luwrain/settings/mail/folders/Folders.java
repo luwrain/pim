@@ -71,11 +71,11 @@ public class Folders
     {
 	if (withDeleting)
 	    return new Action[]{
-		new Action("add-mail-folder", strings.addMailFolder(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
-		new Action("delete-mail-folder", strings.deleteMailFolder(), new KeyboardEvent(KeyboardEvent.Special.DELETE)),
+		new Action("add-mail-folder", strings.addMailFolder(), new InputEvent(InputEvent.Special.INSERT)),
+		new Action("delete-mail-folder", strings.deleteMailFolder(), new InputEvent(InputEvent.Special.DELETE)),
 	    };
 	return new Action[]{
-	    new Action("add-mail-folder", strings.addMailFolder(), new KeyboardEvent(KeyboardEvent.Special.INSERT)),
+	    new Action("add-mail-folder", strings.addMailFolder(), new InputEvent(InputEvent.Special.INSERT)),
 	};
     }
 
