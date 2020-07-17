@@ -30,7 +30,6 @@ import org.luwrain.script.hooks.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
 
-import org.luwrain.app.fetch.Base.Type;
 
 public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
@@ -72,7 +71,6 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
     @Override public Command[] getCommands(Luwrain luwrain)
     {
 	return new Command[]{
-	    new SimpleShortcutCommand("fetch"),
 
 	    new Command(){
 		@Override public String getName()
@@ -99,49 +97,7 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	return new ExtensionObject[]{
-
-	    newsWorker, smtpWorker, pop3Worker,
-
-	    new Shortcut() {
-		@Override public String getExtObjName()
-		{
-		    return "fetch";
-		}
-		@Override public Application[] prepareApp(String[] args)
-		{
-		    NullCheck.notNull(args, "args");
-		    if (args.length == 0)
-			return new Application[]{new org.luwrain.app.fetch.App(EnumSet.of(Type.NEWS, Type.INCOMING_MAIL, Type.OUTGOING_MAIL))};
-		    if (args.length > 1)
-			return null;
-		    final String arg = args[0];
-		    Set<Type> type;
-		    switch(arg)
-		    {
-		    case "--ALL":
-			type = EnumSet.of(Type.NEWS, Type.INCOMING_MAIL, Type.OUTGOING_MAIL);
-			break;
-		    case "--NEWS":
-			type = EnumSet.of(Type.NEWS);
-			break;
-		    case "--MAIL":
-			type = EnumSet.of(Type.INCOMING_MAIL, Type.OUTGOING_MAIL);
-			break;
-		    case "--INCOMING-MAIL":
-			type = EnumSet.of(Type.INCOMING_MAIL);
-			break;
-		    case "--OUTGOING-MAIL":
-			type = EnumSet.of(Type.OUTGOING_MAIL);
-			break;
-		    default:
-			return new Application[0];
-		    };
-		    return new Application[]{new org.luwrain.app.fetch.App(type)};
-		}
-	    },
-
-	};
+	return new ExtensionObject[]{ newsWorker, smtpWorker, pop3Worker };
     }
 
 @Override public void close()
