@@ -23,7 +23,7 @@ import java.net.*;
 import java.util.*;
 
 import org.luwrain.core.*;
-import org.luwrain.core.events.EnvironmentEvent;
+import org.luwrain.core.events.SystemEvent;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
 
@@ -96,7 +96,7 @@ checkInterrupted();
 	    }
 	    if (freshNews.size() > 0 )
 message(group.getName() + ": " + freshNews.size() + "/" + totalCount);
-luwrain.sendBroadcastEvent(new EnvironmentEvent(EnvironmentEvent.Type.BROADCAST, EnvironmentEvent.Code.REFRESH, "", "newsgroup:"));
+luwrain.sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.REFRESH, "", "newsgroup:"));
 	    return true;
 	}
 	catch(PimException e)

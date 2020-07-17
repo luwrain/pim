@@ -20,7 +20,7 @@ import java.net.*;
 import java.util.*;
 
 import org.luwrain.core.*;
-import org.luwrain.core.events.EnvironmentEvent;
+import org.luwrain.core.events.SystemEvent;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
 
@@ -98,7 +98,7 @@ class News
 	    }
 	    if (freshNews.size() > 0 )
 		control.message(group.getName() + ": " + freshNews.size() + "/" + totalCount);
-	    control.luwrain().sendBroadcastEvent(new EnvironmentEvent(EnvironmentEvent.Type.BROADCAST, EnvironmentEvent.Code.REFRESH, "", "newsgroup:"));
+	    control.luwrain().sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.REFRESH, "", "newsgroup:"));
 	    return true;
 	}
 	catch(PimException e)

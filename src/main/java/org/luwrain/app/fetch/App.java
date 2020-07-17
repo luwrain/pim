@@ -72,7 +72,7 @@ private Action[] getFetchAreaActions()
 	};
     }
 
-private boolean onAreaAction(EnvironmentEvent event)
+private boolean onAreaAction(SystemEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (ActionEvent.isAction(event, "fetch-all"))
@@ -118,10 +118,10 @@ area = new ProgressArea(new DefaultControlContext(luwrain), strings.appName(),
 		    return super.onInputEvent(event);
 		}
 
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(SystemEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+		    if (event.getType() != SystemEvent.Type.REGULAR)
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
