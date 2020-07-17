@@ -21,8 +21,9 @@ import java.net.*;
 import java.util.*;
 import java.io.*;
 
-import com.sun.syndication.feed.synd.*;
-import com.sun.syndication.io.*;
+//import com.sun.syndication.feed.synd.*;
+import com.rometools.rome.feed.synd.*;
+import com.rometools.rome.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.util.*;

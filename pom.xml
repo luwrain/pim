@@ -7,8 +7,8 @@
     <version>2.0.0</version>
   </parent>
   <artifactId>luwrain-pim</artifactId>
-  <name>The LUWRAIN platform</name>
-  <url>http://luwrain.org/</url>
+  <name>A personal information manager for LUWRAIN</name>
+  <url>https://github.com/luwrain/pim/</url>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>

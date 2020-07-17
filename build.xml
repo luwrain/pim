@@ -12,6 +12,7 @@
   <target name="clean">
     <delete dir="build"/>
     <delete dir="jar"/>
+        <delete dir="target"/>
   </target>
   <target name="compile" depends="clean">
     <mkdir dir="build"/>
