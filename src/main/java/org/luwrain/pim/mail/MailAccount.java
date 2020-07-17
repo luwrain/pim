@@ -21,6 +21,8 @@ package org.luwrain.pim.mail;
 
 import java.util.*;
 
+import com.google.gson.annotations.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 
@@ -30,14 +32,31 @@ public class MailAccount implements Comparable
     public enum Flags {ENABLED, SSL, TLS, DEFAULT, LEAVE_MESSAGES};
 
     private Type type = Type.POP3;
+
+    @SerializedName("title")
     private String title = "";
+
+    @SerializedName("host")
     private String host = "";
+
+    @SerializedName("port")
     private int port = 995;
+
+    @SerializedName("login")
     private String login = "";
+
+    @SerializedName("passwd")
     private String passwd = "";
+
+    @SerializedName("trusted-hosts")
     private String trustedHosts = "*";
+    
     private Set<Flags> flags = EnumSet.noneOf(Flags.class);
+
+    @SerializedName("subst-name")
     private String substName = "";
+
+    @SerializedName("subst-address")
     private String substAddress = "";
 
     public void setType(Type type) throws PimException

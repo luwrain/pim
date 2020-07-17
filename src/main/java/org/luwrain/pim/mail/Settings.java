@@ -23,10 +23,11 @@ import org.luwrain.core.*;
 
 public interface Settings
 {
-    static public final String STORING_PATH = "/org/luwrain/pim/mail/storing";
-    static public final String FOLDERS_PATH = "/org/luwrain/pim/mail/folders";
-    static public final String RULES_PATH = "/org/luwrain/pim/mail/rules";
-    static public final String ACCOUNTS_PATH = "/org/luwrain/pim/mail/accounts";
+    static public final String
+	STORING_PATH = "/org/luwrain/pim/mail/storing",
+	FOLDERS_PATH = "/org/luwrain/pim/mail/folders",
+	RULES_PATH = "/org/luwrain/pim/mail/rules",
+	ACCOUNTS_PATH = "/org/luwrain/pim/mail/accounts";
 
     public interface Storing
     {
@@ -46,36 +47,12 @@ public interface Settings
 	void setInitProc(String value);
     }
 
-    public interface Account
+    public interface Accounts
     {
-	String getType(String defValue);
-	String getTitle(String defValue);
-	String getHost(String defValue);
-	int getPort(int defValue);
-	String getLogin(String defValue);
-	String getPasswd(String defValue);
-	String getTrustedHosts(String defValue);
-	String getSubstName(String defValue);
-	String getSubstAddress(String defValue);
-	boolean getEnabled(boolean defValue);
-	boolean getSsl(boolean defValue);
-	boolean getTls(boolean defValue);
-	boolean getDefault(boolean defValue);
-	boolean getLeaveMessages(boolean defValue);
-	void setType(String value);
-	void setTitle(String value);
-	void setHost(String value);
-	void setPort(int value);
-	void setLogin(String value);
-	void setPasswd(String value);
-	void setTrustedHosts(String value);
-	void setSubstName(String value);
-	void setSubstAddress(String value);
-	void setEnabled(boolean value);
-	void setSsl(boolean value);
-	void setTls(boolean value);
-	void setDefault(boolean value);
-	void setLeaveMessages(boolean value);
+	String getAccounts(String defValue);
+	void setAccounts(String value);
+	int getNextId(int defValue);
+	void setNextId(int value);
     }
 
 public interface Folder
@@ -101,11 +78,11 @@ public interface Rule
     void setDestFolderUniref(String value);
 }
 
-    static public Account createAccount(Registry registry, String path)
+    static public Accounts createAccounts(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(path, "path");
-	return RegistryProxy.create(registry, path, Account.class);
+	registry.addDirectory(ACCOUNTS_PATH);
+	return RegistryProxy.create(registry, ACCOUNTS_PATH, Accounts.class);
     }
 
     static public Folder createFolder(Registry registry, String path)
