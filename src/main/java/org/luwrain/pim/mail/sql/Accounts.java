@@ -18,6 +18,10 @@
 package org.luwrain.pim.mail.sql;
 
 import java.util.*;
+import java.lang.reflect.*;
+
+import com.google.gson.*;
+import com.google.gson.reflect.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -25,57 +29,75 @@ import org.luwrain.pim.mail.*;
 
 final class Accounts implements MailAccounts
 {
+        static private final Type ACCOUNT_LIST_TYPE = new TypeToken<List<Account>>(){}.getType();
+
     private final Registry registry;
+    private final org.luwrain.pim.mail.Settings.Accounts sett;
+    private final Gson gson = new Gson();
+    private Map<Integer, Account> accounts = new HashMap();
 
     Accounts(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
+	this.sett = org.luwrain.pim.mail.Settings.createAccounts(registry);
     }
 
-    @Override public MailAccount[] load() throws PimException
+    @Override public MailAccount[] load()
     {
-	registry.addDirectory(org.luwrain.pim.mail.Settings.ACCOUNTS_PATH);
-	return null;
+	final List<Account> res = gson.fromJson(sett.getAccounts(""), ACCOUNT_LIST_TYPE);
+	this.accounts.clear();
+	for(Account a: res)
+	{
+	    a.accounts = this;
+	    this.accounts.put(new Integer(a.id), a);
+	}
+	final Account[] a = res.toArray(new Account[res.size()]);
+	Arrays.sort(a);
+	return a;
     }
 
-    @Override public MailAccount loadById(int id) throws PimException
+    @Override public MailAccount loadById(int id)
     {
 	if (id < 0)
 	    throw new IllegalArgumentException("id (" + String.valueOf(id) + ") may not be negative");
-	/*
-	final Account account = new Account(registry, id);
-	return account.load()?account:null;
-	*/
-	return null;
+	if (accounts.isEmpty())
+	    load();
+	return accounts.get(new Integer(id));
     }
 
-    @Override public MailAccount save(MailAccount account) throws PimException
+    @Override public MailAccount save(MailAccount account)
     {
 	NullCheck.notNull(account, "account");
-	final int newId = Registry.nextFreeNum(registry, org.luwrain.pim.mail.Settings.ACCOUNTS_PATH);
-	return null;
+	if (accounts.isEmpty())
+	    load();
+	final int newId = sett.getNextId(1);
+	sett.setNextId(newId + 1);
+	final Account a = new Account();
+	a.id = newId;
+	a.accounts = this;
+	a.copyValues(account);
+	accounts.put(new Integer(a.id), a);
+	saveAll();
+	return a;
     }
 
     @Override public void delete(MailAccount account) throws PimException
     {
 	NullCheck.notNull(account, "account");
-	final Account accountReg = (Account)account;
-	final String path = Registry.join(org.luwrain.pim.mail.Settings.ACCOUNTS_PATH, String.valueOf(accountReg.id));
-
-	    }
+	final Account a = (Account)account;
+		    }
 
     @Override public String getUniRef(MailAccount account) throws PimException
     {
 	NullCheck.notNull(account, "account");
-	final Account accountReg = (Account)account;
-	return AccountUniRefProc.PREFIX + ":" + String.valueOf(accountReg.id);
+	final Account a = (Account)account;
+	return AccountUniRefProc.PREFIX + ":" + String.valueOf(a.id);
     }
 
     @Override public MailAccount loadByUniRef(String uniRef)
     {
 	NullCheck.notEmpty(uniRef, "uniRef");
-	/*
 	if (!uniRef.startsWith(AccountUniRefProc.PREFIX + ":"))
 	    return null;
 	final int id;
@@ -86,10 +108,9 @@ final class Accounts implements MailAccounts
 	{
 	    return null;
 	}
-	final Account account = new Account(registry, id);
-	return account.load()?account:null;
-	*/
-	return null;
+	if (accounts.isEmpty())
+	    load();
+	return accounts.get(new Integer(id));
     }
 
     @Override public int getId(MailAccount account) throws PimException
@@ -115,5 +136,13 @@ final class Accounts implements MailAccounts
 	    return a;
 	}
 	return anyEnabled;
+    }
+
+    void saveAll()
+    {
+	final List<Account> a = new LinkedList();
+	for(Map.Entry<Integer, Account> e: accounts.entrySet())
+	    a.add(e.getValue());
+	sett.setAccounts(gson.toJson(a));
     }
 }

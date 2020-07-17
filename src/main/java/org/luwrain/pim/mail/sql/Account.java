@@ -19,70 +19,67 @@ package org.luwrain.pim.mail.sql;
 
 import java.util.*;
 
+import com.google.gson.annotations.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
 final class Account extends MailAccount
 {
-    static private final String LOG_COMPONENT = "pim-mail";//FIXME:
+    @SerializedName("id")
+    int id = 0;
 
-    final int id;
-
-    Account(int id, Accounts accounts)
-    {
-	NullCheck.notNull(accounts, "accounts");
-	this.id = id;
-    }
+    transient Accounts accounts = null;
 
     @Override public void setType(Type type) throws PimException
     {
 	NullCheck.notNull(type, "type");
-	//	sett.setType(getTypeStr(type));
 	super.setType(type);
+	accounts.saveAll();
     }
 
     @Override public void setTitle(String title) throws PimException
     {
 	NullCheck.notNull(title, "title");
-	//	sett.setTitle(title);
 	super.setTitle(title);
+	accounts.saveAll();
     }
 
     @Override public void setHost(String host) throws PimException
     {
 	NullCheck.notNull(host, "host");
-	//	sett.setHost(host);
 	super.setHost(host);
+	accounts.saveAll();
     }
 
     @Override public void setPort(int port) throws PimException
     {
 	if (port < 0)
 	    throw new IllegalArgumentException("port (" + String.valueOf(port) + ") may not be negative");
-	//	sett.setPort(port);
 	super.setPort(port);
+	accounts.saveAll();
     }
 
     @Override public void setLogin(String login) throws PimException
     {
 	NullCheck.notNull(login, "login");
-	//	sett.setLogin(login);
 	super.setLogin(login);
+	accounts.saveAll();
     }
 
     @Override public void setPasswd(String passwd) throws PimException
     {
 	NullCheck.notNull(passwd, "passwd");
-	//	sett.setPasswd(passwd);
 	super.setPasswd(passwd);
+	accounts.saveAll();
     }
 
     @Override public void setTrustedHosts(String trustedHosts) throws PimException
     {
 	NullCheck.notNull(trustedHosts, "trustedHosts");
-	//	sett.setTrustedHosts(trustedHosts);
 	super.setTrustedHosts(trustedHosts);
+	accounts.saveAll();
     }
 
     @Override public void setFlags(Set<Flags> flags) throws PimException
@@ -104,15 +101,15 @@ final class Account extends MailAccount
     @Override public void setSubstName(String substName) throws PimException
     {
 	NullCheck.notNull(substName, "substName");
-	//	sett.setSubstName(substName);
 	super.setSubstName(substName);
+	accounts.saveAll();
     }
 
     @Override public void setSubstAddress(String substAddress) throws PimException
     {
 	NullCheck.notNull(substAddress, "substAddress");
-	//	sett.setSubstAddress(substAddress);
 	super.setSubstAddress(substAddress);
+	accounts.saveAll();
     }
 
     static String getTypeStr(Type type)
