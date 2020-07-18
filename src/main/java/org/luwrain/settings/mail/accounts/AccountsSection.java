@@ -16,8 +16,6 @@
 
 package org.luwrain.settings.mail.accounts;
 
-import java.util.*;
-
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;

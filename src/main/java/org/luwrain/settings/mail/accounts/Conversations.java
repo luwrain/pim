@@ -46,4 +46,15 @@ final class Conversations
 	    return MailAccount.Type.SMTP;
 	return null;
     }
+
+    String newAccountTitle()
+    {
+	return Popups.textNotEmpty(luwrain, strings.newAccountTitlePopupName(), strings.newAccountTitlePopupPrefix(), "");
+    }
+
+    boolean confirmAccountDeleting(String title)
+    {
+	NullCheck.notNull(title, "title");
+	return Popups.confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + title + "\"?");
+    }
 }

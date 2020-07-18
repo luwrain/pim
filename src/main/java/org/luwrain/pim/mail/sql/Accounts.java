@@ -45,10 +45,10 @@ final class Accounts implements MailAccounts
 
     @Override public MailAccount[] load()
     {
-	return new Account[0];
-	/*
+		this.accounts.clear();
 	final List<Account> res = gson.fromJson(sett.getAccounts(""), ACCOUNT_LIST_TYPE);
-	this.accounts.clear();
+	if (res == null)
+	    return new Account[0];
 	for(Account a: res)
 	{
 	    a.accounts = this;
@@ -57,7 +57,6 @@ final class Accounts implements MailAccounts
 	final Account[] a = res.toArray(new Account[res.size()]);
 	Arrays.sort(a);
 	return a;
-	*/
     }
 
     @Override public MailAccount loadById(int id)

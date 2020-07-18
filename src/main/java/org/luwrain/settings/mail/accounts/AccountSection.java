@@ -16,11 +16,10 @@
 
 package org.luwrain.settings.mail.accounts;
 
-import java.util.*;
-
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
+import org.luwrain.pim.*;
 
 public class AccountSection implements Section
 {
@@ -41,7 +40,16 @@ public class AccountSection implements Section
 
     @Override public SectionArea getSectionArea(ControlPanel controlPanel)
     {
-	return null;
+	NullCheck.notNull(controlPanel, "controlPanel");
+	final Luwrain luwrain = controlPanel.getCoreInterface();
+	try {
+	    return new Area(controlPanel, accounts.strings, accounts.storing, accounts.storing.getAccounts().loadById(id));
+	}
+	catch(PimException e)
+	{
+	    luwrain.crash(e);
+	    return null;
+	}
     }
 
     @Override public Element getElement()
@@ -52,7 +60,8 @@ public class AccountSection implements Section
     @Override public Action[] getSectionActions()
     {
 	return new Action[]{
-	    new Action("add-mail-account", accounts.strings.addMailAccount(), new InputEvent(InputEvent.Special.INSERT))
+	    new Action("add-mail-account", accounts.strings.addMailAccount(), new InputEvent(InputEvent.Special.INSERT)),
+	    new Action("delete-mail-account", accounts.strings.deleteAccount(), new InputEvent(InputEvent.Special.DELETE)),
 	};
     }
 

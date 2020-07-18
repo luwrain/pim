@@ -30,7 +30,7 @@ import org.luwrain.settings.mail.folders.Folders;
 public final class Factory implements org.luwrain.cpanel.Factory
 {
     private final Luwrain luwrain;
-            private final SimpleElement mailElement, accountsElement, rulesElement, foldersElement;
+    private final SimpleElement mailElement, accountsElement, rulesElement, foldersElement;
 
     private Strings strings = null;
     private MailStoring storing = null;
@@ -41,10 +41,10 @@ public final class Factory implements org.luwrain.cpanel.Factory
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	    this.mailElement = new SimpleElement(StandardElements.APPLICATIONS, this.getClass().getName());
-	    this.accountsElement = new SimpleElement(mailElement, this.getClass().getName() + ":Accounts");
-	    this.foldersElement = new SimpleElement(mailElement, this.getClass().getName() + ":Groups");
-	    	    this.rulesElement = new SimpleElement(mailElement, this.getClass().getName() + ":Rules");
+	this.mailElement = new SimpleElement(StandardElements.APPLICATIONS, this.getClass().getName());
+	this.accountsElement = new SimpleElement(mailElement, this.getClass().getName() + ":Accounts");
+	this.foldersElement = new SimpleElement(mailElement, this.getClass().getName() + ":Groups");
+	this.rulesElement = new SimpleElement(mailElement, this.getClass().getName() + ":Rules");
     }
 
     @Override public Element[] getElements()
@@ -90,13 +90,13 @@ public final class Factory implements org.luwrain.cpanel.Factory
 
     private boolean initStrings()
     {
-			    final Object o = luwrain.i18n().getStrings(Strings.NAME);
-		    	    if (o != null && (o instanceof Strings))
-			    {
-		this.strings = (Strings)o;
-		return true;
-			    }
-		    this.strings = null;
-		return false;
-		    }
+	final Object o = luwrain.i18n().getStrings(Strings.NAME);
+	if (o != null && (o instanceof Strings))
+	{
+	    this.strings = (Strings)o;
+	    return true;
+	}
+	this.strings = null;
+	return false;
+    }
 }

@@ -27,10 +27,10 @@ import org.luwrain.pim.mail.*;
 
 final class Account extends MailAccount
 {
+    transient Accounts accounts = null;
+
     @SerializedName("id")
     int id = 0;
-
-    transient Accounts accounts = null;
 
     @Override public void setType(Type type) throws PimException
     {
@@ -85,17 +85,8 @@ final class Account extends MailAccount
     @Override public void setFlags(Set<Flags> flags) throws PimException
     {
 	NullCheck.notNull(flags, "flags");
-	final boolean enabled = flags.contains(Flags.ENABLED);
-	final boolean ssl = flags.contains(Flags.SSL);
-	final boolean tls =  flags.contains(Flags.TLS);
-	final boolean def =  flags.contains(Flags.DEFAULT);
-	final boolean leaveMessages =  flags.contains(Flags.LEAVE_MESSAGES);
-	//	sett.setEnabled(enabled);
-	//	sett.setSsl(ssl);
-	//	sett.setTls(tls);
-	//	sett.setDefault(def);
-	//	sett.setLeaveMessages(leaveMessages);
 	super.setFlags(flags);
+	accounts.saveAll();
     }
 
     @Override public void setSubstName(String substName) throws PimException
@@ -110,19 +101,5 @@ final class Account extends MailAccount
 	NullCheck.notNull(substAddress, "substAddress");
 	super.setSubstAddress(substAddress);
 	accounts.saveAll();
-    }
-
-    static String getTypeStr(Type type)
-    {
-	NullCheck.notNull(type, "type");
-	switch(type)
-	{
-	case POP3:
-	    return "pop3";
-	case SMTP:
-	    return "smtp";
-	default:
-	    return "";
-	}
     }
 }

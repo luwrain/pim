@@ -16,11 +16,8 @@
 
 package org.luwrain.settings.mail.accounts;
 
-import java.util.*;
-
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.popups.Popups;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.*;
@@ -60,76 +57,61 @@ public final class Accounts
 	}
     }
 
-public Area createArea(ControlPanel controlPanel, int id)
-    {
-	NullCheck.notNull(controlPanel, "controlPanel");
-	final Luwrain luwrain = controlPanel.getCoreInterface();
-	try {
-	    return new Area(controlPanel, strings, storing, storing.getAccounts().loadById(id));
-	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
-	    return null;
-	}
-    }
-
-    public Action[] getActions()
-    {
-				     return new Action[]{
-					 new Action("add-mail-account", strings.addMailAccount(), new InputEvent(InputEvent.Special.INSERT)),
-					 new Action("delete-mail-account", strings.deleteAccount(), new InputEvent(InputEvent.Special.DELETE)),
-				     };
-    }
-
-public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int id)
+    boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int id)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(event, "event");
 	if (ActionEvent.isAction(event, "add-mail-account"))
 	    return onAddAccount(controlPanel);
 	if (ActionEvent.isAction(event, "delete-mail-account"))
-	{
-	    if (id < 0)
-		return false;
-	    try {
-		final MailAccount account = storing.getAccounts().loadById(id);
-		if (account == null)
-		    return false;
-		if (Popups.confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + account.getTitle() + "\"?"))
-		{
-		    storing.getAccounts().delete(account);
-		    controlPanel.refreshSectionsTree();
-		}
-		return true;
-	    }
-	    catch(PimException e)
-	    {
-		luwrain.crash(e);
-		return false;
-	    }
-	}
+	    return onDeleteAccount(controlPanel, id);
 	return false;
     }
 
     private boolean onAddAccount(ControlPanel controlPanel)
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
-	    try {
-		final MailAccount.Type type = conv.newAccountType();
-		if (type == null)
-		    return true;
-		final MailAccount account = new MailAccount();
-		account.setType(type);
-		account.setTitle("Новая");
-		storing.getAccounts().save(account);
-		controlPanel.refreshSectionsTree();
+	try {
+	    final MailAccount.Type type = conv.newAccountType();
+	    if (type == null)
 		return true;
-	    }
-	    catch(PimException e)
-	    {
-		luwrain.crash(e);
+	    final String title = conv.newAccountTitle();
+	    if (title == null)
 		return true;
-	    }
+	    final MailAccount account = new MailAccount();
+	    account.setType(type);
+	    account.setTitle(title);
+	    storing.getAccounts().save(account);
+	    controlPanel.refreshSectionsTree();
+	    return true;
+	}
+	catch(PimException e)
+	{
+	    luwrain.crash(e);
+	    return true;
 	}
     }
+
+    private boolean onDeleteAccount(ControlPanel controlPanel, int id)
+    {
+	NullCheck.notNull(controlPanel, "controlPanel");
+	if (id < 0)
+	    return false;
+	try {
+	    final MailAccount account = storing.getAccounts().loadById(id);
+	    if (account == null)
+		return false;
+	    if (conv.confirmAccountDeleting(account.getTitle()))
+	    {
+		storing.getAccounts().delete(account);
+		controlPanel.refreshSectionsTree();
+	    }
+	    return true;
+	}
+	catch(PimException e)
+	{
+	    luwrain.crash(e);
+	    return false;
+	}
+    }
+}

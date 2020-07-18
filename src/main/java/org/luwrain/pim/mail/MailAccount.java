@@ -31,6 +31,7 @@ public class MailAccount implements Comparable
     public enum Type {POP3, SMTP};
     public enum Flags {ENABLED, SSL, TLS, DEFAULT, LEAVE_MESSAGES};
 
+    @SerializedName("type")
     private Type type = Type.POP3;
 
     @SerializedName("title")
@@ -50,8 +51,9 @@ public class MailAccount implements Comparable
 
     @SerializedName("trusted-hosts")
     private String trustedHosts = "*";
-    
-    private Set<Flags> flags = EnumSet.noneOf(Flags.class);
+
+    @SerializedName("flags")
+    private Set<Flags> flags = EnumSet.of(Flags.ENABLED);
 
     @SerializedName("subst-name")
     private String substName = "";
