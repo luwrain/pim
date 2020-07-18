@@ -14,21 +14,23 @@
    General Public License for more details.
 */
 
-package org.luwrain.settings.mail.folders;
+package org.luwrain.settings.mail.accounts;
 
 import org.luwrain.core.*;
 import org.luwrain.cpanel.*;
 
-public class Element implements org.luwrain.cpanel.Element
+public final class AccountElement implements org.luwrain.cpanel.Element
 {
-    public final org.luwrain.cpanel.Element parent;
-    public final int id;
-    public final String title;
+public final org.luwrain.cpanel.Element parent;
+public final int id;
+public final String title;
 
-    Element(org.luwrain.cpanel.Element parent, int id, String title)
+AccountElement(org.luwrain.cpanel.Element parent, int id, String title)
     {
 	NullCheck.notNull(parent, "parent");
 	NullCheck.notNull(title, "title");
+	if (id < 0)
+	    throw new IllegalArgumentException("id (" + id + ") may not be empty");
 	this.parent = parent;
 	this.id = id;
 	this.title = title;
@@ -43,7 +45,7 @@ public class Element implements org.luwrain.cpanel.Element
     {
 	if (o == null || !(o instanceof Element))
 	    return false;
-	return id == ((Element)o).id;
+	return id == ((AccountElement)o).id;
     }
 
     @Override public int hashCode()

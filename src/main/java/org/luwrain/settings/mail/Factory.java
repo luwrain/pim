@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.settings.mail;
 
@@ -9,39 +24,34 @@ import org.luwrain.cpanel.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-import org.luwrain.settings.mail.accounts.Accounts;
+import org.luwrain.settings.mail.accounts.*;
 import org.luwrain.settings.mail.folders.Folders;
 
-public class Factory implements org.luwrain.cpanel.Factory
+public final class Factory implements org.luwrain.cpanel.Factory
 {
     private final Luwrain luwrain;
+            private final SimpleElement mailElement, accountsElement, rulesElement, foldersElement;
+
     private Strings strings = null;
     private MailStoring storing = null;
-
     private Accounts accounts = null;
     private Folders folders = null;
-
-    private SimpleElement mailElement = null;
-    private SimpleElement accountsElement = null;
-    private SimpleElement rulesElement = null;
-    private SimpleElement foldersElement = null;
 
     public Factory(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	    this.mailElement = new SimpleElement(StandardElements.APPLICATIONS, this.getClass().getName());
+	    this.accountsElement = new SimpleElement(mailElement, this.getClass().getName() + ":Accounts");
+	    this.foldersElement = new SimpleElement(mailElement, this.getClass().getName() + ":Groups");
+	    	    this.rulesElement = new SimpleElement(mailElement, this.getClass().getName() + ":Rules");
     }
 
     @Override public Element[] getElements()
     {
-	if (!init())
+	if (!initStrings())
 	    return new Element[0];
-	return new Element[]{
-	    mailElement,
-	    foldersElement,
-	    accountsElement,
-	    rulesElement,
-	};
+	return new Element[]{ mailElement, accountsElement };
     }
 
     @Override public Element[] getOnDemandElements(Element parent)
@@ -51,8 +61,6 @@ public class Factory implements org.luwrain.cpanel.Factory
 	    return new Element[0];
 	if (parent.equals(accountsElement))
 	    return accounts.getElements(parent);
-	if (parent.equals(foldersElement) || (parent instanceof org.luwrain.settings.mail.folders.Element))
-	    return folders.getElements(parent);
 	return new Element[0];
     }
 
@@ -62,16 +70,15 @@ public class Factory implements org.luwrain.cpanel.Factory
 	if (el.equals(mailElement))
 	    return new SimpleSection(mailElement, strings.mailSection());
 	if (el.equals(accountsElement))
-	    return new SimpleSection(accountsElement, strings.accountsSection(), null,
-				     accounts.getActions(), (controlPanel, event)->accounts.onActionEvent(controlPanel, event, -1));
+	    return new AccountsSection(accounts, el);
 	if (el.equals(foldersElement))
 	    return new SimpleSection(foldersElement, strings.groupsSection(), null,
 				     folders.getActions(false), (controlPanel, event)->folders.onActionEvent(controlPanel, event, -1));
 	if (el.equals(rulesElement))
 	    return new SimpleSection(rulesElement, strings.rulesSection());
-	if (el instanceof org.luwrain.settings.mail.accounts.Element)
+	if (el instanceof AccountElement)
 	{
-	    final org.luwrain.settings.mail.accounts.Element accountElement = (org.luwrain.settings.mail.accounts.Element)el;
+	    final AccountElement accountElement = (AccountElement)el;
 	    return new SimpleSection(el, accountElement.title, (controlPanel)->accounts.createArea(controlPanel, accountElement.id),
 				     accounts.getActions(), (controlPanel, event)->accounts.onActionEvent(controlPanel, event, accountElement.id));
 	}
@@ -84,26 +91,6 @@ public class Factory implements org.luwrain.cpanel.Factory
 	return null;
     }
 
-    private boolean init()
-    {
-	if (strings == null)
-	{
-	    final Object o = luwrain.i18n().getStrings(Strings.NAME);
-	    if (o != null && (o instanceof Strings))
-		strings = (Strings)o; else
-		return false;
-	}
-	if (mailElement == null)
-	    mailElement = new SimpleElement(StandardElements.APPLICATIONS, this.getClass().getName());
-	if (accountsElement == null)
-	    accountsElement = new SimpleElement(mailElement, this.getClass().getName() + ":Accounts");
-	if (foldersElement == null)
-	    foldersElement = new SimpleElement(mailElement, this.getClass().getName() + ":Groups");
-	if (rulesElement == null)
-	    rulesElement = new SimpleElement(mailElement, this.getClass().getName() + ":Rules");
-	return true;
-    }
-
     private boolean initStoring()
     {
 	if (storing != null)
@@ -111,8 +98,20 @@ public class Factory implements org.luwrain.cpanel.Factory
 	storing = org.luwrain.pim.Connections.getMailStoring(luwrain, true);
 	if (storing == null)
 	    return false;
-	accounts = new Accounts(luwrain, strings, storing);
-	folders = new Folders(luwrain, strings, storing);
+	this.accounts = new Accounts(luwrain, strings, storing);
+	this.folders = new Folders(luwrain, strings, storing);
 	return true;
     }
+
+    private boolean initStrings()
+    {
+			    final Object o = luwrain.i18n().getStrings(Strings.NAME);
+		    	    if (o != null && (o instanceof Strings))
+			    {
+		this.strings = (Strings)o;
+		return true;
+			    }
+		    this.strings = null;
+		return false;
+		    }
 }

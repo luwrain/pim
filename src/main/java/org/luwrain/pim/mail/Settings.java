@@ -68,6 +68,13 @@ public interface Folder
     void setProperties(String value);
 }
 
+        public interface Folders 
+    {
+	String getFolderPending(String defValue);
+	void setFolderPending(String value);
+    }
+
+
 public interface Rule
 {
     String getAction(String defValue);
@@ -84,6 +91,14 @@ public interface Rule
 	registry.addDirectory(ACCOUNTS_PATH);
 	return RegistryProxy.create(registry, ACCOUNTS_PATH, Accounts.class);
     }
+
+        static public Folders createFolders(Registry registry)
+    {
+	NullCheck.notNull(registry, "registry");
+	registry.addDirectory(FOLDERS_PATH);
+	return RegistryProxy.create(registry, FOLDERS_PATH, Folders.class);
+    }
+
 
     static public Folder createFolder(Registry registry, String path)
     {

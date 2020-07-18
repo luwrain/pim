@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.settings.mail.accounts;
 
@@ -13,12 +28,11 @@ import org.luwrain.settings.mail.*;
 
 public class Accounts
 {
-    private Luwrain luwrain;
-    private Strings strings;
+    final Luwrain luwrain;
+    final Strings strings;
     private MailStoring storing = null;
 
-    public Accounts(Luwrain luwrain, Strings strings,
-MailStoring storing)
+    public Accounts(Luwrain luwrain, Strings strings, MailStoring storing)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(strings, "strings");
@@ -34,7 +48,7 @@ MailStoring storing)
 	    final MailAccount[] accounts = storing.getAccounts().load();
 	    final Element[] res = new Element[accounts.length];
 	    for(int i = 0;i < accounts.length;++i)
-		res[i] = new Element(parent, storing.getAccounts().getId(accounts[i]), accounts[i].getTitle());
+		res[i] = new AccountElement(parent, storing.getAccounts().getId(accounts[i]), accounts[i].getTitle());
 	    return res;
 	}
 	catch(PimException e)
