@@ -26,11 +26,11 @@ import org.luwrain.pim.mail.*;
 import org.luwrain.pim.*;
 import org.luwrain.settings.mail.*;
 
-public class Accounts
+public final class Accounts
 {
     final Luwrain luwrain;
     final Strings strings;
-    private MailStoring storing = null;
+    final MailStoring storing;
 
     public Accounts(Luwrain luwrain, Strings strings, MailStoring storing)
     {
@@ -42,7 +42,7 @@ public class Accounts
 	this.storing = storing;
     }
 
-    public org.luwrain.cpanel.Element[] getElements(org.luwrain.cpanel.Element parent)
+    public org.luwrain.cpanel.Element[] getAccountsElements(Element parent)
     {
 	try {
 	    final MailAccount[] accounts = storing.getAccounts().load();
@@ -72,7 +72,6 @@ public Area createArea(ControlPanel controlPanel, int id)
 	}
     }
 
-
     public Action[] getActions()
     {
 				     return new Action[]{
@@ -86,25 +85,8 @@ public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int i
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(event, "event");
-	//adding
 	if (ActionEvent.isAction(event, "add-mail-account"))
-	{
-	    try {
-		final MailAccount account = new MailAccount();
-		account.setTitle("Новая");
-		//		account.flags = EnumSet.of(MailAccount.Flags.ENABLED);
-		storing.getAccounts().save(account);
-		controlPanel.refreshSectionsTree();
-		return true;
-	    }
-	    catch(PimException e)
-	    {
-		luwrain.crash(e);
-		return false;
-	    }
-	}
-
-	//deleting
+	    return onAddAccount(controlPanel);
 	if (ActionEvent.isAction(event, "delete-mail-account"))
 	{
 	    if (id < 0)
@@ -126,7 +108,24 @@ public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int i
 		return false;
 	    }
 	}
-
 	return false;
     }
-}
+
+    private boolean onAddAccount(ControlPanel controlPanel)
+    {
+	NullCheck.notNull(controlPanel, "controlPanel");
+	    try {
+		final MailAccount account = new MailAccount();
+		account.setTitle("Новая");
+		//		account.flags = EnumSet.of(MailAccount.Flags.ENABLED);
+		storing.getAccounts().save(account);
+		controlPanel.refreshSectionsTree();
+		return true;
+	    }
+	    catch(PimException e)
+	    {
+		luwrain.crash(e);
+		return true;
+	    }
+	}
+    }

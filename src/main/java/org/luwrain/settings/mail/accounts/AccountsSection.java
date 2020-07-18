@@ -54,7 +54,9 @@ public class AccountsSection implements Section
 
     @Override public boolean onSectionActionEvent(ControlPanel controlPanel, ActionEvent event)
     {
-	return false;
+	NullCheck.notNull(controlPanel, "controlPanel");
+	NullCheck.notNull(event, "event");
+	return accounts.onActionEvent(controlPanel, event, -1);
     }
 
     @Override public String toString()

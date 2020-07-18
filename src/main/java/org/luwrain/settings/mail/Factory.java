@@ -60,7 +60,7 @@ public final class Factory implements org.luwrain.cpanel.Factory
 	if (!initStoring())
 	    return new Element[0];
 	if (parent.equals(accountsElement))
-	    return accounts.getElements(parent);
+	    return accounts.getAccountsElements(parent);
 	return new Element[0];
     }
 
