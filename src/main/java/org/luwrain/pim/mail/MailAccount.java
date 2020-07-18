@@ -53,7 +53,7 @@ public class MailAccount implements Comparable
     private String trustedHosts = "*";
 
     @SerializedName("flags")
-    private Set<Flags> flags = EnumSet.of(Flags.ENABLED);
+    private Set<Flags> flags = EnumSet.of(Flags.ENABLED, Flags.DEFAULT);
 
     @SerializedName("subst-name")
     private String substName = "";

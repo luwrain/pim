@@ -81,6 +81,17 @@ public final class Accounts
 	    final MailAccount account = new MailAccount();
 	    account.setType(type);
 	    account.setTitle(title);
+	    switch(type)
+	    {
+	    case SMTP:
+		account.setPort(587);
+		account.getFlags().add(MailAccount.Flags.TLS);
+		break;
+	    case POP3:
+		account.setPort(995);
+		account.getFlags().add(MailAccount.Flags.SSL);
+		break;
+	    }
 	    storing.getAccounts().save(account);
 	    controlPanel.refreshSectionsTree();
 	    return true;

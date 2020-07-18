@@ -88,6 +88,10 @@ final class Accounts implements MailAccounts
     {
 	NullCheck.notNull(account, "account");
 	final Account a = (Account)account;
+	if (accounts.isEmpty())
+	    load();
+	accounts.remove(new Integer(a.id));
+	saveAll();
 		    }
 
     @Override public String getUniRef(MailAccount account) throws PimException
