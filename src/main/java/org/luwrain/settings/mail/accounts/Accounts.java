@@ -31,6 +31,7 @@ public final class Accounts
     final Luwrain luwrain;
     final Strings strings;
     final MailStoring storing;
+    final Conversations conv;
 
     public Accounts(Luwrain luwrain, Strings strings, MailStoring storing)
     {
@@ -40,6 +41,7 @@ public final class Accounts
 	this.luwrain = luwrain;
 	this.strings = strings;
 	this.storing = storing;
+	this.conv = new Conversations(this);
     }
 
     public org.luwrain.cpanel.Element[] getAccountsElements(Element parent)
@@ -76,7 +78,6 @@ public Area createArea(ControlPanel controlPanel, int id)
     {
 				     return new Action[]{
 					 new Action("add-mail-account", strings.addMailAccount(), new InputEvent(InputEvent.Special.INSERT)),
-					 new Action("add-mail-account-predefined", strings.addAccountPredefined()),
 					 new Action("delete-mail-account", strings.deleteAccount(), new InputEvent(InputEvent.Special.DELETE)),
 				     };
     }
@@ -115,9 +116,12 @@ public boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int i
     {
 	NullCheck.notNull(controlPanel, "controlPanel");
 	    try {
+		final MailAccount.Type type = conv.newAccountType();
+		if (type == null)
+		    return true;
 		final MailAccount account = new MailAccount();
+		account.setType(type);
 		account.setTitle("Новая");
-		//		account.flags = EnumSet.of(MailAccount.Flags.ENABLED);
 		storing.getAccounts().save(account);
 		controlPanel.refreshSectionsTree();
 		return true;
