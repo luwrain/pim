@@ -21,16 +21,16 @@ import org.luwrain.cpanel.*;
 
 public final class AccountElement implements org.luwrain.cpanel.Element
 {
-public final org.luwrain.cpanel.Element parent;
-public final int id;
-public final String title;
+    private final Element parent;
+    final int id;
+    final String title;
 
-AccountElement(org.luwrain.cpanel.Element parent, int id, String title)
+AccountElement(Element parent, int id, String title)
     {
 	NullCheck.notNull(parent, "parent");
 	NullCheck.notNull(title, "title");
 	if (id < 0)
-	    throw new IllegalArgumentException("id (" + id + ") may not be empty");
+	    throw new IllegalArgumentException("id (" + String.valueOf(id) + ") can't be empty");
 	this.parent = parent;
 	this.id = id;
 	this.title = title;
@@ -43,7 +43,7 @@ AccountElement(org.luwrain.cpanel.Element parent, int id, String title)
 
     @Override public boolean equals(Object o)
     {
-	if (o == null || !(o instanceof Element))
+	if (o == null || !(o instanceof AccountElement))
 	    return false;
 	return id == ((AccountElement)o).id;
     }
