@@ -27,7 +27,7 @@ public class SqliteCreatingTest extends Assert
 {
     static private final File testDb = new File("/tmp/lwr-pim-test.sqlite");
 
-    @Test public void creatingNews() throws Exception
+    @Ignore @Test public void creatingNews() throws Exception
     {
 	final Connection con = SQL.connect("org.sqlite.JDBC", "jdbc:sqlite:" + testDb.getAbsolutePath(), "", "");
 	assertNotNull(con);
@@ -38,7 +38,7 @@ public class SqliteCreatingTest extends Assert
 	con.close();
     }
 
-    @Test public void creatingMail() throws Exception
+    @Ignore @Test public void creatingMail() throws Exception
     {
 	final Connection con = SQL.connect("org.sqlite.JDBC", "jdbc:sqlite:" + testDb.getAbsolutePath(), "", "");
 	assertNotNull(con);
@@ -52,7 +52,7 @@ public class SqliteCreatingTest extends Assert
 	con.close();
     }
 
-        @Test public void creatingContacts() throws Exception
+        @Ignore @Test public void creatingContacts() throws Exception
     {
 	final Connection con = SQL.connect("org.sqlite.JDBC", "jdbc:sqlite:" + testDb.getAbsolutePath(), "", "");
 	assertNotNull(con);

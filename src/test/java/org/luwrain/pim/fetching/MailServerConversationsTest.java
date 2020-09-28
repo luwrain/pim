@@ -13,6 +13,7 @@ import org.luwrain.core.*;
 
 public class MailServerConversationsTest extends Assert
 {
+    /*
     static private final File PROPERTY_FILE = new File(new File(System.getProperty("user.home")), "testing.properties");
     
     @Test public void sending() throws Exception
@@ -59,4 +60,5 @@ public class MailServerConversationsTest extends Assert
 	message.setText(prop.getProperty(prefix + "text"));
 	return message;
     }
+    */
 }

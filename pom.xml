@@ -27,6 +27,11 @@
       <version>1.6.2</version>
     </dependency>
     <dependency>
+      <groupId>org.dizitart</groupId>
+      <artifactId>nitrite</artifactId>
+      <version>3.4.0</version>
+    </dependency>
+    <dependency>
       <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
       <version>1.14.1</version>

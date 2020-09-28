@@ -27,6 +27,7 @@ import org.luwrain.pim.mail.*;
 
 public class MessagesTest extends Assert
 {
+    /*
     static private final File testDb = new File("/tmp/lwr-pim-test.sqlite");
 
     @Test public void emptyMessageAdding() throws Exception
@@ -81,4 +82,5 @@ public class MessagesTest extends Assert
 	if (testDb.exists())
    	    testDb.delete();
     }
+    */
 }
