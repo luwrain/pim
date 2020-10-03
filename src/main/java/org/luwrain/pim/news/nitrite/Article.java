@@ -18,14 +18,15 @@
 package org.luwrain.pim.news.nitrite;
 
 import java.util.*;
-import java.sql.*;
+import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
 
-class Article extends NewsArticle
+final class Article extends NewsArticle 
 {
     int id;
     int groupId;
+
 }

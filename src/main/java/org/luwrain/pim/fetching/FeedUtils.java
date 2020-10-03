@@ -59,21 +59,21 @@ public final class FeedUtils
 		    */
 		    if (feed.getTitle() != null)
 			//FIXME:		    article.sourceTitle = MlTagStrip.run(feed.getTitle());
-			article.sourceTitle = MlTagStrip.run(feed.getTitle());
+			article.setSourceTitle(MlTagStrip.run(feed.getTitle()));
 		    if (entry.getTitle() != null)
-			article.title = entry.getTitle().replaceAll(" ", " ");
+			article.setTitle(entry.getTitle().replaceAll(" ", " "));
 		    if (entry.getUri() != null)
-			article.uri = entry.getUri();
+			article.setUri(entry.getUri());
 		    if (entry.getLink() != null)
-			article.url = entry.getLink();
+			article.setUrl( entry.getLink());
 		    if (entry.getPublishedDate() != null)
-			article.publishedDate = entry.getPublishedDate();
+			article.setPublishedDate(entry.getPublishedDate());
 		    if (entry.getUpdatedDate() != null)
-			article.updatedDate = entry.getUpdatedDate();
+			article.setUpdatedDate(entry.getUpdatedDate());
 		    if (entry.getAuthor() != null)
-			article.author = /*MlTagStrip.run(*/entry.getAuthor();
-		    if (article.uri.isEmpty())
-			article.uri = article.url;
+			article.setAuthor(/*MlTagStrip.run(*/entry.getAuthor());
+		    if (article.getUri() == null || article.getUri().isEmpty())
+			article.setUri(article.getUrl());
 		    List contents = entry.getContents();
 		    if (contents != null)
 		    {
@@ -84,13 +84,13 @@ public final class FeedUtils
 				{
 				    SyndContentImpl content = (SyndContentImpl)o;
 				    if (content.getValue() != null)
-					article.content += content.getValue();
+					article.setContent(article.getContent() + content.getValue());
 				}
 			} else
 			{
 			    SyndContent content = entry.getDescription();
 			    if (content != null)
-				article.content = content.getValue();
+				article.setContent(content.getValue());
 			}
 		    }
 		    articles.add(article);

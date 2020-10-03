@@ -86,7 +86,7 @@ message(strings.newsFetchingError(group.getName()) + ":" + e.getMessage());
 		}
 		totalCount += articles.length;
 		for(NewsArticle a: articles)
-		    if (storing.getArticles().countByUriInGroup(group, a.uri) == 0)
+		    if (storing.getArticles().countByUriInGroup(group, a.getUri()) == 0)
 			freshNews.add(a);
 	    }
 	    for(NewsArticle a: freshNews)

@@ -21,6 +21,7 @@ import java.util.*;
 import org.dizitart.no2.*;
 import org.dizitart.no2.objects.*;
 import org.dizitart.no2.objects.Cursor;
+import static org.dizitart.no2.objects.filters.ObjectFilters.eq;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -38,7 +39,7 @@ final class Articles implements NewsArticles
 	NullCheck.notNull(db, "db");
 	this.storing = storing;
 	this.db = db;
-		this.repo = this.db.getRepository(Article.class);
+	this.repo = this.db.getRepository(Article.class);
     }
 
     @Override public void save(StoredNewsGroup newsGroup, NewsArticle article) throws PimException
@@ -47,6 +48,11 @@ final class Articles implements NewsArticles
 	final Group g = (Group)newsGroup;
 	try {
 	    storing.execInQueue(()->{
+		    final Article a = new Article();
+		    a.copyValues(article);
+		    a.groupId = g.id;
+		    //		    Log.debug("proba", a.title);
+		    this.repo.insert(a);
 		    return null;
 		});
 	}
@@ -56,12 +62,19 @@ final class Articles implements NewsArticles
 	}
     }
 
-    @Override public     StoredNewsArticle[] load(StoredNewsGroup newsGroup) throws PimException
+    @Override public     StoredNewsArticle[] load(StoredNewsGroup group) throws PimException
     {
-	NullCheck.notNull(newsGroup, "newsGroup");
+	final Group g = (Group)group;
+	NullCheck.notNull(group, "group");
 	try {
 	    return (StoredNewsArticle[])storing.execInQueue(()->{
-		    return null;
+		    final List<Article> res = new LinkedList();
+		    final Cursor<Article> c = this.repo.find(eq("groupId", g.id));
+		    for(Article a: c)
+		    {
+			res.add(a);
+		    }
+		    return res.toArray(new Article[res.size()]);
 		});
 	}
 	catch(Exception e)
@@ -76,7 +89,7 @@ final class Articles implements NewsArticles
 	final Group g = (Group)newsGroup;
 	try {
 	    return (StoredNewsArticle[])storing.execInQueue(()->{
-		    return null;
+		    return new Article[0];
 		});
 	}
 	catch(Exception e)
@@ -104,9 +117,20 @@ final class Articles implements NewsArticles
     @Override public int[] countNewInGroups(StoredNewsGroup[] groups) throws PimException
     {
 	NullCheck.notNullItems(groups, "groups");
+	final Group[] g = Arrays.copyOf(groups, groups.length, Group[].class);
 	try {
 	    return (int[])storing.execInQueue(()->{
-		    return null;
+	    final int[] res = new int[g.length];
+	    Arrays.fill(res, 0);
+	    final Cursor<Article> c = this.repo.find();
+	    for(Article a: c)
+		for(int i = 0;i < g.length;i++)
+		    if (a.groupId == g[i].id)
+	    {
+		res[i]++;
+		break;
+	    }
+	    return res;
 		});
 	}
 	catch(Exception e)
