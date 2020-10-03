@@ -42,7 +42,7 @@ public final class Storing implements NewsStoring
 	this.db = db;
 	this.execQueues = execQueues;
 	this.highPriority = highPriority;
-	this.articles = new Articles(this, this.db);
+	this.articles = new Articles(this);
 	this.groups = new Groups(registry);
     }
 
@@ -65,5 +65,10 @@ public final class Storing implements NewsStoring
     {
 	NullCheck.notNull(callable, "callable");
 	return execQueues.exec(new FutureTask(callable), highPriority);
+    }
+
+    Nitrite getDb()
+    {
+	return this.db;
     }
 }

@@ -191,6 +191,10 @@ Article(Connection con)
 	//FIXME:
     }
 
+    public void save()
+    {
+    }
+
     @Override public int compareTo(Object o)
     {
 	if (o == null || !(o instanceof Article))

@@ -20,13 +20,69 @@ package org.luwrain.pim.news.nitrite;
 import java.util.*;
 import java.io.*;
 
+import org.dizitart.no2.*;
+import org.dizitart.no2.objects.*;
+import org.dizitart.no2.objects.Cursor;
+import static org.dizitart.no2.objects.filters.ObjectFilters.eq;
+import static org.dizitart.no2.objects.filters.ObjectFilters.not;
+import static org.dizitart.no2.objects.filters.ObjectFilters.and;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
 
 final class Article extends NewsArticle 
 {
-    int id;
-    int groupId;
+    private transient Storing storing;
+    private transient ObjectRepository<Article> repo = null;
 
+    private String id = null;
+    private int groupId;
+
+    public int getGroupId()
+    {
+	return this.groupId;
+    }
+
+    public void setGroupId(int groupId)
+    {
+	this.groupId = groupId;
+    }
+
+    void setStoring(Storing storing, ObjectRepository<Article> repo)
+    {
+	NullCheck.notNull(storing, "storing");
+	NullCheck.notNull(repo, "repo");
+	this.storing = storing;
+	this.repo = repo;
+    }
+
+    @Override public void save() throws PimException
+    {
+	verifyStoring();
+	try {
+	    storing.execInQueue(()->{
+	repo.update(eq("id", id), this);
+	return null;
+		});
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+
+    }
+
+    protected void verifyStoring()
+    {
+		if (storing == null || repo == null)
+	    throw new IllegalStateException("No storing, setStoring() must be called prior to any modification operations");
+	if (id == null || id.isEmpty())
+	    throw new IllegalStateException("No ID");
+	    }
+
+    public void genNewId()
+    {
+	this.id = UUID.randomUUID().toString();
+    }
 }

@@ -22,6 +22,7 @@ package org.luwrain.pim.news;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.pim.*;
 
 public class NewsArticle implements StoredNewsArticle, Comparable
 {
@@ -43,135 +44,139 @@ public class NewsArticle implements StoredNewsArticle, Comparable
     private Date updatedDate = new Date();
     private String content = "";
 
-          @Override public   int getState()
+public   int getState()
     {
 	return state;
     }
 
-    @Override public   void setState(int state)
+    public   void setState(int state)
     {
 	    this.state = state;
     }
 
-    @Override public   String getSourceUrl()
+public   String getSourceUrl()
     {
 	return sourceUrl;
     }
 
-    @Override public   void setSourceUrl(String sourceUrl)
+public   void setSourceUrl(String sourceUrl)
     {
 	this.sourceUrl = sourceUrl;
     }
 
-    @Override public   String getSourceTitle()
+public   String getSourceTitle()
     {
 	return sourceTitle;
     }
 
-    @Override public   void setSourceTitle(String sourceTitle)
+public   void setSourceTitle(String sourceTitle)
     {
 	this.sourceTitle = sourceTitle;
     }
 
-    @Override public   String getUri()
+public   String getUri()
     {
 	return uri;
     }
 
-    @Override public   void setUri(String uri)
+public   void setUri(String uri)
     {
 	this.uri = uri;
     }
 
-    @Override public   String getTitle()
+public   String getTitle()
     {
 	return this.title;
     }
 
-    @Override public   void setTitle(String title)
+public   void setTitle(String title)
     {
 	NullCheck.notNull(title, "title");
 	this.title = title;
     }
 
-    @Override public   String getExtTitle()
+public   String getExtTitle()
     {
 	return extTitle;
     }
 
-    @Override public   void setExtTitle(String extTitle)
+public   void setExtTitle(String extTitle)
     {
 	this.extTitle = extTitle;
     }
 
-    @Override public   String getUrl()
+public   String getUrl()
     {
 	return url;
     }
 
-    @Override public   void setUrl(String url)
+public   void setUrl(String url)
     {
 	this.url = url;
     }
 
-    @Override public   String getDescr()
+public   String getDescr()
     {
 	return descr;
     }
 
-    @Override public   void setDescr(String descr)
+public   void setDescr(String descr)
     {
 	this.descr = descr;
     }
 
-    @Override public   String getAuthor()
+public   String getAuthor()
     {
 	return author;
     }
 
-    @Override public   void setAuthor(String authro)
+public   void setAuthor(String authro)
     {
 	this.author = author;
     }
 
-    @Override public   String getCategories()
+public   String getCategories()
     {
 	return categories;
     }
 
-    @Override public   void setCategories(String categories)
+public   void setCategories(String categories)
     {
 	this.categories = categories;
     }
 
-    @Override public   java.util.Date getPublishedDate()
+public   java.util.Date getPublishedDate()
     {
 	return publishedDate;
     }
 
-    @Override public   void setPublishedDate(java.util.Date publishedDate)
+public   void setPublishedDate(java.util.Date publishedDate)
     {
 	this.publishedDate = publishedDate;
     }
 
-    @Override public   java.util.Date getUpdatedDate()
+public   java.util.Date getUpdatedDate()
     {
 	return updatedDate;
     }
 
-    @Override public   void setUpdatedDate(java.util.Date updatedDate)
+public   void setUpdatedDate(java.util.Date updatedDate)
     {
 	this.updatedDate = updatedDate;
     }
 
-    @Override public   String getContent()
+public   String getContent()
     {
 	return content;
     }
 
-    @Override public   void setContent(String content)
+public   void setContent(String content)
     {
 	this.content = content;
+    }
+
+    public void save() throws PimException
+    {
     }
 
     public void copyValues(NewsArticle article)

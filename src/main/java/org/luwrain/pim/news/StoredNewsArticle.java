@@ -51,4 +51,5 @@ public interface StoredNewsArticle
     void setUpdatedDate(Date updatedDate) throws PimException;
     String getContent();
     void setContent(String content) throws PimException;
+    void save() throws PimException;
 }

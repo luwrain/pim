@@ -18,10 +18,13 @@
 package org.luwrain.pim.news.nitrite;
 
 import java.util.*;
+
 import org.dizitart.no2.*;
 import org.dizitart.no2.objects.*;
 import org.dizitart.no2.objects.Cursor;
 import static org.dizitart.no2.objects.filters.ObjectFilters.eq;
+import static org.dizitart.no2.objects.filters.ObjectFilters.not;
+import static org.dizitart.no2.objects.filters.ObjectFilters.and;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -33,12 +36,11 @@ final class Articles implements NewsArticles
     private final Nitrite db;
     private final ObjectRepository<Article> repo;
 
-    Articles(Storing storing, Nitrite db)
+    Articles(Storing storing)
     {
 	NullCheck.notNull(storing, "storing");
-	NullCheck.notNull(db, "db");
 	this.storing = storing;
-	this.db = db;
+	this.db = storing.getDb();
 	this.repo = this.db.getRepository(Article.class);
     }
 
@@ -50,8 +52,8 @@ final class Articles implements NewsArticles
 	    storing.execInQueue(()->{
 		    final Article a = new Article();
 		    a.copyValues(article);
-		    a.groupId = g.id;
-		    //		    Log.debug("proba", a.title);
+		    a.setGroupId(g.id);
+		    a.genNewId();
 		    this.repo.insert(a);
 		    return null;
 		});
@@ -72,6 +74,7 @@ final class Articles implements NewsArticles
 		    final Cursor<Article> c = this.repo.find(eq("groupId", g.id));
 		    for(Article a: c)
 		    {
+			a.setStoring(storing, repo);
 			res.add(a);
 		    }
 		    return res.toArray(new Article[res.size()]);
@@ -89,7 +92,14 @@ final class Articles implements NewsArticles
 	final Group g = (Group)newsGroup;
 	try {
 	    return (StoredNewsArticle[])storing.execInQueue(()->{
-		    return new Article[0];
+		    		    final List<Article> res = new LinkedList();
+				    final Cursor<Article> c = this.repo.find(and( eq("groupId", g.id), not(eq("state", NewsArticle.READ))));
+		    for(Article a: c)
+		    {
+			a.setStoring(storing, repo);
+			res.add(a);
+		    }
+		    return res.toArray(new Article[res.size()]);
 		});
 	}
 	catch(Exception e)
@@ -102,7 +112,8 @@ final class Articles implements NewsArticles
     {
 	NullCheck.notEmpty(uri, "uri");
 	final Group g = (Group)newsGroup;
-	return 0;
+	final Cursor<Article> c = repo.find(and(eq("uri", uri), eq("groupId", g.id)));
+	return c.totalCount();
     }
 
     @Override public int countNewInGroup(StoredNewsGroup group) throws PimException
@@ -111,7 +122,15 @@ final class Articles implements NewsArticles
 	if (!(group instanceof Group))
 	    return 0;
 	final Group g = (Group)group;
-	return 0;
+		try {
+	    return (Integer)storing.execInQueue(()->{
+		    return repo.find(and(eq("groupId", g.id), eq("state", NewsArticle.NEW))).totalCount();
+		});
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 
     @Override public int[] countNewInGroups(StoredNewsGroup[] groups) throws PimException
@@ -122,10 +141,10 @@ final class Articles implements NewsArticles
 	    return (int[])storing.execInQueue(()->{
 	    final int[] res = new int[g.length];
 	    Arrays.fill(res, 0);
-	    final Cursor<Article> c = this.repo.find();
+	    final Cursor<Article> c = this.repo.find(eq("state", NewsArticle.NEW));
 	    for(Article a: c)
 		for(int i = 0;i < g.length;i++)
-		    if (a.groupId == g[i].id)
+		    if (a.getGroupId() == g[i].id)
 	    {
 		res[i]++;
 		break;
@@ -142,12 +161,43 @@ final class Articles implements NewsArticles
     @Override public int[] countMarkedInGroups(StoredNewsGroup[] groups) throws PimException
     {
 	NullCheck.notNullItems(groups, "groups");
-	return new int[0];
+	final Group[] g = Arrays.copyOf(groups, groups.length, Group[].class);
+		try {
+	    return (int[])storing.execInQueue(()->{
+	    final int[] res = new int[g.length];
+	    Arrays.fill(res, 0);
+	    final Cursor<Article> c = this.repo.find(eq("state", NewsArticle.MARKED));
+	    for(Article a: c)
+		for(int i = 0;i < g.length;i++)
+		    if (a.getGroupId() == g[i].id)
+	    {
+		res[i]++;
+		break;
+	    }
+	    return res;
+		});
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 
     @Override public Set<String> loadUrisInGroup(StoredNewsGroup group) throws PimException
     {
 	NullCheck.notNull(group, "group");
-	return null;
+	final Group g = (Group)group;
+	try {
+	    return (Set<String>)storing.execInQueue(()->{
+		    final Set<String> res = new HashSet();
+		    for(Article a: repo.find(eq("groupId", g.id)))
+			res.add(a.getUri());
+		    return res;
+		});
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
     }
 }
