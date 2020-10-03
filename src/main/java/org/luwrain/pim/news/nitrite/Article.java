@@ -62,24 +62,23 @@ final class Article extends NewsArticle
 	verifyStoring();
 	try {
 	    storing.execInQueue(()->{
-	repo.update(eq("id", id), this);
-	return null;
+		    repo.update(eq("id", id), this);
+		    return null;
 		});
 	}
 	catch(Exception e)
 	{
 	    throw new PimException(e);
 	}
-
     }
 
     protected void verifyStoring()
     {
-		if (storing == null || repo == null)
+	if (storing == null || repo == null)
 	    throw new IllegalStateException("No storing, setStoring() must be called prior to any modification operations");
 	if (id == null || id.isEmpty())
 	    throw new IllegalStateException("No ID");
-	    }
+    }
 
     public void genNewId()
     {

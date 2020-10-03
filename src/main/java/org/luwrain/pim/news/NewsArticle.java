@@ -44,133 +44,133 @@ public class NewsArticle implements StoredNewsArticle, Comparable
     private Date updatedDate = new Date();
     private String content = "";
 
-public   int getState()
+    public   int getState()
     {
 	return state;
     }
 
     public   void setState(int state)
     {
-	    this.state = state;
+	this.state = state;
     }
 
-public   String getSourceUrl()
+    public   String getSourceUrl()
     {
 	return sourceUrl;
     }
 
-public   void setSourceUrl(String sourceUrl)
+    public   void setSourceUrl(String sourceUrl)
     {
 	this.sourceUrl = sourceUrl;
     }
 
-public   String getSourceTitle()
+    public   String getSourceTitle()
     {
 	return sourceTitle;
     }
 
-public   void setSourceTitle(String sourceTitle)
+    public   void setSourceTitle(String sourceTitle)
     {
 	this.sourceTitle = sourceTitle;
     }
 
-public   String getUri()
+    public   String getUri()
     {
 	return uri;
     }
 
-public   void setUri(String uri)
+    public   void setUri(String uri)
     {
 	this.uri = uri;
     }
 
-public   String getTitle()
+    public   String getTitle()
     {
 	return this.title;
     }
 
-public   void setTitle(String title)
+    public   void setTitle(String title)
     {
 	NullCheck.notNull(title, "title");
 	this.title = title;
     }
 
-public   String getExtTitle()
+    public   String getExtTitle()
     {
 	return extTitle;
     }
 
-public   void setExtTitle(String extTitle)
+    public   void setExtTitle(String extTitle)
     {
 	this.extTitle = extTitle;
     }
 
-public   String getUrl()
+    public   String getUrl()
     {
 	return url;
     }
 
-public   void setUrl(String url)
+    public   void setUrl(String url)
     {
 	this.url = url;
     }
 
-public   String getDescr()
+    public   String getDescr()
     {
 	return descr;
     }
 
-public   void setDescr(String descr)
+    public   void setDescr(String descr)
     {
 	this.descr = descr;
     }
 
-public   String getAuthor()
+    public   String getAuthor()
     {
 	return author;
     }
 
-public   void setAuthor(String authro)
+    public   void setAuthor(String authro)
     {
 	this.author = author;
     }
 
-public   String getCategories()
+    public   String getCategories()
     {
 	return categories;
     }
 
-public   void setCategories(String categories)
+    public   void setCategories(String categories)
     {
 	this.categories = categories;
     }
 
-public   java.util.Date getPublishedDate()
+    public   java.util.Date getPublishedDate()
     {
 	return publishedDate;
     }
 
-public   void setPublishedDate(java.util.Date publishedDate)
+    public   void setPublishedDate(java.util.Date publishedDate)
     {
 	this.publishedDate = publishedDate;
     }
 
-public   java.util.Date getUpdatedDate()
+    public   java.util.Date getUpdatedDate()
     {
 	return updatedDate;
     }
 
-public   void setUpdatedDate(java.util.Date updatedDate)
+    public   void setUpdatedDate(java.util.Date updatedDate)
     {
 	this.updatedDate = updatedDate;
     }
 
-public   String getContent()
+    public   String getContent()
     {
 	return content;
     }
 
-public   void setContent(String content)
+    public   void setContent(String content)
     {
 	this.content = content;
     }
@@ -196,7 +196,7 @@ public   void setContent(String content)
 	this.content = article.content;
     }
 
-        @Override public int compareTo(Object o)
+    @Override public int compareTo(Object o)
     {
 	if (o == null || !(o instanceof NewsArticle))
 	    return 0;

@@ -92,8 +92,8 @@ final class Articles implements NewsArticles
 	final Group g = (Group)newsGroup;
 	try {
 	    return (StoredNewsArticle[])storing.execInQueue(()->{
-		    		    final List<Article> res = new LinkedList();
-				    final Cursor<Article> c = this.repo.find(and( eq("groupId", g.id), not(eq("state", NewsArticle.READ))));
+		    final List<Article> res = new LinkedList();
+		    final Cursor<Article> c = this.repo.find(and( eq("groupId", g.id), not(eq("state", NewsArticle.READ))));
 		    for(Article a: c)
 		    {
 			a.setStoring(storing, repo);
@@ -122,7 +122,7 @@ final class Articles implements NewsArticles
 	if (!(group instanceof Group))
 	    return 0;
 	final Group g = (Group)group;
-		try {
+	try {
 	    return (Integer)storing.execInQueue(()->{
 		    return repo.find(and(eq("groupId", g.id), eq("state", NewsArticle.NEW))).totalCount();
 		});
@@ -139,17 +139,17 @@ final class Articles implements NewsArticles
 	final Group[] g = Arrays.copyOf(groups, groups.length, Group[].class);
 	try {
 	    return (int[])storing.execInQueue(()->{
-	    final int[] res = new int[g.length];
-	    Arrays.fill(res, 0);
-	    final Cursor<Article> c = this.repo.find(eq("state", NewsArticle.NEW));
-	    for(Article a: c)
-		for(int i = 0;i < g.length;i++)
-		    if (a.getGroupId() == g[i].id)
-	    {
-		res[i]++;
-		break;
-	    }
-	    return res;
+		    final int[] res = new int[g.length];
+		    Arrays.fill(res, 0);
+		    final Cursor<Article> c = this.repo.find(eq("state", NewsArticle.NEW));
+		    for(Article a: c)
+			for(int i = 0;i < g.length;i++)
+			    if (a.getGroupId() == g[i].id)
+			    {
+				res[i]++;
+				break;
+			    }
+		    return res;
 		});
 	}
 	catch(Exception e)
@@ -162,19 +162,19 @@ final class Articles implements NewsArticles
     {
 	NullCheck.notNullItems(groups, "groups");
 	final Group[] g = Arrays.copyOf(groups, groups.length, Group[].class);
-		try {
+	try {
 	    return (int[])storing.execInQueue(()->{
-	    final int[] res = new int[g.length];
-	    Arrays.fill(res, 0);
-	    final Cursor<Article> c = this.repo.find(eq("state", NewsArticle.MARKED));
-	    for(Article a: c)
-		for(int i = 0;i < g.length;i++)
-		    if (a.getGroupId() == g[i].id)
-	    {
-		res[i]++;
-		break;
-	    }
-	    return res;
+		    final int[] res = new int[g.length];
+		    Arrays.fill(res, 0);
+		    final Cursor<Article> c = this.repo.find(eq("state", NewsArticle.MARKED));
+		    for(Article a: c)
+			for(int i = 0;i < g.length;i++)
+			    if (a.getGroupId() == g[i].id)
+			    {
+				res[i]++;
+				break;
+			    }
+		    return res;
 		});
 	}
 	catch(Exception e)
