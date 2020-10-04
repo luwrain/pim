@@ -20,17 +20,21 @@ package org.luwrain.pim.mail.nitrite;
 import java.io.*;
 import java.util.*;
 
+import com.google.gson.*;
+import com.google.gson.annotations.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
 final class Folders implements MailFolders
 {
-    static private final String LOG_COMPONENT = "fixme";
+    static private final String LOG_COMPONENT = "mail";
 
     private final Registry registry;
     private final Messages messages;
-    private Folder[] cache = null;
+    private final Gson gson = new Gson();
+    private Data data = null;
 
     Folders(Registry registry, Messages messages)
     {
@@ -44,6 +48,7 @@ final class Folders implements MailFolders
     {
 	NullCheck.notEmpty(propName, "propName");
 	NullCheck.notNull(propValue, "propValue");
+	loadAll();
 	final Folder[] folders = null;
 	for(Folder f: folders)
 	{
@@ -57,11 +62,14 @@ final class Folders implements MailFolders
     @Override public int getId(MailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
-	return ((Folder)folder).id;
+	loadAll();
+	final Folder f = (Folder)folder;
+	return f.id;
     }
 
     @Override public MailFolder loadById(int id) throws PimException
     {
+	loadAll();
 	final Folder folder = new Folder();
 	return null;
     }
@@ -70,24 +78,31 @@ final class Folders implements MailFolders
     {
 	NullCheck.notNull(parentFolder, "parentFolder");
 	NullCheck.notNull(newFolder, "newFolder");
-	final Folder parent = (Folder)parentFolder;
-	return null;
+	loadAll();
+	final Folder p = (Folder)parentFolder;
+	final Folder n = (Folder)newFolder;
+	p.subfolders.add(n);
+	return n;
     }
 
     @Override public MailFolder getRoot() throws PimException
     {
-	return null;
+	loadAll();
+	return this.data.root;
     }
 
     @Override public MailFolder[] load(MailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
-	return null;
+	loadAll();
+	final Folder f = (Folder)folder;
+	return f.subfolders.toArray(new Folder[f.subfolders.size()]);
     }
 
     @Override public String getUniRef(MailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
+	loadAll();
 	final Folder folderReg = (Folder)folder;
 	return FolderUniRefProc.PREFIX + ":" + folderReg.id;
     }
@@ -95,6 +110,7 @@ final class Folders implements MailFolders
     @Override public MailFolder loadByUniRef(String uniRef) throws PimException
     {
 	NullCheck.notEmpty(uniRef, "uniRef");
+	loadAll();
 	if (!uniRef.startsWith(FolderUniRefProc.PREFIX + ":"))
 	    return null;
 	final int id;
@@ -110,4 +126,37 @@ final class Folders implements MailFolders
 	return null;
     }
 
+    private void loadAll()
+    {
+	if (this.data != null)
+	    return;
+	try {
+	final Data res = gson.fromJson(registry.getString("/org/luwrain/pim/mail/folders2"), Data.class);
+	if (res == null)
+	{
+	    Log.warning(LOG_COMPONENT, "unable to load a folders tree from the registry");
+	    this.data = new Data();
+	    return;
+	}
+	this.data = res;
+	}
+	catch(Exception e)
+	{
+	    Log.warning(LOG_COMPONENT, "unable to load a folders tree from the registry: " + e.getClass().getName() + ":" + e.getMessage());
+	    this.data = new Data();
+	}
+    }
+
+    private void saveAll()
+    {
+	registry.setString("/org/luwrain/pim/mail/folders2", gson.toJson(data));
+    }
+
+    static private final class Data
+    {
+	@SerializedName("nextId")
+	int nextId = 1;
+	@SerializedName("root")
+	Folder root = null;
+    }
 }
