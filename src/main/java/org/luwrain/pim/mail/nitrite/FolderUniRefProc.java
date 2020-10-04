@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail.nitrite;
+package org.luwrain.pim.mail.sql;
 
 import org.luwrain.core.*;
 import org.luwrain.util.*;

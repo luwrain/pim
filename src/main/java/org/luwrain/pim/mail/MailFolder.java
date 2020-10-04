@@ -79,6 +79,10 @@ public class MailFolder implements Comparable
 	props.load(reader);
     }
 
+    public void save() throws PimException
+    {
+    }
+
     @Override public String toString()
     {
 	return title != null?title:"";

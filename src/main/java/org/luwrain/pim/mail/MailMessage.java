@@ -40,7 +40,7 @@ public class MailMessage implements Comparable
     private String text = "";
     private String contentType = "";
     private String[] attachments = new String[0];
-    private byte[] rawMessage = new byte[0];
+    private transient byte[] rawMessage = new byte[0];
     private String extInfo = "";
 
     public void setMessageId(String messageId) throws PimException
@@ -194,6 +194,10 @@ this.extInfo = extInfo;
     public String getExtInfo() throws PimException
     {
 	return this.extInfo;
+    }
+
+    public void save() throws PimException
+    {
     }
 
     	@Override public int compareTo(Object o)
