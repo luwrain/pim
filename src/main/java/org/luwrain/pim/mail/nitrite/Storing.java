@@ -18,20 +18,21 @@
 package org.luwrain.pim.mail.nitrite;
 
 import java.io.*;
-import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
+
+import org.dizitart.no2.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-public final class Storing implements MailStoring, ExecQueue
+public final class Storing implements MailStoring
 {
     static final String LOG_COMPONENT = "pim";
 
     private final Registry registry;
-    private final Connection con;
+    private final Nitrite db;
     private final ExecQueues execQueues;
     private final boolean highPriority;
 
@@ -40,18 +41,18 @@ public final class Storing implements MailStoring, ExecQueue
     private final Folders folders;
     private final Messages messages;
 
-    public Storing(Registry registry,Connection con, ExecQueues execQueues, boolean highPriority, File messagesDir)
+    public Storing(Registry registry,Nitrite db, ExecQueues execQueues, boolean highPriority, File messagesDir)
     {
 	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(con, "con");
+	NullCheck.notNull(db, "db");
 	NullCheck.notNull(execQueues, "execQueues");
 	NullCheck.notNull(messagesDir, "messagesDir");
 	this.registry = registry;
-	this.con = con;
+	this.db = db;
 	this.execQueues = execQueues;
 	this.highPriority = highPriority;
 	this.rules = new Rules(registry);
-		this.messages = new Messages(this, con, messagesDir);
+		this.messages = new Messages(this, messagesDir);
 		this.folders = new Folders(registry, messages);
 	this.accounts = new Accounts(registry);
 	    }
@@ -76,16 +77,21 @@ public final class Storing implements MailStoring, ExecQueue
 	return messages;
     }
 
-    @Override public Object execInQueue(Callable callable) throws Exception
-    {
-	NullCheck.notNull(callable, "callable");
-	return execQueues.exec(new FutureTask(callable), highPriority);
-    }
-
         @Override public     String combinePersonalAndAddr(String personal, String addr)
     {
 	NullCheck.notNull(personal, "personal");
 	NullCheck.notNull(addr, "addr");
 	return AddressUtils.combinePersonalAndAddr(personal, addr);
+    }
+
+        Object execInQueue(Callable callable) throws Exception
+    {
+	NullCheck.notNull(callable, "callable");
+	return execQueues.exec(new FutureTask(callable), highPriority);
+    }
+
+    Nitrite getDb()
+    {
+	return this.db;
     }
 }

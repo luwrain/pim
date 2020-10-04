@@ -18,7 +18,6 @@
 package org.luwrain.pim.mail.nitrite;
 
 import java.io.*;
-import java.sql.*;
 import java.util.*;
 
 import org.luwrain.core.*;
@@ -27,17 +26,14 @@ import org.luwrain.pim.mail.*;
 
 final class Messages implements MailMessages
 {
-    private final ExecQueue queue;
-    private final Connection con;
+    private final Storing storing;
     private final File messagesDir;
 
-    Messages(ExecQueue queue,Connection con, File messagesDir)
+    Messages(Storing storing,File messagesDir)
     {
-	NullCheck.notNull(queue, "queue");
-	NullCheck.notNull(con, "con");
+	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(messagesDir, "messagesDir");
-	this.queue = queue;
-	this.con = con;
+	this.storing = storing;
 	this.messagesDir = messagesDir;
     }
 
@@ -47,7 +43,7 @@ final class Messages implements MailMessages
 	NullCheck.notNull(message, "message");
 	//	final Folder folderReg = (Folder)folder;
 	try {
-	    queue.execInQueue(()->{
+	    storing.execInQueue(()->{
 		    return null;
 		});
 	}
@@ -72,9 +68,9 @@ final class Messages implements MailMessages
     @Override public void delete(MailMessage message) throws PimException
     {
 	NullCheck.notNull(message, "message");
-	final Message messageSql = (Message)message;
+	final Message m = (Message)message;
 	try {
-	    queue.execInQueue(()->{
+	    storing.execInQueue(()->{
 		    return null;
 		});
 	}
@@ -89,9 +85,9 @@ final class Messages implements MailMessages
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
 	//	final Folder folderRegistry = (Folder)folder;
-	final Message messageSql = (Message)message;
+	final Message m = (Message)message;
 	try {
-	    queue.execInQueue(()->{
+	    storing.execInQueue(()->{
 		    return null;
 		});
 	}
