@@ -33,6 +33,7 @@ import org.luwrain.pim.PimException;
 
 public final class MailConversations
 {
+    static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     static final int LIMIT_MESSAGES_LOAD = 500;
 
     public interface Listener
@@ -72,18 +73,21 @@ public final class MailConversations
 	    props.put( "mail.pop3.host", params.host);
 	    props.put( "mail.pop3.user", params.login);
 	    props.put( "mail.pop3.password", params.passwd);
-	    props.put( "mail.pop3.port", new Integer(params.port).toString());
+	    props.put( "mail.pop3.port", String.valueOf(params.port));
 	    props.put( "mail.pop3.ssl.enable", new Boolean(params.ssl).toString());
-	    props.put("mail.pop3.starttls.enable", new Boolean(params.tls));
+	    props.put("mail.pop3.starttls.enable", new Boolean(params.tls).toString());
 	    for(Map.Entry<String,String> p: params.extProps.entrySet())
 		props.put(p.getKey(), p.getValue());
 	    try {
 		this.session = Session.getInstance(props,null);
 		this.store = session.getStore();
-		store.connect(params.host, params.login, params.passwd);
+		Log.debug(LOG_COMPONENT, "store.connect(" + params.host + ", " + params.login + ")");
+		store.connect(params.host, params.port, params.login, params.passwd);
+		Log.debug(LOG_COMPONENT, "connected to " + params.host);
 	    }
-	    catch(MessagingException e)
+	    catch(Throwable e)
 	    {
+		Log.error(LOG_COMPONENT, "connecting to " + params.host + ":" + params.port + ": " + e.getClass().getName() + ":" + e.getMessage());
 		throw new PimException(e);
 	    }
 	    this.smtpTransport = null;

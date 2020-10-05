@@ -147,8 +147,8 @@ final class Folders implements MailFolders
 	final Data res = gson.fromJson(registry.getString("/org/luwrain/pim/mail/folders2"), Data.class);
 	if (res == null)
 	{
-	    Log.warning(LOG_COMPONENT, "unable to load a folders tree from the registry");
-	    this.data = new Data();
+	    Log.warning(LOG_COMPONENT, "unable to load a folders tree from the registry, creating default");
+	    initRoot();
 	    return;
 	}
 	this.data = res;
@@ -156,13 +156,22 @@ final class Folders implements MailFolders
 	catch(Exception e)
 	{
 	    Log.warning(LOG_COMPONENT, "unable to load a folders tree from the registry: " + e.getClass().getName() + ":" + e.getMessage());
-	    this.data = new Data();
+	    initRoot();
 	}
     }
 
     private void saveAll()
     {
 	registry.setString("/org/luwrain/pim/mail/folders2", gson.toJson(data));
+    }
+
+    private void initRoot()
+    {
+	this.data = new Data();
+	this.data.root = new Folder();
+	this.data.root.setTitle("Почта");
+	saveAll();
+
     }
 
     static private final class Data

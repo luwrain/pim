@@ -21,7 +21,7 @@ package org.luwrain.pim;
 
 public class PimException extends Exception
 {
-    public PimException(Exception cause)
+    public PimException(Throwable cause)
     {
 	super(cause.getMessage(), cause);
     }

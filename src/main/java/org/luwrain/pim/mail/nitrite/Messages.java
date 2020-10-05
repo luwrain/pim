@@ -54,6 +54,8 @@ final class Messages implements MailMessages
 	try {
 	    storing.execInQueue(()->{
 		    final Message m = new Message();
+		    m.setMessagesDir(this.messagesDir);
+		    m.setRepo(this.repo);
 		    repo.insert(m);
 		    return null;
 		});

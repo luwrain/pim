@@ -91,13 +91,15 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	Log.debug(LOG_COMPONENT, "fetching POP3 mail from account \"" + account.getTitle() + "\", flags " + account.getFlags());
 	if (!account.getFlags().contains(MailAccount.Flags.ENABLED))
 	{
+	    	Log.debug(LOG_COMPONENT, "the account \'" + account.getTitle() + "\' is disabled");
 	    message(strings.skippingFetchingFromDisabledAccount(title));
 	    return;
 	}
 	control.message(strings.fetchingMailFromAccount(title));
-	Log.debug(LOG_COMPONENT, "connecting to POP3 server:" + account.getHost() + ":" + account.getPort());
+	Log.debug(LOG_COMPONENT, "connecting to the POP3 server:" + account.getHost() + ":" + account.getPort());
 	control.message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
 	final MailConversations conversation = new MailConversations(createMailServerParams(account), true);
+    
 	Log.debug(LOG_COMPONENT, "connection established");
 	message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES));

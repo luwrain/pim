@@ -60,7 +60,17 @@ final class Message extends MailMessage
 	this.folderId = folderId;
     }
 
+    void setMessagesDir(File messagesDir)
+    {
+	NullCheck.notNull(messagesDir, "messagesDir");
+	this.messagesDir = messagesDir;
+    }
 
+    void setRepo(ObjectRepository<Message> repo)
+    {
+	NullCheck.notNull(repo, "repo");
+	this.repo = repo;
+    }
 
     @Override public byte[] getRawMessage() throws PimException
     {
