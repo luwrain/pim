@@ -17,7 +17,9 @@
 
 package org.luwrain.pim.mail;
 
-import java.sql.*;
+import java.io.*;
+
+import org.dizitart.no2.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -25,20 +27,14 @@ import org.luwrain.pim.*;
 public final class Factory
 {
     static private final String LOG_COMPONENT = "pim-mail";
-    static private final String SQLITE_INIT_RESOURCE = "org/luwrain/pim/mail.sqlite";
-
-    static public final String MESSAGES_DIR_NAME = "luwrain.pim.mail.messages";
-
-    static public final String DEFAULT_TYPE = "jdbc";
-    static public final String DEFAULT_DRIVER = "org.sqlite.JDBC";
-    static public final String DEFAULT_URL = "jdbc:sqlite:$userdata/sqlite/mail.db";
-    static public final String DEFAULT_INIT_PROC = "sqlite";
 
     private final Luwrain luwrain;
     private final Registry registry;
     private final Settings.Storing sett;
     private final ExecQueues execQueues = new ExecQueues();
-    private Connection con = null;
+    private final File file;
+    private final File messagesDir;
+    private Nitrite db = null;
 
     public Factory(Luwrain luwrain)
     {
@@ -47,67 +43,25 @@ public final class Factory
 	this.registry = luwrain.getRegistry();
 	this.sett = Settings.createStoring(registry);
 	this.execQueues.start();
+	this.file = new File(luwrain.getAppDataDir("luwrain.pim.mail").toFile(), "mail.nitrite");
+		this.messagesDir = luwrain.getAppDataDir("luwrain.pim.mail.messages").toFile();
     }
 
     public MailStoring newMailStoring(boolean highPriority)
     {
-	if (con != null)
-	    return new org.luwrain.pim.mail.sql.Storing(registry, con, execQueues, highPriority, luwrain.getAppDataDir(MESSAGES_DIR_NAME).toFile());
-	final String type = sett.getType(DEFAULT_TYPE).trim().toLowerCase();
-	if (type.isEmpty())
-	{
-	    Log.error(LOG_COMPONENT, "mail storing type may not be empty");
-	    return null;
-	}
-	switch(type)
-	{
-	case "jdbc":
-	    {
-	    	final String driver = sett.getDriver(DEFAULT_DRIVER);
-		final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, sett.getUrl(DEFAULT_URL));
-		if (driver.isEmpty() || url.isEmpty())
-		{
-		    Log.error(LOG_COMPONENT, "in mail storing settings for JDBC the driver and url values may not be empty");
-		    return null;
-		}
-		final String login = sett.getLogin("");
-		final String passwd = sett.getPasswd("");
-		final String initProc = sett.getInitProc(DEFAULT_INIT_PROC);
-		this.con = org.luwrain.pim.SQL.connect(driver, url, login, passwd);
-		if (this.con == null)
-		    return null;
-		if (!org.luwrain.pim.SQL.initProc(con, initProc, SQLITE_INIT_RESOURCE))
-		{
-		    try {
-			this.con.close();
-		    }
-		    catch(SQLException e)
-		    {
-		    }
-		    this.con = null;
-		    return null;
-		}
-		return new org.luwrain.pim.mail.sql.Storing(registry, this.con, execQueues, highPriority, luwrain.getAppDataDir(MESSAGES_DIR_NAME).toFile());
-	    }
-	default:
-	    Log.error(LOG_COMPONENT, "unknown mail storing type \'" + type + "\'");
-	    return null;
-	}
+	if (db != null)
+	    return new org.luwrain.pim.mail.nitrite.Storing(registry, db, execQueues, highPriority, messagesDir);
+			this.db = Nitrite.builder()
+        .compressed()
+        .filePath(file)
+        .openOrCreate("luwrain", "passwd");
+			return new org.luwrain.pim.mail.nitrite.Storing(registry, this.db, execQueues, highPriority, messagesDir);
     }
 
     public void close()
     {
 	execQueues.cancel();
-	if (con != null)
-	{
-	    try {
-		con.close();
-	    }
-	    catch(SQLException e)
-	    {
-		Log.error(LOG_COMPONENT, "unable to close mail JDBC connection normally:" + e.getClass().getName() + ":" + e.getMessage());
-	    }
-	    con = null;
-	}
-    }
+	if (db != null)
+	    db.close();
+}
 }
