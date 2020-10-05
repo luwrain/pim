@@ -27,7 +27,6 @@ import static org.dizitart.no2.objects.filters.ObjectFilters.eq;
 import static org.dizitart.no2.objects.filters.ObjectFilters.not;
 import static org.dizitart.no2.objects.filters.ObjectFilters.and;
 
-
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
@@ -35,18 +34,32 @@ import org.luwrain.pim.mail.*;
 final class Message extends MailMessage
 {
     private String id = "";
-    private int groupId = -1;
+    private int folderId = 0;
 
-    private transient final File messagesDir;
-    private transient final ObjectRepository<Message> repo;
+    private transient File messagesDir;
+    private transient ObjectRepository<Message> repo;
 
-    Message(File messagesDir, ObjectRepository<Message> repo)
+    public String getId()
     {
-	NullCheck.notNull(messagesDir, "messagesDir");
-	NullCheck.notNull(repo, "repo");
-	this.messagesDir = messagesDir;
-	this.repo = repo;
+	return this.id;
     }
+
+    public void setId(String id)
+    {
+	NullCheck.notEmpty(id, "id");
+	this.id = id;
+    }
+
+    public int getFolderId()
+    {
+	return this.folderId;
+    }
+
+    public void setFolderId(int folderId)
+    {
+	this.folderId = folderId;
+    }
+
 
 
     @Override public byte[] getRawMessage() throws PimException

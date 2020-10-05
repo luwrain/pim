@@ -76,7 +76,7 @@ class Area extends FormArea implements SectionArea
 	    folder.setOrderIndex(orderIndex);
 	    return true;
 	}
-	catch(PimException e)
+	catch(Exception e)
 	{
 	    luwrain.crash(e);
 	    return false;

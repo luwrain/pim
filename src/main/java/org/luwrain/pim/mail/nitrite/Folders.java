@@ -17,8 +17,8 @@
 
 package org.luwrain.pim.mail.nitrite;
 
-import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import com.google.gson.*;
 import com.google.gson.annotations.*;
@@ -49,14 +49,11 @@ final class Folders implements MailFolders
 	NullCheck.notEmpty(propName, "propName");
 	NullCheck.notNull(propValue, "propValue");
 	loadAll();
-	final Folder[] folders = null;
-	for(Folder f: folders)
-	{
-	    final String value = f.getProperties().getProperty(propName);
-	    if (value != null && value.equals(propValue))
-		return f;
-	}
-	return null;
+	return find(data.root, (o)->{
+		final Folder f = (Folder)o;
+		final String value = f.getProperties().getProperty(propName);
+		return value != null && value.equals(propValue);
+	    });
     }
 
     @Override public int getId(MailFolder folder)
@@ -70,8 +67,10 @@ final class Folders implements MailFolders
     @Override public MailFolder loadById(int id) throws PimException
     {
 	loadAll();
-	final Folder folder = new Folder();
-	return null;
+	return find(data.root, (o)->{
+		final Folder f = (Folder)o;
+		return f.getId() == id;
+	    });
     }
 
     @Override public MailFolder save(MailFolder parentFolder, MailFolder newFolder) throws PimException
@@ -96,7 +95,7 @@ final class Folders implements MailFolders
 	NullCheck.notNull(folder, "folder");
 	loadAll();
 	final Folder f = (Folder)folder;
-	return f.subfolders.toArray(new Folder[f.subfolders.size()]);
+	return f.getSubfoldersAsArray();
     }
 
     @Override public String getUniRef(MailFolder folder) throws PimException
@@ -122,7 +121,21 @@ final class Folders implements MailFolders
 	    Log.warning(LOG_COMPONENT, "parsing an invalid mail folder uniref: " + uniRef);
 	    return null;
 	}
-	final Folder folder = new Folder();
+	return loadById(id);
+    }
+
+    private Folder find(Folder f, Predicate p)
+    {
+	if (f == null)
+	    return null;
+	if (p.test(f))
+	    return f;
+	for(Folder ff: f.getSubfoldersAsArray())
+	{
+	    final Folder res = find(ff, p);
+	    if (res != null)
+		return res;
+	}
 	return null;
     }
 

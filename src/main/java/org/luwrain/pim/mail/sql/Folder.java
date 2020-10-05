@@ -43,7 +43,7 @@ final class Folder extends MailFolder
 	this.sett = org.luwrain.pim.mail.Settings.createFolder(registry, Registry.join(org.luwrain.pim.mail.Settings.FOLDERS_PATH, "" + id));
     }
 
-    @Override public void setTitle(String title) throws PimException
+    @Override public void setTitle(String title)
     {
 	NullCheck.notNull(title, "title");
 	sett.setTitle(title);
@@ -63,7 +63,7 @@ final class Folder extends MailFolder
 	return this.parentId;
     }
 
-    @Override public void setOrderIndex(int orderIndex) throws PimException
+    @Override public void setOrderIndex(int orderIndex)
     {
 	if (orderIndex < 0)
 	    throw new IllegalArgumentException("value (" + String.valueOf(orderIndex) + ") may not be negative");
@@ -71,14 +71,14 @@ final class Folder extends MailFolder
 	super.setOrderIndex(orderIndex);
     }
 
-    @Override public void saveProperties() throws PimException
+    @Override public void saveProperties()
     {
 	try {
 	    sett.setProperties(getPropertiesAsString());
 	}
 	catch(IOException e)
 	{
-	    throw new PimException(e);
+	    throw new RuntimeException(e);
 	}
     }
 
@@ -113,7 +113,7 @@ final class Folder extends MailFolder
 	    }
 	    return true;
 	}
-	catch(PimException e)
+	catch(Exception e)
 	{
 	    Log.warning(LOG_COMPONENT, "unexpected exception on loading the mail folder with ID=" + String.valueOf(id) + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;

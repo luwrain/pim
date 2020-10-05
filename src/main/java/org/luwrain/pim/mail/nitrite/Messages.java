@@ -20,6 +20,13 @@ package org.luwrain.pim.mail.nitrite;
 import java.io.*;
 import java.util.*;
 
+import org.dizitart.no2.*;
+import org.dizitart.no2.objects.*;
+import org.dizitart.no2.objects.Cursor;
+import static org.dizitart.no2.objects.filters.ObjectFilters.eq;
+import static org.dizitart.no2.objects.filters.ObjectFilters.not;
+import static org.dizitart.no2.objects.filters.ObjectFilters.and;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
@@ -28,6 +35,7 @@ final class Messages implements MailMessages
 {
     private final Storing storing;
     private final File messagesDir;
+    private final ObjectRepository<Message> repo;
 
     Messages(Storing storing,File messagesDir)
     {
@@ -35,15 +43,18 @@ final class Messages implements MailMessages
 	NullCheck.notNull(messagesDir, "messagesDir");
 	this.storing = storing;
 	this.messagesDir = messagesDir;
+	this.repo = storing.getDb().getRepository(Message.class);
     }
 
     @Override public void save(MailFolder folder, MailMessage message) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
-	//	final Folder folderReg = (Folder)folder;
+		final Folder f = (Folder)folder;
 	try {
 	    storing.execInQueue(()->{
+		    final Message m = new Message();
+		    repo.insert(m);
 		    return null;
 		});
 	}
@@ -56,7 +67,20 @@ final class Messages implements MailMessages
     @Override public MailMessage[] load(MailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
-	return null;
+	final Folder f = (Folder)folder;
+	try {
+	return (Message[])storing.execInQueue(()->{
+		final List<Message> res = new LinkedList();
+		final Cursor<Message> c = repo.find(eq("folderId", f.id));
+		for(Message m: c)
+		    res.add(m);
+		return res.toArray(new Message[res.size()]);
+	    });
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
 								  }
 
         @Override public MailMessage[] loadNoDeleted(MailFolder folder) throws PimException

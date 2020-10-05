@@ -26,11 +26,24 @@ import org.luwrain.pim.mail.*;
 
 final class Folder extends MailFolder
 {
-    int id;
+    int id = 0;
     List<Folder> subfolders = null;
 
-    Folder()
+    public int getId()
     {
+	return this.id;
+    }
+
+    public void setId(int id)
+    {
+	this.id = id;
+    }
+
+    public Folder[] getSubfoldersAsArray()
+    {
+	if (subfolders == null)
+	    return new Folder[0];
+	return subfolders.toArray(new Folder[subfolders.size()]);
     }
 
     @Override public void save()

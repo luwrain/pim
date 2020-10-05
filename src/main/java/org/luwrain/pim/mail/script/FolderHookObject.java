@@ -87,7 +87,7 @@ final class FolderHookObject extends EmptyHookObject
 		    folder.setTitle(value);
 		    return;
 		}
-		catch(PimException e)
+		catch(Exception e)
 		{
 		    Log.error(LOG_COMPONENT, "unable to set the title of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
 		    return;
@@ -118,7 +118,7 @@ final class FolderHookObject extends EmptyHookObject
 		folder.saveProperties();
 		return new Boolean(true);
 		}
-		catch(PimException e)
+		catch(Exception e)
 		{
 		    Log.error(LOG_COMPONENT, "unable to save properties of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
 		    return new Boolean(false);
