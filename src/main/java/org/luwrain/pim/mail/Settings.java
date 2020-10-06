@@ -23,88 +23,33 @@ import org.luwrain.core.*;
 
 public interface Settings
 {
-    static public final String
-	STORING_PATH = "/org/luwrain/pim/mail/storing",
-	FOLDERS_PATH = "/org/luwrain/pim/mail/folders",
-	RULES_PATH = "/org/luwrain/pim/mail/rules",
-	ACCOUNTS_PATH = "/org/luwrain/pim/mail/accounts";
+    static public final String PATH = "/org/luwrain/pim/mail";
+    static public final String RULES_PATH = "/org/luwrain/pim/mail/rules";
 
-    public interface Storing
-    {
-	String getType(String defValue);
-	String getDriver(String defValue);
-	String getUrl(String defValue);
-	String getLogin(String defValue);
-	String getPasswd(String defValue);
-	boolean getSharedConnection(boolean defValue);
-	String getInitProc(String defValue);
-	void setType(String value);
-	void setDriver(String value);
-	void setUrl(String value);
-	void setLogin(String value);
-	void setPasswd(String value);
-	void setSharedConnection(boolean value);
-	void setInitProc(String value);
-    }
-
-    public interface Accounts
-    {
 	String getAccounts(String defValue);
-	void setAccounts(String value);
-	int getNextId(int defValue);
-	void setNextId(int value);
-    }
+    void setAccounts(String value);
+    int getNextAccountId(int defValue);
+    void setNextAccountId(int value);
+    String getFolders(String defValue);
+    void setFolders(String value);
+    String getFolderPending(String defValue);
+    void setFolderPending(String value);
 
-public interface Folder
-{
-    String getTitle(String defValue);
-    	void setTitle(String value);
-    int getOrderIndex(int defValue);
-        void setOrderIndex(int defValue);
-    int getParentId(int defValue);
-
-    void setParentId(int defValue);
-    String getProperties(String defValue);
-    void setProperties(String value);
-}
-
-        public interface Folders 
+    public interface Rule
     {
-	String getFolderPending(String defValue);
-	void setFolderPending(String value);
+	String getAction(String defValue);
+	String getHeaderRegex(String defValue);
+	String getDestFolderUniref(String defValue);
+	void setAction(String value);
+	void setHeaderRegex(String value);
+	void setDestFolderUniref(String value);
     }
 
-
-public interface Rule
-{
-    String getAction(String defValue);
-    String getHeaderRegex(String defValue);
-    String getDestFolderUniref(String defValue);
-    void setAction(String value);
-    void setHeaderRegex(String value);
-    void setDestFolderUniref(String value);
-}
-
-    static public Accounts createAccounts(Registry registry)
+    static public Settings create(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-	registry.addDirectory(ACCOUNTS_PATH);
-	return RegistryProxy.create(registry, ACCOUNTS_PATH, Accounts.class);
-    }
-
-        static public Folders createFolders(Registry registry)
-    {
-	NullCheck.notNull(registry, "registry");
-	registry.addDirectory(FOLDERS_PATH);
-	return RegistryProxy.create(registry, FOLDERS_PATH, Folders.class);
-    }
-
-
-    static public Folder createFolder(Registry registry, String path)
-    {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(path, "path");
-	return RegistryProxy.create(registry, path, Folder.class);
+	registry.addDirectory(PATH);
+	return RegistryProxy.create(registry, PATH, Settings.class);
     }
 
     static public Rule createRule(Registry registry, String path)
@@ -112,11 +57,5 @@ public interface Rule
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(path, "path");
 	return RegistryProxy.create(registry, path, Rule.class);
-    }
-
-    static public Storing createStoring(Registry registry)
-    {
-	NullCheck.notNull(registry, "registry");
-	return RegistryProxy.create(registry, STORING_PATH, Storing.class);
     }
 }

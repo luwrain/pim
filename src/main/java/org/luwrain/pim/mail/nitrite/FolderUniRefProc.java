@@ -51,11 +51,13 @@ public class FolderUniRefProc implements UniRefProc
 	{
 	    return new UniRefInfo(uniRef);
 	}
+	/*
 	final Registry registry = luwrain.getRegistry();
 	final String path = Registry.join(org.luwrain.pim.mail.Settings.FOLDERS_PATH, "" + id);
 	final org.luwrain.pim.mail.Settings.Folder sett = org.luwrain.pim.mail.Settings.createFolder(registry, path);
 	final String title = sett.getTitle("");
-    return new UniRefInfo(uniRef, "Почтовая группа", folderName(title));
+	*/
+    return new UniRefInfo(uniRef, "Почтовая группа", "title");
 }
 
 		@Override public boolean openUniRef(String uniRef, Luwrain luwrain)

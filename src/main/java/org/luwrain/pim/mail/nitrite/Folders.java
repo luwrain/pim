@@ -31,9 +31,11 @@ final class Folders implements MailFolders
 {
     static private final String LOG_COMPONENT = "mail";
 
+        private final Gson gson = new Gson();
     private final Registry registry;
+    private final org.luwrain.pim.mail.Settings sett;
     private final Messages messages;
-    private final Gson gson = new Gson();
+
     private Data data = null;
 
     Folders(Registry registry, Messages messages)
@@ -41,6 +43,7 @@ final class Folders implements MailFolders
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(messages, "messages");
 	this.registry = registry;
+	this.sett = org.luwrain.pim.mail.Settings.create(registry);
 	this.messages = messages;
     }
 
@@ -144,7 +147,7 @@ final class Folders implements MailFolders
 	if (this.data != null)
 	    return;
 	try {
-	final Data res = gson.fromJson(registry.getString("/org/luwrain/pim/mail/folders2"), Data.class);
+	    final Data res = gson.fromJson(sett.getFolders(""), Data.class);
 	if (res == null)
 	{
 	    Log.warning(LOG_COMPONENT, "unable to load a folders tree from the registry, creating default");
@@ -162,7 +165,7 @@ final class Folders implements MailFolders
 
     private void saveAll()
     {
-	registry.setString("/org/luwrain/pim/mail/folders2", gson.toJson(data));
+	sett.setFolders(gson.toJson(data));
     }
 
     private void initRoot()

@@ -29,8 +29,6 @@ public final class Factory
     static private final String LOG_COMPONENT = "pim-mail";
 
     private final Luwrain luwrain;
-    private final Registry registry;
-    private final Settings.Storing sett;
     private final ExecQueues execQueues = new ExecQueues();
     private final File file;
     private final File messagesDir;
@@ -40,8 +38,6 @@ public final class Factory
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.registry = luwrain.getRegistry();
-	this.sett = Settings.createStoring(registry);
 	this.execQueues.start();
 	this.file = new File(luwrain.getAppDataDir("luwrain.pim.mail").toFile(), "mail.nitrite");
 		this.messagesDir = luwrain.getAppDataDir("luwrain.pim.mail.messages").toFile();
@@ -50,12 +46,12 @@ public final class Factory
     public MailStoring newMailStoring(boolean highPriority)
     {
 	if (db != null)
-	    return new org.luwrain.pim.mail.nitrite.Storing(registry, db, execQueues, highPriority, messagesDir);
+	    return new org.luwrain.pim.mail.nitrite.Storing(luwrain.getRegistry(), db, execQueues, highPriority, messagesDir);
 			this.db = Nitrite.builder()
         .compressed()
         .filePath(file)
         .openOrCreate("luwrain", "passwd");
-			return new org.luwrain.pim.mail.nitrite.Storing(registry, this.db, execQueues, highPriority, messagesDir);
+			return new org.luwrain.pim.mail.nitrite.Storing(luwrain.getRegistry(), this.db, execQueues, highPriority, messagesDir);
     }
 
     public void close()

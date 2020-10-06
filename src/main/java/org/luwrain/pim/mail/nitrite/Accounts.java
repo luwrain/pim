@@ -32,7 +32,7 @@ final class Accounts implements MailAccounts
         static private final Type ACCOUNT_LIST_TYPE = new TypeToken<List<Account>>(){}.getType();
 
     private final Registry registry;
-    private final org.luwrain.pim.mail.Settings.Accounts sett;
+    private final org.luwrain.pim.mail.Settings sett;
     private final Gson gson = new Gson();
     private Map<Integer, Account> accounts = new HashMap();
 
@@ -40,7 +40,7 @@ final class Accounts implements MailAccounts
     {
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
-	this.sett = org.luwrain.pim.mail.Settings.createAccounts(registry);
+	this.sett = org.luwrain.pim.mail.Settings.create(registry);
     }
 
     @Override public MailAccount[] load()
@@ -73,8 +73,8 @@ final class Accounts implements MailAccounts
 	NullCheck.notNull(account, "account");
 	if (accounts.isEmpty())
 	    load();
-	final int newId = sett.getNextId(1);
-	sett.setNextId(newId + 1);
+	final int newId = sett.getNextAccountId(1);
+	sett.setNextAccountId(newId + 1);
 	final Account a = new Account();
 	a.id = newId;
 	a.accounts = this;
