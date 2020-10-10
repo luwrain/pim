@@ -40,170 +40,189 @@ public class MailMessage implements Comparable
     private String text = "";
     private String contentType = "";
     private String[] attachments = new String[0];
-    private transient byte[] rawMessage = new byte[0];
     private String extInfo = "";
+        private transient byte[] rawMessage = new byte[0];
 
-    public void setMessageId(String messageId) throws PimException
+    public final void setMessageId(String messageId)
     {
 	NullCheck.notNull(messageId, "messageId");
 	this.messageId = messageId;
     }
 
-    public String getMessageId() throws PimException
+    public final String getMessageId()
     {
 	return this.messageId;
     }
 
-    public void setSubject(String subject) throws PimException
+    public final void setSubject(String subject)
     {
 	NullCheck.notNull(subject, "subject");
 	this.subject = subject;
     }
 
-    public String getSubject() throws PimException
+    public final String getSubject()
     {
 	return this.subject;
     }
 
-    public void setFrom(String from) throws PimException
+    public final void setFrom(String from)
     {
 	NullCheck.notNull(from, "from");
 	this.from = from;
     }
 
-    public String getFrom() throws PimException
+    public final String getFrom()
     {
 	return this.from;
     }
 
-    public void setTo(String[] to) throws PimException
+    public final void setTo(String[] to)
     {
 	NullCheck.notNullItems(to, "to");
 	this.to = to.clone();
     }
 
-    public String[] getTo() throws PimException
+    public final String[] getTo()
     {
 	return this.to.clone();
     }
 
-    public void setCc(String[] cc) throws PimException
+    public final void setCc(String[] cc)
     {
 	NullCheck.notNullItems(cc, "cc");
 	this.cc = cc.clone();
     }
 
-    public String[] getCc() throws PimException
+    public final String[] getCc()
     {
 	return cc.clone();
     }
 
-    public void setBcc(String[] bcc) throws PimException
+    public final void setBcc(String[] bcc)
     {
 	NullCheck.notNullItems(bcc, "bcc");
 	this.bcc = bcc.clone();
     }
 
-    public String[] getBcc() throws PimException
+    public final String[] getBcc()
     {
 	return this.bcc.clone();
     }
 
-    public void setState(State state) throws PimException
+    public final void setState(State state)
     {
 	NullCheck.notNull(state, "state");
 	this.state = state;
     }
 
-    public State getState() throws PimException
+    public final State getState()
     {
 	return this.state;
     }
 
-    public void setSentDate(Date date) throws PimException
+    public final void setSentDate(Date date)
     {
 	NullCheck.notNull(sentDate, "sentDate");
 	this.sentDate = sentDate;
     }
 
-    public Date getSentDate() throws PimException
+    public final Date getSentDate()
     {
 	return this.sentDate;
     }
 
-    public void setReceivedDate(Date date) throws PimException
+    public final void setReceivedDate(Date date)
     {
 	NullCheck.notNull(receivedDate, "receivedDate");
 	this.receivedDate = receivedDate;
     }
 
-    public Date getReceivedDate() throws PimException
+    public final Date getReceivedDate()
     {
 	return this.receivedDate;
     }
 
-    public void setText(String text) throws PimException
+    public final void setText(String text)
     {
 	NullCheck.notNull(text, "text");
 	this.text = text;
     }
 
-    public String getText() throws PimException
+    public final String getText()
     {
 	return this.text;
     }
 
-    public void setContentType(String contentType) throws PimException
+    public final void setContentType(String contentType)
     {
 	this.contentType = contentType;
     }
 
-    public String getContentType() throws PimException
+    public final String getContentType()
     {
 	return this.contentType;
     }
 
-    public void setAttachments(String[] attachments) throws PimException
+    public final void setAttachments(String[] attachments)
     {
 	NullCheck.notNullItems(attachments, "attachments");
-this.attachments = attachments.clone();
+	this.attachments = attachments.clone();
     }
 
-    public String[] getAttachments() throws PimException
+    public final String[] getAttachments()
     {
 	return this.attachments.clone();
     }
 
-        public void setRawMessage(byte[] rawMessage) throws PimException
+    public final void setExtInfo(String extInfo)
     {
-NullCheck.notNull(rawMessage, "rawMessage");
-this.rawMessage = rawMessage.clone();
+	NullCheck.notNull(extInfo, "extInfo");
+	this.extInfo = extInfo;
     }
 
-    public byte[] getRawMessage() throws PimException
+    public final String getExtInfo()
+    {
+	return this.extInfo;
+    }
+
+        public final void setRawMessage(byte[] rawMessage)
+    {
+	NullCheck.notNull(rawMessage, "rawMessage");
+	this.rawMessage = rawMessage.clone();
+    }
+
+    public final byte[] getRawMessage()
     {
 	return this.rawMessage.clone();
     }
 
-    public void setExtInfo(String extInfo) throws PimException
+    public final void copyValues(MailMessage message)
     {
-NullCheck.notNull(extInfo, "extInfo");
-this.extInfo = extInfo;
-    }
-
-    public String getExtInfo() throws PimException
-    {
-	return this.extInfo;
+	NullCheck.notNull(message, "message");
+	this.messageId = message.messageId;
+	this.subject = message.subject;
+	this.from = message.from;
+	this.to = message.to.clone();
+	this.cc = message.cc.clone();
+	this.bcc = message.bcc.clone();
+	this.state = message.state;
+	this.sentDate = message.sentDate;
+	this.receivedDate = message.receivedDate;
+	this.text = message.text;
+	this.contentType = message.contentType;
+	this.attachments = message.attachments.clone();
+	this.rawMessage = message.rawMessage.clone();
+	this.extInfo = message.extInfo;
     }
 
     public void save() throws PimException
     {
     }
 
-    	@Override public int compareTo(Object o)
+    @Override public int compareTo(Object o)
     {
 	/*
-FIXME:
+	  FIXME:
     	if (o == null || !(o instanceof Message))
 	    return 0;
     	StoredMailMessageSql article = (StoredMailMessageSql)o;

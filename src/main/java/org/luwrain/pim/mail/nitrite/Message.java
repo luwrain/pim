@@ -30,6 +30,7 @@ import static org.dizitart.no2.objects.filters.ObjectFilters.and;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
+import org.luwrain.util.*;
 
 final class Message extends MailMessage
 {
@@ -44,10 +45,12 @@ final class Message extends MailMessage
 	return this.id;
     }
 
-    public void setId(String id)
+    public void genId()
     {
-	NullCheck.notEmpty(id, "id");
-	this.id = id;
+	final byte[] bytes = getRawMessage();
+	if (bytes.length == 0)
+	    throw new IllegalStateException("the raw message can't be empty on ID generation");
+	this.id = new Sha1().getSha1(bytes);
     }
 
     public int getFolderId()
@@ -72,7 +75,7 @@ final class Message extends MailMessage
 	this.repo = repo;
     }
 
-    @Override public byte[] getRawMessage() throws PimException
+    public byte[] loadRawMessage() throws PimException
     {
 	try {
 	    final InputStream is = new FileInputStream(new File(messagesDir, getRawMessageFileName(id)) );
@@ -91,11 +94,13 @@ final class Message extends MailMessage
 	}
     }
 
-    @Override public void setRawMessage(byte[] rawMessage) throws PimException
+    public void saveRawMessage() throws PimException
     {
-	NullCheck.notNull(rawMessage, "rawMessage");
+	final byte[] bytes = getRawMessage();
+	if (bytes.length == 0)
+	    return;
 	try {
-	    saveRawMessage(rawMessage, messagesDir, id);
+	    saveRawMessage(bytes, messagesDir, id);
 	}
 	catch(IOException e)
 	{
@@ -105,31 +110,37 @@ final class Message extends MailMessage
 
     static void saveRawMessage(byte[] bytes, File messagesDir, String id) throws IOException
     {
+	mkdirs(messagesDir, id);
 	final File file = new File(messagesDir, getRawMessageFileName(id));
-	final File parent = file.getParentFile();
-	if (!parent.exists())
-	    parent.mkdir(); else
-	    if (!parent.isDirectory())
-		throw new IOException(parent.getAbsolutePath() + " exists is not a directory");
-	final OutputStream os = new FileOutputStream(file);
-	try {
-	    final ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-	    org.luwrain.util.StreamUtils.copyAllBytes(is, os);
+	try (final OutputStream os = new FileOutputStream(file)) {
+	    try (final ByteArrayInputStream is = new ByteArrayInputStream(bytes)){
+		org.luwrain.util.StreamUtils.copyAllBytes(is, os);
+	    }
 	    os.flush();
 	}
-	finally {
-	    os.close();
+    }
+
+    static private void mkdirs(File messagesDir, String id)
+    {
+	File f = messagesDir;
+	for(int i = 1;i < 5;i++)
+	{
+	    f = new File(f, id.substring(0, i));
+	    f.mkdir();
 	}
     }
 
     static String getRawMessageFileName(String id)
     {
-	String s = id;
-	/*
-		String d = String.valueOf(id/ 1000);
-	while (d.length() < 3)
-	    d = "0" + d;
-	*/
-	return new File("message" + s + ".eml").getPath();
+	NullCheck.notEmpty(id, "id");
+	if (id.length() < 4)
+	    throw new IllegalArgumentException("id (" + id + ") can't have the lenth less than 4");
+	final StringBuilder b = new StringBuilder();
+	b.append(id.substring(0, 1)).append("/")
+	.append(id.substring(0, 2)).append("/")
+	.append(id.substring(0, 3)).append("/")
+	.append(id.substring(0, 4)).append("/")
+	.append(id).append(".eml");
+	return new String(b);
     }
 }

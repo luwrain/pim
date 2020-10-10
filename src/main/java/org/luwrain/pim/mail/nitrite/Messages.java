@@ -56,6 +56,9 @@ final class Messages implements MailMessages
 		    final Message m = new Message();
 		    m.setMessagesDir(this.messagesDir);
 		    m.setRepo(this.repo);
+		    m.copyValues(message);
+		    m.genId();
+		    m.saveRawMessage();
 		    repo.insert(m);
 		    return null;
 		});

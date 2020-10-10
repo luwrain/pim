@@ -41,7 +41,6 @@ public final class MessageHookObject extends EmptyHookObject
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
-	try {
 	    switch(name)
 	    {
 	    case "subject":
@@ -73,12 +72,6 @@ public final class MessageHookObject extends EmptyHookObject
 	    default:
 		return super.getMember(name);
 	    }
-	}
-	catch(PimException e)
-	{
-	    Log.warning(LOG_COMPONENT, "unable to get the \'" + name + "\' member of the message hook object:" + e.getClass().getName() + ":" + e.getMessage());
-	    return null;
-	}
     }
 
     static private String[] extractHeaders(byte[] bytes)

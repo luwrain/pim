@@ -23,6 +23,8 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.script.hooks.*;
+
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
@@ -131,9 +133,9 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	final MessageHookObject hookObj = new MessageHookObject(message);
 	try {
 	    Log.debug(LOG_COMPONENT, "saving the message " + num + "/" + total);
-	    return luwrain.xRunHooks(HOOK_NAME_SAVE, new Object[]{mailHookObject, hookObj}, Luwrain.HookStrategy.CHAIN_OF_RESPONSIBILITY);
+	    return new ChainOfResponsibilityHook(luwrain).run(HOOK_NAME_SAVE, new Object[]{mailHookObject, hookObj});
 	}
-	catch(RuntimeException e)
+	catch(Throwable e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to save a message:" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;
