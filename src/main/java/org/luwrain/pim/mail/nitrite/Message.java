@@ -19,6 +19,7 @@ package org.luwrain.pim.mail.nitrite;
 
 import java.io.*;
 import java.util.*;
+import java.util.zip.*;
 
 import org.dizitart.no2.*;
 import org.dizitart.no2.objects.*;
@@ -78,7 +79,7 @@ final class Message extends MailMessage
     public byte[] loadRawMessage() throws PimException
     {
 	try {
-	    final InputStream is = new FileInputStream(new File(messagesDir, getRawMessageFileName(id)) );
+	    final InputStream is = new GZIPInputStream(new FileInputStream(new File(messagesDir, getRawMessageFileName(id)) ));
 	    try {
 		final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		org.luwrain.util.StreamUtils.copyAllBytes(is, bytes);
@@ -112,11 +113,14 @@ final class Message extends MailMessage
     {
 	mkdirs(messagesDir, id);
 	final File file = new File(messagesDir, getRawMessageFileName(id));
-	try (final OutputStream os = new FileOutputStream(file)) {
-	    try (final ByteArrayInputStream is = new ByteArrayInputStream(bytes)){
-		org.luwrain.util.StreamUtils.copyAllBytes(is, os);
+	try (final FileOutputStream fs = new FileOutputStream(file)) {
+	    try (final GZIPOutputStream os = new GZIPOutputStream(fs)) {
+		try (final ByteArrayInputStream is = new ByteArrayInputStream(bytes)){
+		    org.luwrain.util.StreamUtils.copyAllBytes(is, os);
+		}
+		os.flush();
 	    }
-	    os.flush();
+	    fs.flush();
 	}
     }
 
@@ -140,7 +144,7 @@ final class Message extends MailMessage
 	.append(id.substring(0, 2)).append("/")
 	.append(id.substring(0, 3)).append("/")
 	.append(id.substring(0, 4)).append("/")
-	.append(id).append(".eml");
+	.append(id).append(".eml.gz");
 	return new String(b);
     }
 }
