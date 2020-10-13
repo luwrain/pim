@@ -76,7 +76,7 @@ final class Messages implements MailMessages
 	try {
 	return (Message[])storing.execInQueue(()->{
 		final List<Message> res = new LinkedList();
-		final Cursor<Message> c = repo.find(eq("folderId", f.id));
+		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
 		for(Message m: c)
 		    res.add(m);
 		return res.toArray(new Message[res.size()]);

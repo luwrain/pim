@@ -31,36 +31,45 @@ public class MailFolder implements Comparable
     private int orderIndex = 0;
     private Properties props = new Properties();
 
-    public void setTitle(String title)
+    public final void setTitle(String title)
     {
 	NullCheck.notNull(title, "title");
 	this.title = title;
     }
 
-    public String getTitle()
+    public final String getTitle()
     {
 	return this.title;
     }
 
-    public void setOrderIndex(int orderIndex)
+    public final void setOrderIndex(int orderIndex)
     {
 	if (orderIndex < 0)
 	    throw new IllegalArgumentException("orderIndex (" + String.valueOf(orderIndex) + ") may not be negative");
 	this.orderIndex = orderIndex;
     }
 
-    public int getOrderIndex()
+    public final int getOrderIndex()
     {
 	return this.orderIndex;
     }
 
-    public Properties getProperties()
+    public final Properties getProperties()
     {
 	return this.props;
     }
 
     public void saveProperties()
     {
+    }
+
+    public final void copyValues(MailFolder folder)
+    {
+	NullCheck.notNull(folder, "folder");
+	this.title = folder.title;
+	this.orderIndex = folder.orderIndex;
+	this.props = new Properties();
+	this.props.putAll(folder.props);
     }
 
     public final String getPropertiesAsString() throws IOException

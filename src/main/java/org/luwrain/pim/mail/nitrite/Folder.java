@@ -19,6 +19,7 @@ package org.luwrain.pim.mail.nitrite;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -26,27 +27,54 @@ import org.luwrain.pim.mail.*;
 
 final class Folder extends MailFolder
 {
-    int id = 0;
-    List<Folder> subfolders = null;
+    private int id = 0;
+    private List<Folder> subfolders = null;
+    private transient Folders folders = null;
 
-    public int getId()
+    int getId()
     {
 	return this.id;
     }
 
-    public void setId(int id)
+    void setId(int id)
     {
 	this.id = id;
     }
 
-    public Folder[] getSubfoldersAsArray()
+    Folder[] getSubfoldersAsArray()
     {
 	if (subfolders == null)
 	    return new Folder[0];
 	return subfolders.toArray(new Folder[subfolders.size()]);
     }
 
+    void visit(Consumer c)
+    {
+	NullCheck.notNull(c, "c");
+	c.accept(this);
+	if (subfolders != null)
+	    for(Folder f: subfolders)
+		f.visit(c);
+    }
+
+    void addSubfolder(Folder folder)
+    {
+	NullCheck.notNull(folder, "folder");
+	if (subfolders == null)
+	    subfolders = new LinkedList();
+		    subfolders.add(folder);
+    }
+
+    void setFolders(Folders folders)
+    {
+	NullCheck.notNull(folders, "folders");
+	this.folders = folders;
+    }
+
     @Override public void save()
     {
+	if (this.folders == null)
+	    throw new IllegalStateException("folders can't be null on saving");
+	this.folders.saveAll();
     }
 }

@@ -64,7 +64,7 @@ final class Folders implements MailFolders
 	NullCheck.notNull(folder, "folder");
 	loadAll();
 	final Folder f = (Folder)folder;
-	return f.id;
+	return f.getId();
     }
 
     @Override public MailFolder loadById(int id) throws PimException
@@ -82,8 +82,13 @@ final class Folders implements MailFolders
 	NullCheck.notNull(newFolder, "newFolder");
 	loadAll();
 	final Folder p = (Folder)parentFolder;
-	final Folder n = (Folder)newFolder;
-	p.subfolders.add(n);
+	final Folder n = new Folder();
+	n.copyValues(newFolder);
+	n.setId(data.nextId);
+	n.setFolders(this);
+	data.nextId++;
+		p.addSubfolder(n);
+		saveAll();
 	return n;
     }
 
@@ -106,7 +111,7 @@ final class Folders implements MailFolders
 	NullCheck.notNull(folder, "folder");
 	loadAll();
 	final Folder folderReg = (Folder)folder;
-	return FolderUniRefProc.PREFIX + ":" + folderReg.id;
+	return FolderUniRefProc.PREFIX + ":" + folderReg.getId();
     }
 
     @Override public MailFolder loadByUniRef(String uniRef) throws PimException
@@ -155,6 +160,10 @@ final class Folders implements MailFolders
 	    return;
 	}
 	this.data = res;
+	this.data.root.visit((o)->{
+		final Folder f = (Folder)o;
+		f.setFolders(this);
+	    });
 	}
 	catch(Exception e)
 	{
@@ -163,7 +172,7 @@ final class Folders implements MailFolders
 	}
     }
 
-    private void saveAll()
+    void saveAll()
     {
 	sett.setFolders(gson.toJson(data));
     }
@@ -173,6 +182,7 @@ final class Folders implements MailFolders
 	this.data = new Data();
 	this.data.root = new Folder();
 	this.data.root.setTitle("Почта");
+	this.data.root.setFolders(this);
 	saveAll();
 
     }
