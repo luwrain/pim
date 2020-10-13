@@ -30,24 +30,19 @@ import org.luwrain.script.hooks.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
 
-
 public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
-    static private final String MAIL_ACCOUNT_WIZARD_HOOK_NAME = "luwrain.wizards.mail.account";
-
     private org.luwrain.pim.workers.News newsWorker = null;
-        private org.luwrain.pim.workers.Smtp smtpWorker = null;
-            private org.luwrain.pim.workers.Pop3 pop3Worker = null;
-
-    private org.luwrain.pim.mail.nitrite.FolderUniRefProc mailFolderUniRefProc;
+    private org.luwrain.pim.workers.Smtp smtpWorker = null;
+    private org.luwrain.pim.workers.Pop3 pop3Worker = null;
 
     @Override public String init(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	Connections.init(luwrain);
 	this.newsWorker = new org.luwrain.pim.workers.News(luwrain);
-		this.smtpWorker = new org.luwrain.pim.workers.Smtp(luwrain);
-				this.pop3Worker = new org.luwrain.pim.workers.Pop3(luwrain);
+	this.smtpWorker = new org.luwrain.pim.workers.Smtp(luwrain);
+	this.pop3Worker = new org.luwrain.pim.workers.Pop3(luwrain);
 	return null;
     }
 
@@ -59,48 +54,12 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 	};
     }
 
-	@Override public UniRefProc[] getUniRefProcs(Luwrain luwrain)
-	{
-	    if (mailFolderUniRefProc == null)
-		mailFolderUniRefProc = new org.luwrain.pim.mail.nitrite.FolderUniRefProc(luwrain);
-	    return new UniRefProc[]{
-		mailFolderUniRefProc,
-	    };
-    }
-
-    @Override public Command[] getCommands(Luwrain luwrain)
-    {
-	return new Command[]{
-
-	    new Command(){
-		@Override public String getName()
-		{
-		    return "wizard-mail-account";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    NullCheck.notNull(luwrain, "luwrain");
-		    try {
-			final MailStoring storing = org.luwrain.pim.Connections.getMailStoring(luwrain, true);
-			if (!(new ChainOfResponsibilityHook(luwrain).run(MAIL_ACCOUNT_WIZARD_HOOK_NAME, new Object[]{new MailHookObject(storing)})))
-			    luwrain.playSound(Sounds.ERROR);
-		    }
-		    catch(Exception e)
-		    {
-			luwrain.crash(e);
-		    }
-		}
-	    },
-
-	};
-    }
-
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
 	return new ExtensionObject[]{ newsWorker, smtpWorker, pop3Worker };
     }
 
-@Override public void close()
+    @Override public void close()
     {
 	Connections.close();
     }

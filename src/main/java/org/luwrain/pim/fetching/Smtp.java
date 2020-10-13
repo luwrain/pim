@@ -41,9 +41,8 @@ public final class Smtp extends Base
 	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
 	if (storing == null)
 	    throw new FetchingException("Отсутствует соединение");
-	final org.luwrain.pim.Settings.MailFolders sett = org.luwrain.pim.Settings.createMailFolders(luwrain.getRegistry());
-	this.pending = storing.getFolders().loadByUniRef(sett.getFolderPending(""));
-	this.sent = storing.getFolders().loadByUniRef(sett.getFolderSent(""));
+	this.pending = storing.getFolders().findFirstByProperty("defaultOutgoing", "true");
+	this.sent = storing.getFolders().findFirstByProperty("defaultSent", "true");
 	if (this.pending == null || this.sent == null)
 throw new FetchingException("Не удалось подготовить почтовые группы, доставка сообщений отменена");
     }

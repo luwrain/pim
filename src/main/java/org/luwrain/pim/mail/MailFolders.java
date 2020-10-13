@@ -25,10 +25,8 @@ public interface MailFolders
 {
     int getId(MailFolder folder) throws PimException;
     MailFolder getRoot() throws PimException;
-    String getUniRef(MailFolder folder) throws PimException;
     MailFolder findFirstByProperty(String propName, String propValue) throws PimException;
     MailFolder[] load(MailFolder folder) throws PimException;
     MailFolder loadById(int id) throws PimException;
-    MailFolder loadByUniRef(String uniRef) throws PimException;
     MailFolder save(MailFolder parentFolder, MailFolder newFolder) throws PimException;
 }

@@ -106,32 +106,6 @@ final class Folders implements MailFolders
 	return f.getSubfoldersAsArray();
     }
 
-    @Override public String getUniRef(MailFolder folder) throws PimException
-    {
-	NullCheck.notNull(folder, "folder");
-	loadAll();
-	final Folder folderReg = (Folder)folder;
-	return FolderUniRefProc.PREFIX + ":" + folderReg.getId();
-    }
-
-    @Override public MailFolder loadByUniRef(String uniRef) throws PimException
-    {
-	NullCheck.notEmpty(uniRef, "uniRef");
-	loadAll();
-	if (!uniRef.startsWith(FolderUniRefProc.PREFIX + ":"))
-	    return null;
-	final int id;
-	try {
-	    id = Integer.parseInt(uniRef.substring(FolderUniRefProc.PREFIX.length() + 1));
-	}
-	catch (NumberFormatException e)
-	{
-	    Log.warning(LOG_COMPONENT, "parsing an invalid mail folder uniref: " + uniRef);
-	    return null;
-	}
-	return loadById(id);
-    }
-
     private Folder find(Folder f, Predicate p)
     {
 	if (f == null)

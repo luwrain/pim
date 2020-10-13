@@ -17,7 +17,9 @@
 
 package org.luwrain.pim.news;
 
-import java.sql.*;
+import java.io.*;
+
+import org.dizitart.no2.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -25,18 +27,13 @@ import org.luwrain.pim.*;
 public final class Factory
 {
     static private final String LOG_COMPONENT = "pim-news";
-    static private final String SQLITE_INIT_RESOURCE = "org/luwrain/pim/news.sqlite";
-
-    static public final String DEFAULT_TYPE = "jdbc";
-    static public final String DEFAULT_DRIVER = "org.sqlite.JDBC";
-    static public final String DEFAULT_URL = "jdbc:sqlite:$userdata/sqlite/news.db";
-    static public final String DEFAULT_INIT_PROC = "sqlite";
 
     private final Luwrain luwrain;
     private final Registry registry;
     private final Settings.Storing sett;
     private final ExecQueues execQueues = new ExecQueues();
-    private Connection con = null;
+    private final File file;
+    private Nitrite db = null;
 
     public Factory(Luwrain luwrain)
     {
@@ -45,67 +42,24 @@ public final class Factory
 	this.registry = luwrain.getRegistry();
 	this.sett = Settings.createStoring(registry);
 	this.execQueues.start();
+	this.file = new File(luwrain.getAppDataDir("luwrain.pim.news").toFile(), "news.nitrite");
     }
 
     public NewsStoring newNewsStoring(boolean highPriority)
     {
-	if (con != null)
-	    return new org.luwrain.pim.news.sql.Storing(registry, con, execQueues, highPriority);
-	final String type = sett.getType(DEFAULT_TYPE).trim().toLowerCase();
-	if (type.isEmpty())
-	{
-	    Log.error(LOG_COMPONENT, "news storing type may not be empty");
-	    return null;
-	}
-	switch(type)
-	{
-	case "jdbc":
-	    {
-	    	final String driver = sett.getDriver(DEFAULT_DRIVER);
-		final String url = org.luwrain.pim.SQL.prepareUrl(luwrain, sett.getUrl(DEFAULT_URL));
-		if (driver.isEmpty() || url.isEmpty())
-		{
-		    Log.error(LOG_COMPONENT, "in news storing settings for JDBC the driver and url values may not be empty");
-		    return null;
-		}
-		final String login = sett.getLogin("");
-		final String passwd = sett.getPasswd("");
-		final String initProc = sett.getInitProc(DEFAULT_INIT_PROC);
-		this.con = org.luwrain.pim.SQL.connect(driver, url, login, passwd);
-		if (this.con == null)
-		    return null;
-		if (!org.luwrain.pim.SQL.initProc(con, initProc, SQLITE_INIT_RESOURCE))
-		{
-		    try {
-			this.con.close();
-		    }
-		    catch(SQLException e)
-		    {
-		    }
-		    this.con = null;
-		    return null;
-		}
-		return new org.luwrain.pim.news.sql.Storing(registry, this.con, execQueues, highPriority);
-	    }
-	default:
-	    Log.error(LOG_COMPONENT, "unknown news storing type \'" + type + "\'");
-	    return null;
-	}
+	if (db != null)
+	    return new org.luwrain.pim.news.nitrite.Storing(registry, db, execQueues, highPriority);
+			this.db = Nitrite.builder()
+        .compressed()
+        .filePath(file)
+        .openOrCreate("luwrain", "passwd");
+		return new org.luwrain.pim.news.nitrite.Storing(registry, this.db, execQueues, highPriority);
     }
 
     public void close()
     {
 	execQueues.cancel();
-	if (con != null)
-	{
-	    try {
-		con.close();
-	    }
-	    catch(SQLException e)
-	    {
-		Log.error(LOG_COMPONENT, "unable to close news JDBC connection normally:" + e.getClass().getName() + ":" + e.getMessage());
-	    }
-	    con = null;
-	}
-    }
+	if (db != null)
+	    db.close();
+}
 }

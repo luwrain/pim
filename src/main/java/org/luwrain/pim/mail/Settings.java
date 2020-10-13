@@ -26,14 +26,14 @@ public interface Settings
     static public final String PATH = "/org/luwrain/pim/mail";
     static public final String RULES_PATH = "/org/luwrain/pim/mail/rules";
 
-	String getAccounts(String defValue);
+    String getAccounts(String defValue);
     void setAccounts(String value);
     int getNextAccountId(int defValue);
     void setNextAccountId(int value);
     String getFolders(String defValue);
     void setFolders(String value);
-    String getFolderPending(String defValue);
-    void setFolderPending(String value);
+    int getNextFolderId(int defValue);
+    void setNextFolderId(int value);
 
     public interface Rule
     {

@@ -24,7 +24,7 @@ import org.luwrain.core.*;
 public class Connections
 {
     static private org.luwrain.pim.mail.Factory mailFactory = null;
-    static private org.luwrain.pim.news.FactoryNitrite newsFactory = null;
+    static private org.luwrain.pim.news.Factory newsFactory = null;
     static private org.luwrain.pim.contacts.Factory contactsFactory = null;
     static private org.luwrain.pim.binder.Factory binderFactory = null;
 
@@ -32,7 +32,7 @@ public class Connections
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	mailFactory = new org.luwrain.pim.mail.Factory(luwrain);
-	newsFactory = new org.luwrain.pim.news.FactoryNitrite(luwrain);
+	newsFactory = new org.luwrain.pim.news.Factory(luwrain);
 	contactsFactory = new org.luwrain.pim.contacts.Factory(luwrain);
 	binderFactory = new org.luwrain.pim.binder.Factory(luwrain.getRegistry());
     }
