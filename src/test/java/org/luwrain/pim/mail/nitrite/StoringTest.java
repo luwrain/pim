@@ -1,5 +1,5 @@
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.nitrite;
 
 import java.io.*;
 import java.util.*;
@@ -20,34 +20,23 @@ public final class StoringTest extends Assert
     @Test public void main() throws Exception
     {
 	final File tmpFile = File.createTempFile(".lwr-junit-pim-mail.", ".nitrite");
-	final String messageId = "message123";
 	tmpFile.delete();
 	final Nitrite db = Nitrite.builder()
         .compressed()
         .filePath(tmpFile)
         .openOrCreate("luwrain", "passwd");
-	final ObjectRepository<MailMessage> repo = db.getRepository(MailMessage.class);
-	MailMessage m = new MailMessage();
-	m.setMessageId(messageId);
-	m.setCc(new String[]{"0", "1", "2"});
-	m.setRawMessage(new byte[]{0, 1, 2});
+	final ObjectRepository<Message> repo = db.getRepository(Message.class);
+	Message m = new Message();
+	m.setId("123");
+	m.setFolderId(32);
 	repo.insert(m);
-	final Cursor<MailMessage> c = repo.find();
-	final List<MailMessage> res = c.toList();
+	final Cursor<Message> c = repo.find();
+	final List<Message> res = c.toList();
 	assertNotNull(res);
 	assertEquals(1, res.size());
 	m = res.get(0);
-	assertNotNull(m);
-	assertEquals(messageId, m.getMessageId());
-	String[] a = m.getCc();
-	assertNotNull(a);
-	assertEquals(3, a.length);
-	for(int i = 0;i < a.length;i++)
-	{
-	    assertNotNull(a[i]);
-	    assertEquals(String.valueOf(i), a[i]);
-	}
-	assertNotNull(m.getRawMessage());
-	assertEquals(0, m.getRawMessage().length);
+	assertNotNull(m.getId());
+	assertEquals("123", m.getId());
+	assertEquals(32, m.getFolderId());
     }
 }

@@ -55,8 +55,7 @@ final class Messages implements MailMessages
 	    storing.execInQueue(()->{
 		    final Message m = new Message();
 		    m.setMessagesDir(this.messagesDir);
-		    m.setRepo(this.repo);
-		    m.setStoring(storing);
+		    m.initStoring(storing, repo);
 		    m.copyValues(message);
 		    m.genId();
 		    m.setFolderId(f.getId());
@@ -83,8 +82,7 @@ final class Messages implements MailMessages
 		{
 		    m.loadRawMessage();
 		    		    m.setMessagesDir(this.messagesDir);
-		    m.setRepo(this.repo);
-		    m.setStoring(storing);
+				    m.initStoring(storing, repo);
 		    res.add(m);
 		}
 		return res.toArray(new Message[res.size()]);

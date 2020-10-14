@@ -38,22 +38,22 @@ final class Message extends MailMessage
     private String id = "";
     private int folderId = 0;
 
-    private transient File messagesDir;
+    private transient File messagesDir = null;
     private transient Storing storing = null;
-    private transient ObjectRepository<Message> repo;
+    private transient ObjectRepository<Message> repo = null;
 
-    public String getId()
+    String getId()
     {
 	return this.id;
     }
 
-    public void setId(String id)
+    void setId(String id)
     {
 	NullCheck.notNull(id, "id");
 	this.id = id;
     }
 
-    public void genId()
+    void genId()
     {
 	final byte[] bytes = getRawMessage();
 	if (bytes.length == 0)
@@ -61,12 +61,12 @@ final class Message extends MailMessage
 	this.id = new Sha1().getSha1(bytes);
     }
 
-    public int getFolderId()
+    int getFolderId()
     {
 	return this.folderId;
     }
 
-    public void setFolderId(int folderId)
+    void setFolderId(int folderId)
     {
 	this.folderId = folderId;
     }
@@ -77,16 +77,12 @@ final class Message extends MailMessage
 	this.messagesDir = messagesDir;
     }
 
-    void setRepo(ObjectRepository<Message> repo)
-    {
-	NullCheck.notNull(repo, "repo");
-	this.repo = repo;
-    }
-
-    void setStoring(Storing storing)
+    void initStoring(Storing storing, ObjectRepository<Message> repo)
     {
 	NullCheck.notNull(storing, "storing");
-	this.storing = storing;
+		NullCheck.notNull(repo, "repo");
+			this.storing = storing;
+	this.repo = repo;
     }
 
     @Override public void save() throws PimException
