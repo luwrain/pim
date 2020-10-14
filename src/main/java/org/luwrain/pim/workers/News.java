@@ -8,7 +8,7 @@ import org.luwrain.pim.fetching.*;
 
 public class News implements Worker
 {
-    static public String NAME = "luwrain.pim.workers.news";
+    static public String NAME = "luwrain.pim.fetch.news";
 
     static protected final String LOG_COMPONENT = "pim-workers";
 

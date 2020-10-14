@@ -39,11 +39,18 @@ final class Message extends MailMessage
     private int folderId = 0;
 
     private transient File messagesDir;
+    private transient Storing storing = null;
     private transient ObjectRepository<Message> repo;
 
     public String getId()
     {
 	return this.id;
+    }
+
+    public void setId(String id)
+    {
+	NullCheck.notNull(id, "id");
+	this.id = id;
     }
 
     public void genId()
@@ -76,17 +83,41 @@ final class Message extends MailMessage
 	this.repo = repo;
     }
 
-    public byte[] loadRawMessage() throws PimException
+    void setStoring(Storing storing)
+    {
+	NullCheck.notNull(storing, "storing");
+	this.storing = storing;
+    }
+
+    @Override public void save() throws PimException
+    {
+	if (storing == null)
+	    throw new IllegalStateException("storing can't be null");
+	if (repo == null)
+	    throw new IllegalStateException("repo can't be null");
+	if (id == null)
+	    throw new IllegalStateException("id can't be null");
+	if (id.isEmpty())
+	    throw new IllegalStateException("id can't be empty");
+	try {
+	    storing.execInQueue(()->{
+		    repo.update(eq("id", id), this);
+		    return null;
+		});
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+    void loadRawMessage() throws PimException
     {
 	try {
-	    final InputStream is = new GZIPInputStream(new FileInputStream(new File(messagesDir, getRawMessageFileName(id)) ));
-	    try {
+	    try (final InputStream is = new GZIPInputStream(new FileInputStream(new File(messagesDir, getRawMessageFileName(id)) ))){
 		final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		org.luwrain.util.StreamUtils.copyAllBytes(is, bytes);
-		return bytes.toByteArray();
-	    }
-	    finally {
-		is.close();
+		setRawMessage(bytes.toByteArray());
 	    }
 	}
 	catch(IOException e)
@@ -95,7 +126,7 @@ final class Message extends MailMessage
 	}
     }
 
-    public void saveRawMessage() throws PimException
+    void saveRawMessage() throws PimException
     {
 	final byte[] bytes = getRawMessage();
 	if (bytes.length == 0)

@@ -41,6 +41,7 @@ public class MailMessage implements Comparable
     private String contentType = "";
     private String[] attachments = new String[0];
     private String extInfo = "";
+
         private transient byte[] rawMessage = new byte[0];
 
     public final void setMessageId(String messageId)

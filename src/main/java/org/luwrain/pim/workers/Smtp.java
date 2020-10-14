@@ -9,7 +9,7 @@ import org.luwrain.pim.fetching.*;
 public class Smtp implements Worker
 {
     static protected final String LOG_COMPONENT = "pim-workers";
-    static public String NAME = "luwrain.pim.workers.smtp";
+    static public String NAME = "luwrain.pim.fetch.smtp";
 
     protected final Luwrain luwrain;
     protected final org.luwrain.pim.fetching.Control control;
@@ -53,7 +53,8 @@ public class Smtp implements Worker
 	}
 	catch(Throwable e)
 	{
-	    Log.error(LOG_COMPONENT, "the worker \'" + NAME + "\' failed:" + e.getClass().getName() + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "the worker " + NAME + " failed:" + e.getClass().getName() + ":" + e.getMessage());
+	    e.printStackTrace();
 	    luwrain.message("Произошла ошибка при отправке сообщений", Luwrain.MessageType.ERROR);
 	    return;
 	}

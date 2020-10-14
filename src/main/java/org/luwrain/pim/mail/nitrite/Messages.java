@@ -56,8 +56,10 @@ final class Messages implements MailMessages
 		    final Message m = new Message();
 		    m.setMessagesDir(this.messagesDir);
 		    m.setRepo(this.repo);
+		    m.setStoring(storing);
 		    m.copyValues(message);
 		    m.genId();
+		    m.setFolderId(f.getId());
 		    m.saveRawMessage();
 		    repo.insert(m);
 		    return null;
@@ -78,7 +80,13 @@ final class Messages implements MailMessages
 		final List<Message> res = new LinkedList();
 		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
 		for(Message m: c)
+		{
+		    m.loadRawMessage();
+		    		    m.setMessagesDir(this.messagesDir);
+		    m.setRepo(this.repo);
+		    m.setStoring(storing);
 		    res.add(m);
+		}
 		return res.toArray(new Message[res.size()]);
 	    });
 	}
@@ -113,17 +121,10 @@ final class Messages implements MailMessages
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
-	//	final Folder folderRegistry = (Folder)folder;
+	final Folder f = (Folder)folder;
 	final Message m = (Message)message;
-	try {
-	    storing.execInQueue(()->{
-		    return null;
-		});
-	}
-	catch(Exception e)
-	{
-	    throw new PimException(e);
-	}
+	m.setFolderId(f.getId());
+	m.save();
     }
 
     @Override public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException
