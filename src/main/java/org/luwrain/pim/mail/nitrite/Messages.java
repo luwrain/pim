@@ -80,9 +80,9 @@ final class Messages implements MailMessages
 		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
 		for(Message m: c)
 		{
-		    m.loadRawMessage();
-		    		    m.setMessagesDir(this.messagesDir);
+		    		    		    m.setMessagesDir(this.messagesDir);
 				    m.initStoring(storing, repo);
+		    m.loadRawMessage();
 		    res.add(m);
 		}
 		return res.toArray(new Message[res.size()]);
