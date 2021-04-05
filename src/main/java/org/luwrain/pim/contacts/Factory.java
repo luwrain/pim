@@ -37,7 +37,13 @@ public final class Factory
 
     public ContactsStoring newContactsStoring(boolean highPriority)
     {
+	try {
 	return new org.luwrain.pim.contacts.json.Storing(new File("/tmp"));
+	}
+	catch(IOException e)
+	{
+	    throw new RuntimeException(e);
+	}
     }
 
     public void close()

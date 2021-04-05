@@ -1,14 +1,9 @@
 
 package org.luwrain.pim.contacts.json;
 
-import java.io.*;
 import java.util.*;
-import org.dizitart.no2.*;
-import org.dizitart.no2.objects.*;
-import org.dizitart.no2.objects.Cursor;
 
 import org.luwrain.core.*;
-import org.luwrain.pim.*;
 import org.luwrain.pim.contacts.*;
 
 final class Folders implements ContactsFolders
