@@ -22,8 +22,8 @@ import org.luwrain.pim.*;
 
 public interface ContactsFolders
 {
-    ContactsFolder getRoot() throws PimException;
-    ContactsFolder[] load(ContactsFolder folder) throws PimException;
-    void save(ContactsFolder addTo, ContactsFolder folder) throws PimException;
-    void delete(ContactsFolder folder) throws PimException;
+    ContactsFolder getRoot();
+    ContactsFolder[] load(ContactsFolder folder);
+    void save(ContactsFolder addTo, ContactsFolder folder);
+    void delete(ContactsFolder folder);
 }
