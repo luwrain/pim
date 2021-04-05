@@ -121,7 +121,7 @@ protected void onContactEntry(Contact contact)
 	    closing.doOk();
 	    return;
 	}
-	catch(PimException e)
+	catch(Exception e)
 	{
 	    luwrain.crash(e);
 	    return;
@@ -215,7 +215,7 @@ protected final Strings strings;
 		    luwrain.speak(title + " группа");
 		    return;
 		}
-		catch(PimException e)
+		catch(Exception e)
 		{
 		    luwrain.crash(e);
 		    return;

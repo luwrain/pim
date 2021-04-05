@@ -1,5 +1,5 @@
 
-package org.luwrain.pim.contacts.nitrite;
+package org.luwrain.pim.contacts.json;
 
 import java.io.*;
 import org.dizitart.no2.*;
@@ -7,18 +7,14 @@ import org.dizitart.no2.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.contacts.*;
 
-final class Storing implements ContactsStoring
+public final class Storing implements ContactsStoring
 {
-    final Nitrite  db;
+    Folder root = new Folder();
     private final Folders folders;
 
-    Storing(File file)
+    public Storing(File file)
     {
-	this.db = Nitrite.builder()
-        .compressed()
-        .filePath(file.getAbsolutePath())
-        .openOrCreate("luwrain", "passwd");
-	this.folders = new Folders(this.db);
+	this.folders = new Folders(this);
     }
 
         @Override public ContactsFolders getFolders()
