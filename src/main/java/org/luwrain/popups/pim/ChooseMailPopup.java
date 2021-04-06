@@ -100,7 +100,7 @@ protected void onContactEntry(Contact contact)
 	    final ContactValue values[] = contact.getValues();
 	    if (values != null)
 		for(ContactValue v: values)
-		    if (v.getType() == ContactValue.MAIL && !v.getValue().trim().isEmpty())
+		    if (v.getType() == ContactValue.Type.MAIL && !v.getValue().trim().isEmpty())
 			addrs.add(v.getValue().trim());
 	    if (addrs.isEmpty())
 	    {

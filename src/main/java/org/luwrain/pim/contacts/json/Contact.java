@@ -17,27 +17,26 @@
 
 package org.luwrain.pim.contacts.json;
 
-import java.util.*;
-
 import org.luwrain.core.*;
 import org.luwrain.pim.contacts.*;
 
-final class Folder extends ContactsFolder
+final class Contact extends org.luwrain.pim.contacts.Contact
 {
-    List<Folder> subfolders = new ArrayList<Folder>();
-    List<Contact> contacts = new ArrayList<Contact>();
+    int id = 0;
     private transient Storing storing = null;
+
+    public Contact()
+    {
+    }
+
+    public Contact(int id)
+    {
+	this.id = id;
+    }
 
     void setStoring(Storing storing)
     {
 	NullCheck.notNull(storing, "storing");
-	if (subfolders == null)
-	    subfolders = new ArrayList();
-	if (contacts == null)
-	    contacts = new ArrayList();
-	for(Folder f: subfolders)
-	    f.setStoring(storing);
-	for(Contact c: contacts)
-	    c.setStoring(storing);
+	this.storing = storing;
     }
 }

@@ -24,7 +24,7 @@ import org.luwrain.pim.*;
 
 public final class Factory
 {
-    static private final String LOG_COMPONENT = "pim-contacts";
+    static public final String LOG_COMPONENT = "pim-contacts";
 
     private final Luwrain luwrain;
     private final ExecQueues execQueues = new ExecQueues();
@@ -37,13 +37,7 @@ public final class Factory
 
     public ContactsStoring newContactsStoring(boolean highPriority)
     {
-	try {
-	return new org.luwrain.pim.contacts.json.Storing(new File("/tmp"));
-	}
-	catch(IOException e)
-	{
-	    throw new RuntimeException(e);
-	}
+	    return new org.luwrain.pim.contacts.json.Storing(new File(luwrain.getAppDataDir("luwrain.pim.contacts").toFile(), "contacts.json"));
     }
 
     public void close()
