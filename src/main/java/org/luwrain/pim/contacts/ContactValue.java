@@ -17,37 +17,17 @@
 
 package org.luwrain.pim.contacts;
 
-import org.luwrain.core.NullCheck;
+import lombok.*;
 
+import org.luwrain.core.*;
+
+@Data
+@NoArgsConstructor
 public final class ContactValue
 {
     public enum Type { MAIL, ADDRESS, PHONE, BIRTHDAY, URL, SKYPE };
 
-    private final Type type;
-    private final String value;
-    private final boolean preferable;
-
-    public ContactValue(Type type, String value, boolean preferable)
-    {
-	NullCheck.notNull(type, "type");
-		NullCheck.notNull(value, "value");
-	this.type = type;
-	this.value = value;
-	this.preferable = preferable;
-    }
-
-    public Type getType()
-    {
-	return this.type;
-    }
-
-    public String getValue()
-    {
-	return value;
-    }
-
-    public boolean isPreferable()
-    {
-	return preferable;
-    }
+    private Type type = null;
+    private String value = "";
+    private boolean preferable = false;
 }
