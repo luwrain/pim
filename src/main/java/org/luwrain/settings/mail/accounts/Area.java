@@ -100,7 +100,6 @@ public class Area extends FormArea implements SectionArea
 	    luwrain.message(strings.portMustBeGreaterZero(), Luwrain.MessageType.ERROR);
 	    return false;
 	}
-	try {
 	    account.setTitle(getEnteredText("title"));
 	    account.setLogin(getEnteredText("login"));
 	    account.setPasswd(getEnteredText("passwd"));
@@ -127,12 +126,6 @@ public class Area extends FormArea implements SectionArea
 		flags.add(MailAccount.Flags.LEAVE_MESSAGES);
 	    account.setFlags(flags);
 	    return true;
-	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
-	    return false;
-	}
     }
 
     @Override public boolean onInputEvent(InputEvent event)

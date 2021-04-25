@@ -22,10 +22,13 @@ package org.luwrain.pim.mail;
 import java.util.*;
 
 import com.google.gson.annotations.*;
+import lombok.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 
+@Data
+@NoArgsConstructor
 public class MailAccount implements Comparable
 {
     public enum Type {POP3, SMTP};
@@ -60,117 +63,6 @@ public class MailAccount implements Comparable
 
     @SerializedName("subst-address")
     private String substAddress = "";
-
-    public void setType(Type type) throws PimException
-    {
-	NullCheck.notNull(type, "type");
-	this.type = type;
-    }
-
-    public Type getType() throws PimException
-    {
-	return this.type;
-    }
-
-    public void setTitle(String title) throws PimException
-    {
-	NullCheck.notNull(title, "title");
-	this.title = title;
-    }
-
-    public String getTitle() throws PimException
-    {
-	return this.title;
-    }
-
-    public void setHost(String host) throws PimException
-    {
-	NullCheck.notNull(host, "host");
-	this.host = host;
-    }
-
-    public String getHost() throws PimException
-    {
-	return this.host;
-    }
-
-    public void setPort(int port) throws PimException
-    {
-	if (port < 0)
-	    throw new IllegalArgumentException("port (" + String.valueOf(port) + ") may not be negative");
-	this.port = port;
-    }
-
-    public int getPort() throws PimException
-    {
-	return this.port;
-    }
-
-    public void setLogin(String login) throws PimException
-    {
-	NullCheck.notNull(login, "login");
-	this.login = login;
-    }
-
-    public String getLogin() throws PimException
-    {
-	return this.login;
-    }
-
-    public void setPasswd(String passwd) throws PimException
-    {
-	NullCheck.notNull(passwd, "passwd");
-	this.passwd = passwd;
-    }
-
-    public String getPasswd() throws PimException
-    {
-	return this.passwd;
-    }
-
-    public void setTrustedHosts(String trustedHosts) throws PimException
-    {
-	NullCheck.notNull(trustedHosts, "trustedHosts");
-	this.trustedHosts = trustedHosts;
-    }
-
-    public String getTrustedHosts() throws PimException
-    {
-	return this.trustedHosts;
-    }
-
-    public void setFlags(Set<Flags> flags) throws PimException
-    {
-	NullCheck.notNull(flags, "flags");
-	this.flags = flags;
-    }
-
-    public Set<Flags> getFlags() throws PimException
-    {
-	return this.flags;
-    }
-
-    public void setSubstName(String substName) throws PimException
-    {
-	NullCheck.notNull(substName, "substName");
-	this.substName = substName;
-    }
-
-    public String getSubstName() throws PimException
-    {
-	return this.substName;
-    }
-
-    public void setSubstAddress(String substAddress) throws PimException
-    {
-	NullCheck.notNull(substAddress, "substAddress");
-	this.substAddress = substAddress;
-    }
-
-    public String getSubstAddress() throws PimException
-    {
-	return this.substAddress;
-    }
 
     public void copyValues(MailAccount account)
     {

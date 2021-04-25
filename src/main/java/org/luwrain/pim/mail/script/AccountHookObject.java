@@ -41,7 +41,6 @@ public class AccountHookObject extends EmptyHookObject
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
-	try {
 	switch(name)
 	{
 case "type":
@@ -67,12 +66,6 @@ return account.getSubstAddress();
 default:
 return super.getMember(name);
 	}
-}
-catch(PimException e)
-{
-Log.warning(LOG_COMPONENT, "unable to get the member \'" + name + "\' of the mail account:" + e.getClass().getName() + ":" + e.getMessage());
-return null;
-}
     }
 
 /*

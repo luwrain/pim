@@ -61,14 +61,7 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	{
 	    checkInterrupted();
 	    final MailAccount.Type type;
-	    try {
 		type = a.getType();
-	    }
-	    catch(PimException e)
-	    {
-		control.luwrain().crash(e);
-		continue;
-	    }
 	    if (type == MailAccount.Type.POP3)
 	    {
 		try {

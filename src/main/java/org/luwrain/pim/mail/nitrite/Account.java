@@ -32,28 +32,28 @@ final class Account extends MailAccount
     @SerializedName("id")
     int id = 0;
 
-    @Override public void setType(Type type) throws PimException
+    @Override public void setType(Type type)
     {
 	NullCheck.notNull(type, "type");
 	super.setType(type);
 	accounts.saveAll();
     }
 
-    @Override public void setTitle(String title) throws PimException
+    @Override public void setTitle(String title)
     {
 	NullCheck.notNull(title, "title");
 	super.setTitle(title);
 	accounts.saveAll();
     }
 
-    @Override public void setHost(String host) throws PimException
+    @Override public void setHost(String host)
     {
 	NullCheck.notNull(host, "host");
 	super.setHost(host);
 	accounts.saveAll();
     }
 
-    @Override public void setPort(int port) throws PimException
+    @Override public void setPort(int port)
     {
 	if (port < 0)
 	    throw new IllegalArgumentException("port (" + String.valueOf(port) + ") may not be negative");
@@ -61,42 +61,42 @@ final class Account extends MailAccount
 	accounts.saveAll();
     }
 
-    @Override public void setLogin(String login) throws PimException
+    @Override public void setLogin(String login)
     {
 	NullCheck.notNull(login, "login");
 	super.setLogin(login);
 	accounts.saveAll();
     }
 
-    @Override public void setPasswd(String passwd) throws PimException
+    @Override public void setPasswd(String passwd)
     {
 	NullCheck.notNull(passwd, "passwd");
 	super.setPasswd(passwd);
 	accounts.saveAll();
     }
 
-    @Override public void setTrustedHosts(String trustedHosts) throws PimException
+    @Override public void setTrustedHosts(String trustedHosts)
     {
 	NullCheck.notNull(trustedHosts, "trustedHosts");
 	super.setTrustedHosts(trustedHosts);
 	accounts.saveAll();
     }
 
-    @Override public void setFlags(Set<Flags> flags) throws PimException
+    @Override public void setFlags(Set<Flags> flags)
     {
 	NullCheck.notNull(flags, "flags");
 	super.setFlags(flags);
 	accounts.saveAll();
     }
 
-    @Override public void setSubstName(String substName) throws PimException
+    @Override public void setSubstName(String substName)
     {
 	NullCheck.notNull(substName, "substName");
 	super.setSubstName(substName);
 	accounts.saveAll();
     }
 
-    @Override public void setSubstAddress(String substAddress) throws PimException
+    @Override public void setSubstAddress(String substAddress)
     {
 	NullCheck.notNull(substAddress, "substAddress");
 	super.setSubstAddress(substAddress);

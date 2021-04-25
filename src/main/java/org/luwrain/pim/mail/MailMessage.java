@@ -20,10 +20,13 @@
 package org.luwrain.pim.mail;
 
 import java.util.*;
+import lombok.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 
+@Data
+@NoArgsConstructor
 public class MailMessage implements Comparable
 {
     public enum State {NEW, READ, MARKED, DELETED};
@@ -42,160 +45,7 @@ public class MailMessage implements Comparable
     private String[] attachments = new String[0];
     private String extInfo = "";
 
-        private transient byte[] rawMessage = new byte[0];
-
-    public final void setMessageId(String messageId)
-    {
-	NullCheck.notNull(messageId, "messageId");
-	this.messageId = messageId;
-    }
-
-    public final String getMessageId()
-    {
-	return this.messageId;
-    }
-
-    public final void setSubject(String subject)
-    {
-	NullCheck.notNull(subject, "subject");
-	this.subject = subject;
-    }
-
-    public final String getSubject()
-    {
-	return this.subject;
-    }
-
-    public final void setFrom(String from)
-    {
-	NullCheck.notNull(from, "from");
-	this.from = from;
-    }
-
-    public final String getFrom()
-    {
-	return this.from;
-    }
-
-    public final void setTo(String[] to)
-    {
-	NullCheck.notNullItems(to, "to");
-	this.to = to.clone();
-    }
-
-    public final String[] getTo()
-    {
-	return this.to.clone();
-    }
-
-    public final void setCc(String[] cc)
-    {
-	NullCheck.notNullItems(cc, "cc");
-	this.cc = cc.clone();
-    }
-
-    public final String[] getCc()
-    {
-	return cc.clone();
-    }
-
-    public final void setBcc(String[] bcc)
-    {
-	NullCheck.notNullItems(bcc, "bcc");
-	this.bcc = bcc.clone();
-    }
-
-    public final String[] getBcc()
-    {
-	return this.bcc.clone();
-    }
-
-    public final void setState(State state)
-    {
-	NullCheck.notNull(state, "state");
-	this.state = state;
-    }
-
-    public final State getState()
-    {
-	return this.state;
-    }
-
-    public final void setSentDate(Date date)
-    {
-	NullCheck.notNull(sentDate, "sentDate");
-	this.sentDate = sentDate;
-    }
-
-    public final Date getSentDate()
-    {
-	return this.sentDate;
-    }
-
-    public final void setReceivedDate(Date date)
-    {
-	NullCheck.notNull(receivedDate, "receivedDate");
-	this.receivedDate = receivedDate;
-    }
-
-    public final Date getReceivedDate()
-    {
-	return this.receivedDate;
-    }
-
-    public final void setText(String text)
-    {
-	NullCheck.notNull(text, "text");
-	this.text = text;
-    }
-
-    public final String getText()
-    {
-	return this.text;
-    }
-
-    public final void setContentType(String contentType)
-    {
-	this.contentType = contentType;
-    }
-
-    public final String getContentType()
-    {
-	return this.contentType;
-    }
-
-    public final void setAttachments(String[] attachments)
-    {
-	NullCheck.notNullItems(attachments, "attachments");
-	this.attachments = attachments.clone();
-    }
-
-    public final String[] getAttachments()
-    {
-	return this.attachments.clone();
-    }
-
-    public final void setExtInfo(String extInfo)
-    {
-	NullCheck.notNull(extInfo, "extInfo");
-	this.extInfo = extInfo;
-    }
-
-    public final String getExtInfo()
-    {
-	return this.extInfo;
-    }
-
-        public final void setRawMessage(byte[] rawMessage)
-    {
-	NullCheck.notNull(rawMessage, "rawMessage");
-	this.rawMessage = rawMessage.clone();
-    }
-
-    public final byte[] getRawMessage()
-    {
-	return this.rawMessage.clone();
-    }
+    private transient byte[] rawMessage = new byte[0];
 
     public final void copyValues(MailMessage message)
     {
