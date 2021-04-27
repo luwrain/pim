@@ -26,6 +26,7 @@ import com.google.gson.reflect.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
+import org.luwrain.pim.fetching.MailConversations;
 
 final class Accounts implements MailAccounts
 {
@@ -41,6 +42,23 @@ final class Accounts implements MailAccounts
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.sett = org.luwrain.pim.mail.Settings.create(registry);
+    }
+
+    @Override public void sendDirectly(MailAccount account, MailMessage message) throws PimException
+    {
+	NullCheck.notNull(account, "account");
+	NullCheck.notNull(message, "message");
+		final MailConversations.Params params = new MailConversations.Params();
+	params.doAuth = !account.getLogin().isEmpty();
+	params.host = account.getHost();
+	params.port = account.getPort();
+	params.ssl = account.getFlags().contains(MailAccount.Flags.SSL);
+	params.tls = account.getFlags().contains(MailAccount.Flags.TLS);
+	params.login = account.getLogin();
+	params.passwd = account.getPasswd();
+	//		params.extProps.put( "mail.pop3.ssl.trust", account.getTrustedHosts());
+		final MailConversations conv = new MailConversations(params, false);
+	    conv.send(message.getRawMessage());
     }
 
     @Override public MailAccount[] load()

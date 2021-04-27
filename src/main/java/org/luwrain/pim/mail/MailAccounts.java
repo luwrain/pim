@@ -31,4 +31,5 @@ public interface MailAccounts
     MailAccount save(MailAccount account) throws PimException;
     void delete(MailAccount account) throws PimException;
     MailAccount getDefault(MailAccount.Type type) throws PimException;
+    void sendDirectly(MailAccount account, MailMessage message) throws PimException;
 }

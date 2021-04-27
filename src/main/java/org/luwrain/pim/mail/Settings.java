@@ -34,6 +34,8 @@ public interface Settings
     void setFolders(String value);
     int getNextFolderId(int defValue);
     void setNextFolderId(int value);
+    String getUserAgent(String defValue);
+    void setUserAgent(String value);
 
     public interface Rule
     {
