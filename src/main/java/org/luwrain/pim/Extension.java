@@ -23,14 +23,13 @@ package org.luwrain.pim;
 
 import java.util.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.script.hooks.*;
 
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
 
-public final class Extension extends org.luwrain.core.extensions.EmptyExtension
+public final class Extension extends EmptyExtension
 {
     private org.luwrain.pim.workers.News newsWorker = null;
     private org.luwrain.pim.workers.Smtp smtpWorker = null;
