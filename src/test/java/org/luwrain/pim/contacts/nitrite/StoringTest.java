@@ -9,6 +9,7 @@ import org.luwrain.pim.contacts.*;
 
 public final class StoringTest extends Assert
 {
+    /*
 @Test public void main() throws Exception
     {
 	final File tmpFile = File.createTempFile(".lwr-junit-pim-contacts.", ".nitrite");
@@ -22,4 +23,5 @@ public final class StoringTest extends Assert
 	assertEquals(1, ff.length);
 	assertEquals("Proba", ff[0].getTitle());
     }
+    */
 }
