@@ -102,7 +102,7 @@ public class Folders
 	//adding
 	if (ActionEvent.isAction(event, "add-mail-folder"))
 	{
-	    final String newFolderName = Popups.simple(luwrain, strings.newFolderPopupName(), strings.newFolderPopupPrefix(), "");
+	    final String newFolderName = Popups.text(luwrain, strings.newFolderPopupName(), strings.newFolderPopupPrefix(), "");
 	    if (newFolderName == null || newFolderName.isEmpty())
 		return true;
 	    try {
