@@ -22,66 +22,35 @@ package org.luwrain.pim.mail.script;
 import java.util.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script.*;
+import org.luwrain.script.core.*;
+import org.luwrain.script2.ScriptUtils;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-public class AccountHookObject extends EmptyHookObject
+public class AccountHookObject extends MapScriptObject
 {
-    static final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
-
     final MailAccount account;
 
     public AccountHookObject(MailAccount account)
     {
+	super(createMap(account));
 	NullCheck.notNull(account, "account");
 	this.account = account;
     }
 
-    @Override public Object getMember(String name)
+    static private Map<String, Object> createMap(MailAccount account)
     {
-	NullCheck.notNull(name, "name");
-	switch(name)
-	{
-case "type":
-    return account.getType().toString().toLowerCase();
-case "title":
-return account.getTitle();
-case "host":
-return account.getHost();
-case "port":
-return account.getPort();
-case "login":
-return account.getLogin();
-case "passwd":
-return account.getPasswd();
-case "trustedHosts":
-return account.getTrustedHosts();
-case "flags":
-return ScriptUtils.createEnumSet(account.getFlags());
-case "substName":
-return account.getSubstName();
-case "substAddress":
-return account.getSubstAddress();
-default:
-return super.getMember(name);
-	}
+	final Map<String, Object> map = new HashMap<>();
+	map.put("type", account.getType().toString());
+	map.put("title", account.getTitle());
+	map.put("host", account.getHost());
+	map.put("port", account.getPort());
+	map.put("login", account.getLogin());
+	map.put("passwd", account.getPasswd());
+	map.put("trustedHosts", account.getTrustedHosts());
+	map.put("flags", createEnumSet(account.getFlags()));
+	map.put("substName", account.getSubstName());
+	map.put("substAddress", account.getSubstAddress());
+	return map;
     }
-
-/*
-    setMember()
-    {
-	    public Type type = Type.POP3;
-    public String title = "";
-    public String host = "";
-    public int port = 995;
-    public String login = "";
-    public String passwd = "";
-    public String trustedHosts = "*";
-    public Set<Flags> flags = EnumSet.noneOf(Flags.class);
-    public String substName = "";
-    public String substAddress = "";
-
-    }
-*/
 }
