@@ -23,9 +23,10 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.script.core.*;
-import org.luwrain.script2.ScriptUtils;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
+
+import static org.luwrain.script2.ScriptUtils.*;
 
 public class AccountHookObject extends MapScriptObject
 {

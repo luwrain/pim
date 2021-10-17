@@ -33,7 +33,7 @@ protected final Strings strings;
     public ChooseMailPopup(Luwrain luwrain, Strings strings, ContactsStoring storing, ContactsFolder folder) throws PimException
     {
 	super(luwrain, 
-	      constructParams(luwrain, strings.chooseMailPopupName(folder.toString()), strings, storing, folder),Popups.DEFAULT_POPUP_FLAGS);
+	      createParams(luwrain, strings.chooseMailPopupName(folder.toString()), strings, storing, folder),Popups.DEFAULT_POPUP_FLAGS);
 	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(strings, "strings");
 	this.storing = storing;
@@ -128,7 +128,7 @@ protected void onContactEntry(Contact contact)
 	}
     }
 
-    static protected ListArea.Params constructParams(Luwrain luwrain, String name, Strings strings,
+    static protected ListArea.Params<Object> createParams(Luwrain luwrain, String name, Strings strings,
 						     ContactsStoring storing, ContactsFolder folder)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -136,7 +136,7 @@ protected void onContactEntry(Contact contact)
 	NullCheck.notNull(strings, "strings");
 	NullCheck.notNull(storing, "storing");
 	NullCheck.notNull(folder, "folder");
-	final ListArea.Params params = new ListArea.Params();
+	final ListArea.Params<Object> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
 params.model = new Model(storing, folder);
@@ -144,12 +144,11 @@ params.appearance = new Appearance(luwrain, strings);
 	return params;
     }
 
-    static protected class Model implements ListArea.Model
+    static protected class Model implements ListArea.Model<Object>
     {
 protected final ContactsStoring storing;
 protected final ContactsFolder folder;
 protected Object[] items;
-
 	Model(ContactsStoring storing, ContactsFolder folder)
 	{
 	    NullCheck.notNull(storing, "storing");
@@ -158,23 +157,20 @@ protected Object[] items;
 	    this.folder = folder;
 	    refresh();
 	}
-
 	@Override public int getItemCount()
 	{
 	    return items != null?items.length:0;
 	}
-
 	@Override public Object getItem(int index)
 	{
 	    return items != null && index < items.length?items[index]:null;
 	}
-
 	@Override public void refresh()
 	{
 	    try {
 		final ContactsFolder[] folders = storing.getFolders().load(folder);
 		final Contact[] contacts = storing.getContacts().load(folder);
-		final List res = new LinkedList();
+		final List<Object> res = new ArrayList<>();
 		for(ContactsFolder f: folders)
 		    res.add(f);
 		for(Contact c: contacts)
@@ -189,11 +185,10 @@ protected Object[] items;
 	}
     }
 
-    static protected class Appearance implements ListArea.Appearance
+    static protected class Appearance extends ListUtils.AbstractAppearance<Object>
     {
 protected final Luwrain luwrain;
 protected final Strings strings;
-
 	Appearance(Luwrain luwrain, Strings strings)
 	{
 	    NullCheck.notNull(luwrain, "luwrain");
@@ -201,7 +196,6 @@ protected final Strings strings;
 	    this.luwrain = luwrain;
 	    this.strings = strings;
 	}
-
 	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
 	    NullCheck.notNull(item, "item");
@@ -223,22 +217,5 @@ protected final Strings strings;
 	    }
 	    luwrain.speak(item.toString());
 	}
-
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    return item.toString();
-	}
-
-	@Override public int getObservableLeftBound(Object item)
-	{
-	    return 0;
-	}
-
-	@Override public int getObservableRightBound(Object item)
-	{
-	    return item != null?item.toString().length():0;
-	}
-    }
+}
 }
