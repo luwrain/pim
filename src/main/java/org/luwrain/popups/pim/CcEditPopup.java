@@ -115,7 +115,7 @@ protected boolean openSubfolder()
 	final EditableListArea.Params params = new EditableListArea.Params();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
-	params.model = new ListUtils.DefaultEditableModel();
+	params.model = new ListUtils.DefaultEditableModel(Object.class);
 	params.appearance = new ListUtils.DefaultAppearance(params.context);
 	return params;
     }
