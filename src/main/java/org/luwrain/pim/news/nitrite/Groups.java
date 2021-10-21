@@ -29,7 +29,7 @@ import org.luwrain.pim.news.*;
 
 final class Groups implements NewsGroups
 {
-        static private final Type _LIST_TYPE = new TypeToken<List<Group>>(){}.getType();
+        static private final Type LIST_TYPE = new TypeToken<List<Group>>(){}.getType();
 
     private final Gson gson = new Gson();
     private final org.luwrain.pim.news.Settings sett;
@@ -39,26 +39,49 @@ final class Groups implements NewsGroups
     {
 	NullCheck.notNull(registry, "registry");
 		this.sett = org.luwrain.pim.news.Settings.create(registry);registry = registry;
-
     }
 
-    @Override public NewsGroup[] load()
+    @Override public synchronized Group[] load()
     {
+	if (this.groups != null)
+	    return this.groups.toArray(new Group[this.groups.size()]);
+final List<Group> res = gson.fromJson(sett.getGroups(""), LIST_TYPE);
+this.groups = new ArrayList<>();
+if (res != null)
+    for(Group g: res)
+	if (g != null)
+	    this.groups.add(g);
+		    return this.groups.toArray(new Group[this.groups.size()]);
+    }
+
+    synchronized void save()
+    {
+	if (this.groups != null)
+	    this.sett.setGroups(gson.toJson(this.groups));
+    }
+
+    @Override public synchronized NewsGroup loadById(int id)
+    {
+	for(Group g: load())
+	    if (g.id == id)
+		return g;
 	return null;
     }
 
-    @Override public NewsGroup loadById(int id)
-    {
-	return null;
-    }
-
-    @Override public void save(NewsGroup group) throws PimException
+    @Override public synchronized void save(NewsGroup group) throws PimException
     {
 	NullCheck.notNull(group, "group");
-    }
+	load();
+	final Group g = new Group();
+	g.id = sett.getNextGroupId(0);
+	sett.setNextGroupId(g.id + 1);
+	g.groups = this;
+	g.copyValues(group);
+	this.groups.add(g);
+	save();
+	    }
 
-    @Override public void delete(NewsGroup group)
+    @Override public synchronized void delete(NewsGroup group)
     {
     }
-
 }

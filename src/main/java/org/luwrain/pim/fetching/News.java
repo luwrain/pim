@@ -27,7 +27,7 @@ import org.luwrain.core.events.SystemEvent;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
 
-public class News extends Base
+public final class News extends Base
 {
     private final NewsStoring storing;
 
@@ -41,55 +41,56 @@ public class News extends Base
     {
 	if (storing == null)
 	{
-message(strings.noNewsGroupsData());
+	    message(strings.noNewsGroupsData());
 	    return;
 	}
 	final NewsGroup[] groups;
-	    groups = storing.getGroups().load();
+	groups = storing.getGroups().load();
 	if (groups == null || groups.length < 1)
 	{
-message(strings.noNewsGroups());
+	    message(strings.noNewsGroups());
 	    return;
 	}
 	for(NewsGroup g: groups)
 	{
 	    if (!fetchGroup(g))
 		return;
-checkInterrupted();
+	    checkInterrupted();
 	}
     }
 
     protected boolean 		fetchGroup(NewsGroup group) throws InterruptedException
     {
-	    final List<NewsArticle> freshNews = new LinkedList();
-	    int totalCount = 0;
-	    final String[] urls = group.getUrls();
-	    for (int k = 0;k < urls.length;k++)
-	    {
-checkInterrupted();
-		NewsArticle[] articles = null;
-				try {
-
-		    articles = FeedUtils.readFeed(new URL(urls[k]));
-		}
-		catch(PimException  | MalformedURLException e)
+	final List<NewsArticle> freshNews = new LinkedList();
+	int totalCount = 0;
+	final List<String> urls = group.getUrls();
+	if (urls != null)
+	    for (String url: urls)
+		if (url != null && !url.trim().isEmpty())
 		{
-message(strings.newsFetchingError(group.getName()) + ":" + e.getMessage());
-		    return true;
+		    checkInterrupted();
+		    NewsArticle[] articles = null;
+		    try {
+			articles = FeedUtils.readFeed(new URL(url.trim()));
+		    }
+		    catch(PimException  | MalformedURLException e)
+		    {
+			message(strings.newsFetchingError(group.getName()) + ":" + e.getMessage());
+			return true;
+		    }
+		    totalCount += articles.length;
+		    for(NewsArticle a: articles)
+			if (storing.getArticles().countByUriInGroup(group, a.getUri()) == 0)
+			    freshNews.add(a);
 		}
-		totalCount += articles.length;
-		for(NewsArticle a: articles)
-		    if (storing.getArticles().countByUriInGroup(group, a.getUri()) == 0)
-			freshNews.add(a);
-	    }
-	    for(NewsArticle a: freshNews)
-	    {
-storing.getArticles().save(group, a);
-checkInterrupted();
-	    }
-	    if (freshNews.size() > 0 )
-message(group.getName() + ": " + freshNews.size() + "/" + totalCount);
-luwrain.sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.REFRESH, "", "newsgroup:"));
-	    return true;
+	for(NewsArticle a: freshNews)
+	{
+	    storing.getArticles().save(group, a);
+	    checkInterrupted();
+	}
+	if (freshNews.size() > 0 )
+	    message(group.getName() + ": " + freshNews.size() + "/" + totalCount);
+	luwrain.sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.REFRESH, "", "newsgroup:"));
+	return true;
     }
 }

@@ -19,17 +19,30 @@
 
 package org.luwrain.pim.news;
 
+import java.util.*;
 import lombok.*;
+
+import org.luwrain.core.*;
 
 @Data
 @NoArgsConstructor
 public class NewsGroup implements Comparable
 {
-    private String name ="";
-    private String[] urls = new String[0];
+    private String name = "";
+    private List<String> urls = new ArrayList<String>();
     private String mediaContentType = "";
     private int orderIndex = 0;
     private int expireAfterDays = 30;
+
+    public void copyValues(NewsGroup g)
+    {
+	NullCheck.notNull(g, "g");
+	this.name = g.name;
+	this.urls = g.urls;
+	this.mediaContentType = g.mediaContentType;
+	this.orderIndex = g.orderIndex;
+	this.expireAfterDays = g.expireAfterDays;
+    }
 
     @Override public String toString()
     {

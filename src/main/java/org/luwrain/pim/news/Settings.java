@@ -43,8 +43,10 @@ void setInitProc(String value);
 
     String getGroups(String defValue);
     void setGroups(String value);
+    int getNextGroupId(int defValue);
+    void setNextGroupId(int value);
 
-        static public Settings create(Registry registry)
+    static public Settings create(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, PATH, Settings.class);
