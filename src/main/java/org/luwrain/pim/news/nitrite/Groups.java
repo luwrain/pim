@@ -33,9 +33,9 @@ class Groups implements NewsGroups
 	this.registry = registry;
     }
 
-    @Override public StoredNewsGroup[] load() throws PimException
+    @Override public NewsGroup[] load()
     {
-	    final LinkedList<StoredNewsGroup> groups = new LinkedList<StoredNewsGroup>();
+	    final List<NewsGroup> groups = new ArrayList<>();
 	    for(String s: registry.getDirectories(org.luwrain.pim.news.Settings.GROUPS_PATH))
 	    {
 		if (s.isEmpty())
@@ -53,12 +53,12 @@ class Groups implements NewsGroups
 		g.load();
 		    groups.add(g);
 	    }
-final StoredNewsGroup[] res = groups.toArray(new StoredNewsGroup[groups.size()]);
+final NewsGroup[] res = groups.toArray(new NewsGroup[groups.size()]);
 Arrays.sort(res);
 return res;
     }
 
-    @Override public StoredNewsGroup loadById(int id) throws PimException
+    @Override public NewsGroup loadById(int id)
     {
 	final Group group = new Group(registry, id);
 	group.load();
@@ -72,13 +72,13 @@ return res;
 	final String path = Registry.join(org.luwrain.pim.news.Settings.GROUPS_PATH, "" + id);
 	registry.addDirectory(path);
 	final org.luwrain.pim.news.Settings.Group settings = org.luwrain.pim.news.Settings.createGroup(registry, path);
-	settings.setName(group.name);
-	settings.setOrderIndex(group.orderIndex);
-	settings.setExpireDays(group.expireAfterDays);
-	settings.setMediaContentType(group.mediaContentType);
+	settings.setName(group.getName());
+	settings.setOrderIndex(group.getOrderIndex());
+	settings.setExpireDays(group.getExpireAfterDays());
+	settings.setMediaContentType(group.getMediaContentType());
     }
 
-    @Override public void delete(StoredNewsGroup group) throws PimException
+    @Override public void delete(NewsGroup group)
     {
 	if (!(group instanceof Group))
 	    return;

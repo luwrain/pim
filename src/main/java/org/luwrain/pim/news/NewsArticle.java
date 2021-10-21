@@ -20,17 +20,20 @@
 package org.luwrain.pim.news;
 
 import java.util.*;
+import lombok.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 
-public class NewsArticle implements StoredNewsArticle, Comparable
+@Data
+@NoArgsConstructor
+public class NewsArticle implements Comparable
 {
     public static final int NEW = 0;
     public static final int READ = 1;
     public static final int MARKED = 2;
 
-    private int state = 0;
+    private int state = NEW;
     private String sourceUrl = "";
     private String sourceTitle = "";
     private String uri = "";
@@ -44,139 +47,9 @@ public class NewsArticle implements StoredNewsArticle, Comparable
     private Date updatedDate = new Date();
     private String content = "";
 
-    public   int getState()
+    public void save()
     {
-	return state;
-    }
-
-    public   void setState(int state)
-    {
-	this.state = state;
-    }
-
-    public   String getSourceUrl()
-    {
-	return sourceUrl;
-    }
-
-    public   void setSourceUrl(String sourceUrl)
-    {
-	this.sourceUrl = sourceUrl;
-    }
-
-    public   String getSourceTitle()
-    {
-	return sourceTitle;
-    }
-
-    public   void setSourceTitle(String sourceTitle)
-    {
-	this.sourceTitle = sourceTitle;
-    }
-
-    public   String getUri()
-    {
-	return uri;
-    }
-
-    public   void setUri(String uri)
-    {
-	this.uri = uri;
-    }
-
-    public   String getTitle()
-    {
-	return this.title;
-    }
-
-    public   void setTitle(String title)
-    {
-	NullCheck.notNull(title, "title");
-	this.title = title;
-    }
-
-    public   String getExtTitle()
-    {
-	return extTitle;
-    }
-
-    public   void setExtTitle(String extTitle)
-    {
-	this.extTitle = extTitle;
-    }
-
-    public   String getUrl()
-    {
-	return url;
-    }
-
-    public   void setUrl(String url)
-    {
-	this.url = url;
-    }
-
-    public   String getDescr()
-    {
-	return descr;
-    }
-
-    public   void setDescr(String descr)
-    {
-	this.descr = descr;
-    }
-
-    public   String getAuthor()
-    {
-	return author;
-    }
-
-    public   void setAuthor(String authro)
-    {
-	this.author = author;
-    }
-
-    public   String getCategories()
-    {
-	return categories;
-    }
-
-    public   void setCategories(String categories)
-    {
-	this.categories = categories;
-    }
-
-    public   java.util.Date getPublishedDate()
-    {
-	return publishedDate;
-    }
-
-    public   void setPublishedDate(java.util.Date publishedDate)
-    {
-	this.publishedDate = publishedDate;
-    }
-
-    public   java.util.Date getUpdatedDate()
-    {
-	return updatedDate;
-    }
-
-    public   void setUpdatedDate(java.util.Date updatedDate)
-    {
-	this.updatedDate = updatedDate;
-    }
-
-    public   String getContent()
-    {
-	return content;
-    }
-
-    public   void setContent(String content)
-    {
-	this.content = content;
-    }
-
-    public void save() throws PimException
-    {
+	throw new RuntimeException("You shouldn't call NewsArticle.save() directly");
     }
 
     public void copyValues(NewsArticle article)
@@ -216,6 +89,6 @@ public class NewsArticle implements StoredNewsArticle, Comparable
 
     @Override public String toString()
     {
-	return this.title != null?title:"";
+	return this.title != null?title.trim():"";
     }
 }

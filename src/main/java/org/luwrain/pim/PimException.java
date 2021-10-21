@@ -19,7 +19,7 @@
 
 package org.luwrain.pim;
 
-public class PimException extends Exception
+public class PimException extends RuntimeException
 {
     public PimException(Throwable cause)
     {

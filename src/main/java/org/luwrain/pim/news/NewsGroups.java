@@ -24,8 +24,8 @@ import org.luwrain.pim.news.*;
 
 public interface NewsGroups
 {
-    StoredNewsGroup[] load() throws PimException;
-    StoredNewsGroup loadById(int id) throws PimException;
-    void save(NewsGroup group) throws PimException;
-    void delete(StoredNewsGroup group) throws PimException;
+    void delete(NewsGroup group);
+    NewsGroup[] load();
+    NewsGroup loadById(int id);
+    void save(NewsGroup group);
 }

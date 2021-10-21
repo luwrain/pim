@@ -23,7 +23,7 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
 
-class Group extends NewsGroup implements StoredNewsGroup
+class Group extends NewsGroup
 {
     private final Registry registry;
     private final org.luwrain.pim.news.Settings.Group settings;
@@ -40,56 +40,31 @@ class Group extends NewsGroup implements StoredNewsGroup
 	this.settings = org.luwrain.pim.news.Settings.createGroup(registry, getPath());
     }
 
-    @Override public long getId()
+    long getId()
     {
 	return id;
 }
-
-    @Override public String getName()
-    {
-	return name;
-    }
-
-    @Override public String getMediaContentType()
-    {
-	return mediaContentType;
-    }
-
-    @Override public int getOrderIndex()
-    {
-	return orderIndex;
-    }
-
-    @Override public int getExpireAfterDays()
-    {
-	return expireAfterDays;
-    }
-
-    @Override public String[] getUrls()
-    {
-	return urls;
-    }
 
     @Override public void setName(String name)
     {
 	NullCheck.notNull(name, "name");
 	    settings.setName(name);
-	    this.name = name;
+	    super.setName(name);
     }
 
     @Override public void setMediaContentType(String value)
     {
 	NullCheck.notNull(value, "value");
 	    settings.setMediaContentType(value);
-	    this.mediaContentType = value;
+	    //	    this.mediaContentType = value;
     }
 
     @Override public void setOrderIndex(int index)
     {
-	if (orderIndex < 0)
-	    throw new IllegalArgumentException("orderIndex (" + orderIndex + ") may not be negative");
+	if (index < 0)
+	    throw new IllegalArgumentException("orderIndex (" + String.valueOf(index) + ") may not be negative");
 		settings.setOrderIndex(index);
-		this.orderIndex = index;
+		//		this.orderIndex = index;
     }
 
     @Override public void setExpireAfterDays(int count)
@@ -97,7 +72,7 @@ class Group extends NewsGroup implements StoredNewsGroup
 	if (count < 0)
 	    throw new IllegalArgumentException("count (" + count + ") may not be negative");
 		settings.setExpireDays(count);
-		this.expireAfterDays = count;
+		//		this.expireAfterDays = count;
     }
 
     @Override public void setUrls(String[] urls) throws PimException
@@ -131,6 +106,7 @@ old.add(path);
 
     void load()
     {
+	/*
 	final String path = getPath();
 name = settings.getName("");
 expireAfterDays = settings.getExpireDays(0);
@@ -151,6 +127,7 @@ mediaContentType = settings.getMediaContentType("");
 		urls.add(value);
 	}
 	this.urls = urls.toArray(new String[urls.size()]);
+	*/
     }
 
     boolean delete()

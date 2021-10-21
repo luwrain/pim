@@ -44,7 +44,7 @@ final class Articles implements NewsArticles
 	this.repo = this.db.getRepository(Article.class);
     }
 
-    @Override public void save(StoredNewsGroup newsGroup, NewsArticle article) throws PimException
+    @Override public void save(NewsGroup newsGroup, NewsArticle article) throws PimException
     {
 	NullCheck.notNull(newsGroup, "newsGroup");
 	final Group g = (Group)newsGroup;
@@ -64,12 +64,12 @@ final class Articles implements NewsArticles
 	}
     }
 
-    @Override public     StoredNewsArticle[] load(StoredNewsGroup group) throws PimException
+    @Override public     NewsArticle[] load(NewsGroup group)
     {
 	final Group g = (Group)group;
 	NullCheck.notNull(group, "group");
 	try {
-	    return (StoredNewsArticle[])storing.execInQueue(()->{
+	    return (NewsArticle[])storing.execInQueue(()->{
 		    final List<Article> res = new LinkedList();
 		    final Cursor<Article> c = this.repo.find(eq("groupId", g.id));
 		    for(Article a: c)
@@ -86,12 +86,12 @@ final class Articles implements NewsArticles
 	}
     }
 
-    @Override public     StoredNewsArticle[] loadWithoutRead(StoredNewsGroup newsGroup) throws PimException
+    @Override public     NewsArticle[] loadWithoutRead(NewsGroup newsGroup)
     {
 	NullCheck.notNull(newsGroup, "newsGroup");
 	final Group g = (Group)newsGroup;
 	try {
-	    return (StoredNewsArticle[])storing.execInQueue(()->{
+	    return (NewsArticle[])storing.execInQueue(()->{
 		    final List<Article> res = new LinkedList();
 		    final Cursor<Article> c = this.repo.find(and( eq("groupId", g.id), not(eq("state", NewsArticle.READ))));
 		    for(Article a: c)
@@ -108,7 +108,7 @@ final class Articles implements NewsArticles
 	}
     }
 
-    @Override public int countByUriInGroup(StoredNewsGroup newsGroup, String uri) throws PimException
+    @Override public int countByUriInGroup(NewsGroup newsGroup, String uri)
     {
 	NullCheck.notEmpty(uri, "uri");
 	final Group g = (Group)newsGroup;
@@ -116,7 +116,7 @@ final class Articles implements NewsArticles
 	return c.totalCount();
     }
 
-    @Override public int countNewInGroup(StoredNewsGroup group) throws PimException
+    @Override public int countNewInGroup(NewsGroup group) throws PimException
     {
 	NullCheck.notNull(group, "group");
 	if (!(group instanceof Group))
@@ -133,7 +133,7 @@ final class Articles implements NewsArticles
 	}
     }
 
-    @Override public int[] countNewInGroups(StoredNewsGroup[] groups) throws PimException
+    @Override public int[] countNewInGroups(NewsGroup[] groups) throws PimException
     {
 	NullCheck.notNullItems(groups, "groups");
 	final Group[] g = Arrays.copyOf(groups, groups.length, Group[].class);
@@ -158,7 +158,7 @@ final class Articles implements NewsArticles
 	}
     }
 
-    @Override public int[] countMarkedInGroups(StoredNewsGroup[] groups) throws PimException
+    @Override public int[] countMarkedInGroups(NewsGroup[] groups)
     {
 	NullCheck.notNullItems(groups, "groups");
 	final Group[] g = Arrays.copyOf(groups, groups.length, Group[].class);
@@ -183,7 +183,7 @@ final class Articles implements NewsArticles
 	}
     }
 
-    @Override public Set<String> loadUrisInGroup(StoredNewsGroup group) throws PimException
+    @Override public Set<String> loadUrisInGroup(NewsGroup group)
     {
 	NullCheck.notNull(group, "group");
 	final Group g = (Group)group;

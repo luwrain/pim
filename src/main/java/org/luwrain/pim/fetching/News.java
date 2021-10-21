@@ -30,7 +30,7 @@ import org.luwrain.pim.news.*;
 public class News extends Base
 {
     private final NewsStoring storing;
-    
+
     public News(Control control, Strings strings)
     {
 	super(control, strings);
@@ -44,21 +44,14 @@ public class News extends Base
 message(strings.noNewsGroupsData());
 	    return;
 	}
-	final StoredNewsGroup[] groups;
-	try {
+	final NewsGroup[] groups;
 	    groups = storing.getGroups().load();
-	}
-	catch (PimException e)
-	{
-crash(e);
-	    return;
-	}
 	if (groups == null || groups.length < 1)
 	{
 message(strings.noNewsGroups());
 	    return;
 	}
-	for(StoredNewsGroup g: groups)
+	for(NewsGroup g: groups)
 	{
 	    if (!fetchGroup(g))
 		return;
@@ -66,9 +59,8 @@ checkInterrupted();
 	}
     }
 
-    protected boolean 		fetchGroup(StoredNewsGroup group) throws InterruptedException
+    protected boolean 		fetchGroup(NewsGroup group) throws InterruptedException
     {
-	try {
 	    final List<NewsArticle> freshNews = new LinkedList();
 	    int totalCount = 0;
 	    final String[] urls = group.getUrls();
@@ -76,7 +68,8 @@ checkInterrupted();
 	    {
 checkInterrupted();
 		NewsArticle[] articles = null;
-		try {
+				try {
+
 		    articles = FeedUtils.readFeed(new URL(urls[k]));
 		}
 		catch(PimException  | MalformedURLException e)
@@ -98,11 +91,5 @@ checkInterrupted();
 message(group.getName() + ": " + freshNews.size() + "/" + totalCount);
 luwrain.sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.REFRESH, "", "newsgroup:"));
 	    return true;
-	}
-	catch(PimException e)
-	{
-crash(e);
-	    return false;
-	}
     }
 }

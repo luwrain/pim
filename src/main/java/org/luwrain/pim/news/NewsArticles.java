@@ -26,12 +26,12 @@ import org.luwrain.pim.news.*;
 
 public interface NewsArticles
 {
-    void save(StoredNewsGroup newsGroup, NewsArticle article) throws PimException;
-    StoredNewsArticle[] load(StoredNewsGroup newsGroup) throws PimException;
-    StoredNewsArticle[] loadWithoutRead(StoredNewsGroup newsGroup) throws PimException;
-    Set<String> loadUrisInGroup(StoredNewsGroup group) throws PimException;
-    int countByUriInGroup(StoredNewsGroup newsGroup, String uri) throws PimException;
-    int countNewInGroup(StoredNewsGroup group) throws PimException;
-    int[] countNewInGroups(StoredNewsGroup[] groups) throws PimException;
-    int[] countMarkedInGroups(StoredNewsGroup[] groups) throws PimException;
+    int[] countMarkedInGroups(NewsGroup[] groups);
+    int countNewInGroup(NewsGroup group);
+    int[] countNewInGroups(NewsGroup[] groups);
+    int countByUriInGroup(NewsGroup newsGroup, String uri);
+    NewsArticle[] load(NewsGroup newsGroup);
+    Set<String> loadUrisInGroup(NewsGroup group);
+    NewsArticle[] loadWithoutRead(NewsGroup newsGroup);
+    void save(NewsGroup newsGroup, NewsArticle article);
 }

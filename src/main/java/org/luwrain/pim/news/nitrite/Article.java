@@ -57,7 +57,7 @@ final class Article extends NewsArticle
 	this.repo = repo;
     }
 
-    @Override public void save() throws PimException
+    @Override public void save()
     {
 	verifyStoring();
 	try {

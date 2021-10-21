@@ -19,17 +19,21 @@
 
 package org.luwrain.pim.news;
 
+import lombok.*;
+
+@Data
+@NoArgsConstructor
 public class NewsGroup implements Comparable
 {
-    public String name ="";
-    public String[] urls = new String[0];
-    public String mediaContentType = "";
-    public int orderIndex = 0;
-    public int expireAfterDays = 30;
+    private String name ="";
+    private String[] urls = new String[0];
+    private String mediaContentType = "";
+    private int orderIndex = 0;
+    private int expireAfterDays = 30;
 
     @Override public String toString()
     {
-	return name;
+	return name != null?name.trim():"";
     }
 
     @Override public int compareTo(Object o)
