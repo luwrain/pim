@@ -30,7 +30,6 @@ public final class Factory
 
     private final Luwrain luwrain;
     private final Registry registry;
-    //    private final Settings.Storing sett;
     private final ExecQueues execQueues = new ExecQueues();
     private final File file;
     private Nitrite db = null;
@@ -40,7 +39,6 @@ public final class Factory
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.registry = luwrain.getRegistry();
-	//	this.sett = Settings.createStoring(registry);
 	this.execQueues.start();
 	this.file = new File(luwrain.getAppDataDir("luwrain.pim.news").toFile(), "news.nitrite");
     }
@@ -49,11 +47,10 @@ public final class Factory
     {
 	if (db != null)
 	    return new org.luwrain.pim.news.nitrite.Storing(registry, db, execQueues, highPriority);
-			this.db = Nitrite.builder()
-        .compressed()
+	this.db = Nitrite.builder()
         .filePath(file)
         .openOrCreate("luwrain", "passwd");
-		return new org.luwrain.pim.news.nitrite.Storing(registry, this.db, execQueues, highPriority);
+	return new org.luwrain.pim.news.nitrite.Storing(registry, this.db, execQueues, highPriority);
     }
 
     public void close()

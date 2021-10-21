@@ -46,29 +46,13 @@ public final class Storing implements NewsStoring
 	this.groups = new Groups(registry);
     }
 
-    @Override public NewsArticles getArticles()
-    {
-	return articles;
-    }
-
-    @Override public NewsGroups getGroups()
-    {
-	return groups;
-    }
-
-    @Override public Object clone()
-    {
-	return null;
-    }
+    @Override public NewsArticles getArticles() { return articles; }
+    @Override public NewsGroups getGroups() { return groups; }
+    Nitrite getDb() { return this.db; }
 
     Object execInQueue(Callable callable) throws Exception
     {
 	NullCheck.notNull(callable, "callable");
 	return execQueues.exec(new FutureTask(callable), highPriority);
-    }
-
-    Nitrite getDb()
-    {
-	return this.db;
     }
 }

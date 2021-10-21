@@ -27,5 +27,4 @@ public interface NewsStoring extends Cloneable
 {
     NewsGroups getGroups();
     NewsArticles getArticles();
-    Object clone();
 }
