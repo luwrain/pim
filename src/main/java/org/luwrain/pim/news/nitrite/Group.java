@@ -26,7 +26,6 @@ import org.luwrain.pim.news.*;
 class Group extends NewsGroup
 {
     private final Registry registry;
-    private final org.luwrain.pim.news.Settings.Group settings;
 
     final int id;
 
@@ -37,7 +36,6 @@ class Group extends NewsGroup
 	NullCheck.notNull(registry, "registry");
 	this.registry = registry;
 	this.id = (int)id;
-	this.settings = org.luwrain.pim.news.Settings.createGroup(registry, getPath());
     }
 
     long getId()
@@ -48,14 +46,12 @@ class Group extends NewsGroup
     @Override public void setName(String name)
     {
 	NullCheck.notNull(name, "name");
-	    settings.setName(name);
 	    super.setName(name);
     }
 
     @Override public void setMediaContentType(String value)
     {
 	NullCheck.notNull(value, "value");
-	    settings.setMediaContentType(value);
 	    //	    this.mediaContentType = value;
     }
 
@@ -63,7 +59,6 @@ class Group extends NewsGroup
     {
 	if (index < 0)
 	    throw new IllegalArgumentException("orderIndex (" + String.valueOf(index) + ") may not be negative");
-		settings.setOrderIndex(index);
 		//		this.orderIndex = index;
     }
 
@@ -71,30 +66,8 @@ class Group extends NewsGroup
     {
 	if (count < 0)
 	    throw new IllegalArgumentException("count (" + count + ") may not be negative");
-		settings.setExpireDays(count);
 		//		this.expireAfterDays = count;
     }
-
-    @Override public void setUrls(String[] urls) throws PimException
-    {
-	NullCheck.notNullItems(urls, "urls");
-	final String[] values = registry.getValues(getPath());
-	final List<String> old = new LinkedList();
-	for(String s: values)
-	{
-	    final String path = Registry.join(getPath(), s);
-	    if (s.indexOf("url") < 0 || registry.getTypeOf(path) != Registry.STRING)
-		continue;
-old.add(path);
-	}
-	for (String s: old)
-	    registry.deleteValue(s);
-	int k = 1;
-	for(String s: urls)
-	    if (!s.trim().isEmpty())
-		registry.setString(Registry.join(getPath(), "url" + (k++)), s);
-    }
-
 
     @Override public boolean equals(Object o)
     {
@@ -130,13 +103,4 @@ mediaContentType = settings.getMediaContentType("");
 	*/
     }
 
-    boolean delete()
-    {
-	return registry.deleteDirectory(getPath());
-    }
-
-    private String getPath()
-    {
-	return Registry.join(org.luwrain.pim.news.Settings.GROUPS_PATH, "" + id);
-    }
 }

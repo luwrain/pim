@@ -21,8 +21,9 @@ import org.luwrain.core.*;
 
 public interface Settings
 {
-    static public final String STORING_PATH = "/org/luwrain/pim/news/storing";
-    static public final String GROUPS_PATH = "/org/luwrain/pim/news/groups";
+    static public final String
+PATH = "/org/luwrain/pim/news",
+	STORING_PATH = "/org/luwrain/pim/news/storing";
 
     public interface Storing
     {
@@ -40,24 +41,15 @@ void setPasswd(String value);
 void setInitProc(String value);
 }
 
-    public interface Group
-    {
-	String getName(String defValue);
-	void setName(String value);
-	int getExpireDays(int defValue);
-	void setExpireDays(int value);
-	int getOrderIndex(int defValue);
-	void setOrderIndex(int value);
-	String getMediaContentType(String defValue);
-	void setMediaContentType(String defValue);
-    }
+    String getGroups(String defValue);
+    void setGroups(String value);
 
-    static public Group createGroup(Registry registry, String path)
+        static public Settings create(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(path, "path");
-	return RegistryProxy.create(registry, path, Group.class);
+	return RegistryProxy.create(registry, PATH, Settings.class);
     }
+
 
     static public Storing createStoring(Registry registry)
     {
