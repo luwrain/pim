@@ -29,7 +29,7 @@ import org.luwrain.pim.news.*;
 
 final class Groups implements NewsGroups
 {
-        static private final Type LIST_TYPE = new TypeToken<List<Group>>(){}.getType();
+    static private final Type LIST_TYPE = new TypeToken<List<Group>>(){}.getType();
 
     private final Gson gson = new Gson();
     private final org.luwrain.pim.news.Settings sett;
@@ -38,20 +38,20 @@ final class Groups implements NewsGroups
     Groups(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-		this.sett = org.luwrain.pim.news.Settings.create(registry);registry = registry;
+	this.sett = org.luwrain.pim.news.Settings.create(registry);registry = registry;
     }
 
     @Override public synchronized Group[] load()
     {
 	if (this.groups != null)
 	    return this.groups.toArray(new Group[this.groups.size()]);
-final List<Group> res = gson.fromJson(sett.getGroups(""), LIST_TYPE);
-this.groups = new ArrayList<>();
-if (res != null)
-    for(Group g: res)
-	if (g != null)
-	    this.groups.add(g);
-		    return this.groups.toArray(new Group[this.groups.size()]);
+	final List<Group> res = gson.fromJson(sett.getGroups(""), LIST_TYPE);
+	this.groups = new ArrayList<>();
+	if (res != null)
+	    for(Group g: res)
+		if (g != null)
+		    this.groups.add(g);
+	return this.groups.toArray(new Group[this.groups.size()]);
     }
 
     synchronized void save()
@@ -79,9 +79,16 @@ if (res != null)
 	g.copyValues(group);
 	this.groups.add(g);
 	save();
-	    }
+    }
 
     @Override public synchronized void delete(NewsGroup group)
     {
+	NullCheck.notNull(group, "group");
+	final Group g = (Group)group;
+	load();
+	for(int i = 0;i < this.groups.size();i++)
+	    if (this.groups.get(i).id == g.id)
+		this.groups.remove(i);
+	save();
     }
 }

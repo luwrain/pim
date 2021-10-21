@@ -49,7 +49,7 @@ public class NewsArticle implements Comparable
 
     public void save()
     {
-	throw new RuntimeException("You shouldn't call NewsArticle.save() directly");
+	throw new UnsupportedOperationException("You can't call this method directly");
     }
 
     public void copyValues(NewsArticle article)

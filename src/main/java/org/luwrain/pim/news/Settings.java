@@ -22,24 +22,7 @@ import org.luwrain.core.*;
 public interface Settings
 {
     static public final String
-PATH = "/org/luwrain/pim/news",
-	STORING_PATH = "/org/luwrain/pim/news/storing";
-
-    public interface Storing
-    {
-	String getType(String defValue);
-	String getDriver(String defValue);
-	String getUrl(String defValue);
-    String getLogin(String defValue);
-String getPasswd(String defValue);
-String getInitProc(String defValue);
-void setType(String value);
-void setDriver(String value);
-void setUrl(String value);
-void setLogin(String value);
-void setPasswd(String value);
-void setInitProc(String value);
-}
+	PATH = "/org/luwrain/pim/news";
 
     String getGroups(String defValue);
     void setGroups(String value);
@@ -50,12 +33,5 @@ void setInitProc(String value);
     {
 	NullCheck.notNull(registry, "registry");
 	return RegistryProxy.create(registry, PATH, Settings.class);
-    }
-
-
-    static public Storing createStoring(Registry registry)
-    {
-	NullCheck.notNull(registry, "registry");
-	return RegistryProxy.create(registry, STORING_PATH, Storing.class);
     }
 }

@@ -28,6 +28,11 @@ final class Group extends NewsGroup
 int id = 0;
     transient Groups groups = null;
 
+    @Override public void save()
+    {
+	groups.save();
+    }
+
     @Override public boolean equals(Object o)
     {
 	if (o == null || !(o instanceof Group))

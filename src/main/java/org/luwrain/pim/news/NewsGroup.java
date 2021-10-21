@@ -44,6 +44,11 @@ public class NewsGroup implements Comparable
 	this.expireAfterDays = g.expireAfterDays;
     }
 
+    public void save()
+    {
+	throw new UnsupportedOperationException("You can't call this method directly");
+    }
+
     @Override public String toString()
     {
 	return name != null?name.trim():"";
