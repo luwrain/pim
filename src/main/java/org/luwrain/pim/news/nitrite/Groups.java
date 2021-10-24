@@ -50,7 +50,10 @@ final class Groups implements NewsGroups
 	if (res != null)
 	    for(Group g: res)
 		if (g != null)
+		{
+		    g.groups = this;
 		    this.groups.add(g);
+		}
 	return this.groups.toArray(new Group[this.groups.size()]);
     }
 

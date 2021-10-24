@@ -25,8 +25,43 @@ import org.luwrain.pim.news.*;
 
 final class Group extends NewsGroup
 {
-int id = 0;
+    int id = 0;
     transient Groups groups = null;
+
+    @Override public void setName(String value)
+    {
+	synchronized(groups) {
+	    super.setName(value);
+	}
+    }
+
+    @Override public void setUrls(List<String> value)
+    {
+	synchronized(groups) {
+	    super.setUrls(value);
+	}
+    }
+
+    @Override public void setMediaContentType(String value)
+    {
+	synchronized(groups) {
+	    super.setMediaContentType(value);
+	}
+    }
+
+    @Override public void setOrderIndex(int value)
+    {
+	synchronized(groups) {
+	    super.setOrderIndex(value);
+	}
+    }
+
+    @Override public void setExpireAfterDays(int value)
+    {
+	synchronized(groups) {
+	    super.setExpireAfterDays(value);
+	}
+    }
 
     @Override public void save()
     {
