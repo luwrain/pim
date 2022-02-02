@@ -36,7 +36,7 @@ final class Article extends NewsArticle
     private transient Storing storing;
     private transient ObjectRepository<Article> repo = null;
 
-    private String id = null;
+    String id = null;
     private int groupId;
 
     public int getGroupId()
@@ -83,5 +83,13 @@ final class Article extends NewsArticle
     public void genNewId()
     {
 	this.id = UUID.randomUUID().toString();
+    }
+
+    @Override public boolean equals(Object o)
+    {
+	if (!(o instanceof Article))
+	    return false;
+	final Article a = (Article)o;
+	return id.equals(a.id);
     }
 }

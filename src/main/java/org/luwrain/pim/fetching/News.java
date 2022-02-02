@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -53,15 +53,17 @@ public final class News extends Base
 	}
 	for(NewsGroup g: groups)
 	{
+	    removeOldArticles(g);
+	    checkInterrupted();
 	    if (!fetchGroup(g))
 		return;
 	    checkInterrupted();
 	}
     }
 
-    protected boolean 		fetchGroup(NewsGroup group) throws InterruptedException
+    boolean 		fetchGroup(NewsGroup group) throws InterruptedException
     {
-	final List<NewsArticle> freshNews = new LinkedList();
+	final List<NewsArticle> freshNews = new ArrayList<>();
 	int totalCount = 0;
 	final List<String> urls = group.getUrls();
 	if (urls != null)
@@ -92,5 +94,22 @@ public final class News extends Base
 	    message(group.getName() + ": " + freshNews.size() + "/" + totalCount);
 	luwrain.sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.REFRESH, "", "newsgroup:"));
 	return true;
+    }
+
+    void removeOldArticles(NewsGroup group)
+    {
+	final NewsArticle[] articles = storing.getArticles().load(group);
+	for(NewsArticle a: articles)
+	if (isOldArticle(a))
+	    storing.getArticles().delete(group, a);
+    }
+
+    boolean isOldArticle(NewsArticle article)
+    {
+
+	final Calendar cal = Calendar.getInstance();
+cal.add(Calendar.MONTH, -1);
+final Date result = cal.getTime();
+return (article.getPublishedDate().compareTo(result) < 0);
     }
 }

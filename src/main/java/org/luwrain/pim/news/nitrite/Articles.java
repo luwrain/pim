@@ -64,6 +64,24 @@ final class Articles implements NewsArticles
 	}
     }
 
+        @Override public void delete(NewsGroup newsGroup, NewsArticle article) throws PimException
+    {
+	NullCheck.notNull(newsGroup, "newsGroup");
+	final Group g = (Group)newsGroup;
+	try {
+	    storing.execInQueue(()->{
+		    final Article a = (Article)article;
+		    Log.debug("proba", "Deleting " + a.id);
+		    this.repo.remove(eq("id", a.id));
+		    return null;
+		});
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
     @Override public     NewsArticle[] load(NewsGroup group)
     {
 	final Group g = (Group)group;

@@ -26,6 +26,7 @@ import org.luwrain.pim.news.*;
 
 public interface NewsArticles
 {
+    void delete(NewsGroup group, NewsArticle article);
     int[] countMarkedInGroups(NewsGroup[] groups);
     int countNewInGroup(NewsGroup group);
     int[] countNewInGroups(NewsGroup[] groups);
