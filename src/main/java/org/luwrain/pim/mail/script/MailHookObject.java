@@ -45,7 +45,7 @@ public final class MailHookObject extends EmptyHookObject
 	case "folders":
 	    return new FoldersHookObject(storing);
 	case "accounts":
-	    return new AccountsHookObject(storing);
+	    return new AccountsObj(storing);
 	    	default:
 	    return super.getMember(name);
 	}

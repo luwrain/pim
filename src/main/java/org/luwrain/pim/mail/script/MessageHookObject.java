@@ -55,7 +55,7 @@ public final class MessageHookObject extends EmptyHookObject
     @HostAccess.Export
     public Object getFrom(Value[] args)
     {
-			return new AddressHookObject(message.getFrom());
+			return new AddressObj(message.getFrom());
     }
 
     @HostAccess.Export
@@ -64,7 +64,7 @@ public final class MessageHookObject extends EmptyHookObject
 		    final List<Object> res = new ArrayList<>();
 		    for(String s: message.getCc())
 			if (s != null)
-			    res.add(new AddressHookObject(s));
+			    res.add(new AddressObj(s));
 		    return ProxyArray.fromArray(res.toArray(new HookObject[res.size()]));
     }
 

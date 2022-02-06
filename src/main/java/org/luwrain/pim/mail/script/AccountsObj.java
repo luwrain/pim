@@ -17,47 +17,37 @@
 
 package org.luwrain.pim.mail.script;
 
+import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.proxy.*;
+
 import org.luwrain.core.*;
-import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-final class AddressHookObject extends EmptyHookObject
+final class AccountsObj
 {
     static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
 
-    private final String full;
-    private final String personal;
-    private final String addr;
+    private final MailStoring storing;
 
-    AddressHookObject(String full)
+    AccountsObj(MailStoring storing)
     {
-	NullCheck.notNull(full, "full");
-	this.full = full;
-	if (!this.full.trim().isEmpty())
-	{
-	    this.personal = AddressUtils.getPersonal(full);
-	    this.addr = AddressUtils.getAddress(full);
-	} else
-	{
-	this.personal = "";
-	this.addr = "";
-	}
+	NullCheck.notNull(storing, "storing");
+	this.storing = storing;
     }
 
-        @Override public Object getMember(String name)
+    @HostAccess.Export
+    public final ProxyExecutable newAccount = (ProxyExecutable)this::newAccountImpl;
+    public Object newAccountImpl(Value[] args)
     {
-	NullCheck.notNull(name, "name");
-	switch(name)
+	try {
+	    return new AccountObj(storing.getAccounts().save(new MailAccount()));
+	}
+	catch(PimException e)
 	{
-	case "full":
-	    return full;
-	case "personal":
-	    return personal;
-	case "addr":
-	    return addr;
-	    	default:
-	    return super.getMember(name);
+	    Log.error(LOG_COMPONENT, "unable to save newly created mail account: " + e.getClass().getName() + ": " + e.getMessage());
+	    e.printStackTrace();
+	    return null;
 	}
     }
 }

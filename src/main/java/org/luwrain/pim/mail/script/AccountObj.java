@@ -28,11 +28,11 @@ import org.luwrain.pim.mail.*;
 
 import static org.luwrain.script2.ScriptUtils.*;
 
-public class AccountHookObject extends MapScriptObject
+public class AccountObj extends MapScriptObject
 {
     final MailAccount account;
 
-    public AccountHookObject(MailAccount account)
+    public AccountObj(MailAccount account)
     {
 	super(createMap(account));
 	NullCheck.notNull(account, "account");
