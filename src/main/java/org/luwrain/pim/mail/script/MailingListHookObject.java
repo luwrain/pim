@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -18,19 +18,23 @@
 package org.luwrain.pim.mail.script;
 
 import java.io.*;
+import org.graalvm.polyglot.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-final class MailingListHookObject extends EmptyHookObject
+public final class MailingListHookObject
 {
-    static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
-    static private final String HEADER_ID = "list-id:";
+    static private final String
+	LOG_COMPONENT = MailHookObject.LOG_COMPONENT,
+HEADER_ID = "list-id:";
 
-    private final String id;
-    private final String name;
+    @HostAccess.Export
+    public final String id;
+
+    @HostAccess.Export
+    public final String name;
 
     MailingListHookObject(String[] headers)
     {
@@ -60,19 +64,5 @@ final class MailingListHookObject extends EmptyHookObject
 	    this.id = idStr; else
 	    this.id = idValue.trim();
 	this.name = AddressUtils.getPersonal(idValue);
-    }
-
-    @Override public Object getMember(String name)
-    {
-	NullCheck.notNull(name, "name");
-	switch(name)
-	{
-	case "id":
-	    return this.id;
-	case "name":
-	    return this.name;
-	default:
-	    return super.getMember(name);
-	}
     }
 }

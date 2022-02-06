@@ -18,14 +18,15 @@
 package org.luwrain.pim.mail.script;
 
 import java.util.*;
-import java.util.function.*;
+
+import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-final class FolderHookObject extends EmptyHookObject
+final class FolderHookObject
 {
     static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
 
@@ -40,62 +41,27 @@ final class FolderHookObject extends EmptyHookObject
 	this.folder = folder;
     }
 
-    @Override public Object getMember(String name)
+    @HostAccess.Export
+    public ProxyExecutable getTitle = (ProxyExecutable)this::getTitleImpl;
+    public Object getTitleImpl(Value[] args)
     {
-	NullCheck.notNull(name, "name");
-	try {
-	    switch(name)
-	    {
-	    case "title":
-		return folder.getTitle();
-	    case "subfolders":
-		{
-		    final List<HookObject> res = new LinkedList();
-		    for(MailFolder f: storing.getFolders().load(folder))
-			res.add(new FolderHookObject(storing, f));
-		    return ScriptUtils.createReadOnlyArray(res.toArray(new HookObject[res.size()]));
-		}
-	    case "saveMessage":
-		return (Predicate)this::saveMessage;
-	    case "properties":
-		return new PropertiesHookObject(folder.getProperties(), "");
-	    case "saveProperties":
-		return (Supplier)this::saveProperties;
-	    case "newSubfolder":
-		return (Supplier)this::newSubfolder;
-	    default:
-		return super.getMember(name);
-	    }
-	}
-	catch(PimException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to get the member \'" + name + "\' of the mail folder:" + e.getClass().getName() + ":" + e.getMessage());
-	    return null;
-	}
+			return folder.getTitle();
     }
 
-    @Override public void setMember(String name, Object obj)
+    public Object setTitleImpl(Value[] args)
     {
-	NullCheck.notNull(name, "name");
-	final String value = ScriptUtils.getStringValue(obj);
-	if (name.isEmpty() || value == null)
-	    return;
-	switch(name)
-	{
-	case "title":
-		try {
-		    folder.setTitle(value);
-		    return;
-		}
-		catch(Exception e)
-		{
-		    Log.error(LOG_COMPONENT, "unable to set the title of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
-		    return;
-		}
-	default:
-	    return;
-	}
+	//FIXME:
+	return null;
     }
+
+    public Object getSubfolders()
+    {
+			    final List<Object> res = new ArrayList<>();
+		    for(MailFolder f: storing.getFolders().load(folder))
+			res.add(new FolderHookObject(storing, f));
+		    return ProxyArray.fromArray(res.toArray(new Object[res.size()]));
+    }
+
 
     private boolean saveMessage(Object o)
     {

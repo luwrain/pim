@@ -17,15 +17,14 @@
 
 package org.luwrain.pim.mail.script;
 
-import java.util.*;
-import java.util.function.*;
+import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-final class AccountsHookObject extends EmptyHookObject
+final class AccountsHookObject
 {
     static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
 
@@ -37,27 +36,18 @@ final class AccountsHookObject extends EmptyHookObject
 	this.storing = storing;
     }
 
-    @Override public Object getMember(String name)
-    {
-	NullCheck.notNull(name, "name");
-	switch(name)
-	{
-	case "newAccount":
-	    return (Supplier)this::newAccount;
-	default:
-	    return super.getMember(name);
-	}
-    }
-
-    private Object newAccount()
+    @HostAccess.Export
+    public final ProxyExecutable newAccount = (ProxyExecutable)this::newAccountImpl;
+    public Object newAccountImpl(Value[] args)
     {
 	try {
 	    return new AccountHookObject(storing.getAccounts().save(new MailAccount()));
 	}
 	catch(PimException e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to save newly created mail account:" + e.getClass().getName() + ":" + e.getMessage());
-	    return true;
+	    Log.error(LOG_COMPONENT, "unable to save newly created mail account: " + e.getClass().getName() + ": " + e.getMessage());
+	    e.printStackTrace();
+	    return null;
 	}
     }
 }

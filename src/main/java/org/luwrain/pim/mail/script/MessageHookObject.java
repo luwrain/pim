@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -18,6 +18,8 @@
 package org.luwrain.pim.mail.script;
 
 import java.util.*;
+import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 import org.luwrain.script.*;
@@ -38,40 +40,50 @@ public final class MessageHookObject extends EmptyHookObject
 	this.message = message;
     }
 
-    @Override public Object getMember(String name)
+    @HostAccess.Export
+    public String getSubject(Value[] args)
     {
-	NullCheck.notNull(name, "name");
-	    switch(name)
-	    {
-	    case "subject":
-		return message.getSubject ();
-	    case "text":
-		return message.getText();
-	    case "from":
-		return new AddressHookObject(message.getFrom());
-	    case "cc":
-		{
-		    final List<HookObject> res = new LinkedList();
+	return message.getSubject();
+    }
+
+    @HostAccess.Export
+    public Object getText(Value[] args)
+    {
+			return message.getText();
+    }
+
+    @HostAccess.Export
+    public Object getFrom(Value[] args)
+    {
+			return new AddressHookObject(message.getFrom());
+    }
+
+    @HostAccess.Export
+    public Object getCc(Value[] args)
+    {
+		    final List<Object> res = new ArrayList<>();
 		    for(String s: message.getCc())
 			if (s != null)
 			    res.add(new AddressHookObject(s));
-		    return ScriptUtils.createReadOnlyArray(res.toArray(new HookObject[res.size()]));
-		}
-	    case "headers":
-		if (headers == null)
+		    return ProxyArray.fromArray(res.toArray(new HookObject[res.size()]));
+    }
+
+    public Object getHeaders(Value[] args)
+    {
+			if (headers == null)
 		    headers = extractHeaders(message.getRawMessage());
-		return ScriptUtils.createReadOnlyArray(headers);
-	    case "list":
-		if (this.listHookObj == null)
+			return ProxyArray.fromArray((Object[])headers);
+    }
+
+    public Object getMailingList()
+    {
+    		if (this.listHookObj == null)
 		{
 		    if (headers == null)
 			headers = extractHeaders(message.getRawMessage());
 		    this.listHookObj = new MailingListHookObject(headers);
 		}
 		return listHookObj;
-	    default:
-		return super.getMember(name);
-	    }
     }
 
     static private String[] extractHeaders(byte[] bytes)
