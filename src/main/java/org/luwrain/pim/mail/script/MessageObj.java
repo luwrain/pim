@@ -26,7 +26,7 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-public final class MessageHookObject extends EmptyHookObject
+public final class MessageObj extends EmptyHookObject
 {
     static final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
 
@@ -34,26 +34,29 @@ public final class MessageHookObject extends EmptyHookObject
     private String[] headers = null;
     private MailingListHookObject listHookObj = null;
 
-    public MessageHookObject(MailMessage message)
+    public MessageObj(MailMessage message)
     {
 	NullCheck.notNull(message, "message");
 	this.message = message;
     }
 
     @HostAccess.Export
-    public String getSubject(Value[] args)
+    public final ProxyExecutable getSubject = (ProxyExecutable)this::getSubjectImpl;
+    private Object getSubjectImpl(Value[] args)
     {
 	return message.getSubject();
-    }
+    };
 
     @HostAccess.Export
-    public Object getText(Value[] args)
+    public final ProxyExecutable getMessageText = (ProxyExecutable)this::getMessageTextImpl;
+    private Object getMessageTextImpl(Value[] args)
     {
 			return message.getText();
     }
 
     @HostAccess.Export
-    public Object getFrom(Value[] args)
+    public final ProxyExecutable getFromAddress = (ProxyExecutable)this::getFromAddressImpl;
+    private Object getFromAddressImpl(Value[] args)
     {
 			return new AddressObj(message.getFrom());
     }

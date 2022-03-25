@@ -65,10 +65,10 @@ final class FolderHookObject
 
     private boolean saveMessage(Object o)
     {
-	if (o == null || !(o instanceof MessageHookObject))
+	if (o == null || !(o instanceof MessageObj))
 	    return false;
 	try {
-	    storing.getMessages().save(folder, ((MessageHookObject)o).message);
+	    storing.getMessages().save(folder, ((MessageObj)o).message);
 	    return true;
 	}
 	catch(PimException e)

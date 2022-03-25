@@ -123,7 +123,7 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	    Log.error(LOG_COMPONENT, "unable to create a message object:" + e.getMessage());
 	    return false;
 	}
-	final MessageHookObject hookObj = new MessageHookObject(message);
+	final MessageObj hookObj = new MessageObj(message);
 	try {
 	    Log.debug(LOG_COMPONENT, "saving the message " + num + "/" + total);
 	    return new ChainOfResponsibilityHook(luwrain).run(HOOK_NAME_SAVE, new Object[]{mailHookObject, hookObj});
