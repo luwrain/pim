@@ -22,17 +22,14 @@ import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-public final class MessageObj extends EmptyHookObject
+public final class MessageObj
 {
-    static final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
-
     final MailMessage message;
     private String[] headers = null;
-    private MailingListHookObject listHookObj = null;
+    private MailingListObj listHookObj = null;
 
     public MessageObj(MailMessage message)
     {
@@ -68,7 +65,7 @@ public final class MessageObj extends EmptyHookObject
 		    for(String s: message.getCc())
 			if (s != null)
 			    res.add(new AddressObj(s));
-		    return ProxyArray.fromArray(res.toArray(new HookObject[res.size()]));
+		    return ProxyArray.fromArray(res.toArray(new Object[res.size()]));
     }
 
     public Object getHeaders(Value[] args)
@@ -84,7 +81,7 @@ public final class MessageObj extends EmptyHookObject
 		{
 		    if (headers == null)
 			headers = extractHeaders(message.getRawMessage());
-		    this.listHookObj = new MailingListHookObject(headers);
+		    this.listHookObj = new MailingListObj(headers);
 		}
 		return listHookObj;
     }
@@ -98,7 +95,6 @@ public final class MessageObj extends EmptyHookObject
 	}
 	catch(java.io.UnsupportedEncodingException e)
 	{
-	    Log.debug(LOG_COMPONENT, "unable to decode a message to US-ASCII:" + e.getClass().getName() + ":" + e.getMessage());
 	    return new String[0];
 	}
 	final String[] lines = str.split("\n", -1);

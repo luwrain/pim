@@ -24,11 +24,11 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-public final class MailingListHookObject
+public final class MailingListObj
 {
     static private final String
-	LOG_COMPONENT = MailHookObject.LOG_COMPONENT,
-HEADER_ID = "list-id:";
+    	LOG_COMPONENT = MailHookObject.LOG_COMPONENT,
+	HEADER_ID = "list-id:";
 
     @HostAccess.Export
     public final String id;
@@ -36,7 +36,7 @@ HEADER_ID = "list-id:";
     @HostAccess.Export
     public final String name;
 
-    MailingListHookObject(String[] headers)
+    MailingListObj(String[] headers)
     {
 	NullCheck.notNullItems(headers, "headers");
 	String idValue = null;
