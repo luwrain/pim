@@ -15,6 +15,7 @@ import static org.dizitart.no2.objects.filters.ObjectFilters.and;
 import org.luwrain.core.*;
 import org.luwrain.pim.contacts.*;
 
+@Ignore
 public final class StoringTest extends Assert
 {
     @Test public void main() throws Exception
