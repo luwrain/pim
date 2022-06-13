@@ -25,7 +25,7 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-public final class MailHookObject extends EmptyHookObject
+public final class MailHookObject
 {
     static final String LOG_COMPONENT = "pim";
 
@@ -37,6 +37,7 @@ public final class MailHookObject extends EmptyHookObject
 	this.storing = storing;
     }
 
+    /*
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
@@ -50,4 +51,5 @@ public final class MailHookObject extends EmptyHookObject
 	    return super.getMember(name);
 	}
     }
+    */
 }

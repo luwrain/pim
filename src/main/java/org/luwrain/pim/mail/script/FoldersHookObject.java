@@ -25,7 +25,7 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-final class FoldersHookObject extends EmptyHookObject
+final class FoldersHookObject
 {
     static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
 
@@ -37,6 +37,7 @@ final class FoldersHookObject extends EmptyHookObject
 	this.storing = storing;
     }
 
+    /*
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
@@ -57,12 +58,13 @@ final class FoldersHookObject extends EmptyHookObject
 	    return super.getMember(name);
 	}
     }
+    */
 
     private Object findFirstByProperty(Object nameObj, Object valueObj)
     {
 	try {
-	    final String name = ScriptUtils.getStringValue(nameObj);
-	    final String value = ScriptUtils.getStringValue(valueObj);
+	    final String name = ScriptUtils.asString(nameObj);
+	    final String value = ScriptUtils.asString(valueObj);
 	    if (name == null || value == null || name.trim().isEmpty())
 		return null;
 	    final MailFolder res = storing.getFolders().findFirstByProperty(name, value);

@@ -26,7 +26,7 @@ import org.luwrain.script.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-import static org.luwrain.script2.ScriptUtils.*;
+import static org.luwrain.script.ScriptUtils.*;
 
 public class AccountObj extends MapScriptObject
 {
