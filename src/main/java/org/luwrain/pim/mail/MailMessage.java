@@ -31,25 +31,30 @@ public class MailMessage implements Comparable
 {
     public enum State {NEW, READ, MARKED, DELETED};
 
-    private String messageId = "";
-    private String subject = "";
-    private String from = "";
-    private String[] to = new String[0];
-    private String[] cc = new String[0];
-    private String[] bcc = new String[0];
-    private State state = State.NEW;
-    private Date sentDate = new Date();
-    private Date receivedDate = new Date();
-    private String text = "";
-    private String contentType = "";
-    private String[] attachments = new String[0];
-    private String extInfo = "";
+            private State state = State.NEW;
+
+    private String
+	messageId = "",
+	subject = "",
+	from = "",
+	text = "",
+	contentType = "",
+extInfo = "";
+
+    private String[]
+	to = new String[0],
+	cc = new String[0],
+	bcc = new String[0],
+attachments = new String[0];
+
+    private Date
+	sentDate = new Date(),
+	receivedDate = new Date();
 
     private transient byte[] rawMessage = new byte[0];
 
     public final void copyValues(MailMessage message)
     {
-	NullCheck.notNull(message, "message");
 	this.messageId = message.messageId;
 	this.subject = message.subject;
 	this.from = message.from;

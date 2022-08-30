@@ -35,23 +35,12 @@ import org.luwrain.util.*;
 
 final class Message extends MailMessage
 {
-    private String id = "";
-    private int folderId = 0;
+    String id = "";
+    int folderId = 0;
 
-    private transient File messagesDir = null;
+    transient File messagesDir = null;
     private transient Storing storing = null;
     private transient ObjectRepository<Message> repo = null;
-
-    String getId()
-    {
-	return this.id;
-    }
-
-    void setId(String id)
-    {
-	NullCheck.notNull(id, "id");
-	this.id = id;
-    }
 
     void genId()
     {
@@ -59,22 +48,6 @@ final class Message extends MailMessage
 	if (bytes.length == 0)
 	    throw new IllegalStateException("the raw message can't be empty on ID generation");
 	this.id = new Sha1().getSha1(bytes);
-    }
-
-    int getFolderId()
-    {
-	return this.folderId;
-    }
-
-    void setFolderId(int folderId)
-    {
-	this.folderId = folderId;
-    }
-
-    void setMessagesDir(File messagesDir)
-    {
-	NullCheck.notNull(messagesDir, "messagesDir");
-	this.messagesDir = messagesDir;
     }
 
     void initStoring(Storing storing, ObjectRepository<Message> repo)

@@ -34,35 +34,19 @@ public class MailAccount implements Comparable
     public enum Type {POP3, SMTP};
     public enum Flags {ENABLED, SSL, TLS, DEFAULT, LEAVE_MESSAGES};
 
-    @SerializedName("type")
     private Type type = Type.POP3;
 
-    @SerializedName("title")
-    private String title = "";
+    private String
+	title = "",
+	host = "",
+	login = "",
+	passwd = "",
+	trustedHosts = "*",
+	substName = "",
+	substAddress = "";
 
-    @SerializedName("host")
-    private String host = "";
-
-    @SerializedName("port")
     private int port = 995;
-
-    @SerializedName("login")
-    private String login = "";
-
-    @SerializedName("passwd")
-    private String passwd = "";
-
-    @SerializedName("trusted-hosts")
-    private String trustedHosts = "*";
-
-    @SerializedName("flags")
     private Set<Flags> flags = EnumSet.of(Flags.ENABLED, Flags.DEFAULT);
-
-    @SerializedName("subst-name")
-    private String substName = "";
-
-    @SerializedName("subst-address")
-    private String substAddress = "";
 
     public void copyValues(MailAccount account)
     {

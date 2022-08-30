@@ -19,17 +19,15 @@
 
 package org.luwrain.pim.mail;
 
-import org.luwrain.pim.*;
-
 public interface MailAccounts
 {
-    int getId(MailAccount account) throws PimException;
-    MailAccount[] load() throws PimException;
-    String getUniRef(MailAccount account) throws PimException;
-    MailAccount loadById(int id) throws PimException;
-    MailAccount loadByUniRef(String uniRef) throws PimException;
-    MailAccount save(MailAccount account) throws PimException;
-    void delete(MailAccount account) throws PimException;
-    MailAccount getDefault(MailAccount.Type type) throws PimException;
-    void sendDirectly(MailAccount account, MailMessage message) throws PimException;
+    MailAccount[] load();
+    MailAccount save(MailAccount account);
+    void delete(MailAccount account);
+    MailAccount loadById(int id);
+    MailAccount loadByUniRef(String uniRef);
+    int getId(MailAccount account);
+    String getUniRef(MailAccount account);
+    MailAccount getDefault(MailAccount.Type type);
+    void sendDirectly(MailAccount account, MailMessage message);
 }

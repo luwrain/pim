@@ -54,11 +54,11 @@ final class Messages implements MailMessages
 	try {
 	    storing.execInQueue(()->{
 		    final Message m = new Message();
-		    m.setMessagesDir(this.messagesDir);
+		    m.messagesDir = this.messagesDir;
 		    m.initStoring(storing, repo);
 		    m.copyValues(message);
 		    m.genId();
-		    m.setFolderId(f.getId());
+		    m.folderId = f.getId();
 		    m.saveRawMessage();
 		    repo.insert(m);
 		    return null;
@@ -80,7 +80,7 @@ final class Messages implements MailMessages
 		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
 		for(Message m: c)
 		{
-		    		    		    m.setMessagesDir(this.messagesDir);
+		    		    		    m.messagesDir = this.messagesDir;
 				    m.initStoring(storing, repo);
 		    m.loadRawMessage();
 		    res.add(m);
@@ -121,7 +121,7 @@ final class Messages implements MailMessages
 	NullCheck.notNull(message, "message");
 	final Folder f = (Folder)folder;
 	final Message m = (Message)message;
-	m.setFolderId(f.getId());
+	m.folderId = f.getId();
 	m.save();
     }
 

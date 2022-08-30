@@ -61,7 +61,7 @@ final class Accounts implements MailAccounts
 	    conv.send(message.getRawMessage());
     }
 
-    @Override public MailAccount[] load()
+    @Override public synchronized MailAccount[] load()
     {
 		this.accounts.clear();
 	final List<Account> res = gson.fromJson(sett.getAccounts(""), ACCOUNT_LIST_TYPE);
@@ -77,7 +77,7 @@ final class Accounts implements MailAccounts
 	return a;
     }
 
-    @Override public MailAccount loadById(int id)
+    @Override public synchronized MailAccount loadById(int id)
     {
 	if (id < 0)
 	    throw new IllegalArgumentException("id (" + String.valueOf(id) + ") may not be negative");
@@ -86,9 +86,8 @@ final class Accounts implements MailAccounts
 	return accounts.get(new Integer(id));
     }
 
-    @Override public MailAccount save(MailAccount account)
+    @Override public synchronized MailAccount save(MailAccount account)
     {
-	NullCheck.notNull(account, "account");
 	if (accounts.isEmpty())
 	    load();
 	final int newId = sett.getNextAccountId(1);
@@ -102,9 +101,8 @@ final class Accounts implements MailAccounts
 	return a;
     }
 
-    @Override public void delete(MailAccount account) throws PimException
+    @Override public synchronized void delete(MailAccount account) throws PimException
     {
-	NullCheck.notNull(account, "account");
 	final Account a = (Account)account;
 	if (accounts.isEmpty())
 	    load();
@@ -112,16 +110,14 @@ final class Accounts implements MailAccounts
 	saveAll();
 		    }
 
-    @Override public String getUniRef(MailAccount account) throws PimException
+    @Override public synchronized String getUniRef(MailAccount account) throws PimException
     {
-	NullCheck.notNull(account, "account");
 	final Account a = (Account)account;
 	return AccountUniRefProc.PREFIX + ":" + String.valueOf(a.id);
     }
 
-    @Override public MailAccount loadByUniRef(String uniRef)
+    @Override public synchronized MailAccount loadByUniRef(String uniRef)
     {
-	NullCheck.notEmpty(uniRef, "uniRef");
 	if (!uniRef.startsWith(AccountUniRefProc.PREFIX + ":"))
 	    return null;
 	final int id;
@@ -137,15 +133,13 @@ final class Accounts implements MailAccounts
 	return accounts.get(new Integer(id));
     }
 
-    @Override public int getId(MailAccount account) throws PimException
+    @Override public synchronized int getId(MailAccount account) throws PimException
     {
-	NullCheck.notNull(account, "account");
 	return ((Account)account).id;
     }
 
-    @Override public MailAccount getDefault(MailAccount.Type type) throws PimException
+    @Override public synchronized MailAccount getDefault(MailAccount.Type type) throws PimException
     {
-	NullCheck.notNull(type, "type");
 	final MailAccount[] accounts = load();
 	MailAccount anyEnabled = null;
 	for(MailAccount a: accounts)
