@@ -23,10 +23,12 @@ import org.luwrain.pim.*;
 
 public interface MailFolders
 {
-    int getId(MailFolder folder) throws PimException;
-    MailFolder getRoot() throws PimException;
-    MailFolder findFirstByProperty(String propName, String propValue) throws PimException;
-    MailFolder[] load(MailFolder folder) throws PimException;
-    MailFolder loadById(int id) throws PimException;
-    MailFolder save(MailFolder parentFolder, MailFolder newFolder) throws PimException;
+        MailFolder getRoot();
+    int getId(MailFolder folder);
+    MailFolder findFirstByProperty(String propName, String propValue);
+    MailFolder[] load(MailFolder folder);
+    MailFolder loadById(int id);
+    MailFolder save(MailFolder parentFolder, MailFolder newFolder, int saveAtIndex);
+    boolean remove(MailFolder parent, int index);
+    boolean hasSubfolders(MailFolder folder);
 }

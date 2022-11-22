@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -38,7 +38,14 @@ final class Folder extends MailFolder
 
     void setId(int id)
     {
+	if (id < 0)
+	    throw new IllegalArgumentException("id can't be negative");
 	this.id = id;
+    }
+
+    int getSubfolderCount()
+    {
+	return subfolders != null?subfolders.size():0;
     }
 
     Folder[] getSubfoldersAsArray()
@@ -48,21 +55,35 @@ final class Folder extends MailFolder
 	return subfolders.toArray(new Folder[subfolders.size()]);
     }
 
+        @Override public void save()
+    {
+	if (this.folders == null)
+	    throw new IllegalStateException("folders can't be null on saving");
+	this.folders.saveAll();
+    }
+
     void visit(Consumer c)
     {
-	NullCheck.notNull(c, "c");
 	c.accept(this);
 	if (subfolders != null)
 	    for(Folder f: subfolders)
 		f.visit(c);
     }
 
-    void addSubfolder(Folder folder)
+    void addSubfolder(Folder folder, int saveAtIndex)
     {
 	NullCheck.notNull(folder, "folder");
 	if (subfolders == null)
-	    subfolders = new LinkedList();
-		    subfolders.add(folder);
+	    subfolders = new ArrayList<>();
+	subfolders.add(saveAtIndex, folder);
+    }
+
+    boolean removeSubfolder(int index)
+    {
+	if (subfolders == null || index >= subfolders.size())
+	    return false;
+	subfolders.remove(index);
+	return true;
     }
 
     void setFolders(Folders folders)
@@ -71,10 +92,16 @@ final class Folder extends MailFolder
 	this.folders = folders;
     }
 
-    @Override public void save()
+
+    @Override public int hashCode()
     {
-	if (this.folders == null)
-	    throw new IllegalStateException("folders can't be null on saving");
-	this.folders.saveAll();
+	return id;
+    }
+
+    @Override public boolean equals(Object o)
+    {
+	if (o == null || !(o instanceof Folder))
+	    return false;
+	return id == ((Folder)o).id;
     }
 }

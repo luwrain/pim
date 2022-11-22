@@ -29,7 +29,8 @@ import org.luwrain.pim.mail.*;
 
 public final class Storing implements MailStoring
 {
-    static final String LOG_COMPONENT = "pim";
+    static final String
+	LOG_COMPONENT = "pim";
 
     private final Registry registry;
     private final Nitrite db;

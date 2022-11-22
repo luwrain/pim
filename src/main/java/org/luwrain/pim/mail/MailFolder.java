@@ -21,61 +21,32 @@ package org.luwrain.pim.mail;
 
 import java.io.*;
 import java.util.*;
+import lombok.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 
+
+@Data
+@NoArgsConstructor
 public class MailFolder implements Comparable
 {
     private String title = "";
     private int orderIndex = 0;
-    private Properties props = new Properties();
-
-    public final void setTitle(String title)
-    {
-	NullCheck.notNull(title, "title");
-	this.title = title;
-    }
-
-    public final String getTitle()
-    {
-	return this.title;
-    }
-
-    public final void setOrderIndex(int orderIndex)
-    {
-	if (orderIndex < 0)
-	    throw new IllegalArgumentException("orderIndex (" + String.valueOf(orderIndex) + ") may not be negative");
-	this.orderIndex = orderIndex;
-    }
-
-    public final int getOrderIndex()
-    {
-	return this.orderIndex;
-    }
-
-    public final Properties getProperties()
-    {
-	return this.props;
-    }
-
-    public void saveProperties()
-    {
-    }
+    private Properties properties = new Properties();
 
     public final void copyValues(MailFolder folder)
     {
-	NullCheck.notNull(folder, "folder");
 	this.title = folder.title;
 	this.orderIndex = folder.orderIndex;
-	this.props = new Properties();
-	this.props.putAll(folder.props);
+	this.properties = new Properties();
+	this.properties.putAll(folder.properties);
     }
 
     public final String getPropertiesAsString() throws IOException
     {
 	final StringWriter writer = new StringWriter();
-	props.store(writer, "");
+	properties.store(writer, "");
 	writer.flush();
 	return writer.toString();
     }
@@ -84,11 +55,11 @@ public class MailFolder implements Comparable
     {
 	NullCheck.notNull(text, "text");
 	final StringReader reader = new StringReader(text);
-	props.clear();
-	props.load(reader);
+	properties.clear();
+	properties.load(reader);
     }
 
-    public void save() throws PimException
+    public void save()
     {
     }
 

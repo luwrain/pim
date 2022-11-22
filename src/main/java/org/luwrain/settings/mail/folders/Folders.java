@@ -114,7 +114,7 @@ public class Folders
 		    throw new PimException("No parent folder");
 		final MailFolder newFolder = new MailFolder();
 		newFolder.setTitle(newFolderName);
-		storing.getFolders().save(parentFolder, newFolder);
+		storing.getFolders().save(parentFolder, newFolder, 0);
 		controlPanel.refreshSectionsTree();
 		return true;
 	    }

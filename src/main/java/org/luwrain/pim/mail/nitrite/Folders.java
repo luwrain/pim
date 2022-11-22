@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.function.*;
 
 import com.google.gson.*;
-import com.google.gson.annotations.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -29,29 +28,25 @@ import org.luwrain.pim.mail.*;
 
 final class Folders implements MailFolders
 {
-    static private final String LOG_COMPONENT = "mail";
+    static private final String
+	LOG_COMPONENT = "mail";
 
-        private final Gson gson = new Gson();
+    private final Gson gson = new Gson();
     private final Registry registry;
     private final org.luwrain.pim.mail.Settings sett;
     private final Messages messages;
-
     private Data data = null;
 
     Folders(Registry registry, Messages messages)
     {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(messages, "messages");
 	this.registry = registry;
 	this.sett = org.luwrain.pim.mail.Settings.create(registry);
 	this.messages = messages;
+	loadAll();
     }
 
-    @Override public MailFolder findFirstByProperty(String propName, String propValue) throws PimException
+    @Override synchronized public MailFolder findFirstByProperty(String propName, String propValue)
     {
-	NullCheck.notEmpty(propName, "propName");
-	NullCheck.notNull(propValue, "propValue");
-	loadAll();
 	return find(data.root, (o)->{
 		final Folder f = (Folder)o;
 		final String value = f.getProperties().getProperty(propName);
@@ -61,49 +56,60 @@ final class Folders implements MailFolders
 
     @Override public int getId(MailFolder folder)
     {
-	NullCheck.notNull(folder, "folder");
-	loadAll();
 	final Folder f = (Folder)folder;
 	return f.getId();
     }
 
-    @Override public MailFolder loadById(int id) throws PimException
+    @Override synchronized public MailFolder loadById(int id) throws PimException
     {
-	loadAll();
 	return find(data.root, (o)->{
 		final Folder f = (Folder)o;
 		return f.getId() == id;
 	    });
     }
 
-    @Override public MailFolder save(MailFolder parentFolder, MailFolder newFolder) throws PimException
+    @Override synchronized public MailFolder save(MailFolder parentFolder, MailFolder newFolder, int saveAtIndex)
     {
-	NullCheck.notNull(parentFolder, "parentFolder");
 	NullCheck.notNull(newFolder, "newFolder");
-	loadAll();
 	final Folder p = (Folder)parentFolder;
 	final Folder n = new Folder();
 	n.copyValues(newFolder);
-	n.setId(data.nextId);
+	n.setId(data.nextId++);
 	n.setFolders(this);
-	data.nextId++;
-		p.addSubfolder(n);
+	p.addSubfolder(n, saveAtIndex);
 		saveAll();
 	return n;
     }
 
+    @Override synchronized public boolean remove(MailFolder parent, int index)
+    {
+	final Folder folder = (Folder)parent;
+	if (!folder.removeSubfolder(index))
+	    return false;
+	saveAll();
+	return true;
+    }
+
+    @Override public boolean hasSubfolders(MailFolder mailFolder)
+    {
+	final Folder folder = (Folder)mailFolder;
+	return folder.getSubfolderCount() > 0;
+    }
+
     @Override public MailFolder getRoot() throws PimException
     {
-	loadAll();
 	return this.data.root;
     }
 
-    @Override public MailFolder[] load(MailFolder folder) throws PimException
+    @Override synchronized public MailFolder[] load(MailFolder folder)
     {
-	NullCheck.notNull(folder, "folder");
-	loadAll();
 	final Folder f = (Folder)folder;
 	return f.getSubfoldersAsArray();
+    }
+
+        voidsynchronized  saveAll()
+    {
+	sett.setFolders(gson.toJson(data));
     }
 
     private Folder find(Folder f, Predicate p)
@@ -146,26 +152,18 @@ final class Folders implements MailFolders
 	}
     }
 
-    void saveAll()
-    {
-	sett.setFolders(gson.toJson(data));
-    }
-
     private void initRoot()
     {
 	this.data = new Data();
 	this.data.root = new Folder();
-	this.data.root.setTitle("Почта");
+	this.data.root.setTitle("Mail");
 	this.data.root.setFolders(this);
 	saveAll();
-
     }
 
     static private final class Data
     {
-	@SerializedName("nextId")
 	int nextId = 1;
-	@SerializedName("root")
 	Folder root = null;
     }
 }

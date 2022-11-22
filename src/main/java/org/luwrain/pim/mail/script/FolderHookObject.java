@@ -81,7 +81,7 @@ final class FolderHookObject
     private Object saveProperties()
     {
 		    try {
-		folder.saveProperties();
+		folder.save();
 		return new Boolean(true);
 		}
 		catch(Exception e)
@@ -94,7 +94,7 @@ final class FolderHookObject
     private Object newSubfolder()
     {
 	try {
-	    return new FolderHookObject(storing, storing.getFolders().save(folder, new MailFolder()));
+	    return new FolderHookObject(storing, storing.getFolders().save(folder, new MailFolder(), 0));
 	}
 	catch(PimException e)
 	{
