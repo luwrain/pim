@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -77,7 +77,7 @@ final class Folders implements MailFolders
 	n.setId(data.nextId++);
 	n.setFolders(this);
 	p.addSubfolder(n, saveAtIndex);
-		saveAll();
+	saveAll();
 	return n;
     }
 
@@ -107,7 +107,7 @@ final class Folders implements MailFolders
 	return f.getSubfoldersAsArray();
     }
 
-        voidsynchronized  saveAll()
+    synchronized void saveAll()
     {
 	sett.setFolders(gson.toJson(data));
     }
@@ -133,17 +133,17 @@ final class Folders implements MailFolders
 	    return;
 	try {
 	    final Data res = gson.fromJson(sett.getFolders(""), Data.class);
-	if (res == null)
-	{
-	    Log.warning(LOG_COMPONENT, "unable to load a folders tree from the registry, creating default");
-	    initRoot();
-	    return;
-	}
-	this.data = res;
-	this.data.root.visit((o)->{
-		final Folder f = (Folder)o;
-		f.setFolders(this);
-	    });
+	    if (res == null)
+	    {
+		Log.warning(LOG_COMPONENT, "unable to load a folders tree from the registry, creating default");
+		initRoot();
+		return;
+	    }
+	    this.data = res;
+	    this.data.root.visit((o)->{
+		    final Folder f = (Folder)o;
+		    f.setFolders(this);
+		});
 	}
 	catch(Exception e)
 	{
