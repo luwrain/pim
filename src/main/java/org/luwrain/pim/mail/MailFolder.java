@@ -61,6 +61,7 @@ public class MailFolder implements Comparable
 
     public void save()
     {
+	throw new UnsupportedOperationException("You can't call this method directly");
     }
 
     @Override public String toString()

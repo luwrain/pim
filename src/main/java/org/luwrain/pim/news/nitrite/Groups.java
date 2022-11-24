@@ -37,7 +37,6 @@ final class Groups implements NewsGroups
 
     Groups(Registry registry)
     {
-	NullCheck.notNull(registry, "registry");
 	this.sett = org.luwrain.pim.news.Settings.create(registry);registry = registry;
     }
 

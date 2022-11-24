@@ -31,7 +31,7 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
 
-final class Article extends NewsArticle 
+public final class Article extends NewsArticle 
 {
     private transient Storing storing;
     private transient ObjectRepository<Article> repo = null;

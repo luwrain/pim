@@ -33,15 +33,15 @@ import org.luwrain.pim.news.*;
 final class Articles implements NewsArticles
 {
     private final Storing storing;
-    private final Nitrite db;
     private final ObjectRepository<Article> repo;
 
     Articles(Storing storing)
     {
 	NullCheck.notNull(storing, "storing");
 	this.storing = storing;
-	this.db = storing.getDb();
-	this.repo = this.db.getRepository(Article.class);
+	//	this.storage = storing.storage;
+	//	this.repo = this.db.getRepository(Article.class);
+	this.repo = storing.storage.get();
     }
 
     @Override public void save(NewsGroup newsGroup, NewsArticle article) throws PimException

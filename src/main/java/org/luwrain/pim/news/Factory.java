@@ -19,44 +19,36 @@ package org.luwrain.pim.news;
 
 import java.io.*;
 
-import org.dizitart.no2.*;
-
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.storage.*;
 
-public final class Factory
+public final class Factory implements AutoCloseable
 {
-    static private final String LOG_COMPONENT = "pim-news";
+    static private final String
+	DATA_DIR = "luwrain.pim.news",
+	DATA_FILE = "news.nitrite";
 
     private final Luwrain luwrain;
-    private final Registry registry;
     private final ExecQueues execQueues = new ExecQueues();
-    private final File file;
-    private Nitrite db = null;
+    private final NitriteStorage<org.luwrain.pim.news.nitrite.Article> storage;
 
     public Factory(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.registry = luwrain.getRegistry();
 	this.execQueues.start();
-	this.file = new File(luwrain.getAppDataDir("luwrain.pim.news").toFile(), "news.nitrite");
+	this.storage = new NitriteStorage<>(new File(luwrain.getAppDataDir(DATA_DIR).toFile(), DATA_FILE), org.luwrain.pim.news.nitrite.Article.class);
     }
 
     public NewsStoring newNewsStoring(boolean highPriority)
     {
-	if (db != null)
-	    return new org.luwrain.pim.news.nitrite.Storing(registry, db, execQueues, highPriority);
-	this.db = Nitrite.builder()
-        .filePath(file)
-        .openOrCreate("luwrain", "passwd");
-	return new org.luwrain.pim.news.nitrite.Storing(registry, this.db, execQueues, highPriority);
+	return new org.luwrain.pim.news.nitrite.Storing(luwrain.getRegistry(), storage, execQueues, highPriority);
     }
 
-    public void close()
+    @Override public void close()
     {
+	storage.close();
 	execQueues.cancel();
-	if (db != null)
-	    db.close();
-}
+    }
 }

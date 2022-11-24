@@ -18,28 +18,28 @@
 package org.luwrain.pim.news.nitrite;
 
 import java.util.concurrent.*;
-import org.dizitart.no2.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.news.*;
+import org.luwrain.pim.storage.*;
 
 public final class Storing implements NewsStoring
 {
     private final Registry registry;
-    private final Nitrite db;
-    private final Articles articles;
-    private final Groups groups;
+    final NitriteStorage storage;
     private final ExecQueues execQueues;
     private final boolean highPriority;
+    private final Articles articles;
+    private final Groups groups;
 
-    public Storing(Registry registry, Nitrite db, ExecQueues execQueues, boolean highPriority)
+    public Storing(Registry registry, NitriteStorage storage, ExecQueues execQueues, boolean highPriority)
     {
 	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(db, "db");
+	NullCheck.notNull(storage, "storage");
 	NullCheck.notNull(execQueues, "execQueues");
 	this.registry = registry;
-	this.db = db;
+	this.storage = storage;
 	this.execQueues = execQueues;
 	this.highPriority = highPriority;
 	this.articles = new Articles(this);
@@ -48,7 +48,6 @@ public final class Storing implements NewsStoring
 
     @Override public NewsArticles getArticles() { return articles; }
     @Override public NewsGroups getGroups() { return groups; }
-    Nitrite getDb() { return this.db; }
 
     Object execInQueue(Callable callable) throws Exception
     {

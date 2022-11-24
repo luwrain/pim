@@ -28,17 +28,17 @@ import org.luwrain.core.*;
 @NoArgsConstructor
 public class NewsGroup implements Comparable
 {
-    private String name = "";
+    private String
+	name = "",
+mediaContentType = "";
     private List<String> urls = new ArrayList<String>();
-    private String mediaContentType = "";
     private int orderIndex = 0;
     private int expireAfterDays = 30;
 
     public void copyValues(NewsGroup g)
     {
-	NullCheck.notNull(g, "g");
 	this.name = g.name;
-	this.urls = g.urls;
+	this.urls = new ArrayList<>(g.urls);
 	this.mediaContentType = g.mediaContentType;
 	this.orderIndex = g.orderIndex;
 	this.expireAfterDays = g.expireAfterDays;
