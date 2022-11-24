@@ -17,34 +17,18 @@
 
 package org.luwrain.pim;
 
-import org.luwrain.core.Registry;
-import org.luwrain.core.NullCheck;
+import org.luwrain.core.*;
 
-public class Util
+public final class PimObjFactory implements ObjFactory
 {
-    static public int newFolderId(Registry registry, String folder)
+    @Override public String getExtObjName()
     {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(folder, "folder");
-	//	System.out.println(folder);
-	final String[] values = registry.getDirectories(folder);
-	int res = 0;
-	for(String s: values)
-	{
-	    if (s == null || s.isEmpty())
-		continue;
-	    int value = 0;
-	    try {
-		value = Integer.parseInt(s);
-	    }
-	    catch (NumberFormatException e)
-	    {
-		e.printStackTrace();
-		continue;
-	    }
-	    if (value > res)
-		res = value;
-	}
-	return res + 1;
+	return "luwrain.pim.factory";
+    }
+
+    
+@Override public Object newObject(String name)
+    {
+	return null;
     }
 }
