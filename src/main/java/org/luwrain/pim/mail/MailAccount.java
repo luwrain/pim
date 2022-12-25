@@ -29,7 +29,7 @@ import org.luwrain.pim.*;
 
 @Data
 @NoArgsConstructor
-public class MailAccount implements Comparable
+public class MailAccount
 {
     public enum Type {POP3, SMTP};
     public enum Flags {ENABLED, SSL, TLS, DEFAULT, LEAVE_MESSAGES};
@@ -62,21 +62,7 @@ public class MailAccount implements Comparable
 	this.substName = account.substName;
 	this.substAddress = account.substAddress;
     }
-
-    @Override public int compareTo(Object o)
-    {
-	if (o == null || !(o instanceof MailAccount))
-	    return 0;
-	return title.compareTo(((MailAccount)o).title);
-    }
-
-    @Override public boolean equals(Object o)
-    {
-	if (o == null || !(o instanceof MailAccount))
-	    return false;
-	return title.equals(((MailAccount)o).title);
-    }
-
+    
     @Override public String toString()    
     {
 	return title != null?title:"";

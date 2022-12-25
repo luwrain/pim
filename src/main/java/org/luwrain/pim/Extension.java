@@ -21,10 +21,8 @@
        
 package org.luwrain.pim;
 
-import java.util.*;
-
 import org.luwrain.core.*;
-import org.luwrain.script.hooks.*;
+import org.luwrain.i18n.*;
 
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
@@ -45,9 +43,16 @@ public final class Extension extends EmptyExtension
 	return null;
     }
 
+        @Override public void close()
+    {
+	Connections.close();
+    }
+
+
         @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	return new ExtensionObject[]{ objFactory, newsWorker, smtpWorker, pop3Worker };
+	return new ExtensionObject[]{ objFactory, //new org.luwrain.settings.mail.Factory(luwrain),
+				      newsWorker, smtpWorker, pop3Worker };
     }
 
     @Override public org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain)
@@ -57,9 +62,22 @@ public final class Extension extends EmptyExtension
 	};
     }
 
-
-    @Override public void close()
+            @Override public void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt)
     {
-	Connections.close();
+	/*
+	try {
+	    	    i18nExt.addStrings(Lang.EN, Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-mail.properties").create(Lang.EN, Strings.class));
+	    	    i18nExt.addStrings(Lang.RU, Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-mail.properties").create(Lang.RU, Strings.class));
+	}
+	catch(java.io.IOException e)
+	{
+	    throw new RuntimeException(e);
+	}
+	*/
     }
+
+
+    
+
+
 }
