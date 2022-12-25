@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -15,10 +15,6 @@
    General Public License for more details.
 */
 
-
-       
-
-       
 package org.luwrain.pim;
 
 import org.luwrain.core.*;
@@ -43,16 +39,19 @@ public final class Extension extends EmptyExtension
 	return null;
     }
 
-        @Override public void close()
+    @Override public void close()
     {
 	Connections.close();
     }
 
-
-        @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
+    @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	return new ExtensionObject[]{ objFactory, //new org.luwrain.settings.mail.Factory(luwrain),
-				      newsWorker, smtpWorker, pop3Worker };
+	return new ExtensionObject[]{
+	    objFactory,
+	    newsWorker,
+	    smtpWorker,
+	    pop3Worker
+	};
     }
 
     @Override public org.luwrain.cpanel.Factory[] getControlPanelFactories(Luwrain luwrain)
@@ -62,11 +61,11 @@ public final class Extension extends EmptyExtension
 	};
     }
 
-            @Override public void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt)
+    @Override public void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt)
     {
 	try {
-	    	    i18nExt.addStrings(Lang.EN, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.EN, org.luwrain.settings.mail.Strings.class));
-	    	    i18nExt.addStrings(Lang.RU, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.RU, org.luwrain.settings.mail.Strings.class));
+	    i18nExt.addStrings(Lang.EN, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.EN, org.luwrain.settings.mail.Strings.class));
+	    i18nExt.addStrings(Lang.RU, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.RU, org.luwrain.settings.mail.Strings.class));
 	}
 	catch(java.io.IOException e)
 	{

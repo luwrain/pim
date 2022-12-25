@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -42,7 +42,6 @@ public interface Strings
     String deleteAccount();
     String deleteMailFolder();
     String folderFormName(String folderName);
-    String groupsSection();
     String mailFolderFormBadOrderIndex(String value);
     String mailSection();
     String newAccountTitlePopupName();
@@ -52,5 +51,4 @@ public interface Strings
     String newFolderPopupPrefix();
     String portMustBeGreaterZero();
     String portNotNumber();
-    String rulesSection();
 }
