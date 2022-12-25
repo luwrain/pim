@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,27 +17,30 @@
 package org.luwrain.settings.mail.accounts;
 
 import org.luwrain.core.*;
-import org.luwrain.popups.Popups;
 import org.luwrain.pim.mail.*;
 import org.luwrain.settings.mail.*;
 
-final class Conversations
+import static org.luwrain.popups.Popups.*;
+
+final class Conv
 {
     final Luwrain luwrain;
     final Strings strings;
 
-    Conversations(Accounts accounts)
+    Conv(Accounts accounts)
     {
-	NullCheck.notNull(accounts, "accounts");
 	this.luwrain = accounts.luwrain;
 	this.strings = accounts.strings;
     }
+
+    String newAccountTitle() { return textNotEmpty(luwrain, strings.newAccountTitlePopupName(), strings.newAccountTitlePopupPrefix(), ""); }
+    boolean confirmAccountDeleting(String title) { return confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + title + "\"?"); } //FIXME:
 
     MailAccount.Type newAccountType()
     {
 	final String pop3 = "POP3";
 	final String smtp = "SMTP";
-	final Object obj = Popups.fixedList(luwrain, strings.newAccountTypePopupName(), new String[]{pop3, smtp});
+	final Object obj = fixedList(luwrain, strings.newAccountTypePopupName(), new String[]{pop3, smtp});
 	if (obj == null)
 	    return null;
 	if (obj == pop3)
@@ -45,16 +48,5 @@ final class Conversations
 	if (obj == smtp)
 	    return MailAccount.Type.SMTP;
 	return null;
-    }
-
-    String newAccountTitle()
-    {
-	return Popups.textNotEmpty(luwrain, strings.newAccountTitlePopupName(), strings.newAccountTitlePopupPrefix(), "");
-    }
-
-    boolean confirmAccountDeleting(String title)
-    {
-	NullCheck.notNull(title, "title");
-	return Popups.confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + title + "\"?");
     }
 }

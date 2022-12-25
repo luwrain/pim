@@ -28,7 +28,7 @@ public final class Accounts
     final Luwrain luwrain;
     final Strings strings;
     final MailStoring storing;
-    final Conversations conv;
+    final Conv conv;
 
     public Accounts(Luwrain luwrain, Strings strings, MailStoring storing)
     {
@@ -38,7 +38,7 @@ public final class Accounts
 	this.luwrain = luwrain;
 	this.strings = strings;
 	this.storing = storing;
-	this.conv = new Conversations(this);
+	this.conv = new Conv(this);
     }
 
     public org.luwrain.cpanel.Element[] getAccountsElements(Element parent)
