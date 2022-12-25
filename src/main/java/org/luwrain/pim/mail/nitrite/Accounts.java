@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -32,16 +32,17 @@ final class Accounts implements MailAccounts
 {
         static private final Type ACCOUNT_LIST_TYPE = new TypeToken<List<Account>>(){}.getType();
 
-    private final Registry registry;
+    //    private final Registry registry;
     private final org.luwrain.pim.mail.Settings sett;
     private final Gson gson = new Gson();
-    private Map<Integer, Account> accounts = new HashMap();
+    //    private Map<Integer, Account> accounts = new HashMap();
+    private Data data = null;
 
     Accounts(Registry registry)
     {
 	NullCheck.notNull(registry, "registry");
-	this.registry = registry;
 	this.sett = org.luwrain.pim.mail.Settings.create(registry);
+	loadAll();
     }
 
     @Override public void sendDirectly(MailAccount account, MailMessage message) throws PimException
@@ -63,55 +64,44 @@ final class Accounts implements MailAccounts
 
     @Override public synchronized MailAccount[] load()
     {
-		this.accounts.clear();
-	final List<Account> res = gson.fromJson(sett.getAccounts(""), ACCOUNT_LIST_TYPE);
-	if (res == null)
-	    return new Account[0];
-	for(Account a: res)
-	{
-	    a.accounts = this;
-	    this.accounts.put(new Integer(a.id), a);
-	}
-	final Account[] a = res.toArray(new Account[res.size()]);
-	Arrays.sort(a);
-	return a;
+	final List<MailAccount> res = new ArrayList<>();
+	for(Map.Entry<Integer, Account> e: data.accounts.entrySet())
+	    res.add(e.getValue());
+	return res.toArray(new MailAccount[res.size()]);
     }
 
     @Override public synchronized MailAccount loadById(int id)
     {
 	if (id < 0)
 	    throw new IllegalArgumentException("id (" + String.valueOf(id) + ") may not be negative");
-	if (accounts.isEmpty())
-	    load();
-	return accounts.get(new Integer(id));
+	return data.accounts.get(Integer.valueOf(id));
     }
 
     @Override public synchronized MailAccount save(MailAccount account)
     {
-	if (accounts.isEmpty())
-	    load();
-	final int newId = sett.getNextAccountId(1);
-	sett.setNextAccountId(newId + 1);
+	NullCheck.notNull(account, "account");
+	final int newId = data.nextId.intValue();
+	data.nextId = Integer.valueOf(newId + 1);
 	final Account a = new Account();
 	a.id = newId;
 	a.accounts = this;
 	a.copyValues(account);
-	accounts.put(new Integer(a.id), a);
+	data.accounts.put(Integer.valueOf(newId), a);
 	saveAll();
 	return a;
     }
 
     @Override public synchronized void delete(MailAccount account) throws PimException
     {
+	NullCheck.notNull(account, "account");
 	final Account a = (Account)account;
-	if (accounts.isEmpty())
-	    load();
-	accounts.remove(new Integer(a.id));
+	data.accounts.remove(Integer.valueOf(a.id));
 	saveAll();
 		    }
 
     @Override public synchronized String getUniRef(MailAccount account) throws PimException
     {
+	NullCheck.notNull(account, "account");
 	final Account a = (Account)account;
 	return AccountUniRefProc.PREFIX + ":" + String.valueOf(a.id);
     }
@@ -128,9 +118,7 @@ final class Accounts implements MailAccounts
 	{
 	    return null;
 	}
-	if (accounts.isEmpty())
-	    load();
-	return accounts.get(new Integer(id));
+	return data.accounts.get(Integer.valueOf(id));
     }
 
     @Override public synchronized int getId(MailAccount account) throws PimException
@@ -156,11 +144,41 @@ final class Accounts implements MailAccounts
 	return anyEnabled;
     }
 
-    void saveAll()
+    private void loadAll()
     {
-	final List<Account> a = new LinkedList();
-	for(Map.Entry<Integer, Account> e: accounts.entrySet())
-	    a.add(e.getValue());
-	sett.setAccounts(gson.toJson(a));
+	final String accountsStr = sett.getAccounts("");
+	if (accountsStr.trim().isEmpty())
+	{
+	    this.data = new Data();
+	    this.data.nextId = Integer.valueOf(0);
+	    this.data.accounts = new TreeMap<>();
+	    saveAll();
+	    return;
+	}
+	this.data = gson.fromJson(accountsStr, Data.class);
+	final Map<Integer, Account> accounts = new TreeMap<>();
+	int maxId = 0;
+	for(Map.Entry<Integer, Account> e: data.accounts.entrySet())
+	    if (e.getKey() != null && e.getValue() != null)
+	    {
+		e.getValue().accounts = this;
+		accounts.put(e.getKey(), e.getValue());
+		if (e.getKey().intValue() > maxId)
+		    maxId = e.getKey().intValue();
+	    }
+	data.accounts = accounts;
+	if(data.nextId == null)
+	    data.nextId = Integer.valueOf(maxId + 1);
+    }
+
+    private void saveAll()
+    {
+	sett.setAccounts(gson.toJson(data));
+    }
+
+    static private final class Data
+    {
+	Integer nextId = null;
+	Map<Integer, Account> accounts = null;
     }
 }

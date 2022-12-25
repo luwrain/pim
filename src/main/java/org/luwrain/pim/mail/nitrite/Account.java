@@ -28,5 +28,5 @@ import org.luwrain.pim.mail.*;
 final class Account extends MailAccount
 {
     int id = 0;
-    Accounts accounts = null;
+    transient Accounts accounts = null;
 }

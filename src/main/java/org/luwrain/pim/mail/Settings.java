@@ -28,8 +28,6 @@ public interface Settings
 
     String getAccounts(String defValue);
     void setAccounts(String value);
-    int getNextAccountId(int defValue);
-    void setNextAccountId(int value);
     String getFolders(String defValue);
     void setFolders(String value);
     int getNextFolderId(int defValue);
