@@ -45,7 +45,7 @@ final class Accounts implements MailAccounts
 	loadAll();
     }
 
-    @Override public void sendDirectly(MailAccount account, MailMessage message) throws PimException
+    @Override public void sendDirectly(MailAccount account, MailMessage message)
     {
 	NullCheck.notNull(account, "account");
 	NullCheck.notNull(message, "message");
@@ -91,7 +91,7 @@ final class Accounts implements MailAccounts
 	return a;
     }
 
-    @Override public synchronized void delete(MailAccount account) throws PimException
+    @Override public synchronized void delete(MailAccount account)
     {
 	NullCheck.notNull(account, "account");
 	final Account a = (Account)account;
@@ -99,7 +99,7 @@ final class Accounts implements MailAccounts
 	saveAll();
 		    }
 
-    @Override public synchronized String getUniRef(MailAccount account) throws PimException
+    @Override public synchronized String getUniRef(MailAccount account)
     {
 	NullCheck.notNull(account, "account");
 	final Account a = (Account)account;
@@ -121,12 +121,12 @@ final class Accounts implements MailAccounts
 	return data.accounts.get(Integer.valueOf(id));
     }
 
-    @Override public synchronized int getId(MailAccount account) throws PimException
+    @Override public synchronized int getId(MailAccount account)
     {
 	return ((Account)account).id;
     }
 
-    @Override public synchronized MailAccount getDefault(MailAccount.Type type) throws PimException
+    @Override public synchronized MailAccount getDefault(MailAccount.Type type)
     {
 	final MailAccount[] accounts = load();
 	MailAccount anyEnabled = null;

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -46,7 +46,7 @@ final class Messages implements MailMessages
 	this.repo = storing.getDb().getRepository(Message.class);
     }
 
-    @Override public void save(MailFolder folder, MailMessage message) throws PimException
+    @Override public void save(MailFolder folder, MailMessage message)
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
@@ -76,7 +76,7 @@ final class Messages implements MailMessages
 	final Folder f = (Folder)folder;
 	try {
 	return (Message[])storing.execInQueue(()->{
-		final List<Message> res = new LinkedList();
+		final List<Message> res = new ArrayList<>();
 		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
 		for(Message m: c)
 		{
@@ -88,16 +88,16 @@ final class Messages implements MailMessages
 		return res.toArray(new Message[res.size()]);
 	    });
 	}
-	catch(Exception e)
+	catch(Throwable e)
 	{
 	    throw new PimException(e);
 	}
-								  }
+    }
 
         @Override public MailMessage[] loadNoDeleted(MailFolder folder) throws PimException
     {
 	NullCheck.notNull(folder, "folder");
-	return null;
+	return load(folder);
 								  }
 
     @Override public void delete(MailMessage message) throws PimException

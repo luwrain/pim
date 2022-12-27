@@ -39,24 +39,15 @@ public final class MessageObj
 
     @HostAccess.Export
     public final ProxyExecutable getSubject = (ProxyExecutable)this::getSubjectImpl;
-    private Object getSubjectImpl(Value[] args)
-    {
-	return message.getSubject();
-    };
+    private Object getSubjectImpl(Value[] args) { return message.getSubject(); };
+
+        @HostAccess.Export
+    public final ProxyExecutable getFromAddress = (ProxyExecutable)this::getFromAddressImpl;
+    private Object getFromAddressImpl(Value[] args) { return new AddressObj(message.getFrom()); }
 
     @HostAccess.Export
     public final ProxyExecutable getMessageText = (ProxyExecutable)this::getMessageTextImpl;
-    private Object getMessageTextImpl(Value[] args)
-    {
-			return message.getText();
-    }
-
-    @HostAccess.Export
-    public final ProxyExecutable getFromAddress = (ProxyExecutable)this::getFromAddressImpl;
-    private Object getFromAddressImpl(Value[] args)
-    {
-			return new AddressObj(message.getFrom());
-    }
+    private Object getMessageTextImpl(Value[] args) { return message.getText(); }
 
     @HostAccess.Export
     public Object getCc(Value[] args)

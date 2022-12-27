@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -23,15 +23,18 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
-import org.luwrain.script.hooks.*;
+
 
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
 
+import static org.luwrain.script.Hooks.*;
+
 public final class Pop3 extends Base implements MailConversations.Listener
 {
-    static private final String HOOK_NAME_SAVE = "luwrain.pim.message.new.save";
+    static private final String
+	HOOK_SAVE = "luwrain.pim.mail.save.new";
 
     private final MailStoring storing;
     private final MailHookObject mailHookObject;
@@ -41,35 +44,28 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	super(control, strings);
 	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
 	if (storing == null)
-	    throw new FetchingException("Отсутствует соединение");
+	    throw new PimException("No connection");
 	this.mailHookObject = new MailHookObject(storing);
     }
 
-    public void fetch() throws PimException, InterruptedException
+    public void fetch() throws InterruptedException
     {
 	final MailAccount[] accounts;
-	try {
 	    accounts = storing.getAccounts().load();
-	}
-	catch(PimException e)
-	{
-	    throw new FetchingException(strings.errorLoadingMailAccounts(e.getClass().getName() + ":" + e.getMessage()));
-	}
-	Log.debug(LOG_COMPONENT, "loaded " + accounts.length + " accounts for fetching mail");
+	Log.debug(LOG_COMPONENT, "loaded " + accounts.length + " account(s) for fetching mail");
 	int used = 0;
 	for(MailAccount a: accounts)
 	{
 	    checkInterrupted();
-	    final MailAccount.Type type;
-		type = a.getType();
+	    final MailAccount.Type type = a.getType();
 	    if (type == MailAccount.Type.POP3)
 	    {
 		try {
 		    processAccount(a);
 		}
-		catch(PimException | IOException e)
+		catch(Throwable e)
 		{
-		    //FIXME:
+		    Log.error(LOG_COMPONENT, "unable to fetch mail from the account '" + a.getTitle() + "': " + e.getClass().getName() + ": " + e.getMessage());
 		}
 		checkInterrupted();
 		++used;
@@ -81,20 +77,18 @@ public final class Pop3 extends Base implements MailConversations.Listener
 
     private void processAccount(MailAccount account) throws IOException, PimException, InterruptedException
     {
-	NullCheck.notNull(account, "account");
 	final String title = account.getTitle();
-	Log.debug(LOG_COMPONENT, "fetching POP3 mail from account \"" + account.getTitle() + "\", flags " + account.getFlags());
+	Log.debug(LOG_COMPONENT, "fetching POP3 mail from the account '" + account.getTitle() + "', flags " + account.getFlags());
 	if (!account.getFlags().contains(MailAccount.Flags.ENABLED))
 	{
-	    	Log.debug(LOG_COMPONENT, "the account \'" + account.getTitle() + "\' is disabled");
+	    	Log.debug(LOG_COMPONENT, "the account '" + account.getTitle() + "' is disabled");
 	    message(strings.skippingFetchingFromDisabledAccount(title));
 	    return;
 	}
 	control.message(strings.fetchingMailFromAccount(title));
 	Log.debug(LOG_COMPONENT, "connecting to the POP3 server:" + account.getHost() + ":" + account.getPort());
 	control.message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
-	final MailConversations conversation = new MailConversations(createMailServerParams(account), true);
-    
+	    	final MailConversations conversation = new MailConversations(createMailServerParams(account), true);
 	Log.debug(LOG_COMPONENT, "connection established");
 	message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES));
@@ -113,24 +107,23 @@ public final class Pop3 extends Base implements MailConversations.Listener
 
     @Override public boolean saveMessage(byte[] bytes, int num, int total)
     {
-		NullCheck.notNull(bytes, "bytes");
 	final MailMessage message;
 	try {
 	    message = BinaryMessage.fromByteArray(bytes);
 	}
 	catch(PimException | IOException e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to create a message object:" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "unable to create a message object: " + e.getClass().getName() + ": " + e.getMessage());
 	    return false;
 	}
 	final MessageObj hookObj = new MessageObj(message);
 	try {
-	    Log.debug(LOG_COMPONENT, "saving the message " + num + "/" + total);
-	    return new ChainOfResponsibilityHook(luwrain).run(HOOK_NAME_SAVE, new Object[]{mailHookObject, hookObj});
+	    Log.debug(LOG_COMPONENT, "saving the message " + num + "/" + total + " from " + message.getFrom());
+	    return chainOfResponsibility(luwrain, HOOK_SAVE, new Object[]{mailHookObject, hookObj});
 	}
 	catch(Throwable e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to save a message:" + e.getClass().getName() + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "unable to save the message: " + e.getClass().getName() + ": " + e.getMessage());
 	    return false;
 	}
     }
