@@ -17,12 +17,7 @@
 
 package org.luwrain.pim.mail;
 
-//import java.io.*;
-
 import org.junit.*;
-
-//import org.luwrain.core.*;
-
 import static org.luwrain.pim.mail.AddressUtils.*;
 
 public class AddressUtilsTest extends Assert

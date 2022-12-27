@@ -22,8 +22,6 @@ import java.io.*;
 
 import org.junit.*;
 
-//import org.luwrain.core.*;
-
 import static org.luwrain.util.StreamUtils.*;
 import static org.luwrain.pim.mail.BinaryMessage.*;
 
@@ -60,7 +58,7 @@ public class BinaryMessageTest extends Assert
 	assertNotNull(m);
 	assertEquals(122, d.getYear());
 	assertEquals(9, d.getMonth());
-		assertEquals(29, d.getDate());
+	assertEquals(29, d.getDate());
     }
 
     @Before public void readRawMessage() throws IOException
@@ -71,4 +69,4 @@ public class BinaryMessageTest extends Assert
 	}
 	this.rawMessage = os.toByteArray();
     }
-    }
+}
