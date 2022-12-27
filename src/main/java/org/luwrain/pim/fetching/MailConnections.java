@@ -31,7 +31,7 @@ import org.luwrain.core.*;
 import org.luwrain.util.*;
 import org.luwrain.pim.PimException;
 
-public final class MailConversations
+public final class MailConnections
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     static final int LIMIT_MESSAGES_LOAD = 500;
@@ -59,7 +59,7 @@ public final class MailConversations
     private final Store store;
     private final Transport smtpTransport;
 
-    public MailConversations(Params params, boolean pop3) throws PimException
+    public MailConnections(Params params, boolean pop3) throws PimException
     {
 	NullCheck.notNull(params, "params");
 	NullCheck.notEmpty(params.host, "params.host");

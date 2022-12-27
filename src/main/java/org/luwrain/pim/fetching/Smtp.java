@@ -122,7 +122,7 @@ throw new FetchingException("Не удалось подготовить почт
 	    throw new FetchingException("The mail account \'" + account.getTitle() + "\' is disabled");
 	}
 	message(strings.messagesInQueueForAccount(account.getTitle(), "" + queue.messages.size()));
-	final MailConversations conversation = new MailConversations(createMailServerParams(account), false);
+	final MailConnections conversation = new MailConnections(createMailServerParams(account), false);
 	message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
 	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	int count = 0;

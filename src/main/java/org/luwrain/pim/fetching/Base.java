@@ -59,9 +59,9 @@ public class Base
 	luwrain.crash(e);
     }
 
-    protected MailConversations.Params createMailServerParams(MailAccount account) throws PimException
+    protected MailConnections.Params createMailServerParams(MailAccount account)
     {
-	final MailConversations.Params params = new MailConversations.Params();
+	final MailConnections.Params params = new MailConnections.Params();
 	params.doAuth = !account.getLogin().isEmpty();
 	params.host = account.getHost();
 	params.port = account.getPort();

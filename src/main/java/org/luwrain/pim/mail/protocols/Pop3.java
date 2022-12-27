@@ -31,7 +31,7 @@ import org.luwrain.pim.mail.script.*;
 
 import static org.luwrain.script.Hooks.*;
 
-public final class Pop3 extends Base implements MailConversations.Listener
+public final class Pop3 extends Base implements MailConnections.Listener
 {
     static private final String
 	LOG_COMPONENT = "pop3",
@@ -89,7 +89,7 @@ public final class Pop3 extends Base implements MailConversations.Listener
 	control.message(strings.fetchingMailFromAccount(title));
 	Log.debug(LOG_COMPONENT, "connecting to the POP3 server:" + account.getHost() + ":" + account.getPort());
 	control.message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
-	final MailConversations conversation = new MailConversations(createMailServerParams(account), true);
+	final MailConnections conversation = new MailConnections(createMailServerParams(account), true);
 	Log.debug(LOG_COMPONENT, "connection established");
 	message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
 	conversation.fetchPop3("inbox", this, !account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES));
