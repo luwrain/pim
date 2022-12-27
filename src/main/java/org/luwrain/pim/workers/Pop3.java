@@ -37,7 +37,7 @@ public class Pop3 implements Worker
 	    return;
 	}
 	try {
-	    	final org.luwrain.pim.fetching.Pop3 pop3Fetching = new org.luwrain.pim.fetching.Pop3(control, strings);
+	    	final org.luwrain.pim.mail.protocols.Pop3 pop3Fetching = new org.luwrain.pim.mail.protocols.Pop3(control, strings);
 		Log.debug(LOG_COMPONENT, "starting " + NAME);
 		pop3Fetching.fetch();
 	}
