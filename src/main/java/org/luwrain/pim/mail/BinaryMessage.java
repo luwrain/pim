@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -48,9 +48,8 @@ public final class BinaryMessage
 	}
     }
 
-    static public MailMessage fromByteArray(byte[] bytes) throws PimException, IOException
+    static public MailMessage fromByteArray(byte[] bytes) throws IOException
     {
-	NullCheck.notNull(bytes, "bytes");
 	final MailMessage message = new MailMessage();
 	try {
 	    convertFromMimeMessage(mimeFromByteArray(bytes), message);
@@ -63,16 +62,8 @@ public final class BinaryMessage
 	return message;
     }
 
-    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws PimException, IOException, MessagingException
+    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws IOException, MessagingException
     {
-	NullCheck.notNull(srcMsg, "srcMsg");
-	NullCheck.notNull(headers, "headers");
-	//	NullCheck.notEmpty(srcMsg.getFrom(), "srcMsg.getFrom()");
-	//	NullCheck.notEmptyArray(srcMsg.to, "srcMsg.to");
-	//	NullCheck.notEmptyItems(srcMsg.to, "srcMsg.to");
-	//	NullCheck.notEmptyItems(srcMsg.cc, "srcMsg.cc");
-	//	NullCheck.notEmptyItems(srcMsg.bcc, "srcMsg.bcc");
-	//	NullCheck.notEmptyItems(srcMsg.attachments, "srcMsg.attachments");
 	final Session session = Session.getDefaultInstance(new Properties(), null);
 	final javax.mail.internet.MimeMessage message = new MimeMessage(session);;
 	for(Map.Entry<String,String> e: headers.entrySet())

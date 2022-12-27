@@ -1,0 +1,201 @@
+X-Yandex-FolderName: Inbox
+Received: from pop.yandex.ru [213.180.204.212]
+	by blard.localdomain with POP3 (fetchmail-6.3.26)
+	for <msp@localhost> (single-drop); Sun, 30 Oct 2022 05:56:14 +0700 (+07)
+Received: from postback7b.mail.yandex.net (postback7b.mail.yandex.net [2a02:6b8:c02:900:1:45:d181:da07])
+	by shxlvn7j6vlbi6hh.sas.yp-c.yandex.net with LMTP id wowlRKEgA8-FoWApygn
+	for <msp@luwrain.org>; Sat, 29 Oct 2022 18:20:54 +0300
+Received: from iva4-4236afee41c6.qloud-c.yandex.net (iva4-4236afee41c6.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:7401:0:640:4236:afee])
+	by postback7b.mail.yandex.net (Yandex) with ESMTP id 7A62C5E5EE
+	for <msp@luwrain.org>; Sat, 29 Oct 2022 18:20:54 +0300 (MSK)
+Received: from mail-qt1-x83f.google.com (mail-qt1-x83f.google.com [2607:f8b0:4864:20::83f])
+	by iva4-4236afee41c6.qloud-c.yandex.net (mxfront/Yandex) with ESMTPS id x1wpPshIyk-KraSg9Il;
+	Sat, 29 Oct 2022 18:20:53 +0300
+X-Yandex-Internal: 1
+X-Yandex-Fwd: 1
+Authentication-Results: iva4-4236afee41c6.qloud-c.yandex.net; spf=pass (iva4-4236afee41c6.qloud-c.yandex.net: domain of googlegroups.com designates 2607:f8b0:4864:20::83f as permitted sender, rule=[ip6:2607:f8b0:4000::/36]) smtp.mail=ransis+bncBAABBU4J6WNAMGQE25V4BNA@googlegroups.com; dkim=pass header.i=@googlegroups.com
+X-Yandex-Spam: 1
+X-Yandex-Uid-Status: 1 1130000031073940
+Received: by mail-qt1-x83f.google.com with SMTP id s14-20020a05622a1a8e00b00397eacd9c1asf5100868qtc.21
+        for <msp@luwrain.org>; Sat, 29 Oct 2022 08:20:53 -0700 (PDT)
+ARC-Seal: i=2; a=rsa-sha256; t=1667056852; cv=pass;
+        d=google.com; s=arc-20160816;
+        b=tmQODYgstrBjJg7tWsq+JONOItLJiXPhUSDc+3hU0LfBspmlSfTHFmD+84QAT14myx
+         wdhDlyd2T1Oaa2Eu7thXIS8cTentwdUrUxalqcrGJf3CMSUnI0dghZ+Ryl4FFu8BhT/1
+         EMZxWoooTBzwGRrc1EHL5HTqIzNe1YiXy8RqOe0lVZC6R/LfYGrhKV7EUHsgpsCTr1KJ
+         GFiXG2UjLxm2/P1W1S+Z9qezTqkBK5lGVFIIoNtQKAzUxhcexCTCdGu+SnhToAEReNPE
+         /NJ4pLt5DWVDHTverT0LOf2MQjYgL/v3sH78yVImR+m2nxvIhF2x1NVGRCAM9D9ydISa
+         G+uw==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=list-unsubscribe:list-subscribe:list-archive:list-help:list-post
+         :list-id:mailing-list:precedence:reply-to:content-transfer-encoding
+         :mime-version:date:subject:to:from:message-id:sender:dkim-signature;
+        bh=7mfUpDvbzTQI23szZ0RLlK1cEsGkDRGqy3+K4tqCjjs=;
+        b=nQIHzlpWS2Nd62WMYEyOhOWvsq7czbBBeJih8culNr2bMIsjnn3y7zXwHCH3fVSiEC
+         Yb3Ca6vU6KYTdI8ZaR8WqaY3QcgQUtOiWhgGNPo2XkMxazPqcXWUM1oACuP2ogAmvbJ0
+         yC3xquKzy857uqXI66rhlGT6fAzS0Lyt5V682H6TxfvS6S2vUvm8ACuaxvLH+1gZHMZp
+         mL3zXYOVcHC4khJaj31YvBLuP3sb1B0zx546CzSI+kP6lhLI/ge/XEJsBOBbBNS5zq+D
+         36Qf/6eBa45YMH2/Wj7PKXkSpJnow7F49mbZipPl4/njKEiCDvseLQ2ICSlEbYDuXliI
+         NRhA==
+ARC-Authentication-Results: i=2; gmr-mx.google.com;
+       spf=neutral (google.com: 31.31.198.186 is neither permitted nor denied by best guess record for domain of news@ransis.org) smtp.mailfrom=news@ransis.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlegroups.com; s=20210112;
+        h=list-unsubscribe:list-subscribe:list-archive:list-help:list-post
+         :list-id:mailing-list:precedence:reply-to
+         :x-original-authentication-results:x-original-sender
+         :content-transfer-encoding:mime-version:date:subject:to:from
+         :message-id:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=7mfUpDvbzTQI23szZ0RLlK1cEsGkDRGqy3+K4tqCjjs=;
+        b=sECl8QPSRw6Fxe8LahU2Xj7LTp5iHif3d23WpcfEMXcGFLtJodtDthtYuZkvbFsCN+
+         VhY6ohui3h4CiFDZ/+m4KTg1m6eUc+nk85MXu1sO7XevjQFqaYOV400vprszkRZI61Nr
+         IS3/3EkeynYhteNtyFfYf1n8DGjzDIQ1cquCGs+4M9LSZJMWxzUU8Ia4cbKop74i067G
+         QDsEUGYK7BmbYmFeccQVYeRq2+xLdgD2WUuDo5C9eAaB7FOI3tkfAZloTWiuu5hy4tKh
+         7qfr1XTQPOKLt0H/dcVv17qESkAtWwVIqauSsOxVAjOWjnYuQUP9V3fnoGQlhHm90WUY
+         jhhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=list-unsubscribe:list-subscribe:list-archive:list-help:list-post
+         :list-id:mailing-list:precedence:reply-to
+         :x-original-authentication-results:x-original-sender
+         :content-transfer-encoding:mime-version:date:subject:to:from
+         :message-id:x-gm-message-state:sender:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7mfUpDvbzTQI23szZ0RLlK1cEsGkDRGqy3+K4tqCjjs=;
+        b=ic5QBmIHBh0dTBQgupDzujWz0Yeg7QIq5sUSNQ5D+OCT6v5dqRL/whDKjLA0yrzTQV
+         cri3UnLXheskRHj1CTKYS/zXzMgrYtMdQMKtj4J9mIukpaVenhaKrziPdmpIsbAUi1fQ
+         PejtC83FCMSy5ynjWoodFUV7EWX44ly1OzVlMDwZJmrt7jZhP6+ZB20BeFN2Xe0E8jkL
+         fgqpFJ9POaso7ir4fwEBfWXIGbajcA6Jpk+yf1bz4ETJ3X6DiKuvUoJ7C+3NHdi83rZG
+         YY8Xjw1I1rqzAWx0eqZSAcmhtybY/GTABg9pkkHAa8B8cg+tHZr7tuzY+RDMVXAGfRz4
+         2Lpg==
+Sender: ransis@googlegroups.com
+X-Gm-Message-State: ACrzQf1g//S0wwCHQugBAMYbCNjvulGMo22AQeuwVwLTzQ4m/WiDrNLE
+	3TVhC9Qa2XcGw4QG7KS12Qk=
+X-Google-Smtp-Source: AMsMyM7s2YJhF4rIAPQH2tPhQjvOzatbwvuX8mOb18V6hMlowcmFwg+zK5LtCbBbufx9Vb0FvNRxDQ==
+X-Received: by 2002:ae9:d603:0:b0:6f9:b208:9837 with SMTP id r3-20020ae9d603000000b006f9b2089837mr3451414qkk.620.1667056852116;
+        Sat, 29 Oct 2022 08:20:52 -0700 (PDT)
+X-BeenThere: ransis@googlegroups.com
+Received: by 2002:a0c:b252:0:b0:4b8:66bf:5723 with SMTP id k18-20020a0cb252000000b004b866bf5723ls2452809qve.2.-pod-prod-gmail;
+ Sat, 29 Oct 2022 08:20:51 -0700 (PDT)
+X-Received: by 2002:a0c:aa96:0:b0:4bb:5ed3:49b6 with SMTP id f22-20020a0caa96000000b004bb5ed349b6mr4170028qvb.80.1667056851538;
+        Sat, 29 Oct 2022 08:20:51 -0700 (PDT)
+Received: by 2002:a05:620a:4452:b0:6b5:f880:4654 with SMTP id af79cd13be357-6f8bc4e7d3cms85a;
+        Sat, 29 Oct 2022 08:17:28 -0700 (PDT)
+X-Received: by 2002:a2e:a9a8:0:b0:26f:d9b4:9299 with SMTP id x40-20020a2ea9a8000000b0026fd9b49299mr1883635ljq.362.1667056647156;
+        Sat, 29 Oct 2022 08:17:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1667056647; cv=none;
+        d=google.com; s=arc-20160816;
+        b=khGUTHiyCfki/iqpbKXlRLm9EeKoQc52hR6pvMpwoUNE3T5PV18NpvnyLAZTtatGbR
+         NiewnCP/w72Mkcm8anPsb17wYd9xadNBaeaPAALLy2HXy3yQNbhuwe1KhuzB+FroDDGy
+         tqp2V8YBEDbXxtPxyhrNviZYhD/V6Exe4w/RALjtcvi+uHLue4SbeE6v84vBsmbPu0c+
+         9t0S62qk6m4PBbEmb637swQhgo8wlpC0bgt8A1qG+U/Gp+loCaoMdA6Cve6S+HuIyg12
+         mGu7WJBrmogCvVmSoDnfIIZactbp4eeJhGnhiiiiqhNbzOygc3rm1Fvk/PftZHogbKgM
+         rccw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=content-transfer-encoding:mime-version:date:subject:to:from
+         :message-id;
+        bh=lTT/0iGQdBRYuwgRbfEbcyw8DXdwmOEJFu3XsNlqnCI=;
+        b=SvXiHVqPEJ8Z4nlk4C6zrPJJC/KtbSqEAstKoWJHzcgPu/kW8V/GEaB6xIt6AQc+4Z
+         LUESo2IE0kTLYRwBMo8Kp0dT92fHfc4BmBy2aa6HmpDmlcjIIGj6U0JV0KKeVTA9G91p
+         EE+yV6TMhtxMbW0pB1JiJrpFLweqPU7w/j9lzI6tMopeXlVcRDUFm5k91nZxME8eaq4T
+         U3Z7rxtbrbuJoIanx4OgELolJG3TLP1S7YhmphE/do6O7ebsxzdc5JfxD1ViFU46MRI0
+         p3WwE0D/dX+5sP/uuAnP+JB97Q7gTWTaMjd3paYJFwfjreFRgND7HdgSATv+nRaCObUU
+         7IFA==
+ARC-Authentication-Results: i=1; gmr-mx.google.com;
+       spf=neutral (google.com: 31.31.198.186 is neither permitted nor denied by best guess record for domain of news@ransis.org) smtp.mailfrom=news@ransis.org
+Received: from scp92.hosting.reg.ru (scp92.hosting.reg.ru. [31.31.198.186])
+        by gmr-mx.google.com with ESMTPS id u16-20020a05651c131000b0026fcb9f003csi60473lja.6.2022.10.29.08.17.27
+        for <ransis@googlegroups.com>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 29 Oct 2022 08:17:27 -0700 (PDT)
+Received-SPF: neutral (google.com: 31.31.198.186 is neither permitted nor denied by best guess record for domain of news@ransis.org) client-ip=31.31.198.186;
+Received: from 46-138-31-80.dynamic.spd-mgts.ru ([46.138.31.80]:1478 helo=HOMEXP)
+	by scp92.hosting.reg.ru with esmtpa (Exim 4.95)
+	(envelope-from <news@ransis.org>)
+	id 1oonaR-0005iN-M3
+	for ransis@googlegroups.com;
+	Sat, 29 Oct 2022 18:17:26 +0300
+X-Gnus-Mail-Source: maildir:~/.spool/lists/new
+Message-ID: <B5900D22DB99403FABC142CAF47368DE@HOMEXP>
+From: =?koi8-r?B?8sXEwcvUz9Igzs/Xz9PUxcog8sHEyc8g8uHu88nz?= <news@ransis.org>
+To: <ransis@googlegroups.com>
+Subject: =?UTF-8?B?W1JBTlNJUzo4NjgyXSDQmNC90YTQvi4gItCh0L/QtdGG0YXRgNCw0L0iICjQsNC90L7QvQ==?=
+	=?UTF-8?B?0YEp?=
+Date: Sat, 29 Oct 2022 18:19:01 +0300
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2900.5512
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2900.5512
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - scp92.hosting.reg.ru
+X-AntiAbuse: Original Domain - googlegroups.com
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - ransis.org
+X-Get-Message-Sender-Via: scp92.hosting.reg.ru: authenticated_id: news@ransis.org
+X-Authenticated-Sender: scp92.hosting.reg.ru: news@ransis.org
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Original-Sender: news@ransis.org
+X-Original-Authentication-Results: gmr-mx.google.com;       spf=neutral
+ (google.com: 31.31.198.186 is neither permitted nor denied by best guess
+ record for domain of news@ransis.org) smtp.mailfrom=news@ransis.org
+Reply-To: ransis@googlegroups.com
+Precedence: list
+Mailing-list: list ransis@googlegroups.com; contact ransis+owners@googlegroups.com
+List-ID: <ransis.googlegroups.com>
+X-Google-Group-Id: 195643102937
+List-Post: <https://groups.google.com/group/ransis/post>, <mailto:ransis@googlegroups.com>
+List-Help: <https://groups.google.com/support/>, <mailto:ransis+help@googlegroups.com>
+List-Archive: <https://groups.google.com/group/ransis
+List-Subscribe: <https://groups.google.com/group/ransis/subscribe>, <mailto:ransis+subscribe@googlegroups.com>
+List-Unsubscribe: <mailto:googlegroups-manage+195643102937+unsubscribe@googlegroups.com>,
+ <https://groups.google.com/group/ransis/subscribe>
+Return-Path: ransis+bncBAABBU4J6WNAMGQE25V4BNA@googlegroups.com
+X-Yandex-Forward: 3248a3d3e19446ea0ac6fa2391b2ce8c
+Lines: 40
+Xref: blard.localdomain blind.ransis:1
+
+ICAg0KPQstCw0LbQsNC10LzRi9C1INC/0L7QtNC/0LjRgdGH0LjQutC4LA0KDQoxIC0gNSDQvdC+
+0Y/QsdGA0Y8g0LIg0LHQu9C+0LrQtSAi0KHQv9C10YbRhdGA0LDQvSIg0L/RgNC+0LfQstGD0YfQ
+uNGCINCw0YPQtNC40L7RgtGA0LXQuiDRgSDQutC+0LzQvNC10L3RgtCw0YDQuNGP0LzQuCDQstC4
+0LTQtdC+0YHQvtGB0YLQsNCy0LvRj9GO0YnQtdC5INC60LjQvdC+0YTQuNC70YzQvNCwICLQmtCw
+0LLQutCw0LfRgdC60LDRjyDQv9C70LXQvdC90LjRhtCwIi4NCg0KItCh0L/QtdGG0YXRgNCw0L0i
+INCy0YvRhdC+0LTQuNGCINCyINGN0YTQuNGADQrQstC+INCy0YLQvtGA0L3QuNC6IC0g0LIgMjE6
+MDAsDQrQsiDRgdGA0LXQtNGDIC0g0LIgMTM6MDAsDQrQsiDRh9C10YLQstC10YDQsyAtINCyIDA1
+OjAwLA0K0LIg0L/Rj9GC0L3QuNGG0YMgLSDQsiAxNzowMCDQuA0K0LIg0YHRg9Cx0LHQvtGC0YMg
+LSDQsiAxMzowMA0KKNCy0YDQtdC80Y8g0LzQvtGB0LrQvtCy0YHQutC+0LUpLg0KDQogICAgINCh
+INGD0LLQsNC20LXQvdC40LXQvA0KICAgICDQoNC10LTQsNC60YLQvtGAINC90L7QstC+0YHRgtC1
+0Lkg0KDQsNC00LjQviDQoNCQ0J3QodC40KENCg0KLS0gCi0tIArQodCw0LnRgiDQn9C+0YDRgtCw
+0LvQsCDQoNCQ0J3QodC40KE6IHd3dy5yYW5zaXMub3JnCtCh0YLRgNCw0L3QuNGG0LAg0KDQsNC0
+0LjQviDQoNCQ0J3QodC40KE6IHd3dy5yYWRpb3BhZ2UucmFuc2lzLm9yZwrQodC10YLQutCwINCy
+0LXRidCw0L3QuNGPINCg0LDQtNC40L4g0KDQkNCd0KHQuNChOiB3d3cucmFkaW9wYWdlLnJhbnNp
+cy5vcmcvaW5kZXgucGhwP25hbWU9TWF0dGVyJm1hdHRlcj1zZXRrYQoK0JTQu9GPINC/0YDQvtGB
+0LvRg9GI0LjQstCw0L3QuNGPINCg0LDQtNC40L4g0KDQkNCd0KHQuNChINC80L7QttC90L4g0LLQ
+vtGB0L/QvtC70YzQt9C+0LLQsNGC0YzRgdGPINC+0LTQvdC+0Lkg0LjQtyDRgdC70LXQtNGD0Y7R
+idC40YUg0YHRgdGL0LvQvtC6OgpiaXRyYXRlIDEyOCBLQi9TIC0gaHR0cDovL3JhbnNpcy5vcmcv
+cmFuc2lzMTI4Lm0zdQpiaXRyYXRlIDY0IEtCL1MgLSBodHRwOi8vcmFuc2lzLm9yZy9yYW5zaXM2
+NC5tM3UKCtCf0L7QtNC60LDRgdGCLdC70LXQvdGC0Ysg0KDQsNC00LjQviDQoNCQ0J3QodC40KE6
+IHd3dy5yYWRpb3BhZ2UucmFuc2lzLm9yZy9pbmRleC5waHA/bmFtZT1NYXR0ZXImbWF0dGVyPXBv
+ZGNhc3QKCtCc0Ysg0LIg0YHQvtGG0YHQtdGC0Y/RhToKRmFjZWJvb2sgLSBodHRwOi8vZmFjZWJv
+b2suY29tL3JhbnNpc3JhZGlvClR3aXR0ZXIgLSBodHRwOi8vdHdpdHRlci5jb20vcmFkaW9yYW5z
+aXMK0JLQmtC+0L3RgtCw0LrRgtC1IC0gaHR0cDovL3ZrLmNvbS9yYWRpb3JhbnNpcwotLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K0J3QsNC/
+0LjRgdCw0YLRjCDQsiDRgNCw0YHRgdGL0LvQutGDOiByYW5zaXNAZ29vZ2xlZ3JvdXBzLmNvbQrQ
+n9C+0LTQv9C40YHQsNGC0YzRgdGPINC90LAg0YDQsNGB0YHRi9C70LrRgzogcmFuc2lzK3N1YnNj
+cmliZUBnb29nbGVncm91cHMuY29tCtCe0YLQvNC10L3QuNGC0Ywg0L/QvtC00L/QuNGB0LrRgzog
+cmFuc2lzK3Vuc3Vic2NyaWJlQGdvb2dsZWdyb3Vwcy5jb20K0J/QuNGB0YzQvNC+INC80L7QtNC1
+0YDQsNGC0L7RgNGDINGA0LDRgdGB0YvQu9C60Lg6IG1vZGVyYXRvckByYW5zaXMub3JnCi0tLSAK
+0JLRiyDQv9C+0LvRg9GH0LjQu9C4INGN0YLQviDRgdC+0L7QsdGJ0LXQvdC40LUsINC/0L7RgdC6
+0L7Qu9GM0LrRgyDQv9C+0LTQv9C40YHQsNC90Ysg0L3QsCDQs9GA0YPQv9C/0YMgcmFuc2lzLgoK
+0KfRgtC+0LHRiyDQvtGC0LzQtdC90LjRgtGMINC/0L7QtNC/0LjRgdC60YMg0L3QsCDRjdGC0YMg
+0LPRgNGD0L/Qv9GDINC4INCx0L7Qu9GM0YjQtSDQvdC1INC/0L7Qu9GD0YfQsNGC0Ywg0L7RgiDQ
+vdC10LUg0YHQvtC+0LHRidC10L3QuNGPLCDQvtGC0L/RgNCw0LLRjNGC0LUg0L/QuNGB0YzQvNC+
+INC90LAg0Y3Qu9C10LrRgtGA0L7QvdC90YvQuSDQsNC00YDQtdGBIHJhbnNpcyt1bnN1YnNjcmli
+ZUBnb29nbGVncm91cHMuY29tLgrQn9GA0L7RgdC80L7RgtGA0LXRgtGMINGN0YLQviDQvtCx0YHR
+g9C20LTQtdC90LjQtSDQsiDQodC10YLQuCDQvNC+0LbQvdC+INC/0L4g0LDQtNGA0LXRgdGDIGh0
+dHBzOi8vZ3JvdXBzLmdvb2dsZS5jb20vZC9tc2dpZC9yYW5zaXMvQjU5MDBEMjJEQjk5NDAzRkFC
+QzE0MkNBRjQ3MzY4REUlNDBIT01FWFAuCg==
