@@ -1,3 +1,19 @@
+/*
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.pim.mail;
 
@@ -7,20 +23,28 @@ import org.junit.*;
 
 import org.luwrain.core.*;
 
+import static org.luwrain.pim.mail.AddressUtils.*;
+
 public class AddressUtilsTest extends Assert
 {
-    @Ignore @Test public void getPersonal() throws Exception
+    @Test public void personal() throws Exception
     {
-	assertTrue(AddressUtils.getPersonal("").equals(""));
-	assertTrue(AddressUtils.getPersonal("test@test.com").equals(""));
-	assertTrue(AddressUtils.getPersonal("<test@test.com>").equals(""));
-	assertTrue(AddressUtils.getPersonal("TEST <test@test.com>").equals("TEST"));
-	assertTrue(AddressUtils.getPersonal(" TEST USER <test@test.com>").equals("TEST USER"));
-	assertTrue(AddressUtils.getPersonal("TEST USER <>").equals(""));
-	assertTrue(AddressUtils.getPersonal("TEST USER").equals(""));
+	assertEquals("", getPersonal(""));
+	assertEquals("", getPersonal("test@test.com"));
+	assertEquals("", AddressUtils.getPersonal("<test@test.com>"));
+	assertEquals("TEST", getPersonal("TEST <test@test.com>"));
+	assertEquals("TEST USER", getPersonal(" TEST USER <test@test.com>"));
+	assertEquals("", getPersonal("TEST USER"));
+	assertEquals("", getPersonal("TEST USER"));
     }
 
-    @Ignore @Test public void getAddress()
+    @Test public void qp()
+    {
+	assertEquals("Редактор новостей Радио РАНСиС", getPersonal("=?koi8-r?B?8sXEwcvUz9Igzs/Xz9PUxcog8sHEyc8g8uHu88nz?= <news@ransis.org>"));
+	assertEquals("news@ransis.org", getAddress("=?koi8-r?B?8sXEwcvUz9Igzs/Xz9PUxcog8sHEyc8g8uHu88nz?= <news@ransis.org>"));
+    }
+
+    @Test public void address()
     {
 	assertTrue(AddressUtils.getAddress("").equals(""));
 	assertTrue(AddressUtils.getAddress("test@test.com").equals("test@test.com"));

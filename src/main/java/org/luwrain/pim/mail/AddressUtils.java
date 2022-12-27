@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -25,11 +25,12 @@ import javax.mail.internet.*;
 
 import org.luwrain.core.*;
 
+import static org.luwrain.pim.mail.Factory.*;
+
 public final class AddressUtils
 {
     static public String getPersonal(String addr)
     {
-	NullCheck.notNull(addr, "addr");
 	if (addr.trim().isEmpty())
 	    return "";
 	try {
@@ -39,13 +40,13 @@ public final class AddressUtils
 	}
 	catch (javax.mail.internet.AddressException e)
 	{
+	    Log.warning(LOG_COMPONENT, "unable to extract the personal part of the mail address '" + addr + "'");
 	    return "";
 	}
     }
 
         static public String getAddress(String addr)
     {
-	NullCheck.notNull(addr, "addr");
 	if (addr.trim().isEmpty())
 	    return "";
 	try {
@@ -55,6 +56,7 @@ public final class AddressUtils
 	}
 	catch (javax.mail.internet.AddressException e)
 	{
+	    	    Log.warning(LOG_COMPONENT, "unable to extract the address part of the mail address '" + addr + "'");
 	    return addr;
 	}
     }

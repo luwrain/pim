@@ -26,7 +26,8 @@ import org.luwrain.pim.*;
 
 public final class Factory
 {
-    static private final String LOG_COMPONENT = "pim-mail";
+    static final String
+	LOG_COMPONENT = "mail";
 
     private final Luwrain luwrain;
     private final ExecQueues execQueues = new ExecQueues();
