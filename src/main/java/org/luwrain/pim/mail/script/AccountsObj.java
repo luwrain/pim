@@ -24,10 +24,10 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import static org.luwrain.pim.mail.script.MailObj.*;
+
 final class AccountsObj
 {
-    static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
-
     private final MailStoring storing;
 
     AccountsObj(MailStoring storing)

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -18,38 +18,30 @@
 package org.luwrain.pim.mail.script;
 
 import java.util.*;
-import java.util.function.*;
+//import java.util.function.*;
+
+import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-public final class MailHookObject
+public final class MailObj
 {
-    static final String LOG_COMPONENT = "pim";
+    static final String
+	LOG_COMPONENT = "mail";
 
     private final MailStoring storing;
 
-    public MailHookObject(MailStoring storing)
+    public MailObj(MailStoring storing)
     {
 	NullCheck.notNull(storing, "storing");
 	this.storing = storing;
     }
 
-    /*
-    @Override public Object getMember(String name)
-    {
-	NullCheck.notNull(name, "name");
-	switch(name)
-	{
-	case "folders":
-	    return new FoldersHookObject(storing);
-	case "accounts":
-	    return new AccountsObj(storing);
-	    	default:
-	    return super.getMember(name);
-	}
-    }
-    */
+    @HostAccess.Export
+    public final ProxyExecutable getFolders = (ProxyExecutable)this::getFoldersImpl;
+    private Object getFoldersImpl(Value[] args) { return new FoldersObj(storing); };
 }

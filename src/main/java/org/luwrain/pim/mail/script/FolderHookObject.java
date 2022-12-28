@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -26,10 +26,10 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import static org.luwrain.pim.mail.script.MailObj.*;
+
 final class FolderHookObject
 {
-    static private final String LOG_COMPONENT = MailHookObject.LOG_COMPONENT;
-
     private final MailStoring storing;
     private final MailFolder folder;
 

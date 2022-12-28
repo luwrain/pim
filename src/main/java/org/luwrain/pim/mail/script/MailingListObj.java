@@ -24,10 +24,11 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import static org.luwrain.pim.mail.script.MailObj.*;
+
 public final class MailingListObj
 {
     static private final String
-    	LOG_COMPONENT = MailHookObject.LOG_COMPONENT,
 	HEADER_ID = "list-id:";
 
     @HostAccess.Export

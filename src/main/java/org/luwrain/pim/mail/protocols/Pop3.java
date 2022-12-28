@@ -38,7 +38,7 @@ public final class Pop3 extends Base implements MailConnections.Listener
 	HOOK_SAVE = "luwrain.pim.mail.save.new";
 
     private final MailStoring storing;
-    private final MailHookObject mailHookObject;
+    private final MailObj mailHookObj;
 
     public Pop3(Control control, Strings strings) throws FetchingException, PimException, InterruptedException
     {
@@ -46,7 +46,7 @@ public final class Pop3 extends Base implements MailConnections.Listener
 	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
 	if (storing == null)
 	    throw new PimException("No connection");
-	this.mailHookObject = new MailHookObject(storing);
+	this.mailHookObj = new MailObj(storing);
     }
 
     public void fetch() throws InterruptedException
@@ -120,7 +120,7 @@ public final class Pop3 extends Base implements MailConnections.Listener
 	final MessageObj hookObj = new MessageObj(message);
 	try {
 	    Log.debug(LOG_COMPONENT, "saving the message " + num + "/" + total + " from " + message.getFrom());
-	    return chainOfResponsibility(luwrain, HOOK_SAVE, new Object[]{mailHookObject, hookObj});
+	    return chainOfResponsibility(luwrain, HOOK_SAVE, new Object[]{mailHookObj, hookObj});
 	}
 	catch(Throwable e)
 	{
