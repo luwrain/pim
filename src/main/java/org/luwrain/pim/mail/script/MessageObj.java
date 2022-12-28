@@ -103,4 +103,9 @@ public final class MessageObj
     {
 	return message;
     }
+
+    public MailMessage getMessage()
+    {
+	return message;
+    }
 }
