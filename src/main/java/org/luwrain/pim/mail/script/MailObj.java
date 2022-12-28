@@ -17,9 +17,6 @@
 
 package org.luwrain.pim.mail.script;
 
-import java.util.*;
-//import java.util.function.*;
-
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 

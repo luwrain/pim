@@ -26,27 +26,22 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import static org.luwrain.script.ScriptUtils.*;
 import static org.luwrain.pim.mail.script.MailObj.*;
 
-final class FolderHookObject
+public final class FolderObj
 {
     private final MailStoring storing;
     private final MailFolder folder;
-
-    FolderHookObject(MailStoring storing, MailFolder folder)
+    FolderObj(MailStoring storing, MailFolder folder)
     {
-	NullCheck.notNull(storing, "storing");
-	NullCheck.notNull(folder, "folder");
 	this.storing = storing;
 	this.folder = folder;
     }
 
     @HostAccess.Export
     public ProxyExecutable getTitle = (ProxyExecutable)this::getTitleImpl;
-    public Object getTitleImpl(Value[] args)
-    {
-			return folder.getTitle();
-    }
+    public Object getTitleImpl(Value[] args) { return folder.getTitle(); }
 
     public Object setTitleImpl(Value[] args)
     {
@@ -58,24 +53,21 @@ final class FolderHookObject
     {
 			    final List<Object> res = new ArrayList<>();
 		    for(MailFolder f: storing.getFolders().load(folder))
-			res.add(new FolderHookObject(storing, f));
+			res.add(new FolderObj(storing, f));
 		    return ProxyArray.fromArray(res.toArray(new Object[res.size()]));
     }
 
-
-    private boolean saveMessage(Object o)
+    @HostAccess.Export
+    public final ProxyExecutable saveMessage = (ProxyExecutable)this::saveMessageImpl;
+    private Object saveMessageImpl(Value[] args)
     {
-	if (o == null || !(o instanceof MessageObj))
-	    return false;
-	try {
-	    storing.getMessages().save(folder, ((MessageObj)o).message);
-	    return true;
-	}
-	catch(PimException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to save the message in the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
-	    return false;
-	}
+	if (!notNullAndLen(args, 1))
+	    return Boolean.valueOf(false);
+	final MessageObj message = args[0].asHostObject();
+	if (message == null)
+	    throw new IllegalArgumentException("The first argument doesn't contain a valid message object");
+	storing.getMessages().save(folder, message.message);
+	return Boolean.valueOf(true);
     }
 
     private Object saveProperties()
@@ -94,7 +86,7 @@ final class FolderHookObject
     private Object newSubfolder()
     {
 	try {
-	    return new FolderHookObject(storing, storing.getFolders().save(folder, new MailFolder(), 0));
+	    return new FolderObj(storing, storing.getFolders().save(folder, new MailFolder(), 0));
 	}
 	catch(PimException e)
 	{

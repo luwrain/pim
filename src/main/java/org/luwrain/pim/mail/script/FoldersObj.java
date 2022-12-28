@@ -31,30 +31,28 @@ import org.luwrain.pim.mail.*;
 import static org.luwrain.script.ScriptUtils.*;
 import static org.luwrain.pim.mail.script.MailObj.*;
 
-final class FoldersObj
+public final class FoldersObj
 {
     private final MailStoring storing;
     FoldersObj(MailStoring storing) { this.storing = storing; }
 
-            @HostAccess.Export
-    public final ProxyExecutable findFirstByProperty = (ProxyExecutable)this::findFirstByPropertyImpl;
+    @HostAccess.Export
+    public final ProxyExecutable findByProp = (ProxyExecutable)this::findFirstByPropertyImpl;
     private Object findFirstByPropertyImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 2))
 	    return null;
-	    final String
-	    name = asString(args[0]);
-	    final String value = asString(args[1]);
-	    if (name == null || value == null || name.trim().isEmpty())
-		return null;
-	    final MailFolder res = storing.getFolders().findFirstByProperty(name, value);
-	    return res != null?new FolderHookObject(storing, res):null;
+	final String
+	name = asString(args[0]),
+	value = asString(args[1]);
+	if (name == null || value == null || name.trim().isEmpty())
+	    return null;
+	final MailFolder res = storing.getFolders().findFirstByProperty(name, value);
+	return res != null?new FolderObj(storing, res):null;
     }
-
 
     /*
 	case "local":
 		return new FolderHookObject(storing, storing.getFolders().getRoot());
     */
-
 }
