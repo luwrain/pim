@@ -25,6 +25,8 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import static org.luwrain.util.TextUtils.*;
+
 public final class MessageObj
 {
     final MailMessage message;
@@ -42,12 +44,32 @@ public final class MessageObj
     private Object getSubjectImpl(Value[] args) { return message.getSubject(); };
 
         @HostAccess.Export
-    public final ProxyExecutable getFromAddress = (ProxyExecutable)this::getFromAddressImpl;
-    private Object getFromAddressImpl(Value[] args) { return new AddressObj(message.getFrom()); }
+    public final ProxyExecutable getFrom = (ProxyExecutable)this::getFromImpl;
+    private Object getFromImpl(Value[] args) { return new AddressObj(message.getFrom()); }
+
+            @HostAccess.Export
+    public final ProxyExecutable getTo = (ProxyExecutable)this::getToImpl;
+    private Object getToImpl(Value[] args)
+    {
+	if (message.getTo() == null || message.getTo().length == 0)
+	    return null;
+	return new AddressObj(message.getTo()[0]);
+    }
+
 
     @HostAccess.Export
-    public final ProxyExecutable getMessageText = (ProxyExecutable)this::getMessageTextImpl;
-    private Object getMessageTextImpl(Value[] args) { return message.getText(); }
+    public final ProxyExecutable getText = (ProxyExecutable)this::getTextImpl;
+    private Object getTextImpl(Value[] args) { return message.getText(); }
+
+        @HostAccess.Export
+    public final ProxyExecutable getTextAsArray = (ProxyExecutable)this::getTextAsArrayImpl;
+    private Object getTextAsArrayImpl(Value[] args)
+    {
+	if (message.getText() == null)
+	    return ProxyArray.fromArray(new Object[0]);
+	return ProxyArray.fromArray(splitLinesAnySeparator(message.getText()));
+    }
+
 
     @HostAccess.Export
     public Object getCc(Value[] args)
