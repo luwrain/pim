@@ -31,6 +31,8 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import static org.luwrain.pim.mail.BinaryMessage.*;
+
 final class Messages implements MailMessages
 {
     private final Storing storing;
@@ -50,32 +52,25 @@ final class Messages implements MailMessages
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
-		final Folder f = (Folder)folder;
-	try {
-	    storing.execInQueue(()->{
-		    final Message m = new Message();
-		    m.messagesDir = this.messagesDir;
-		    m.initStoring(storing, repo);
-		    m.copyValues(message);
-		    m.genId();
-		    m.folderId = f.getId();
-		    m.saveRawMessage();
-		    repo.insert(m);
-		    return null;
-		});
-	}
-	catch(Exception e)
-	{
-	    throw new PimException(e);
-	}
+	final Folder f = (Folder)folder;
+	storing.execInQueue(()->{
+		final Message m = new Message();
+		m.messagesDir = this.messagesDir;
+		m.initStoring(storing, repo);
+		m.copyValues(message);
+		m.genId();
+		m.folderId = f.getId();
+		m.saveRawMessage();
+		repo.insert(m);
+		return null;
+	    });
     }
 
-    @Override public MailMessage[] load(MailFolder folder) throws PimException
+    @Override public MailMessage[] load(MailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
 	final Folder f = (Folder)folder;
-	try {
-	return (Message[])storing.execInQueue(()->{
+	return storing.execInQueue(()->{
 		final List<Message> res = new ArrayList<>();
 		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
 		for(Message m: c)
@@ -87,11 +82,6 @@ final class Messages implements MailMessages
 		}
 		return res.toArray(new Message[res.size()]);
 	    });
-	}
-	catch(Throwable e)
-	{
-	    throw new PimException(e);
-	}
     }
 
         @Override public MailMessage[] loadNoDeleted(MailFolder folder) throws PimException
@@ -104,18 +94,12 @@ final class Messages implements MailMessages
     {
 	NullCheck.notNull(message, "message");
 	final Message m = (Message)message;
-	try {
 	    storing.execInQueue(()->{
 		    return null;
 		});
-	}
-	catch(Exception e)
-	{
-	    throw new PimException(e);
-	}
     }
 
-    @Override public void moveToFolder(MailMessage message, MailFolder folder) throws PimException
+    @Override public void moveToFolder(MailMessage message, MailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
@@ -125,11 +109,12 @@ final class Messages implements MailMessages
 	m.save();
     }
 
-    @Override public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException
+    @Override public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders)
     {
 	NullCheck.notNull(message, "message");
-	try {
-	    return org.luwrain.pim.mail.BinaryMessage.toByteArray(message, extraHeaders);
+		try {
+
+	    return toByteArray(message, extraHeaders);
 	}
 	catch(Exception e)
 	{
@@ -137,7 +122,7 @@ final class Messages implements MailMessages
 	}
     }
 
-    @Override public     MailMessage fromByteArray(byte[] bytes) throws PimException
+    @Override public     MailMessage fromByteArray(byte[] bytes)
     {
 	throw new RuntimeException("not implemented");
     }

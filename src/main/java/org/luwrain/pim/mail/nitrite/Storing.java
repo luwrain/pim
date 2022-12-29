@@ -33,17 +33,23 @@ public final class Storing implements MailStoring
     static final String
 	LOG_COMPONENT = "pim";
 
-    private final Registry registry;
+    final Registry registry;
     final NitriteStorage<Message> storage;
     private final ExecQueues execQueues;
+    final Object syncObj;
     private final boolean highPriority;
 
     private final Accounts accounts;
-    //    private final Rules rules;
     private final Folders folders;
     private final Messages messages;
 
-    public Storing(Registry registry,NitriteStorage<Message> storage, ExecQueues execQueues, boolean highPriority, File messagesDir)
+    public Storing(
+		   Registry registry,
+		   NitriteStorage<Message> storage,
+		   ExecQueues execQueues,
+		   Object syncObj,
+		   boolean highPriority,
+		   File messagesDir)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(storage, "storage");
@@ -52,8 +58,8 @@ public final class Storing implements MailStoring
 	this.registry = registry;
 	this.storage = storage;
 	this.execQueues = execQueues;
+	this.syncObj = syncObj;
 	this.highPriority = highPriority;
-	//	this.rules = new Rules(registry);
 		this.messages = new Messages(this, messagesDir);
 		this.folders = new Folders(registry, messages);
 	this.accounts = new Accounts(registry);
@@ -62,7 +68,6 @@ public final class Storing implements MailStoring
     @Override public MailRules getRules() { return null; }
     @Override public MailFolders getFolders() { return folders; }
     @Override public MailAccounts getAccounts() { return accounts; }
-
     @Override public MailMessages getMessages() { return messages; }
 
         @Override public     String combinePersonalAndAddr(String personal, String addr)
@@ -72,9 +77,15 @@ public final class Storing implements MailStoring
 	return AddressUtils.combinePersonalAndAddr(personal, addr);
     }
 
-        Object execInQueue(Callable callable) throws Exception
+    <T> T execInQueue(Callable<T> callable)
     {
 	NullCheck.notNull(callable, "callable");
-	return execQueues.exec(new FutureTask(callable), highPriority);
+	try {
+	    return (T)execQueues.exec(new FutureTask<T>(callable), highPriority);
+	}
+	catch(Throwable e)
+	{
+	    throw new PimException(e);
+	}
     }
 }

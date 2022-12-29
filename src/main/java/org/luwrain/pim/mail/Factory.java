@@ -36,6 +36,7 @@ static final String
     private final Luwrain luwrain;
     private final ExecQueues execQueues = new ExecQueues();
     private final NitriteStorage<org.luwrain.pim.mail.nitrite.Message> storage;
+    private final Object syncObj = new Object();
 
     public Factory(Luwrain luwrain)
     {
@@ -47,7 +48,11 @@ static final String
 
     public MailStoring newMailStoring(boolean highPriority)
     {
-	return new org.luwrain.pim.mail.nitrite.Storing(luwrain.getRegistry(), storage, execQueues, highPriority, luwrain.getAppDataDir(MESSAGES_DIR).toFile());
+	return new org.luwrain.pim.mail.nitrite.Storing(
+							luwrain.getRegistry(),
+							storage, execQueues,
+							syncObj, highPriority,
+							luwrain.getAppDataDir(MESSAGES_DIR).toFile());
     }
 
     @Override public void close()
