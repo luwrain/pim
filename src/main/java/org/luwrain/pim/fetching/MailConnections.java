@@ -51,7 +51,7 @@ public final class MailConnections
 	public String passwd;
 	public boolean ssl = false;
 	public boolean tls = false;
-	public Map<String, String> extProps = new HashMap();
+	public Map<String, String> extProps = new HashMap<>();
     }
 
     private final Properties props;

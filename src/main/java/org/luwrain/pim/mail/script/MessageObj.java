@@ -111,7 +111,7 @@ public final class MessageObj
 	    return new String[0];
 	}
 	final String[] lines = str.split("\n", -1);
-	final List<String> res = new LinkedList();
+	final List<String> res = new ArrayList<>();
 	for(String s: lines)
 	{
 	    if (s.trim().isEmpty())

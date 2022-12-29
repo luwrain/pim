@@ -83,7 +83,7 @@ throw new FetchingException("Не удалось подготовить почт
 	    queues.add(queue);
 	}
 	Log.debug(LOG_COMPONENT, "prepared " + queues.size() + " queue(s)");
-	final Map<String, Throwable> errors = new HashMap();
+	final Map<String, Throwable> errors = new HashMap<>();
 	for(PendingQueue q: queues)
 	    Log.debug(LOG_COMPONENT, q.accountUniRef + " with " + q.messages.size() + " message(s)");
 	int sentCount = 0;
@@ -146,7 +146,7 @@ throw new FetchingException("Не удалось подготовить почт
 	{
 	    this.total = 0;
 	    this.sent = 0;
-	    this.errors = new HashMap();
+	    this.errors = new HashMap<>();
 	}
 	Result(int total, int sent, Map<String, Throwable> errors)
 	{
@@ -164,7 +164,7 @@ throw new FetchingException("Не удалось подготовить почт
     static private final class PendingQueue
     {
 	final String accountUniRef; 
-	final List<MailMessage> messages = new LinkedList();
+	final List<MailMessage> messages = new ArrayList<>();
 	PendingQueue(String accountUniRef)
 	{
 	    NullCheck.notEmpty(accountUniRef, "accountUniRef");

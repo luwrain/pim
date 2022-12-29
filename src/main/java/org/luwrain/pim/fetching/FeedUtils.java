@@ -35,7 +35,7 @@ public final class FeedUtils
     static public NewsArticle[] readFeed(URL url) throws PimException, InterruptedException
     {
 	NullCheck.notNull(url, "url");
-	final List<NewsArticle> articles = new LinkedList();
+	final List<NewsArticle> articles = new ArrayList<>();
 	XmlReader reader = null;
 	try {
 	    URLConnection con = null;

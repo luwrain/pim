@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -24,8 +24,8 @@ import org.luwrain.core.*;
 
 public final class ExecQueues implements Runnable
 {
-    private final ConcurrentLinkedQueue<FutureTask> lowPriorityQueue = new ConcurrentLinkedQueue();
-    private final ConcurrentLinkedQueue<FutureTask> highPriorityQueue = new ConcurrentLinkedQueue();
+    private final ConcurrentLinkedQueue<FutureTask> lowPriorityQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<FutureTask> highPriorityQueue = new ConcurrentLinkedQueue<>();
     private final Object syncObj = new Object();
     private final Executor executor = Executors.newSingleThreadExecutor();
     private Thread thread = null;
@@ -59,7 +59,7 @@ public final class ExecQueues implements Runnable
 	}
     }
 
-    public Object exec(FutureTask task, boolean highPriority) throws Exception
+    public <T> T exec(FutureTask<T> task, boolean highPriority) throws Exception
     {
 	NullCheck.notNull(task, "task");
 	if (highPriority)
@@ -67,7 +67,7 @@ public final class ExecQueues implements Runnable
 	return execLowPriority(task);
     }
 
-    public Object execHighPriority(FutureTask task) throws Exception
+    public <T> T execHighPriority(FutureTask<T> task) throws Exception
     {
 	NullCheck.notNull(task, "task");
 	enqueueHighPriority(task);
@@ -87,7 +87,7 @@ public final class ExecQueues implements Runnable
 	}
     }
 
-    public Object execLowPriority(FutureTask task) throws Exception
+    public <T> T execLowPriority(FutureTask<T> task) throws Exception
     {
 	NullCheck.notNull(task, "task");
 	enqueueLowPriority(task);

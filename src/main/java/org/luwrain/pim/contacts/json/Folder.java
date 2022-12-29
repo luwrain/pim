@@ -32,9 +32,9 @@ final class Folder extends ContactsFolder
     {
 	NullCheck.notNull(storing, "storing");
 	if (subfolders == null)
-	    subfolders = new ArrayList();
+	    subfolders = new ArrayList<>();
 	if (contacts == null)
-	    contacts = new ArrayList();
+	    contacts = new ArrayList<>();
 	for(Folder f: subfolders)
 	    f.setStoring(storing);
 	for(Contact c: contacts)

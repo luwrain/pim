@@ -27,13 +27,13 @@ import org.luwrain.pim.storage.*;
 public final class Storing implements NewsStoring
 {
     private final Registry registry;
-    final NitriteStorage storage;
+    final NitriteStorage<Article> storage;
     private final ExecQueues execQueues;
     private final boolean highPriority;
     private final Articles articles;
     private final Groups groups;
 
-    public Storing(Registry registry, NitriteStorage storage, ExecQueues execQueues, boolean highPriority)
+    public Storing(Registry registry, NitriteStorage<Article> storage, ExecQueues execQueues, boolean highPriority)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(storage, "storage");
@@ -49,9 +49,9 @@ public final class Storing implements NewsStoring
     @Override public NewsArticles getArticles() { return articles; }
     @Override public NewsGroups getGroups() { return groups; }
 
-    Object execInQueue(Callable callable) throws Exception
+    <T> T execInQueue(Callable<T> callable) throws Exception
     {
 	NullCheck.notNull(callable, "callable");
-	return execQueues.exec(new FutureTask(callable), highPriority);
+	return execQueues.exec(new FutureTask<T>(callable), highPriority);
     }
 }

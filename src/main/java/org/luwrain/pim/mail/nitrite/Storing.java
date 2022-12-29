@@ -81,7 +81,7 @@ public final class Storing implements MailStoring
     {
 	NullCheck.notNull(callable, "callable");
 	try {
-	    return (T)execQueues.exec(new FutureTask<T>(callable), highPriority);
+	    return execQueues.exec(new FutureTask<T>(callable), highPriority);
 	}
 	catch(Throwable e)
 	{

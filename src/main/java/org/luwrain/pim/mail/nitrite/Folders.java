@@ -112,7 +112,7 @@ final class Folders implements MailFolders
 	sett.setFolders(gson.toJson(data));
     }
 
-    private Folder find(Folder f, Predicate p)
+    private Folder find(Folder f, Predicate<Folder> p)
     {
 	if (f == null)
 	    return null;

@@ -62,7 +62,7 @@ final class Folder extends MailFolder
 	this.folders.saveAll();
     }
 
-    void visit(Consumer c)
+    void visit(Consumer<Folder> c)
     {
 	c.accept(this);
 	if (subfolders != null)

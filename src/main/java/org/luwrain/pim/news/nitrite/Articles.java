@@ -88,7 +88,7 @@ final class Articles implements NewsArticles
 	NullCheck.notNull(group, "group");
 	try {
 	    return (NewsArticle[])storing.execInQueue(()->{
-		    final List<Article> res = new LinkedList();
+		    final List<Article> res = new ArrayList<>();
 		    final Cursor<Article> c = this.repo.find(eq("groupId", g.id));
 		    for(Article a: c)
 		    {
@@ -110,7 +110,7 @@ final class Articles implements NewsArticles
 	final Group g = (Group)newsGroup;
 	try {
 	    return (NewsArticle[])storing.execInQueue(()->{
-		    final List<Article> res = new LinkedList();
+		    final List<Article> res = new ArrayList<>();
 		    final Cursor<Article> c = this.repo.find(and( eq("groupId", g.id), not(eq("state", NewsArticle.READ))));
 		    for(Article a: c)
 		    {
@@ -207,7 +207,7 @@ final class Articles implements NewsArticles
 	final Group g = (Group)group;
 	try {
 	    return (Set<String>)storing.execInQueue(()->{
-		    final Set<String> res = new HashSet();
+		    final Set<String> res = new HashSet<>();
 		    for(Article a: repo.find(eq("groupId", g.id)))
 			res.add(a.getUri());
 		    return res;

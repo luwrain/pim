@@ -54,7 +54,7 @@ public final class MediaResources
 	{
 	    return new MediaResource[0];
 	}
-	final List<MediaResource> res = new LinkedList();
+	final List<MediaResource> res = new ArrayList<>();
 	for(int i = 0;i < count;++i)
 	{
 	    final String url = props.getProperty("media." + i + ".url");

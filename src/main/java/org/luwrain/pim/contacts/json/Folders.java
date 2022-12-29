@@ -51,7 +51,7 @@ final class Folders implements ContactsFolders
 	NullCheck.notNull(folder, "folder");
 	final Folder ff = (Folder)addTo;
 	if (ff.subfolders == null)
-	    ff.subfolders = new ArrayList();
+	    ff.subfolders = new ArrayList<>();
 	final Folder f = new Folder();
 	if (folder.getTitle() != null)
 	f.setTitle(folder.getTitle());

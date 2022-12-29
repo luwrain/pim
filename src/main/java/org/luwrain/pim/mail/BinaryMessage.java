@@ -174,7 +174,7 @@ public final class BinaryMessage
     {
 	if (addrs == null)
 	    return new String[0];
-	final List<String> res=new LinkedList();
+	final List<String> res=new ArrayList<>();
 	for(int i = 0;i < addrs.length;++i)
 	    if (addrs[i] != null)
 		res.add(decodeText(addrs[i].toString()));
@@ -194,7 +194,7 @@ public final class BinaryMessage
     static InternetAddress[] encodeAddrs(String[] addrs) throws AddressException
     {
 	NullCheck.notNullItems(addrs, "addrs");
-	final List<InternetAddress> res = new LinkedList();
+	final List<InternetAddress> res = new ArrayList<>();
 	for(String s: addrs)
 	    if (!s.trim().isEmpty())
 		res.add(new InternetAddress(s));//FIXME:encoding???
@@ -203,7 +203,7 @@ public final class BinaryMessage
 
     static class MimePartCollector
     {
-	final List<String> attachments = new LinkedList();
+	final List<String> attachments = new ArrayList<>();
 	String run(Object o, String contentType,
 		   String fileName, String disposition) throws PimException, IOException, MessagingException
 	{

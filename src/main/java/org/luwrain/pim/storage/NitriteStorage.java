@@ -30,7 +30,7 @@ public final class NitriteStorage<E> implements AutoCloseable
     private final Nitrite db;
     private final ObjectRepository<E> repo;
 
-    public NitriteStorage(File file, Class cl)
+    public NitriteStorage(File file, Class<E> cl)
     {
 	NullCheck.notNull(file, "file");
 	NullCheck.notNull(cl, "cl");
