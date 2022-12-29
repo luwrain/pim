@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -33,7 +33,7 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.util.*;
 
-final class Message extends MailMessage
+public final class Message extends MailMessage
 {
     String id = "";
     int folderId = 0;

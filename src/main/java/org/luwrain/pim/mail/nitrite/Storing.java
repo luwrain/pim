@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -25,6 +25,7 @@ import org.dizitart.no2.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.storage.*;
 import org.luwrain.pim.mail.*;
 
 public final class Storing implements MailStoring
@@ -33,7 +34,7 @@ public final class Storing implements MailStoring
 	LOG_COMPONENT = "pim";
 
     private final Registry registry;
-    private final Nitrite db;
+    final NitriteStorage storage;
     private final ExecQueues execQueues;
     private final boolean highPriority;
 
@@ -42,14 +43,14 @@ public final class Storing implements MailStoring
     private final Folders folders;
     private final Messages messages;
 
-    public Storing(Registry registry,Nitrite db, ExecQueues execQueues, boolean highPriority, File messagesDir)
+    public Storing(Registry registry,NitriteStorage storage, ExecQueues execQueues, boolean highPriority, File messagesDir)
     {
 	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(db, "db");
+	NullCheck.notNull(storage, "storage");
 	NullCheck.notNull(execQueues, "execQueues");
 	NullCheck.notNull(messagesDir, "messagesDir");
 	this.registry = registry;
-	this.db = db;
+	this.storage = storage;
 	this.execQueues = execQueues;
 	this.highPriority = highPriority;
 	this.rules = new Rules(registry);
@@ -89,10 +90,5 @@ public final class Storing implements MailStoring
     {
 	NullCheck.notNull(callable, "callable");
 	return execQueues.exec(new FutureTask(callable), highPriority);
-    }
-
-    Nitrite getDb()
-    {
-	return this.db;
     }
 }

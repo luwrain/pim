@@ -43,7 +43,7 @@ final class Messages implements MailMessages
 	NullCheck.notNull(messagesDir, "messagesDir");
 	this.storing = storing;
 	this.messagesDir = messagesDir;
-	this.repo = storing.getDb().getRepository(Message.class);
+	this.repo = storing.storage.get();
     }
 
     @Override public void save(MailFolder folder, MailMessage message)

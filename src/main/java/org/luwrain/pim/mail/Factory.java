@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -19,46 +19,40 @@ package org.luwrain.pim.mail;
 
 import java.io.*;
 
-import org.dizitart.no2.*;
-
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.storage.*;
 
-public final class Factory
+public final class Factory implements AutoCloseable
 {
-    static final String
-	LOG_COMPONENT = "mail";
+static final String
+    LOG_COMPONENT = "mail";
+
+    static private final String
+	DATA_DIR = "luwrain.pim.mail",
+		MESSAGES_DIR = "luwrain.pim.mail.messages",
+	DATA_FILE = "mail.nitrite";
 
     private final Luwrain luwrain;
     private final ExecQueues execQueues = new ExecQueues();
-    private final File file;
-    private final File messagesDir;
-    private Nitrite db = null;
+    private final NitriteStorage<org.luwrain.pim.mail.nitrite.Message> storage;
 
     public Factory(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.execQueues.start();
-	this.file = new File(luwrain.getAppDataDir("luwrain.pim.mail").toFile(), "mail.nitrite");
-		this.messagesDir = luwrain.getAppDataDir("luwrain.pim.mail.messages").toFile();
+	this.storage = new NitriteStorage<>(new File(luwrain.getAppDataDir(DATA_DIR).toFile(), DATA_FILE), org.luwrain.pim.mail.nitrite.Message.class);
     }
 
     public MailStoring newMailStoring(boolean highPriority)
     {
-	if (db != null)
-	    return new org.luwrain.pim.mail.nitrite.Storing(luwrain.getRegistry(), db, execQueues, highPriority, messagesDir);
-			this.db = Nitrite.builder()
-        .compressed()
-        .filePath(file)
-        .openOrCreate("luwrain", "passwd");
-			return new org.luwrain.pim.mail.nitrite.Storing(luwrain.getRegistry(), this.db, execQueues, highPriority, messagesDir);
+	return new org.luwrain.pim.mail.nitrite.Storing(luwrain.getRegistry(), storage, execQueues, highPriority, luwrain.getAppDataDir(MESSAGES_DIR).toFile());
     }
 
-    public void close()
+    @Override public void close()
     {
+	storage.close();
 	execQueues.cancel();
-	if (db != null)
-	    db.close();
-}
+    }
 }
