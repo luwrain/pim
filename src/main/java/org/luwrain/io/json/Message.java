@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -30,24 +30,16 @@ import org.luwrain.core.*;
 public final class Message
 {
     static private Gson gson = null;
-    
-    @SerializedName("to")
-    private String to = null;
 
-    @SerializedName("cc")
-    private String cc = null;
+    private String
+	to = null,
+	cc = null,
+	subject = null;
 
-    @SerializedName("subject")
-    public String subject = null;
-
-    @SerializedName("text")
-    private List<String> text = null;
-
-    @SerializedName("headers")
-    private List<String> headers = null;
-
-    @SerializedName("attachments")
-    private List<String> attachments = null;
+    private List<String>
+	text = null,
+	headers = null,
+	attachments = null;
 
     @Override public String toString()
     {
@@ -58,7 +50,6 @@ public final class Message
 
     static public Message fromString(String str)
     {
-	NullCheck.notNull(str, "str");
 	if (gson == null)
 	    gson = new Gson();
 	return gson.fromJson(str, Message.class);
