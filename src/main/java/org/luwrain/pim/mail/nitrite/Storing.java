@@ -34,16 +34,16 @@ public final class Storing implements MailStoring
 	LOG_COMPONENT = "pim";
 
     private final Registry registry;
-    final NitriteStorage storage;
+    final NitriteStorage<Message> storage;
     private final ExecQueues execQueues;
     private final boolean highPriority;
 
     private final Accounts accounts;
-    private final Rules rules;
+    //    private final Rules rules;
     private final Folders folders;
     private final Messages messages;
 
-    public Storing(Registry registry,NitriteStorage storage, ExecQueues execQueues, boolean highPriority, File messagesDir)
+    public Storing(Registry registry,NitriteStorage<Message> storage, ExecQueues execQueues, boolean highPriority, File messagesDir)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(storage, "storage");
@@ -53,31 +53,17 @@ public final class Storing implements MailStoring
 	this.storage = storage;
 	this.execQueues = execQueues;
 	this.highPriority = highPriority;
-	this.rules = new Rules(registry);
+	//	this.rules = new Rules(registry);
 		this.messages = new Messages(this, messagesDir);
 		this.folders = new Folders(registry, messages);
 	this.accounts = new Accounts(registry);
 	    }
 
-    @Override public MailRules getRules()
-    {
-	return null;//rules;
-    }
+    @Override public MailRules getRules() { return null; }
+    @Override public MailFolders getFolders() { return folders; }
+    @Override public MailAccounts getAccounts() { return accounts; }
 
-    @Override public MailFolders getFolders()
-    {
-	return folders;
-    }
-
-    @Override public MailAccounts getAccounts()
-    {
-	return accounts;
-    }
-
-    @Override public MailMessages getMessages()
-    {
-	return messages;
-    }
+    @Override public MailMessages getMessages() { return messages; }
 
         @Override public     String combinePersonalAndAddr(String personal, String addr)
     {
