@@ -125,6 +125,27 @@ final class Messages implements MailMessages
 	throw new RuntimeException("not implemented");
     }
 
+        public void updateMessage(Message message)
+    {
+	if (storing == null)
+	    throw new IllegalStateException("storing can't be null");
+	if (message.id == null)
+	    throw new IllegalStateException("id can't be null");
+	if (message.id.isEmpty())
+	    throw new IllegalStateException("id can't be empty");
+	try {
+	    storing.execInQueue(()->{
+		    repo.update(eq("id", message.id), message);
+		    return null;
+		});
+	}
+	catch(Exception e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+
     void loadRawMessage(Message message)
     {
 	try {

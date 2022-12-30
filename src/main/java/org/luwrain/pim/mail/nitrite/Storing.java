@@ -39,14 +39,14 @@ public final class Storing implements MailStoring
 
     final Registry registry;
     final NitriteStorage<Message> storage;
+        final Object syncObj;
     private final ExecQueues execQueues;
-    final Object syncObj;
     private final boolean highPriority;
     private final File messagesDir;
 
-    final Accounts accounts;
-    final Folders folders;
-    final Messages messages;
+    private final Accounts accounts;
+    private final Folders folders;
+    private final Messages messages;
 
     public Storing(
 		   Registry registry,
@@ -68,7 +68,7 @@ public final class Storing implements MailStoring
 	this.messagesDir = messagesDir;
 		this.messages = new Messages(this, messagesDir);
 		this.folders = new Folders(registry, messages);
-	this.accounts = new Accounts(registry);
+	this.accounts = new Accounts(this);
 	    }
 
     @Override public MailRules getRules() { return null; }

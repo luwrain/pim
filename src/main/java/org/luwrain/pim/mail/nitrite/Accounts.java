@@ -18,10 +18,7 @@
 package org.luwrain.pim.mail.nitrite;
 
 import java.util.*;
-import java.lang.reflect.*;
-
 import com.google.gson.*;
-import com.google.gson.reflect.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
@@ -30,18 +27,17 @@ import org.luwrain.pim.fetching.MailConnections;
 
 final class Accounts implements MailAccounts
 {
-        static private final Type ACCOUNT_LIST_TYPE = new TypeToken<List<Account>>(){}.getType();
-
-    //    private final Registry registry;
-    private final org.luwrain.pim.mail.Settings sett;
     private final Gson gson = new Gson();
-    //    private Map<Integer, Account> accounts = new HashMap();
-    private Data data = null;
 
-    Accounts(Registry registry)
+    private final org.luwrain.pim.mail.Settings sett;
+    private Data data = null;
+    private final Object syncObj;
+
+    Accounts(Storing storing)
     {
-	NullCheck.notNull(registry, "registry");
-	this.sett = org.luwrain.pim.mail.Settings.create(registry);
+	NullCheck.notNull(storing, "storing");
+	this.sett = org.luwrain.pim.mail.Settings.create(storing.registry);
+	this.syncObj = storing.syncObj;
 	loadAll();
     }
 
