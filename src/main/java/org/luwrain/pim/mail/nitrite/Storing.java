@@ -44,9 +44,9 @@ public final class Storing implements MailStoring
     private final boolean highPriority;
     private final File messagesDir;
 
-    private final Accounts accounts;
-    private final Folders folders;
-    private final Messages messages;
+    final Accounts accounts;
+    final Folders folders;
+    final Messages messages;
 
     public Storing(
 		   Registry registry,
@@ -109,6 +109,16 @@ public final class Storing implements MailStoring
 	    fs.flush();
 	}
     }
+
+        byte[] loadRawMessage(String id) throws IOException
+    {
+	    try (final InputStream is = new GZIPInputStream(new FileInputStream(getRawMessageFileName(id) ))){
+		final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		org.luwrain.util.StreamUtils.copyAllBytes(is, bytes);
+return bytes.toByteArray();
+	    }
+    }
+
 
 
 File getRawMessageFileName(String id)

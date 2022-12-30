@@ -37,7 +37,7 @@ final class Messages implements MailMessages
 {
     private final Storing storing;
     private final File messagesDir;
-    private final ObjectRepository<Message> repo;
+     final ObjectRepository<Message> repo;
 
     Messages(Storing storing,File messagesDir)
     {
@@ -55,11 +55,11 @@ final class Messages implements MailMessages
 	final Folder f = (Folder)folder;
 	storing.execInQueue(()->{
 		final Message m = new Message();
-		m.initStoring(storing, repo);
+		m.setTransient(storing);
 		m.copyValues(message);
 		m.genId();
 		m.folderId = f.getId();
-		m.saveRawMessage();
+		saveRawMessage(m);
 		repo.insert(m);
 		return null;
 	    });
@@ -74,8 +74,8 @@ final class Messages implements MailMessages
 		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
 		for(Message m: c)
 		{
-				    m.initStoring(storing, repo);
-		    m.loadRawMessage();
+				    m.setTransient(storing);
+		    loadRawMessage(m);
 		    res.add(m);
 		}
 		return res.toArray(new Message[res.size()]);
@@ -124,4 +124,30 @@ final class Messages implements MailMessages
     {
 	throw new RuntimeException("not implemented");
     }
+
+    void loadRawMessage(Message message)
+    {
+	try {
+	    message.setRawMessage(storing.loadRawMessage(message.id));
+	}
+	catch(IOException e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
+    void saveRawMessage(Message message)
+    {
+	final byte[] bytes = message.getRawMessage();
+	if (bytes.length == 0)
+	    return;
+	try {
+	    storing.saveRawMessage(bytes, message.id);
+	}
+	catch(IOException e)
+	{
+	    throw new PimException(e);
+	}
+    }
+
 }

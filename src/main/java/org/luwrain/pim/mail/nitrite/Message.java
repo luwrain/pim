@@ -19,7 +19,7 @@ package org.luwrain.pim.mail.nitrite;
 
 import java.io.*;
 import java.util.*;
-import java.util.zip.*;
+//import java.util.zip.*;
 
 import org.dizitart.no2.*;
 import org.dizitart.no2.objects.*;
@@ -38,8 +38,13 @@ public final class Message extends MailMessage
     String id = "";
     int folderId = 0;
 
-transient Storing storing = null;
-transient ObjectRepository<Message> repo = null;
+private transient Storing storing = null;
+
+    void setTransient(Storing storing)
+    {
+	NullCheck.notNull(storing, "storing");
+	this.storing = storing;
+    }
 
     void genId()
     {
@@ -49,27 +54,17 @@ transient ObjectRepository<Message> repo = null;
 	this.id = new Sha1().getSha1(bytes);
     }
 
-    void initStoring(Storing storing, ObjectRepository<Message> repo)
-    {
-	NullCheck.notNull(storing, "storing");
-		NullCheck.notNull(repo, "repo");
-			this.storing = storing;
-	this.repo = repo;
-    }
-
     @Override public void save() throws PimException
     {
 	if (storing == null)
 	    throw new IllegalStateException("storing can't be null");
-	if (repo == null)
-	    throw new IllegalStateException("repo can't be null");
 	if (id == null)
 	    throw new IllegalStateException("id can't be null");
 	if (id.isEmpty())
 	    throw new IllegalStateException("id can't be empty");
 	try {
 	    storing.execInQueue(()->{
-		    repo.update(eq("id", id), this);
+		    storing.messages.repo.update(eq("id", id), this);
 		    return null;
 		});
 	}
@@ -78,34 +73,4 @@ transient ObjectRepository<Message> repo = null;
 	    throw new PimException(e);
 	}
     }
-
-    void loadRawMessage()
-    {
-	try {
-	    try (final InputStream is = new GZIPInputStream(new FileInputStream(storing.getRawMessageFileName(id) ))){
-		final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		org.luwrain.util.StreamUtils.copyAllBytes(is, bytes);
-		setRawMessage(bytes.toByteArray());
-	    }
-	}
-	catch(IOException e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
-    void saveRawMessage()
-    {
-	final byte[] bytes = getRawMessage();
-	if (bytes.length == 0)
-	    return;
-	try {
-	    storing.saveRawMessage(bytes, id);
-	}
-	catch(IOException e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
 }
