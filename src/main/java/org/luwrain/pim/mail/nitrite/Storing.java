@@ -20,6 +20,7 @@ package org.luwrain.pim.mail.nitrite;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.zip.*;
 
 import org.dizitart.no2.*;
 
@@ -33,11 +34,15 @@ public final class Storing implements MailStoring
     static final String
 	LOG_COMPONENT = "pim";
 
+    static private final String
+	MESSAGE_FILE_EXTENSION = ".eml.gz";
+
     final Registry registry;
     final NitriteStorage<Message> storage;
     private final ExecQueues execQueues;
     final Object syncObj;
     private final boolean highPriority;
+    private final File messagesDir;
 
     private final Accounts accounts;
     private final Folders folders;
@@ -60,6 +65,7 @@ public final class Storing implements MailStoring
 	this.execQueues = execQueues;
 	this.syncObj = syncObj;
 	this.highPriority = highPriority;
+	this.messagesDir = messagesDir;
 		this.messages = new Messages(this, messagesDir);
 		this.folders = new Folders(registry, messages);
 	this.accounts = new Accounts(registry);
@@ -87,5 +93,32 @@ public final class Storing implements MailStoring
 	{
 	    throw new PimException(e);
 	}
+    }
+
+    void saveRawMessage(byte[] bytes, String id) throws IOException
+    {
+	final File messageFile = getRawMessageFileName(id);
+	java.nio.file.Files.createDirectories(messageFile.getParentFile().toPath());
+	try (final FileOutputStream fs = new FileOutputStream(messageFile)) {
+	    try (final GZIPOutputStream os = new GZIPOutputStream(fs)) {
+		try (final ByteArrayInputStream is = new ByteArrayInputStream(bytes)){
+		    org.luwrain.util.StreamUtils.copyAllBytes(is, os);
+		}
+		os.flush();
+	    }
+	    fs.flush();
+	}
+    }
+
+
+File getRawMessageFileName(String id)
+    {
+	if (id.length() < 4)
+	    throw new IllegalArgumentException("id (" + id + ") can't be shorter than 4");
+	File f = new File(messagesDir, id.substring(0, 1));
+	f = new File(f, id.substring(0, 2));
+	f = new File(f, id.substring(0, 3));
+	f = new File(f, id.substring(0, 4));
+return new File(f, id + MESSAGE_FILE_EXTENSION);
     }
 }

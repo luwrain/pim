@@ -38,9 +38,8 @@ public final class Message extends MailMessage
     String id = "";
     int folderId = 0;
 
-    transient File messagesDir = null;
-    private transient Storing storing = null;
-    private transient ObjectRepository<Message> repo = null;
+transient Storing storing = null;
+transient ObjectRepository<Message> repo = null;
 
     void genId()
     {
@@ -80,10 +79,10 @@ public final class Message extends MailMessage
 	}
     }
 
-    void loadRawMessage() throws PimException
+    void loadRawMessage()
     {
 	try {
-	    try (final InputStream is = new GZIPInputStream(new FileInputStream(new File(messagesDir, getRawMessageFileName(id)) ))){
+	    try (final InputStream is = new GZIPInputStream(new FileInputStream(storing.getRawMessageFileName(id) ))){
 		final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		org.luwrain.util.StreamUtils.copyAllBytes(is, bytes);
 		setRawMessage(bytes.toByteArray());
@@ -95,13 +94,13 @@ public final class Message extends MailMessage
 	}
     }
 
-    void saveRawMessage() throws PimException
+    void saveRawMessage()
     {
 	final byte[] bytes = getRawMessage();
 	if (bytes.length == 0)
 	    return;
 	try {
-	    saveRawMessage(bytes, messagesDir, id);
+	    storing.saveRawMessage(bytes, id);
 	}
 	catch(IOException e)
 	{
@@ -109,42 +108,4 @@ public final class Message extends MailMessage
 	}
     }
 
-    static void saveRawMessage(byte[] bytes, File messagesDir, String id) throws IOException
-    {
-	mkdirs(messagesDir, id);
-	final File file = new File(messagesDir, getRawMessageFileName(id));
-	try (final FileOutputStream fs = new FileOutputStream(file)) {
-	    try (final GZIPOutputStream os = new GZIPOutputStream(fs)) {
-		try (final ByteArrayInputStream is = new ByteArrayInputStream(bytes)){
-		    org.luwrain.util.StreamUtils.copyAllBytes(is, os);
-		}
-		os.flush();
-	    }
-	    fs.flush();
-	}
-    }
-
-    static private void mkdirs(File messagesDir, String id)
-    {
-	File f = messagesDir;
-	for(int i = 1;i < 5;i++)
-	{
-	    f = new File(f, id.substring(0, i));
-	    f.mkdir();
-	}
-    }
-
-    static String getRawMessageFileName(String id)
-    {
-	NullCheck.notEmpty(id, "id");
-	if (id.length() < 4)
-	    throw new IllegalArgumentException("id (" + id + ") can't have the lenth less than 4");
-	final StringBuilder b = new StringBuilder();
-	b.append(id.substring(0, 1)).append("/")
-	.append(id.substring(0, 2)).append("/")
-	.append(id.substring(0, 3)).append("/")
-	.append(id.substring(0, 4)).append("/")
-	.append(id).append(".eml.gz");
-	return new String(b);
-    }
 }
