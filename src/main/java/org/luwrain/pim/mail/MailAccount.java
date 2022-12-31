@@ -62,7 +62,7 @@ public class MailAccount
 	this.substName = account.substName;
 	this.substAddress = account.substAddress;
     }
-    
+
     @Override public String toString()    
     {
 	return title != null?title:"";

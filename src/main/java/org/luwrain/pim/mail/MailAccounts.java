@@ -25,9 +25,7 @@ public interface MailAccounts
     MailAccount save(MailAccount account);
     void delete(MailAccount account);
     MailAccount loadById(int id);
-    MailAccount loadByUniRef(String uniRef);
     int getId(MailAccount account);
-    String getUniRef(MailAccount account);
     MailAccount getDefault(MailAccount.Type type);
     void sendDirectly(MailAccount account, MailMessage message);
 }

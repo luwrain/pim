@@ -95,28 +95,6 @@ final class Accounts implements MailAccounts
 	saveAll();
 		    }
 
-    @Override public synchronized String getUniRef(MailAccount account)
-    {
-	NullCheck.notNull(account, "account");
-	final Account a = (Account)account;
-	return AccountUniRefProc.PREFIX + ":" + String.valueOf(a.id);
-    }
-
-    @Override public synchronized MailAccount loadByUniRef(String uniRef)
-    {
-	if (!uniRef.startsWith(AccountUniRefProc.PREFIX + ":"))
-	    return null;
-	final int id;
-	try {
-	    id = Integer.parseInt(uniRef.substring(AccountUniRefProc.PREFIX.length() + 1));
-	}
-	catch (NumberFormatException e)
-	{
-	    return null;
-	}
-	return data.accounts.get(Integer.valueOf(id));
-    }
-
     @Override public synchronized int getId(MailAccount account)
     {
 	return ((Account)account).id;

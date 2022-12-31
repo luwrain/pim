@@ -27,131 +27,27 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.fetching.*;
+import org.luwrain.io.json.*;
 
 public final class Smtp extends Base
 {
-    static private final String LOG_COMPONENT = "pim-smtp";
+    static private final String
+	LOG_COMPONENT = "smtp";
 
-    private final MailStoring storing;
-    private final MailFolder pending;
-    private MailFolder sent;
-
-    public Smtp(Control control, Strings strings) throws PimException
-    {
-	super(control, strings);
-	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
-	if (storing == null)
-	    throw new FetchingException("Отсутствует соединение");
-	this.pending = storing.getFolders().findFirstByProperty("defaultOutgoing", "true");
-	this.sent = storing.getFolders().findFirstByProperty("defaultSent", "true");
-	if (this.pending == null || this.sent == null)
-throw new FetchingException("Не удалось подготовить почтовые группы, доставка сообщений отменена");
-    }
-
-    public Result fetch() throws PimException, InterruptedException
-    {
-	final MailMessage[] messages = storing.getMessages().load(pending);
-	Log.debug(LOG_COMPONENT, "loading " + messages.length + " message(s) to send");
-	if (messages.length == 0)
-	{
-	    message("Нет сообщений для отправки");//FIXME :
-	    return new Result();
-	}
-	final List<PendingQueue> queues = new LinkedList();
-	for(MailMessage m: messages)
-	{
-	    checkInterrupted();
-	    final String uniRef = m.getExtInfo();
-	    if (uniRef.trim().isEmpty())
-	    {
-		Log.warning(LOG_COMPONENT, "encountering the message without associated mail account, skipping");
-		continue;
-	    }
-	    PendingQueue queue = null;
-	    for(PendingQueue q: queues)
-		if (q.accountUniRef.equals(uniRef))
-		{
-		    queue = q;
-		    break;
-		}
-	    if (queue != null)
-	    {
-		queue.messages.add(m);
-		continue;
-	    }
-	    queue = new PendingQueue(uniRef);
-	    queue.messages.add(m);
-	    queues.add(queue);
-	}
-	Log.debug(LOG_COMPONENT, "prepared " + queues.size() + " queue(s)");
-	final Map<String, Throwable> errors = new HashMap<>();
-	for(PendingQueue q: queues)
-	    Log.debug(LOG_COMPONENT, q.accountUniRef + " with " + q.messages.size() + " message(s)");
-	int sentCount = 0;
-	for(PendingQueue queue: queues)
-	{
-	    checkInterrupted();
-	    try {
-		sentCount += sendQueue(queue);
-	    }
-	    catch(InterruptedException e)
-	    {
-		throw e;
-	    }
-	    catch (Throwable e)
-	    {
-		Log.error(LOG_COMPONENT, "unable to send the messages from the queue \'" + queue.accountUniRef + "\':" + e.getClass().getName() + ":" + e.getMessage());
-		errors.put(queue.accountUniRef, e);
-		message("Произошла ошибка отправки очереди для учётной записи " + queue.accountUniRef);
-	    }
-	}
-	return new Result(messages.length, sentCount, errors);
-    }
-
-    private int sendQueue(PendingQueue queue) throws IOException, PimException, InterruptedException
-    {
-	NullCheck.notNull(queue, "queue");
-	final MailAccount account = storing.getAccounts().loadByUniRef(queue.accountUniRef);
-	if (account == null)
-	{
-	    message(strings.errorLoadingMailAccount(queue.accountUniRef));
-	    throw new FetchingException("No mail account for the uniref \'" + queue.accountUniRef + "\'");
-	}
-	if (!account.getFlags().contains(MailAccount.Flags.ENABLED))
-	{
-	    message(strings.mailAccountDisabled(account.getTitle()));
-	    throw new FetchingException("The mail account \'" + account.getTitle() + "\' is disabled");
-	}
-	message(strings.messagesInQueueForAccount(account.getTitle(), "" + queue.messages.size()));
-	final MailConnections conversation = new MailConnections(createMailServerParams(account), false);
-	message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
-	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
-	int count = 0;
-	for(MailMessage message: queue.messages)
-	{
-	    checkInterrupted();
-	    message(strings.sendingMessage("" + count, "" + queue.messages.size()));
-	    conversation.send(message.getRawMessage());
-	    storing.getMessages().moveToFolder(message, sent);
-	    ++count;
-	}
-	return count;
-    }
-
-    static public final class Result
+        static public final class Result
     {
 	public final int total;
 	public final int sent;
-	public final Map<String, Throwable> errors;
+	public final Map<Integer, Throwable> errors;
 	Result()
 	{
 	    this.total = 0;
 	    this.sent = 0;
 	    this.errors = new HashMap<>();
 	}
-	Result(int total, int sent, Map<String, Throwable> errors)
+	Result(int total, int sent, Map<Integer, Throwable> errors)
 	{
-	    NullCheck.notNull(errors, "errors");
+	    	    NullCheck.notNull(errors, "errors");
 	    if (total < 0)
 		throw new IllegalArgumentException("total (" + total + ") may not be negative");
 	    if (sent < 0)
@@ -162,14 +58,95 @@ throw new FetchingException("Не удалось подготовить почт
 	}
     }
 
-    static private final class PendingQueue
+
+    private final MailStoring storing;
+    private final MailFolder pending, sent;
+
+    public Smtp(Control control, Strings strings)
     {
-	final String accountUniRef; 
-	final List<MailMessage> messages = new ArrayList<>();
-	PendingQueue(String accountUniRef)
-	{
-	    NullCheck.notEmpty(accountUniRef, "accountUniRef");
-	    this.accountUniRef = accountUniRef;
-	}
+	super(control, strings);
+	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
+	if (storing == null)
+	    throw new PimException("Mail storing is unavailable");
+	this.pending = storing.getFolders().findFirstByProperty("defaultOutgoing", "true");
+	this.sent = storing.getFolders().findFirstByProperty("defaultSent", "true");
+	if (this.pending == null || this.sent == null)
+throw new PimException("No default groups for mail sending");
     }
+
+    public Result send() throws InterruptedException
+    {
+	final MailMessage[] messages = storing.getMessages().load(pending);
+	Log.debug(LOG_COMPONENT, "loading " + messages.length + " message(s) to send");
+	if (messages.length == 0)
+	{
+	    message("Нет сообщений для отправки");//FIXME :
+	    return new Result();
+	}
+	final Map<Integer, List<MailMessage>> queues = new HashMap<>();
+	for(MailMessage m: messages)
+	{
+	    checkInterrupted();
+	    final Integer accountId = MessageSendingData.getAccountId(m);
+	    if (accountId == null || accountId.intValue() < 0)
+	    {
+		Log.warning(LOG_COMPONENT, "encountering the message without associated mail account, skipping");
+		continue;
+	    }
+	    List<MailMessage> mm = queues.get(accountId);
+	    	    if (mm == null)
+	    {
+		mm = new ArrayList<>();
+		queues.put(accountId, mm);
+			   }
+		    mm.add(m);
+		    	}
+	Log.debug(LOG_COMPONENT, "prepared " + queues.size() + " queue(s)");
+	final Map<Integer, Throwable> errors = new HashMap<>();
+	int sentCount = 0;
+	for(Map.Entry<Integer, List<MailMessage>> e: queues.entrySet() )
+	{
+	    checkInterrupted();
+	    try {
+		sentCount += sendQueue(e.getKey().intValue(), e.getValue());
+	    }
+	    catch (Throwable ex)
+	    {
+		//		Log.error(LOG_COMPONENT, "unable to send the messages from the queue \'" + queue.accountUniRef + "\':" + e.getClass().getName() + ":" + e.getMessage());
+		errors.put(e.getKey(), ex);
+		message("Произошла ошибка отправки очереди для учётной записи " + e.getKey());
+	    }
+	}
+	return new Result(messages.length, sentCount, errors);
+    }
+
+    private int sendQueue(int accountId, List<MailMessage> messages) throws IOException, InterruptedException
+    {
+	final MailAccount account = storing.getAccounts().loadById(accountId);
+	if (account == null)
+	{
+	    message(strings.errorLoadingMailAccount(String.valueOf(accountId)));
+	    throw new PimException("No account with id=" + accountId);
+	}
+	if (!account.getFlags().contains(MailAccount.Flags.ENABLED))
+	{
+	    message(strings.mailAccountDisabled(account.getTitle()));
+	    throw new PimException("The mail account '" + account.getTitle() + "' is disabled");
+	}
+	    message(strings.messagesInQueueForAccount(account.getTitle(), String.valueOf(messages.size())));
+	final MailConnections conn = new MailConnections(createMailServerParams(account), false);
+	message(strings.connectingTo(account.getHost() + ":" + account.getPort()));
+	control.message(strings.connectionEstablished(account.getHost() + ":" + account.getPort()));
+	int count = 0;
+	for(MailMessage message: messages)
+	{
+	    checkInterrupted();
+	    message(strings.sendingMessage(String.valueOf(count), String.valueOf(messages.size())));
+	    conn.send(message.getRawMessage());
+	    storing.getMessages().moveToFolder(message, sent);
+	    ++count;
+	}
+	return count;
+    }
+
 }

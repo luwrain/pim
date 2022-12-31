@@ -38,7 +38,7 @@ public class Smtp implements Worker
 	}
 	try {
 	    	final org.luwrain.pim.mail.protocols.Smtp smtpFetching = new org.luwrain.pim.mail.protocols.Smtp(control, strings);
-	    final org.luwrain.pim.mail.protocols.Smtp.Result res = smtpFetching.fetch();
+	    final org.luwrain.pim.mail.protocols.Smtp.Result res = smtpFetching.send();
 	    if (res.total > 0)
 	    {
 		if (res.total == res.sent)
