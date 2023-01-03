@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -23,7 +23,13 @@ import org.luwrain.pim.*;
 
 public interface MailFolders
 {
-        MailFolder getRoot();
+    static public final String
+	PROP_DEFAULT_OUTGOING  = "defaultOutgoing",
+	PROP_DEFAULT_SENT = "defaultSent",
+	PROP_DEFAULT_MAILING_LISTS = "defaultMailingLists",
+	PROP_DEFAULT_DRAFTS = "defaultDrafts";
+
+    MailFolder getRoot();
     int getId(MailFolder folder);
     MailFolder findFirstByProperty(String propName, String propValue);
     MailFolder[] load(MailFolder folder);

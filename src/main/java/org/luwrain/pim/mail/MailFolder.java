@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -29,18 +29,20 @@ import org.luwrain.pim.*;
 
 @Data
 @NoArgsConstructor
-public class MailFolder implements Comparable
+public class MailFolder
 {
     private String title = "";
-    private int orderIndex = 0;
-    private Properties properties = new Properties();
+    private Properties properties = null;
 
     public final void copyValues(MailFolder folder)
     {
 	this.title = folder.title;
-	this.orderIndex = folder.orderIndex;
+	if (folder.properties != null)
+	{
 	this.properties = new Properties();
 	this.properties.putAll(folder.properties);
+	} else
+	    this.properties = null;
     }
 
     public final String getPropertiesAsString() throws IOException
@@ -68,16 +70,4 @@ public class MailFolder implements Comparable
     {
 	return title != null?title:"";
     }
-
-    @Override public int compareTo(Object o)
-    {
-	if (o == null || !(o instanceof MailFolder))
-	    return 0;
-	final MailFolder folder = (MailFolder)o;
-	if (orderIndex < folder.orderIndex)
-	    return -1;
-	if (orderIndex > folder.orderIndex)
-	    return 1;
-	return 0;
-    }
-}
+ }

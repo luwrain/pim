@@ -26,10 +26,13 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import static org.luwrain.pim.mail.MailFolders.*;
+
 final class Folders implements MailFolders
 {
     static private final String
-	LOG_COMPONENT = "mail";
+	LOG_COMPONENT = "mail",
+	TRUE = "true";
 
     private final Gson gson = new Gson();
     private final Registry registry;
@@ -154,10 +157,60 @@ final class Folders implements MailFolders
 
     private void initRoot()
     {
-	this.data = new Data();
+Folder f;
+List<Folder> ff = new ArrayList<>();
+
+//Inbox
+	f = new Folder();
+	f.id = 10;
+	f.folders = this;
+	f.setTitle("Inbox");
+	f.setProperties(new Properties());
+	ff.add(f);
+
+	//Mailing lists
+	f = new Folder();
+	f.id = 11;
+	f.folders = this;
+	f.setTitle("Mailing lists");
+	f.setProperties(new Properties());
+	f.getProperties().setProperty(PROP_DEFAULT_MAILING_LISTS, TRUE);
+	ff.add(f);
+
+		//OUtgoing
+	f = new Folder();
+	f.id = 12;
+	f.folders = this;
+	f.setTitle("Outgoing");
+	f.setProperties(new Properties());
+	f.getProperties().setProperty(PROP_DEFAULT_OUTGOING, TRUE);
+	ff.add(f);
+
+			//Sent
+	f = new Folder();
+	f.id = 13;
+	f.folders = this;
+	f.setTitle("Sent");
+	f.setProperties(new Properties());
+	f.getProperties().setProperty(PROP_DEFAULT_SENT, TRUE);
+	ff.add(f);
+
+				//Drafts
+	f = new Folder();
+	f.id = 14;
+	f.folders = this;
+	f.setTitle("Drafts");
+	f.setProperties(new Properties());
+	f.getProperties().setProperty(PROP_DEFAULT_DRAFTS, TRUE);
+	ff.add(f);
+
+		this.data = new Data();
 	this.data.root = new Folder();
+	this.data.root.id = 1;
 	this.data.root.setTitle("Mail");
-	this.data.root.setFolders(this);
+	this.data.root.folders = this;
+	this.data.root.subfolders = ff;
+	this.data.nextId = 100;
 	saveAll();
     }
 

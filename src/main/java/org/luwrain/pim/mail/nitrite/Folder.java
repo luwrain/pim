@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -27,9 +27,9 @@ import org.luwrain.pim.mail.*;
 
 final class Folder extends MailFolder
 {
-    private int id = 0;
-    private List<Folder> subfolders = null;
-    private transient Folders folders = null;
+    int id = 0;
+    List<Folder> subfolders = null;
+    transient Folders folders = null;
 
     int getId()
     {

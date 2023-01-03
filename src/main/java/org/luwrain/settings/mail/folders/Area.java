@@ -54,7 +54,6 @@ class Area extends FormArea implements SectionArea
     private void fillForm() throws PimException
     {
 	addEdit("title", "Имя почтовой группы:", folder.getTitle());
-	addEdit("order-index", "Индекс сортировки:", "" + folder.getOrderIndex());
     }
 
     @Override public boolean saveSectionData()
@@ -73,7 +72,6 @@ class Area extends FormArea implements SectionArea
 		return false;
 	    }
 	    folder.setTitle(getEnteredText("title"));
-	    folder.setOrderIndex(orderIndex);
 	    return true;
 	}
 	catch(Exception e)
