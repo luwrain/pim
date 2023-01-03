@@ -50,8 +50,9 @@ final class Folders implements MailFolders
 
     @Override synchronized public MailFolder findFirstByProperty(String propName, String propValue)
     {
-	return find(data.root, (o)->{
-		final Folder f = (Folder)o;
+	return find(data.root, (f)->{
+		if (f.getProperties() == null)
+		    return false;
 		final String value = f.getProperties().getProperty(propName);
 		return value != null && value.equals(propValue);
 	    });
@@ -121,7 +122,8 @@ final class Folders implements MailFolders
 	    return null;
 	if (p.test(f))
 	    return f;
-	for(Folder ff: f.getSubfoldersAsArray())
+	if (f.subfolders != null)
+	for(Folder ff: f.subfolders)
 	{
 	    final Folder res = find(ff, p);
 	    if (res != null)

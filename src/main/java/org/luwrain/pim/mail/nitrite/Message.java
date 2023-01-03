@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -25,13 +25,6 @@ public final class Message extends MailMessage
 {
     String id = "";
     int folderId = 0;
-    transient private Storing storing = null;
-
-    void setTransient(Storing storing)
-    {
-	NullCheck.notNull(storing, "storing");
-	this.storing = storing;
-    }
 
     void genId()
     {

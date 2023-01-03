@@ -55,7 +55,7 @@ final class Messages implements MailMessages
 	final Folder f = (Folder)folder;
 	storing.execInQueue(()->{
 		final Message m = new Message();
-		m.setTransient(storing);
+		//		m.setTransient(storing);
 		m.copyValues(message);
 		m.genId();
 		m.folderId = f.getId();
@@ -74,7 +74,7 @@ final class Messages implements MailMessages
 		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
 		for(Message m: c)
 		{
-				    m.setTransient(storing);
+		    //				    m.setTransient(storing);
 		    loadRawMessage(m);
 		    res.add(m);
 		}

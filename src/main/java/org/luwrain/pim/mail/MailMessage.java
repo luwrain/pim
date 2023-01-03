@@ -27,11 +27,10 @@ import org.luwrain.pim.*;
 
 @Data
 @NoArgsConstructor
-public class MailMessage implements Comparable
+public class MailMessage
 {
-    public enum State {NEW, READ, MARKED, DELETED};
-
-            private State state = State.NEW;
+    //    public enum State {NEW, READ, MARKED, DELETED};
+    //    private State state = State.NEW;
 
     private String
 	messageId = "",
@@ -39,97 +38,61 @@ public class MailMessage implements Comparable
 	from = "",
 	text = "",
 	contentType = "",
-extInfo = "";
+	extInfo = "";
+
+    //    public List<String> toList = new ArrayList<>();
 
     private String[]
 	to = new String[0],
 	cc = new String[0],
 	bcc = new String[0],
-attachments = new String[0];
+	attachments = new String[0];
 
-    private Date
-	sentDate = new Date(),
-	receivedDate = new Date();
+    /*
 
-    private transient byte[] rawMessage = new byte[0];
+    public String[] getTo() { return toList.toArray(new String[toList.size()]);}
+    public void setTo(String[] value) {toList = Arrays.asList(value);}
+
+    public String[] getCc() {return new String[0];}
+    public void setCc(String[] value) {}
+
+        public String[] getBcc() {return new String[0];}
+    public void setBcc(String[] value) {}
+
+
+    public String[] getAttachments() {return new String[0];}
+    public void setAttachments(String[] value) {}
+    */
+
+
+    
+    
+
+    transient private java.util.Date
+	sentDate = new java.util.Date(),
+	receivedDate = new java.util.Date();
+
+    transient private byte[] rawMessage = new byte[0];
 
     public final void copyValues(MailMessage message)
     {
 	this.messageId = message.messageId;
 	this.subject = message.subject;
 	this.from = message.from;
-	this.to = message.to.clone();
-	this.cc = message.cc.clone();
-	this.bcc = message.bcc.clone();
-	this.state = message.state;
+	//	this.to = message.to.clone();
+	//	this.cc = message.cc.clone();
+	//	this.bcc = message.bcc.clone();
+	//	this.state = message.state;
 	this.sentDate = message.sentDate;
 	this.receivedDate = message.receivedDate;
 	this.text = message.text;
 	this.contentType = message.contentType;
-	this.attachments = message.attachments.clone();
+	//	this.attachments = message.attachments.clone();
 	this.rawMessage = message.rawMessage.clone();
 	this.extInfo = message.extInfo;
     }
 
     public void save() throws PimException
     {
-    }
-
-    @Override public int compareTo(Object o)
-    {
-	/*
-	  FIXME:
-    	if (o == null || !(o instanceof Message))
-	    return 0;
-    	StoredMailMessageSql article = (StoredMailMessageSql)o;
-    	if (state != article.state)
-    	{
-	    if (stateToInt(state) > stateToInt(article.state))
- return -1;
-	    if (stateToInt(state) < stateToInt(article.state)) 
-return 1;
-    		return 0;
-    	}
-    	if (receivedDate == null || article.receivedDate == null) return 0;
-    	// if receivedDate are equal, compare messages via sentDate
-    	if(receivedDate==article.receivedDate&&sentDate!=null&&article.sentDate!=null) return -1 * sentDate.compareTo(article.sentDate);
-    	return -1 * receivedDate.compareTo(article.receivedDate);
-	*/
-	return 0;
-    }
-
-    static public State intToState(int stateCode)
-    {
-	switch(stateCode)
-	{
-	case 1:
-	    return State.NEW;
-	case 2:
-	    return State.READ;
-	case 3:
-	    return State.MARKED;
-	case 4:
-	    return State.DELETED;
-	default:
-	    return State.NEW;
-	}
-    }
-
-    static public int stateToInt(State state)
-    {
-	NullCheck.notNull(state, "state");
-	switch(state)
-	{
-	case NEW:
-	    return 1;
-	case READ:
-	    return 2;
-	case MARKED:
-	    return 3;
-	case DELETED:
-	    return 4;
-	default:
-	    return 1;
-	}
     }
 }

@@ -19,13 +19,8 @@
 
 package org.luwrain.pim.mail;
 
-import java.io.*;
 import java.util.*;
 import lombok.*;
-
-import org.luwrain.core.*;
-import org.luwrain.pim.*;
-
 
 @Data
 @NoArgsConstructor
@@ -39,26 +34,10 @@ public class MailFolder
 	this.title = folder.title;
 	if (folder.properties != null)
 	{
-	this.properties = new Properties();
-	this.properties.putAll(folder.properties);
+	    this.properties = new Properties();
+	    this.properties.putAll(folder.properties);
 	} else
 	    this.properties = null;
-    }
-
-    public final String getPropertiesAsString() throws IOException
-    {
-	final StringWriter writer = new StringWriter();
-	properties.store(writer, "");
-	writer.flush();
-	return writer.toString();
-    }
-
-    public final void setPropertiesFromString(String text) throws IOException
-    {
-	NullCheck.notNull(text, "text");
-	final StringReader reader = new StringReader(text);
-	properties.clear();
-	properties.load(reader);
     }
 
     public void save()
@@ -70,4 +49,4 @@ public class MailFolder
     {
 	return title != null?title:"";
     }
- }
+}

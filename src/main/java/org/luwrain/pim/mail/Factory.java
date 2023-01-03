@@ -30,7 +30,6 @@ static final String
 
     static private final String
 	DATA_DIR = "luwrain.pim.mail",
-		MESSAGES_DIR = "luwrain.pim.mail.messages",
 	DATA_FILE = "mail.nitrite";
 
     private final Luwrain luwrain;
@@ -52,7 +51,7 @@ static final String
 							luwrain.getRegistry(),
 							storage, execQueues,
 							syncObj, highPriority,
-							luwrain.getAppDataDir(MESSAGES_DIR).toFile());
+							luwrain.getAppDataDir(DATA_DIR).toFile());
     }
 
     @Override public void close()
