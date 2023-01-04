@@ -89,6 +89,65 @@ public class BinaryMessageTest extends Assert
 	assertEquals("Testing text", content);
 	    }
 
+        @Ignore @Test public void contentPlainRu() throws Exception
+    {
+	final MailMessage m = new MailMessage();
+	m.setFrom("test1@luwrain.org");
+	m.setTo(new String[]{ "test2@luwrain.org" });
+	m.setSubject("Проверочная тема");
+	m.setText("Проверочный текст");
+	final MessageContentType t = new MessageContentType();
+	t.setType(MessageContentType.PLAIN);
+	t.setCharset("UTF-8");
+	t.setEncoding("");
+	m.setContentType(t.toString());
+
+	final Map<String, String> headers = new HashMap<>();
+	final javax.mail.internet.MimeMessage mm = convertToMimeMessage(m, headers);
+	assertNotNull(mm);
+	assertNotNull(mm.getSubject());
+	assertEquals("Проверочная тема", mm.getSubject());
+	final Object contentObj = mm.getContent();
+	assertNotNull(contentObj);
+	assertTrue(contentObj instanceof String);
+
+	final String content = (String)contentObj;
+	assertEquals("Testing text", content);
+	    }
+
+@Test public void contentBase64Ru() throws Exception
+    {
+	final MailMessage m = new MailMessage();
+	m.setFrom("test1@luwrain.org");
+	m.setTo(new String[]{ "test2@luwrain.org" });
+	m.setSubject("Проверочная тема");
+	m.setText("Проверочный текст");
+	final MessageContentType t = new MessageContentType();
+	t.setType(MessageContentType.PLAIN);
+	t.setCharset("UTF-8");
+	t.setEncoding(MessageContentType.BASE64);
+	m.setContentType(t.toString());
+
+	final Map<String, String> headers = new HashMap<>();
+	final javax.mail.internet.MimeMessage mm = convertToMimeMessage(m, headers);
+	assertNotNull(mm);
+	assertNotNull(mm.getSubject());
+	assertEquals("Проверочная тема", mm.getSubject());
+	assertNotNull(mm.getHeader(TRANSFER_ENCODING));
+	assertEquals(1, mm.getHeader(TRANSFER_ENCODING).length);
+		assertNotNull(mm.getHeader(TRANSFER_ENCODING)[0]);
+	assertEquals(MessageContentType.BASE64, mm.getHeader(TRANSFER_ENCODING)[0]);
+
+	final Object contentObj = mm.getContent();
+	assertNotNull(contentObj);
+	assertTrue(contentObj instanceof String);
+
+	final String content = (String)contentObj;
+	assertEquals("Проверочный текст", content);
+	    }
+
+
+
     @Before public void readRawMessage() throws IOException
     {
 	final ByteArrayOutputStream os = new ByteArrayOutputStream();

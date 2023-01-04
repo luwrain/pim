@@ -32,11 +32,16 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.util.*;
+import org.luwrain.io.json.*;
 
 import static org.luwrain.core.NullCheck.*;
 
 public final class BinaryMessage
 {
+    static public final String
+	TRANSFER_ENCODING = "Content-Transfer-Encoding",
+	DEFAULT_CHARSET = "UTF-8";
+
     static public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException, IOException
     {
 notNull(message, "message");
@@ -85,7 +90,16 @@ notNull(extraHeaders, "extraHeaders");
 	message.setSentDate(srcMsg.getSentDate());
 	if(srcMsg.getAttachments() == null || srcMsg.getAttachments().length == 0)
 	{
-	    message.setContent(MimeUtility.encodeText(srcMsg.getText(), "UTF-8", "B"), srcMsg.getContentType());
+	    message.setText(srcMsg.getText());
+	    message.saveChanges();
+	    final MessageContentType ct;
+	    if (srcMsg.getContentType() != null && !srcMsg.getContentType().isEmpty())
+		ct = MessageContentType.fromString(srcMsg.getContentType()); else
+		ct = new MessageContentType();
+	    //	    message.setContent(MimeUtility.encodeText(srcMsg.getText(), ct.getCharset() != null?ct.getCharset():DEFAULT_CHARSET, ct.getEncoding() != null?ct.getEncoding():""), srcMsg.getContentType());
+	    if (ct.getEncoding() != null&& !ct.getEncoding().isEmpty())
+		message.setHeader(TRANSFER_ENCODING, ct.getEncoding());
+	    message.saveChanges();
 	    return message;
 	}
 	    final Multipart mp = new MimeMultipart();

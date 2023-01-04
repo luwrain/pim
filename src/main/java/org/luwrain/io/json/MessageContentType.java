@@ -33,7 +33,7 @@ public final class MessageContentType
 static public final String
     PLAIN = "text/plain",
     HTML = "text/html",
-    BASE64 = "B",
+    BASE64 = "base64",
     QUOTED_PRINTABLE = "Q";
 
     static private Gson gson = null;
