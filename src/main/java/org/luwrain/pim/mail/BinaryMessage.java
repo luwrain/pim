@@ -44,8 +44,8 @@ public final class BinaryMessage
 
     static public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException, IOException
     {
-notNull(message, "message");
-notNull(extraHeaders, "extraHeaders");
+	notNull(message, "message");
+	notNull(extraHeaders, "extraHeaders");
 	try {
 	    return mimeToByteArray(convertToMimeMessage(message, extraHeaders));
 	}
@@ -79,7 +79,7 @@ notNull(extraHeaders, "extraHeaders");
 	for(Map.Entry<String,String> e: headers.entrySet())
 	    message.addHeader(e.getKey(), e.getValue());
 	if (srcMsg.getSubject() != null)
-	message.setSubject(srcMsg.getSubject());
+	    message.setSubject(srcMsg.getSubject());
 	message.setFrom(encodeAddr(srcMsg.getFrom()));
 	message.setRecipients(RecipientType.TO, encodeAddrs(srcMsg.getTo()));
 	if(srcMsg.getCc() != null && srcMsg.getCc().length>0)
@@ -87,7 +87,7 @@ notNull(extraHeaders, "extraHeaders");
 	if(srcMsg.getBcc() != null && srcMsg.getBcc().length>0)
 	    message.setRecipients(RecipientType.BCC, encodeAddrs(srcMsg.getBcc()));
 	if (srcMsg.getSentDate() != null)
-	message.setSentDate(srcMsg.getSentDate());
+	    message.setSentDate(srcMsg.getSentDate());
 	if(srcMsg.getAttachments() == null || srcMsg.getAttachments().length == 0)
 	{
 	    message.setText(srcMsg.getText());
@@ -96,49 +96,38 @@ notNull(extraHeaders, "extraHeaders");
 	    if (srcMsg.getContentType() != null && !srcMsg.getContentType().isEmpty())
 		ct = MessageContentType.fromString(srcMsg.getContentType()); else
 		ct = new MessageContentType();
-	    //	    message.setContent(MimeUtility.encodeText(srcMsg.getText(), ct.getCharset() != null?ct.getCharset():DEFAULT_CHARSET, ct.getEncoding() != null?ct.getEncoding():""), srcMsg.getContentType());
 	    if (ct.getEncoding() != null&& !ct.getEncoding().isEmpty())
 		message.setHeader(TRANSFER_ENCODING, ct.getEncoding());
-	    message.saveChanges();
+	    //FIXME:content type and charset
 	    return message;
 	}
-	    final Multipart mp = new MimeMultipart();
-	    MimeBodyPart part = new MimeBodyPart();
-	    part.setText(srcMsg.getText());
+	final Multipart mp = new MimeMultipart();
+	MimeBodyPart body = new MimeBodyPart();
+	body.setText(srcMsg.getText());
+	mp.addBodyPart(body);
+	for(String attachment:srcMsg.getAttachments())
+	{
+	    final MimeBodyPart part = new MimeBodyPart();
+	    final File f = new File(attachment);
+	    part.setFileName(MimeUtility.encodeText(f.getName()));
+	    final FileDataSource fds = new FileDataSource(attachment);
+	    part.setDataHandler(new DataHandler(fds));
 	    mp.addBodyPart(part);
-	    for(String fn:srcMsg.getAttachments())
-	    {
-		part = new MimeBodyPart();
-		final File pfn = new File(fn);
-		part.setFileName(MimeUtility.encodeText(pfn.getName()));
-		final FileDataSource fds = new FileDataSource(fn);
-		part.setDataHandler(new DataHandler(fds));
-		mp.addBodyPart(part);
-	    }
-	    message.setContent(mp);
-
-	    /*
-
-			    final Multipart mp = new MimeMultipart();
-	    MimeBodyPart part = new MimeBodyPart();
-	    part.setText(srcMsg.getText());
-	    mp.addBodyPart(part);
-	    message.setContent(mp);
-	    */
-
+	}
+	message.setContent(mp);
 	return message;
     }
 
     static private void convertFromMimeMessage(MimeMessage srcMsg, MailMessage dest) throws PimException, MessagingException, UnsupportedEncodingException, IOException
     {
-	NullCheck.notNull(srcMsg, "srcMsg");
-	NullCheck.notNull(dest, "dest");
+	notNull(srcMsg, "srcMsg");
+	notNull(dest, "dest");
 	if (srcMsg.getSubject() != null)
-	dest.setSubject(srcMsg.getSubject());
+	    dest.setSubject(srcMsg.getSubject());
 	if(srcMsg.getFrom() != null)
 	    dest.setFrom(MimeUtility.decodeText(srcMsg.getFrom()[0].toString()));
 	if (srcMsg.getRecipients(RecipientType.TO) != null)
-	dest.setTo(decodeAddrs(srcMsg.getRecipients(RecipientType.TO)));
+	    dest.setTo(decodeAddrs(srcMsg.getRecipients(RecipientType.TO)));
 	if (srcMsg.getRecipients(RecipientType.CC) != null)
 	    dest.setCc(decodeAddrs(srcMsg.getRecipients(RecipientType.CC)));
 	if (srcMsg.getRecipients(RecipientType.BCC) != null)
@@ -153,30 +142,26 @@ notNull(extraHeaders, "extraHeaders");
 
     static byte[] mimeToByteArray(javax.mail.internet.MimeMessage message) throws MessagingException, IOException
     {
-notNull(message, "message");
-try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
+	notNull(message, "message");
+	try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 	    message.writeTo(byteStream);
 	    byteStream.flush();
 	    return byteStream.toByteArray();
-}
+	}
     }
 
     static private javax.mail.internet.MimeMessage mimeFromByteArray( byte[] bytes) throws MessagingException, IOException
     {
-	NullCheck.notNull(bytes, "bytes");
-	final ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
-	final Session session = Session.getDefaultInstance(new Properties(), null);
-	try {
+	notNull(bytes, "bytes");
+	try (final ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes)) {
+	    final Session session = Session.getDefaultInstance(new Properties(), null);
 	    return new MimeMessage(session, byteStream);
-	}
-	finally {
-	    byteStream.close();
 	}
     }
 
     static public String decodeText(String text) throws IOException
     {
-	NullCheck.notNull(text, "text");
+	notNull(text, "text");
 	return MimeUtility.decodeText(text);
     }
 
@@ -193,7 +178,7 @@ try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 
     static InternetAddress encodeAddr(String addr) throws IOException, AddressException
     {
-	NullCheck.notNull(addr, "addr");
+	notNull(addr, "addr");
 	final String personal = AddressUtils.getPersonal(addr);
 	final String mail = AddressUtils.getAddress(addr);
 	if (personal.trim().isEmpty())
@@ -203,7 +188,7 @@ try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 
     static InternetAddress[] encodeAddrs(String[] addrs) throws AddressException
     {
-	NullCheck.notNullItems(addrs, "addrs");
+	notNullItems(addrs, "addrs");
 	final List<InternetAddress> res = new ArrayList<>();
 	for(String s: addrs)
 	    if (!s.trim().isEmpty())
