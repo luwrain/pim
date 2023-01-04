@@ -28,31 +28,29 @@ import org.luwrain.pim.mail.*;
 
 @Data
 @NoArgsConstructor
-public final class MessageSendingData
+public final class MessageContentType
 {
+static public final String
+    PLAIN = "text/plain",
+    HTML = "text/html",
+    BASE64 = "B",
+    QUOTED_PRINTABLE = "Q";
+
     static private Gson gson = null;
 
-    private Integer accountId = null;
+    private String type = null, charset = null, encoding = null;
 
-        @Override public String toString()
+            @Override public String toString()
     {
 	if (gson == null)
 	    gson = new Gson();
 	return gson.toJson(this);
     }
 
-    static public MessageSendingData fromString(String str)
+    static public MessageContentType fromString(String str)
     {
 	if (gson == null)
 	    gson = new Gson();
-	return gson.fromJson(str, MessageSendingData.class);
-    }
-
-    static public Integer getAccountId(MailMessage message)
-    {
-	if (message == null || message.getExtInfo() == null || message.getExtInfo().isEmpty())
-	    return null;
-	final MessageSendingData sendingData = fromString(message.getExtInfo());
-	return sendingData != null?sendingData.getAccountId():null;
+	return gson.fromJson(str, MessageContentType.class);
     }
 }

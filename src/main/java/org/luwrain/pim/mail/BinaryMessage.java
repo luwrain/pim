@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -33,12 +33,14 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.util.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 public final class BinaryMessage
 {
     static public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException, IOException
     {
-	NullCheck.notNull(message, "message");
-	NullCheck.notNull(extraHeaders, "extraHeaders");
+notNull(message, "message");
+notNull(extraHeaders, "extraHeaders");
 	try {
 	    return mimeToByteArray(convertToMimeMessage(message, extraHeaders));
 	}
@@ -50,6 +52,7 @@ public final class BinaryMessage
 
     static public MailMessage fromByteArray(byte[] bytes) throws IOException
     {
+	notNull(bytes, "bytes");
 	final MailMessage message = new MailMessage();
 	try {
 	    convertFromMimeMessage(mimeFromByteArray(bytes), message);
@@ -62,22 +65,29 @@ public final class BinaryMessage
 	return message;
     }
 
-    static private javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws IOException, MessagingException
+    static javax.mail.internet.MimeMessage convertToMimeMessage(MailMessage srcMsg, Map<String, String> headers) throws IOException, MessagingException
     {
+	notNull(srcMsg, "srcMsg");
+	notNull(headers, "headers");
 	final Session session = Session.getDefaultInstance(new Properties(), null);
-	final javax.mail.internet.MimeMessage message = new MimeMessage(session);;
+	final javax.mail.internet.MimeMessage message = new MimeMessage(session);
 	for(Map.Entry<String,String> e: headers.entrySet())
 	    message.addHeader(e.getKey(), e.getValue());
+	if (srcMsg.getSubject() != null)
 	message.setSubject(srcMsg.getSubject());
 	message.setFrom(encodeAddr(srcMsg.getFrom()));
 	message.setRecipients(RecipientType.TO, encodeAddrs(srcMsg.getTo()));
-	if(srcMsg.getCc().length>0)
+	if(srcMsg.getCc() != null && srcMsg.getCc().length>0)
 	    message.setRecipients(RecipientType.CC, encodeAddrs(srcMsg.getCc()));
-	if(srcMsg.getBcc().length>0)
+	if(srcMsg.getBcc() != null && srcMsg.getBcc().length>0)
 	    message.setRecipients(RecipientType.BCC, encodeAddrs(srcMsg.getBcc()));
+	if (srcMsg.getSentDate() != null)
 	message.setSentDate(srcMsg.getSentDate());
-	if(srcMsg.getAttachments().length > 0)
+	if(srcMsg.getAttachments() == null || srcMsg.getAttachments().length == 0)
 	{
+	    message.setContent(MimeUtility.encodeText(srcMsg.getText(), "UTF-8", "B"), srcMsg.getContentType());
+	    return message;
+	}
 	    final Multipart mp = new MimeMultipart();
 	    MimeBodyPart part = new MimeBodyPart();
 	    part.setText(srcMsg.getText());
@@ -92,26 +102,16 @@ public final class BinaryMessage
 		mp.addBodyPart(part);
 	    }
 	    message.setContent(mp);
-	} else
-	{
+
 	    /*
-	    if(srcMsg.getContentType().isEmpty())
-	    { // simple text email body
-		message.setText(MimeUtility.encodeText(srcMsg.getText(), "UTF-8", "Q"));
-	    } else
-	    */
-	    { // for example utf8 html - mimeContentType="text/html; charset=utf-8"
-		//		message.setContent(MimeUtility.encodeText(srcMsg.getText(), "UTF-8", "B"), srcMsg.getContentType());
-		//				message.setText(srcMsg.getText());
 
 			    final Multipart mp = new MimeMultipart();
 	    MimeBodyPart part = new MimeBodyPart();
 	    part.setText(srcMsg.getText());
 	    mp.addBodyPart(part);
 	    message.setContent(mp);
+	    */
 
-	    }
-	}
 	return message;
     }
 

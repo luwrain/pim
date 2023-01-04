@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -19,17 +19,19 @@
 
 package org.luwrain.pim.mail;
 
-import java.util.*;
+import java.util.function.*;
 
 import org.luwrain.pim.*;
 
 public interface MailMessages
 {
-    void save(MailFolder folder, MailMessage message) throws PimException;
-    MailMessage[] load(MailFolder folder) throws PimException;
-    MailMessage[] loadNoDeleted(MailFolder folder) throws PimException;
-    void moveToFolder(MailMessage message, MailFolder folder) throws PimException;
-    void delete(MailMessage message) throws PimException;
-    byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders) throws PimException;
-    MailMessage fromByteArray(byte[] bytes) throws PimException;
+    void save(MailFolder folder, MailMessage message);
+    MailMessage[] load(MailFolder folder);
+    MailMessage[] load(MailFolder folder, Predicate<MailMessage> cond);
+    MailMessage[] loadNoDeleted(MailFolder folder);
+    void moveToFolder(MailMessage message, MailFolder folder);
+    void update(MailMessage message);
+    void delete(MailMessage message);
+    //    byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders);
+    //    MailMessage fromByteArray(byte[] bytes);
 }

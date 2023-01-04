@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -19,6 +19,7 @@ package org.luwrain.pim.mail.nitrite;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.dizitart.no2.*;
 import org.dizitart.no2.objects.*;
@@ -52,6 +53,8 @@ final class Messages implements MailMessages
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
+	if (message.getRawMessage() == null || message.getRawMessage().length == 0)
+	    throw new IllegalArgumentException("Unable to save a message without raw message data");
 	final Folder f = (Folder)folder;
 	storing.execInQueue(()->{
 		final Message m = new Message();
@@ -74,13 +77,32 @@ final class Messages implements MailMessages
 		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
 		for(Message m: c)
 		{
-		    //				    m.setTransient(storing);
 		    loadRawMessage(m);
 		    res.add(m);
 		}
 		return res.toArray(new Message[res.size()]);
 	    });
     }
+
+    @Override public MailMessage[] load(MailFolder folder, Predicate<MailMessage> cond)
+    {
+	NullCheck.notNull(folder, "folder");
+	NullCheck.notNull(cond, "cond");
+	final Folder f = (Folder)folder;
+	return storing.execInQueue(()->{
+		final List<Message> res = new ArrayList<>();
+		final Cursor<Message> c = repo.find(eq("folderId", f.getId()));
+		for(Message m: c)
+		{
+		    if (!cond.test(m))
+			continue;
+		    loadRawMessage(m);
+		    res.add(m);
+		}
+		return res.toArray(new Message[res.size()]);
+	    });
+    }
+
 
         @Override public MailMessage[] loadNoDeleted(MailFolder folder) throws PimException
     {
@@ -97,17 +119,34 @@ final class Messages implements MailMessages
 		});
     }
 
+            @Override public void update(MailMessage message)
+    {
+	NullCheck.notNull(message, "message");
+	final Message m = (Message)message;
+	if (m.id == null)
+	    throw new IllegalStateException("The message ID can't be null");
+	if (m.id.isEmpty())
+	    throw new IllegalStateException("The message ID can't be empty");
+	    storing.execInQueue(()->{
+		    repo.update(eq("id", m.id), m);
+		    return null;
+		});
+    }
+
+
     @Override public void moveToFolder(MailMessage message, MailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
 	final Folder f = (Folder)folder;
 	final Message m = (Message)message;
-	m.folderId = f.getId();
-	m.save();
+	if (f.id < 0)
+	    throw new IllegalArgumentException("The folder ID can't be negative");
+	m.folderId = f.id;
+	update(m);
     }
 
-    @Override public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders)
+public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders)
     {
 	NullCheck.notNull(message, "message");
 		try {
@@ -120,30 +159,11 @@ final class Messages implements MailMessages
 	}
     }
 
-    @Override public     MailMessage fromByteArray(byte[] bytes)
+public     MailMessage fromByteArray(byte[] bytes)
     {
 	throw new RuntimeException("not implemented");
     }
 
-        public void updateMessage(Message message)
-    {
-	if (storing == null)
-	    throw new IllegalStateException("storing can't be null");
-	if (message.id == null)
-	    throw new IllegalStateException("id can't be null");
-	if (message.id.isEmpty())
-	    throw new IllegalStateException("id can't be empty");
-	try {
-	    storing.execInQueue(()->{
-		    repo.update(eq("id", message.id), message);
-		    return null;
-		});
-	}
-	catch(Exception e)
-	{
-	    throw new PimException(e);
-	}
-    }
 
 
     void loadRawMessage(Message message)

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -21,6 +21,8 @@ import java.util.*;
 import java.io.*;
 
 import org.junit.*;
+
+import org.luwrain.io.json.*;
 
 import static org.luwrain.util.StreamUtils.*;
 import static org.luwrain.pim.mail.BinaryMessage.*;
@@ -60,6 +62,32 @@ public class BinaryMessageTest extends Assert
 	assertEquals(9, d.getMonth());
 	assertEquals(29, d.getDate());
     }
+
+    @Test public void contentPlainEn() throws Exception
+    {
+	final MailMessage m = new MailMessage();
+	m.setFrom("test1@luwrain.org");
+	m.setTo(new String[]{ "test2@luwrain.org" });
+	m.setSubject("Testing subject");
+	m.setText("Testing text");
+	final MessageContentType t = new MessageContentType();
+	t.setType(MessageContentType.PLAIN);
+	t.setCharset("UTF-8");
+	t.setEncoding("");
+	m.setContentType(t.toString());
+
+	final Map<String, String> headers = new HashMap<>();
+	final javax.mail.internet.MimeMessage mm = convertToMimeMessage(m, headers);
+	assertNotNull(mm);
+	assertNotNull(mm.getSubject());
+	assertEquals("Testing subject", mm.getSubject());
+	final Object contentObj = mm.getContent();
+	assertNotNull(contentObj);
+	assertTrue(contentObj instanceof String);
+
+	final String content = (String)contentObj;
+	assertEquals("Testing text", content);
+	    }
 
     @Before public void readRawMessage() throws IOException
     {
