@@ -151,18 +151,14 @@ notNull(extraHeaders, "extraHeaders");
 	dest.setContentType(srcMsg.getContentType());
     }
 
-    static private byte[] mimeToByteArray(javax.mail.internet.MimeMessage message) throws MessagingException, IOException
+    static byte[] mimeToByteArray(javax.mail.internet.MimeMessage message) throws MessagingException, IOException
     {
-	NullCheck.notNull(message, "message");
-	final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-	try {
+notNull(message, "message");
+try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 	    message.writeTo(byteStream);
 	    byteStream.flush();
 	    return byteStream.toByteArray();
-	}
-	finally {
-	    byteStream.close();
-	}
+}
     }
 
     static private javax.mail.internet.MimeMessage mimeFromByteArray( byte[] bytes) throws MessagingException, IOException

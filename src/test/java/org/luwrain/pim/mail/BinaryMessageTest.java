@@ -19,6 +19,7 @@ package org.luwrain.pim.mail;
 
 import java.util.*;
 import java.io.*;
+import org.apache.commons.codec.binary.Base64;
 
 import org.junit.*;
 
@@ -117,11 +118,14 @@ public class BinaryMessageTest extends Assert
 
 @Test public void contentBase64Ru() throws Exception
     {
+	final String
+	text = "Проверочный текст",
+	subject = "Проверочная тема";
 	final MailMessage m = new MailMessage();
 	m.setFrom("test1@luwrain.org");
 	m.setTo(new String[]{ "test2@luwrain.org" });
-	m.setSubject("Проверочная тема");
-	m.setText("Проверочный текст");
+	m.setSubject(subject);
+	m.setText(text);
 	final MessageContentType t = new MessageContentType();
 	t.setType(MessageContentType.PLAIN);
 	t.setCharset("UTF-8");
@@ -132,7 +136,7 @@ public class BinaryMessageTest extends Assert
 	final javax.mail.internet.MimeMessage mm = convertToMimeMessage(m, headers);
 	assertNotNull(mm);
 	assertNotNull(mm.getSubject());
-	assertEquals("Проверочная тема", mm.getSubject());
+	assertEquals(subject, mm.getSubject());
 	assertNotNull(mm.getHeader(TRANSFER_ENCODING));
 	assertEquals(1, mm.getHeader(TRANSFER_ENCODING).length);
 		assertNotNull(mm.getHeader(TRANSFER_ENCODING)[0]);
@@ -143,8 +147,55 @@ public class BinaryMessageTest extends Assert
 	assertTrue(contentObj instanceof String);
 
 	final String content = (String)contentObj;
-	assertEquals("Проверочный текст", content);
+	assertEquals(text, content);
+
+		final byte[] bytes = mimeToByteArray(mm);
+	assertNotNull(bytes);
+	final String raw[] = new String(bytes, "UTF-8").replaceAll("\r", "").split("\n", -1);
+	assertEquals("", raw[raw.length - 2]);
+	assertEquals(new String(Base64.encodeBase64(text.getBytes("UTF-8")), "US-ASCII"), raw[raw.length - 1]);
 	    }
+
+    @Test public void contentQuotedPrintableRu() throws Exception
+    {
+	final MailMessage m = new MailMessage();
+	m.setFrom("test1@luwrain.org");
+	m.setTo(new String[]{ "test2@luwrain.org" });
+	m.setSubject("Проверочная тема");
+	m.setText("Проверочный текст");
+	final MessageContentType t = new MessageContentType();
+	t.setType(MessageContentType.PLAIN);
+	t.setCharset("UTF-8");
+	t.setEncoding(MessageContentType.QUOTED_PRINTABLE);
+	m.setContentType(t.toString());
+
+	final Map<String, String> headers = new HashMap<>();
+	final javax.mail.internet.MimeMessage mm = convertToMimeMessage(m, headers);
+	assertNotNull(mm);
+	assertNotNull(mm.getSubject());
+	assertEquals("Проверочная тема", mm.getSubject());
+	assertNotNull(mm.getHeader(TRANSFER_ENCODING));
+	assertEquals(1, mm.getHeader(TRANSFER_ENCODING).length);
+		assertNotNull(mm.getHeader(TRANSFER_ENCODING)[0]);
+	assertEquals(MessageContentType.QUOTED_PRINTABLE, mm.getHeader(TRANSFER_ENCODING)[0]);
+
+	final Object contentObj = mm.getContent();
+	assertNotNull(contentObj);
+	assertTrue(contentObj instanceof String);
+
+	final String content = (String)contentObj;
+	assertEquals("Проверочный текст", content);
+
+	final byte[] bytes = mimeToByteArray(mm);
+	assertNotNull(bytes);
+	final String raw[] = new String(bytes, "UTF-8").split("\n", -1);
+	/*	
+	System.out.println("proba");
+	for(String s: raw)
+	    System.out.println(s);
+	*/
+    }
+
 
 
 

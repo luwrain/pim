@@ -34,7 +34,7 @@ static public final String
     PLAIN = "text/plain",
     HTML = "text/html",
     BASE64 = "base64",
-    QUOTED_PRINTABLE = "Q";
+    QUOTED_PRINTABLE = "quoted-printable";
 
     static private Gson gson = null;
 
