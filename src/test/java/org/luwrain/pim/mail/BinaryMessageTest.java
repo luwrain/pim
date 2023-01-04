@@ -20,6 +20,7 @@ package org.luwrain.pim.mail;
 import java.util.*;
 import java.io.*;
 import org.apache.commons.codec.binary.Base64;
+import javax.mail.internet.MimeUtility;
 
 import org.junit.*;
 
@@ -158,6 +159,9 @@ public class BinaryMessageTest extends Assert
 
     @Test public void contentQuotedPrintableRu() throws Exception
     {
+final String
+text = "Проверочный текст",
+subject = "Проверочная тема";
 	final MailMessage m = new MailMessage();
 	m.setFrom("test1@luwrain.org");
 	m.setTo(new String[]{ "test2@luwrain.org" });
@@ -188,16 +192,12 @@ public class BinaryMessageTest extends Assert
 
 	final byte[] bytes = mimeToByteArray(mm);
 	assertNotNull(bytes);
-	final String raw[] = new String(bytes, "UTF-8").split("\n", -1);
-	/*	
-	System.out.println("proba");
-	for(String s: raw)
-	    System.out.println(s);
-	*/
+	final String raw[] = new String(bytes, "UTF-8").replaceAll("\r", "").split("\n", -1);
+assertEquals("", raw[raw.length - 3]);
+	final String encoded = MimeUtility.encodeText(text, "UTF-8", "Q").replaceAll("=\\?UTF-8\\?Q\\?", "");
+	final int checkFirstNChars = 40;
+	assertEquals(raw[raw.length - 2].substring(0, checkFirstNChars), encoded.substring(0, checkFirstNChars));
     }
-
-
-
 
     @Before public void readRawMessage() throws IOException
     {
