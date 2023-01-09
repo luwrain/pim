@@ -29,10 +29,10 @@ import org.luwrain.settings.mail.*;
 public class Folders
 {
     private final Luwrain luwrain;
-    private final Strings strings;
+    private final org.luwrain.settings.mail.Strings strings;
     private final MailStoring storing;
 
-    public Folders(Luwrain luwrain, Strings strings,
+    public Folders(Luwrain luwrain, org.luwrain.settings.mail.Strings strings,
 		   MailStoring storing)
     {
 	NullCheck.notNull(luwrain, "luwrain");

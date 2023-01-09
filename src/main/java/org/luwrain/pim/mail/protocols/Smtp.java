@@ -62,7 +62,7 @@ public final class Smtp extends Base
     private final MailStoring storing;
     private final MailFolder pending, sent;
 
-    public Smtp(Control control, Strings strings)
+    public Smtp(Control control, org.luwrain.pim.fetching.Strings strings)
     {
 	super(control, strings);
 	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);

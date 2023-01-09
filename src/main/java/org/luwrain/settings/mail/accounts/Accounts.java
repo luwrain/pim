@@ -26,11 +26,11 @@ import org.luwrain.settings.mail.*;
 public final class Accounts
 {
     final Luwrain luwrain;
-    final Strings strings;
+    final org.luwrain.settings.mail.Strings strings;
     final MailStoring storing;
     final Conv conv;
 
-    public Accounts(Luwrain luwrain, Strings strings, MailStoring storing)
+    public Accounts(Luwrain luwrain, org.luwrain.settings.mail.Strings strings, MailStoring storing)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(strings, "strings");

@@ -36,9 +36,9 @@ public class Area extends FormArea implements SectionArea
     private Luwrain luwrain;
     private MailStoring storing;
     private MailAccount account;
-    private Strings strings;
+    private org.luwrain.settings.mail.Strings strings;
 
-    Area(ControlPanel controlPanel, Strings strings,
+    Area(ControlPanel controlPanel, org.luwrain.settings.mail.Strings strings,
 	    MailStoring storing, MailAccount account) throws PimException
     {
 	super(new DefaultControlContext(controlPanel.getCoreInterface()), strings.accountFormName());

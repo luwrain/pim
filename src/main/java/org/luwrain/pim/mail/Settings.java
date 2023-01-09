@@ -23,15 +23,14 @@ import org.luwrain.core.*;
 
 public interface Settings
 {
-    static public final String PATH = "/org/luwrain/pim/mail";
-    static public final String RULES_PATH = "/org/luwrain/pim/mail/rules";
+    static public final String
+	PATH = "/org/luwrain/pim/mail",
+    RULES_PATH = "/org/luwrain/pim/mail/rules";
 
     String getAccounts(String defValue);
     void setAccounts(String value);
     String getFolders(String defValue);
     void setFolders(String value);
-    int getNextFolderId(int defValue);
-    void setNextFolderId(int value);
     String getUserAgent(String defValue);
     void setUserAgent(String value);
 

@@ -40,9 +40,9 @@ final class Folders implements MailFolders
     private final Messages messages;
     private Data data = null;
 
-    Folders(Registry registry, Messages messages)
+    Folders(Storing storing, Messages messages)
     {
-	this.registry = registry;
+	this.registry = storing.luwrain.getRegistry();
 	this.sett = org.luwrain.pim.mail.Settings.create(registry);
 	this.messages = messages;
 	loadAll();

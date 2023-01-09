@@ -25,7 +25,7 @@ import static org.luwrain.popups.Popups.*;
 final class Conv
 {
     final Luwrain luwrain;
-    final Strings strings;
+    final org.luwrain.settings.mail.Strings strings;
 
     Conv(Accounts accounts)
     {

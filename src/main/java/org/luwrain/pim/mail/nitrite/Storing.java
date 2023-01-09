@@ -37,6 +37,7 @@ public final class Storing implements MailStoring
     static private final String
 	MESSAGE_FILE_EXTENSION = ".eml.gz";
 
+    final Luwrain luwrain;
     final Registry registry;
     final NitriteStorage<Message> storage;
         final Object syncObj;
@@ -49,25 +50,26 @@ public final class Storing implements MailStoring
     private final Messages messages;
 
     public Storing(
-		   Registry registry,
+		   Luwrain luwrain,
 		   NitriteStorage<Message> storage,
 		   ExecQueues execQueues,
 		   Object syncObj,
 		   boolean highPriority,
 		   File messagesDir)
     {
-	NullCheck.notNull(registry, "registry");
+	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(storage, "storage");
 	NullCheck.notNull(execQueues, "execQueues");
 	NullCheck.notNull(messagesDir, "messagesDir");
-	this.registry = registry;
+	this.luwrain = luwrain;
+	this.registry = luwrain.getRegistry();
 	this.storage = storage;
 	this.execQueues = execQueues;
 	this.syncObj = syncObj;
 	this.highPriority = highPriority;
 	this.messagesDir = messagesDir;
 		this.messages = new Messages(this, messagesDir);
-		this.folders = new Folders(registry, messages);
+		this.folders = new Folders(this, messages);
 	this.accounts = new Accounts(this);
 	    }
 

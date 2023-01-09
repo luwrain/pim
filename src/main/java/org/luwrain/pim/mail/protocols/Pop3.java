@@ -40,7 +40,7 @@ public final class Pop3 extends Base implements MailConnections.Listener
     private final MailStoring storing;
     private final MailObj mailHookObj;
 
-    public Pop3(Control control, Strings strings) throws FetchingException, PimException, InterruptedException
+    public Pop3(Control control, org.luwrain.pim.fetching.Strings strings) throws FetchingException, PimException, InterruptedException
     {
 	super(control, strings);
 	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);

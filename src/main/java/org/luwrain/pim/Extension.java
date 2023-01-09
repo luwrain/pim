@@ -64,6 +64,9 @@ public final class Extension extends EmptyExtension
     @Override public void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt)
     {
 	try {
+	    i18nExt.addStrings(Lang.EN, org.luwrain.pim.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-mail.properties").create(Lang.EN, org.luwrain.pim.mail.Strings.class));
+	    i18nExt.addStrings(Lang.RU, org.luwrain.pim.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-mail.properties").create(Lang.RU, org.luwrain.pim.mail.Strings.class));
+
 	    i18nExt.addStrings(Lang.EN, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.EN, org.luwrain.settings.mail.Strings.class));
 	    i18nExt.addStrings(Lang.RU, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.RU, org.luwrain.settings.mail.Strings.class));
 	}

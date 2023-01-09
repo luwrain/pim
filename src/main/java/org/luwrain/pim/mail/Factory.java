@@ -48,7 +48,7 @@ static final String
     public MailStoring newMailStoring(boolean highPriority)
     {
 	return new org.luwrain.pim.mail.nitrite.Storing(
-							luwrain.getRegistry(),
+							luwrain,
 							storage, execQueues,
 							syncObj, highPriority,
 							luwrain.getAppDataDir(DATA_DIR).toFile());
