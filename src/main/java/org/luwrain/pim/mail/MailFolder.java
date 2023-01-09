@@ -27,6 +27,7 @@ import lombok.*;
 public class MailFolder
 {
     private String title = "";
+    private int deleteReadMessagesAfterDays = 0;
     private Properties properties = null;
 
     public final void copyValues(MailFolder folder)

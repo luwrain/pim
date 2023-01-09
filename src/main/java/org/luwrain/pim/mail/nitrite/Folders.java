@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -36,6 +36,7 @@ final class Folders implements MailFolders
 
     private final Gson gson = new Gson();
     private final Registry registry;
+    private org.luwrain.pim.mail.Strings strings;
     private final org.luwrain.pim.mail.Settings sett;
     private final Messages messages;
     private Data data = null;
@@ -43,6 +44,7 @@ final class Folders implements MailFolders
     Folders(Storing storing, Messages messages)
     {
 	this.registry = storing.luwrain.getRegistry();
+	this.strings = (org.luwrain.pim.mail.Strings)storing.luwrain.i18n().getStrings(org.luwrain.pim.mail.Strings.NAME);
 	this.sett = org.luwrain.pim.mail.Settings.create(registry);
 	this.messages = messages;
 	loadAll();
@@ -166,7 +168,7 @@ List<Folder> ff = new ArrayList<>();
 	f = new Folder();
 	f.id = 10;
 	f.folders = this;
-	f.setTitle("Inbox");
+	f.setTitle(strings.inboxFolder());
 	f.setProperties(new Properties());
 	ff.add(f);
 
@@ -174,7 +176,7 @@ List<Folder> ff = new ArrayList<>();
 	f = new Folder();
 	f.id = 11;
 	f.folders = this;
-	f.setTitle("Mailing lists");
+	f.setTitle(strings.mailingListsFolder());
 	f.setProperties(new Properties());
 	f.getProperties().setProperty(PROP_DEFAULT_MAILING_LISTS, TRUE);
 	ff.add(f);
@@ -183,7 +185,7 @@ List<Folder> ff = new ArrayList<>();
 	f = new Folder();
 	f.id = 12;
 	f.folders = this;
-	f.setTitle("Outgoing");
+	f.setTitle(strings.outgoingFolder());
 	f.setProperties(new Properties());
 	f.getProperties().setProperty(PROP_DEFAULT_OUTGOING, TRUE);
 	ff.add(f);
@@ -192,7 +194,7 @@ List<Folder> ff = new ArrayList<>();
 	f = new Folder();
 	f.id = 13;
 	f.folders = this;
-	f.setTitle("Sent");
+	f.setTitle(strings.sentFolder());
 	f.setProperties(new Properties());
 	f.getProperties().setProperty(PROP_DEFAULT_SENT, TRUE);
 	ff.add(f);
@@ -201,7 +203,7 @@ List<Folder> ff = new ArrayList<>();
 	f = new Folder();
 	f.id = 14;
 	f.folders = this;
-	f.setTitle("Drafts");
+	f.setTitle(strings.draftsFolder());
 	f.setProperties(new Properties());
 	f.getProperties().setProperty(PROP_DEFAULT_DRAFTS, TRUE);
 	ff.add(f);
@@ -209,7 +211,7 @@ List<Folder> ff = new ArrayList<>();
 		this.data = new Data();
 	this.data.root = new Folder();
 	this.data.root.id = 1;
-	this.data.root.setTitle("Mail");
+	this.data.root.setTitle(strings.mailFoldersRoot());
 	this.data.root.folders = this;
 	this.data.root.subfolders = ff;
 	this.data.nextId = 100;

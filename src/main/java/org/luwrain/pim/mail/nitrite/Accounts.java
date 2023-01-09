@@ -45,7 +45,7 @@ final class Accounts implements MailAccounts
     {
 	NullCheck.notNull(account, "account");
 	NullCheck.notNull(message, "message");
-		final MailConnections.Params params = new MailConnections.Params();
+	final MailConnections.Params params = new MailConnections.Params();
 	params.doAuth = !account.getLogin().isEmpty();
 	params.host = account.getHost();
 	params.port = account.getPort();
@@ -54,68 +54,78 @@ final class Accounts implements MailAccounts
 	params.login = account.getLogin();
 	params.passwd = account.getPasswd();
 	//		params.extProps.put( "mail.pop3.ssl.trust", account.getTrustedHosts());
-		final MailConnections conv = new MailConnections(params, false);
-	    conv.send(message.getRawMessage());
+	final MailConnections conv = new MailConnections(params, false);
+	conv.send(message.getRawMessage());
     }
 
-    @Override public synchronized MailAccount[] load()
+    @Override public MailAccount[] load()
     {
-	final List<MailAccount> res = new ArrayList<>();
-	for(Map.Entry<Integer, Account> e: data.accounts.entrySet())
-	    res.add(e.getValue());
-	return res.toArray(new MailAccount[res.size()]);
+	synchronized (syncObj) {
+	    final List<MailAccount> res = new ArrayList<>();
+	    for(Map.Entry<Integer, Account> e: data.accounts.entrySet())
+		res.add(e.getValue());
+	    return res.toArray(new MailAccount[res.size()]);
+	}
     }
 
-    @Override public synchronized MailAccount loadById(int id)
+    @Override public MailAccount loadById(int id)
     {
-	if (id < 0)
-	    throw new IllegalArgumentException("id (" + String.valueOf(id) + ") may not be negative");
-	return data.accounts.get(Integer.valueOf(id));
+	synchronized(syncObj) {
+	    if (id < 0)
+		throw new IllegalArgumentException("id (" + String.valueOf(id) + ") may not be negative");
+	    return data.accounts.get(Integer.valueOf(id));
+	}
     }
 
-    @Override public synchronized MailAccount save(MailAccount account)
+    @Override public MailAccount save(MailAccount account)
     {
-	NullCheck.notNull(account, "account");
-	final int newId = data.nextId.intValue();
-	data.nextId = Integer.valueOf(newId + 1);
-	final Account a = new Account();
-	a.id = newId;
-	a.accounts = this;
-	a.copyValues(account);
-	data.accounts.put(Integer.valueOf(newId), a);
-	saveAll();
-	return a;
+	synchronized(syncObj) {
+	    NullCheck.notNull(account, "account");
+	    final int newId = data.nextId.intValue();
+	    data.nextId = Integer.valueOf(newId + 1);
+	    final Account a = new Account();
+	    a.id = newId;
+	    a.accounts = this;
+	    a.copyValues(account);
+	    data.accounts.put(Integer.valueOf(newId), a);
+	    saveAll();
+	    return a;
+	}
     }
 
-    @Override public synchronized void delete(MailAccount account)
+    @Override public void delete(MailAccount account)
     {
-	NullCheck.notNull(account, "account");
-	final Account a = (Account)account;
-	data.accounts.remove(Integer.valueOf(a.id));
-	saveAll();
-		    }
+	synchronized (syncObj) {
+	    NullCheck.notNull(account, "account");
+	    final Account a = (Account)account;
+	    data.accounts.remove(Integer.valueOf(a.id));
+	    saveAll();
+	}
+    }
 
-    @Override public synchronized int getId(MailAccount account)
+    @Override public int getId(MailAccount account)
     {
 	return ((Account)account).id;
     }
 
-    @Override public synchronized MailAccount getDefault(MailAccount.Type type)
+    @Override public MailAccount getDefault(MailAccount.Type type)
     {
-	final MailAccount[] accounts = load();
-	MailAccount anyEnabled = null;
-	for(MailAccount a: accounts)
-	{
-	    if (a.getType() != type)
-		continue;
-	    if (!a.getFlags().contains(MailAccount.Flags.ENABLED))
-		continue;
-	    anyEnabled = a;
-    	    if (!a.getFlags().contains(MailAccount.Flags.DEFAULT))
-		continue;
-	    return a;
+	synchronized(syncObj) {
+	    final MailAccount[] accounts = load();
+	    MailAccount anyEnabled = null;
+	    for(MailAccount a: accounts)
+	    {
+		if (a.getType() != type)
+		    continue;
+		if (!a.getFlags().contains(MailAccount.Flags.ENABLED))
+		    continue;
+		anyEnabled = a;
+		if (!a.getFlags().contains(MailAccount.Flags.DEFAULT))
+		    continue;
+		return a;
+	    }
+	    return anyEnabled;
 	}
-	return anyEnabled;
     }
 
     private void loadAll()
@@ -136,6 +146,7 @@ final class Accounts implements MailAccounts
 	    if (e.getKey() != null && e.getValue() != null)
 	    {
 		e.getValue().accounts = this;
+		e.getValue().id = e.getKey().intValue();
 		accounts.put(e.getKey(), e.getValue());
 		if (e.getKey().intValue() > maxId)
 		    maxId = e.getKey().intValue();

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -27,6 +27,6 @@ import org.luwrain.pim.mail.*;
 
 final class Account extends MailAccount
 {
-    int id = 0;
+    transient int id;
     transient Accounts accounts = null;
 }
