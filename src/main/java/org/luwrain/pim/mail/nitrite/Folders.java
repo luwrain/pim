@@ -165,12 +165,13 @@ Folder f;
 List<Folder> ff = new ArrayList<>();
 
 //Inbox
-	f = new Folder();
-	f.id = 10;
-	f.folders = this;
-	f.setTitle(strings.inboxFolder());
-	f.setProperties(new Properties());
-	ff.add(f);
+f = new Folder();
+f.id = 10;
+f.folders = this;
+f.setTitle(strings.inboxFolder());
+f.setProperties(new Properties());
+f.getProperties().setProperty(PROP_DEFAULT_INCOMING, TRUE);
+ff.add(f);
 
 	//Mailing lists
 	f = new Folder();

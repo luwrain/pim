@@ -24,6 +24,7 @@ import org.luwrain.pim.*;
 public interface MailFolders
 {
     static public final String
+	PROP_DEFAULT_INCOMING  = "defaultIncoming",
 	PROP_DEFAULT_OUTGOING  = "defaultOutgoing",
 	PROP_DEFAULT_SENT = "defaultSent",
 	PROP_DEFAULT_MAILING_LISTS = "defaultMailingLists",
