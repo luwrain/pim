@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -21,31 +21,33 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-import org.luwrain.popups.Popups;
 import org.luwrain.cpanel.*;
-import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.settings.mail.*;
 
-public class Area extends FormArea implements SectionArea
+public final class Area extends FormArea implements SectionArea
 {
-    final String smtpTitle = "SMTP";//FIXME:
-    final String pop3Title = "POP3";//FIXME:
+    static private final int
+	LEN_LIMIT = 256;
 
-    private ControlPanel controlPanel;
-    private Luwrain luwrain;
-    private MailStoring storing;
-    private MailAccount account;
-    private org.luwrain.settings.mail.Strings strings;
+    static private final String
+	TITLE = "title",
+	HOST = "host",
+	PORT = "port",
+	LOGIN = "login",
+	PASSWD = "passwd",
+	DEFAULT = "default",
+	ENABLED = "enabled";
 
-    Area(ControlPanel controlPanel, org.luwrain.settings.mail.Strings strings,
-	    MailStoring storing, MailAccount account) throws PimException
+    final ControlPanel controlPanel;
+    final Luwrain luwrain;
+    final MailStoring storing;
+    final MailAccount account;
+    final org.luwrain.settings.mail.Strings strings;
+
+    Area(ControlPanel controlPanel, org.luwrain.settings.mail.Strings strings, MailStoring storing, MailAccount account)
     {
-	super(new DefaultControlContext(controlPanel.getCoreInterface()), strings.accountFormName());
-	NullCheck.notNull(controlPanel, "controlPanel");
-	NullCheck.notNull(strings, "strings");
-	NullCheck.notNull(storing, "storing");
-	NullCheck.notNull(account, "account");
+	super(new DefaultControlContext(controlPanel.getCoreInterface()), strings.accountFormName(), LEN_LIMIT);
 	this.storing = storing;
 	this.strings = strings;
 	this.account = account;
@@ -54,41 +56,37 @@ public class Area extends FormArea implements SectionArea
 	fillForm();
     }
 
-    private void fillForm() throws PimException
+    private void fillForm()
     {
 	final Set<MailAccount.Flags> flags = account.getFlags();
-	addEdit("title", strings.accountFormTitle(), account.getTitle(), null, true);
-	addCheckbox("enabled", strings.accountFormEnabled(), flags.contains(MailAccount.Flags.ENABLED), null, true);
-	String selected = null;
+	addStatic(strings.accountFormServerType() + account.getType().toString());
+	addEdit(TITLE, strings.accountFormTitle(), account.getTitle());
+	addCheckbox(ENABLED, strings.accountFormEnabled(), flags.contains(MailAccount.Flags.ENABLED));
+	addEdit(HOST, strings.accountFormHost(), account.getHost(), null, true);
+	addEdit(PORT, strings.accountFormPort(), "" + account.getPort());
+	addEdit(LOGIN, strings.accountFormLogin(), account.getLogin());
+	addEdit(PASSWD, strings.accountFormPasswd(), account.getPasswd());
 	switch(account.getType())
 	{
 	case SMTP:
-	    selected = smtpTitle;
+	    addCheckbox(DEFAULT, strings.accountFormDefaultOutgoing(), flags.contains(MailAccount.Flags.DEFAULT), null, true);
+	    addCheckbox("tls", strings.accountFormUseTls(), flags.contains(MailAccount.Flags.TLS), null, true);
+	    addEdit("subst-name", strings.accountForMessagesAuthorName(), account.getSubstName());
+	    addEdit("subst-address", strings.accountFormMessagesAuthorAddress(), account.getSubstAddress(), null, true);
 	    break;
 	case POP3:
-	    selected = pop3Title;
+	    addEdit("trusted-hosts", strings.accountFormTrustedHosts(), account.getTrustedHosts(), null, true);
+	    addCheckbox("leave-messages", strings.accountFormLeaveMessageOnServer(), flags.contains(MailAccount.Flags.LEAVE_MESSAGES), null, true);
+	    addCheckbox("ssl", strings.accountFormUseSsl(), flags.contains(MailAccount.Flags.SSL), null, true);
 	    break;
 	}
-	addList("type", strings.accountFormServerType(), selected,
-		new FormUtils.FixedListChoosing(luwrain, strings.accountFormTypeSelectionPopupName(), new String[]{pop3Title, smtpTitle}, Popups.DEFAULT_POPUP_FLAGS), null, true);
-	addEdit("host", strings.accountFormHost(), account.getHost(), null, true);
-	addEdit("port", strings.accountFormPort(), "" + account.getPort());
-	addEdit("login", strings.accountFormLogin(), account.getLogin());
-	addEdit("passwd", strings.accountFormPasswd(), account.getPasswd());
-	addEdit("trusted-hosts", strings.accountFormTrustedHosts(), account.getTrustedHosts(), null, true);
-	addCheckbox("default", strings.accountFormDefaultOutgoing(), flags.contains(MailAccount.Flags.DEFAULT), null, true);
-	addCheckbox("leave-messages", strings.accountFormLeaveMessageOnServer(), flags.contains(MailAccount.Flags.LEAVE_MESSAGES), null, true);
-	addCheckbox("ssl", strings.accountFormUseSsl(), flags.contains(MailAccount.Flags.SSL), null, true);
-	addCheckbox("tls", strings.accountFormUseTls(), flags.contains(MailAccount.Flags.TLS), null, true);
-	addEdit("subst-name", strings.accountForMessagesAuthorName(), account.getSubstName());
-	addEdit("subst-address", strings.accountFormMessagesAuthorAddress(), account.getSubstAddress(), null, true);
     }
 
     @Override public boolean saveSectionData()
     {
-	int port;
+	final int port;
 	try {
-	    port = Integer.parseInt(getEnteredText("port"));
+	    port = Integer.parseInt(getEnteredText(PORT));
 	}
 	catch(NumberFormatException e)
 	{
@@ -100,37 +98,39 @@ public class Area extends FormArea implements SectionArea
 	    luwrain.message(strings.portMustBeGreaterZero(), Luwrain.MessageType.ERROR);
 	    return false;
 	}
-	    account.setTitle(getEnteredText("title"));
-	    account.setLogin(getEnteredText("login"));
-	    account.setPasswd(getEnteredText("passwd"));
-	    account.setTrustedHosts(getEnteredText("trusted-hosts"));
-	    account.setHost(getEnteredText("host"));
-	    account.setPort(port);
+	account.setTitle(getEnteredText(TITLE));
+	account.setLogin(getEnteredText(LOGIN));
+	account.setPasswd(getEnteredText(PASSWD));
+	account.setHost(getEnteredText(HOST));
+	account.setPort(port);
+	final Set<MailAccount.Flags> flags = EnumSet.noneOf(MailAccount.Flags.class);
+	switch(account.getType())
+	{
+	case SMTP:
 	    account.setSubstName(getEnteredText("subst-name"));
 	    account.setSubstAddress(getEnteredText("subst-address"));
-	    final Object selected = getSelectedListItem("type");
-	    if (selected.equals(pop3Title))
-		account.setType(MailAccount.Type.POP3);
-	    if (selected.equals(smtpTitle))
-		account.setType(MailAccount.Type.SMTP);
-	    final Set<MailAccount.Flags> flags = EnumSet.noneOf(MailAccount.Flags.class);
-	    if (getCheckboxState("ssl"))
-		flags.add(MailAccount.Flags.SSL);
 	    if (getCheckboxState("tls"))
 		flags.add(MailAccount.Flags.TLS);
-	    if (getCheckboxState("default"))
-		flags.add(MailAccount.Flags.DEFAULT);
-	    if (getCheckboxState("enabled"))
-		flags.add(MailAccount.Flags.ENABLED);
+	    break;
+	case POP3:
+	    account.setTrustedHosts(getEnteredText("trusted-hosts"));
+	    if (getCheckboxState("ssl"))
+		flags.add(MailAccount.Flags.SSL);
 	    if (getCheckboxState("leave-messages"))
 		flags.add(MailAccount.Flags.LEAVE_MESSAGES);
-	    account.setFlags(flags);
-	    return true;
+	    break;
+	}
+	if (getCheckboxState(DEFAULT))
+	    flags.add(MailAccount.Flags.DEFAULT);
+	if (getCheckboxState(ENABLED))
+	    flags.add(MailAccount.Flags.ENABLED);
+	account.setFlags(flags);
+	storing.getAccounts().update(account);
+	return true;
     }
 
     @Override public boolean onInputEvent(InputEvent event)
     {
-	NullCheck.notNull(event, "event");
 	if (controlPanel.onInputEvent(event))
 	    return true;
 	return super.onInputEvent(event);
@@ -138,7 +138,6 @@ public class Area extends FormArea implements SectionArea
 
     @Override public boolean onSystemEvent(SystemEvent event)
     {
-	NullCheck.notNull(event, "event");
 	if (controlPanel.onSystemEvent(event))
 	    return true;
 	return super.onSystemEvent(event);

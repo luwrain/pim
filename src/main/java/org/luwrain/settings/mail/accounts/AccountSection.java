@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -21,17 +21,15 @@ import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.*;
 
-public class AccountSection implements Section
+public final class AccountSection implements Section
 {
-    private final Accounts accounts;
-    private final AccountElement element;
-    private final String title;
-    private final int id;
+    final Accounts accounts;
+    final AccountElement element;
+    final String title;
+    final int id;
 
     public AccountSection(Accounts accounts, AccountElement element)
     {
-	NullCheck.notNull(accounts, "accounts");
-	NullCheck.notNull(element, "element");
 	this.accounts = accounts;
 	this.element = element;
 	this.title = element.title;
@@ -40,16 +38,8 @@ public class AccountSection implements Section
 
     @Override public SectionArea getSectionArea(ControlPanel controlPanel)
     {
-	NullCheck.notNull(controlPanel, "controlPanel");
 	final Luwrain luwrain = controlPanel.getCoreInterface();
-	try {
-	    return new Area(controlPanel, accounts.strings, accounts.storing, accounts.storing.getAccounts().loadById(id));
-	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
-	    return null;
-	}
+	return new Area(controlPanel, accounts.strings, accounts.storing, accounts.storing.getAccounts().loadById(id));
     }
 
     @Override public Element getElement()
@@ -67,8 +57,6 @@ public class AccountSection implements Section
 
     @Override public boolean onSectionActionEvent(ControlPanel controlPanel, ActionEvent event)
     {
-	NullCheck.notNull(controlPanel, "controlPanel");
-	NullCheck.notNull(event, "event");
 	return accounts.onActionEvent(controlPanel, event, id);
     }
 

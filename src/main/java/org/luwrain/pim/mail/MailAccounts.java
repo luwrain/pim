@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -24,6 +24,7 @@ public interface MailAccounts
     MailAccount[] load();
     MailAccount save(MailAccount account);
     void delete(MailAccount account);
+    void update(MailAccount account);
     MailAccount loadById(int id);
     int getId(MailAccount account);
     MailAccount getDefault(MailAccount.Type type);

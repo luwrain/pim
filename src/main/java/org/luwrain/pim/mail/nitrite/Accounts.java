@@ -93,6 +93,18 @@ final class Accounts implements MailAccounts
 	}
     }
 
+        @Override public void update(MailAccount account)
+    {
+	synchronized(syncObj) {
+	    NullCheck.notNull(account, "account");
+	    final Account a = (Account)account;
+	    if (a.id < 0)
+		throw new IllegalArgumentException("the ID of the account can't be negative (" + String.valueOf(a.id) + ")");
+	    data.accounts.put(a.id, a);
+	    saveAll();
+	}
+    }
+
     @Override public void delete(MailAccount account)
     {
 	synchronized (syncObj) {
