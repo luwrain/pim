@@ -17,6 +17,8 @@
 
 package org.luwrain.pim.mail.nitrite;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.util.*;
@@ -31,6 +33,6 @@ public final class Message extends MailMessage
 	final byte[] bytes = getRawMessage();
 	if (bytes.length == 0)
 	    throw new IllegalStateException("the raw message can't be empty on ID generation");
-	this.id = new Sha1().getSha1(bytes);
+	this.id = new Sha1().getSha1(bytes) + "-" + UUID.randomUUID().toString().substring(0, 8);
     }
 }

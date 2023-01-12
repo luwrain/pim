@@ -119,7 +119,7 @@ public final class Pop3 extends Base implements MailConnections.Listener
 	}
 	final MessageObj hookObj = new MessageObj(message);
 	try {
-	    Log.debug(LOG_COMPONENT, "saving the message " + num + "/" + total + " from " + message.getFrom());
+	    Log.debug(LOG_COMPONENT, "saving the message " + (num + 1) + "/" + total + " from " + message.getFrom());
 	    return chainOfResponsibility(luwrain, HOOK_SAVE, new Object[]{mailHookObj, hookObj});
 	}
 	catch(Throwable e)
