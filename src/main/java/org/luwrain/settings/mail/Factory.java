@@ -25,7 +25,6 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
 import org.luwrain.settings.mail.accounts.*;
-import org.luwrain.settings.mail.folders.Folders;
 
 public final class Factory implements org.luwrain.cpanel.Factory
 {

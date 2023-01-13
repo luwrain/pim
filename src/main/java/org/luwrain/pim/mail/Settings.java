@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -24,8 +24,10 @@ import org.luwrain.core.*;
 public interface Settings
 {
     static public final String
-	PATH = "/org/luwrain/pim/mail",
-    RULES_PATH = "/org/luwrain/pim/mail/rules";
+	PATH = "/org/luwrain/pim/mail";
+
+    static public final int
+	DEFAULT_MESSAGE_LINE_LEN = 60;
 
     String getAccounts(String defValue);
     void setAccounts(String value);
@@ -33,28 +35,12 @@ public interface Settings
     void setFolders(String value);
     String getUserAgent(String defValue);
     void setUserAgent(String value);
-
-    public interface Rule
-    {
-	String getAction(String defValue);
-	String getHeaderRegex(String defValue);
-	String getDestFolderUniref(String defValue);
-	void setAction(String value);
-	void setHeaderRegex(String value);
-	void setDestFolderUniref(String value);
-    }
+    int getMessageLineLen(int defValue);
+    void setMessageLineLen(int value);
 
     static public Settings create(Registry registry)
     {
-	NullCheck.notNull(registry, "registry");
 	registry.addDirectory(PATH);
 	return RegistryProxy.create(registry, PATH, Settings.class);
-    }
-
-    static public Rule createRule(Registry registry, String path)
-    {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(path, "path");
-	return RegistryProxy.create(registry, path, Rule.class);
     }
 }

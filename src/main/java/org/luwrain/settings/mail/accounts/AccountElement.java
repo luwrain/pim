@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -27,8 +27,6 @@ public final class AccountElement implements org.luwrain.cpanel.Element
 
 AccountElement(Element parent, int id, String title)
     {
-	NullCheck.notNull(parent, "parent");
-	NullCheck.notNull(title, "title");
 	if (id < 0)
 	    throw new IllegalArgumentException("id (" + String.valueOf(id) + ") can't be empty");
 	this.parent = parent;
