@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -29,7 +29,7 @@ import org.luwrain.settings.mail.accounts.*;
 public final class Factory implements org.luwrain.cpanel.Factory
 {
     private final Luwrain luwrain;
-    private final SimpleElement mailElement, accountsElement, rulesElement;
+    private final SimpleElement mailElement, accountsElement, commonSettElement;
 
     private Strings strings = null;
     private MailStoring storing = null;
@@ -41,7 +41,7 @@ public final class Factory implements org.luwrain.cpanel.Factory
 	this.luwrain = luwrain;
 	this.mailElement = new SimpleElement(StandardElements.APPLICATIONS, this.getClass().getName());
 	this.accountsElement = new SimpleElement(mailElement, this.getClass().getName() + ":Accounts");
-	this.rulesElement = new SimpleElement(mailElement, this.getClass().getName() + ":Rules");
+		this.commonSettElement = new SimpleElement(mailElement, this.getClass().getName() + ":Settings");
     }
 
     @Override public Element[] getElements()

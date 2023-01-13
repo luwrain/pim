@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -32,9 +32,6 @@ public final class Accounts
 
     public Accounts(Luwrain luwrain, org.luwrain.settings.mail.Strings strings, MailStoring storing)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(strings, "strings");
-	NullCheck.notNull(storing, "storing");
 	this.luwrain = luwrain;
 	this.strings = strings;
 	this.storing = storing;
@@ -43,24 +40,15 @@ public final class Accounts
 
     public org.luwrain.cpanel.Element[] getAccountsElements(Element parent)
     {
-	try {
-	    final MailAccount[] accounts = storing.getAccounts().load();
-	    final Element[] res = new Element[accounts.length];
-	    for(int i = 0;i < accounts.length;++i)
-		res[i] = new AccountElement(parent, storing.getAccounts().getId(accounts[i]), accounts[i].getTitle());
-	    return res;
-	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
-	    return new org.luwrain.cpanel.Element[0];
-	}
+	final MailAccount[] accounts = storing.getAccounts().load();
+	final Element[] res = new Element[accounts.length];
+	for(int i = 0;i < accounts.length;++i)
+	    res[i] = new AccountElement(parent, storing.getAccounts().getId(accounts[i]), accounts[i].getTitle());
+	return res;
     }
 
     boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int id)
     {
-	NullCheck.notNull(controlPanel, "controlPanel");
-	NullCheck.notNull(event, "event");
 	if (ActionEvent.isAction(event, "add-mail-account"))
 	    return onAddAccount(controlPanel);
 	if (ActionEvent.isAction(event, "delete-mail-account"))
@@ -70,59 +58,43 @@ public final class Accounts
 
     private boolean onAddAccount(ControlPanel controlPanel)
     {
-	NullCheck.notNull(controlPanel, "controlPanel");
-	try {
-	    final MailAccount.Type type = conv.newAccountType();
-	    if (type == null)
-		return true;
-	    final String title = conv.newAccountTitle();
-	    if (title == null)
-		return true;
-	    final MailAccount account = new MailAccount();
-	    account.setType(type);
-	    account.setTitle(title);
-	    switch(type)
-	    {
-	    case SMTP:
-		account.setPort(587);
-		account.getFlags().add(MailAccount.Flags.TLS);
-		break;
-	    case POP3:
-		account.setPort(995);
-		account.getFlags().add(MailAccount.Flags.SSL);
-		break;
-	    }
-	    storing.getAccounts().save(account);
-	    controlPanel.refreshSectionsTree();
+	final MailAccount.Type type = conv.newAccountType();
+	if (type == null)
 	    return true;
-	}
-	catch(PimException e)
+	final String title = conv.newAccountTitle();
+	if (title == null)
+	    return true;
+	final MailAccount account = new MailAccount();
+	account.setType(type);
+	account.setTitle(title);
+	switch(type)
 	{
-	    luwrain.crash(e);
-	    return true;
+	case SMTP:
+	    account.setPort(587);
+	    account.getFlags().add(MailAccount.Flags.TLS);
+	    break;
+	case POP3:
+	    account.setPort(995);
+	    account.getFlags().add(MailAccount.Flags.SSL);
+	    break;
 	}
+	storing.getAccounts().save(account);
+	controlPanel.refreshSectionsTree();
+	return true;
     }
 
     private boolean onDeleteAccount(ControlPanel controlPanel, int id)
     {
-	NullCheck.notNull(controlPanel, "controlPanel");
 	if (id < 0)
 	    return false;
-	try {
-	    final MailAccount account = storing.getAccounts().loadById(id);
-	    if (account == null)
-		return false;
-	    if (conv.confirmAccountDeleting(account.getTitle()))
-	    {
-		storing.getAccounts().delete(account);
-		controlPanel.refreshSectionsTree();
-	    }
-	    return true;
-	}
-	catch(PimException e)
-	{
-	    luwrain.crash(e);
+	final MailAccount account = storing.getAccounts().loadById(id);
+	if (account == null)
 	    return false;
+	if (conv.confirmAccountDeleting(account.getTitle()))
+	{
+	    storing.getAccounts().delete(account);
+	    controlPanel.refreshSectionsTree();
 	}
+	return true;
     }
 }
