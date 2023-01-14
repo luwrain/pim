@@ -109,14 +109,14 @@ final class Messages implements MailMessages
 	final Message m = (Message)message;
 	if (m.id == null || m.id.isEmpty())
 	    throw new IllegalArgumentException("Cannot delete a message without ID");
-	    storing.execInQueue(()->{
-repo.remove(eq("id", m.id));
-storing.getRawMessageFileName(m.id).delete();
-return null;
-		});
+	storing.execInQueue(()->{
+		repo.remove(eq("id", m.id));
+		storing.getRawMessageFileName(m.id).delete();
+		return null;
+	    });
     }
 
-            @Override public void update(MailMessage message)
+    @Override public void update(MailMessage message)
     {
 	NullCheck.notNull(message, "message");
 	final Message m = (Message)message;
@@ -124,10 +124,10 @@ return null;
 	    throw new IllegalStateException("The message ID can't be null");
 	if (m.id.isEmpty())
 	    throw new IllegalStateException("The message ID can't be empty");
-	    storing.execInQueue(()->{
-		    repo.update(eq("id", m.id), m);
-		    return null;
-		});
+	storing.execInQueue(()->{
+		repo.update(eq("id", m.id), m);
+		return null;
+	    });
     }
 
     @Override public void moveToFolder(MailMessage message, MailFolder folder)
