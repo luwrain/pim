@@ -28,7 +28,7 @@ public interface MailMessages
     void save(MailFolder folder, MailMessage message);
     MailMessage[] load(MailFolder folder);
     MailMessage[] load(MailFolder folder, Predicate<MailMessage> cond);
-    MailMessage[] loadNoDeleted(MailFolder folder);
+    //    MailMessage[] loadNoDeleted(MailFolder folder);
     void moveToFolder(MailMessage message, MailFolder folder);
     void update(MailMessage message);
     void delete(MailMessage message);

@@ -38,7 +38,7 @@ final class Messages implements MailMessages
 {
     private final Storing storing;
     private final File messagesDir;
-     final ObjectRepository<Message> repo;
+    private final ObjectRepository<Message> repo;
 
     Messages(Storing storing,File messagesDir)
     {
@@ -103,19 +103,16 @@ final class Messages implements MailMessages
 	    });
     }
 
-
-        @Override public MailMessage[] loadNoDeleted(MailFolder folder) throws PimException
-    {
-	NullCheck.notNull(folder, "folder");
-	return load(folder);
-								  }
-
-    @Override public void delete(MailMessage message) throws PimException
+    @Override public void delete(MailMessage message)
     {
 	NullCheck.notNull(message, "message");
 	final Message m = (Message)message;
+	if (m.id == null || m.id.isEmpty())
+	    throw new IllegalArgumentException("Cannot delete a message without ID");
 	    storing.execInQueue(()->{
-		    return null;
+repo.remove(eq("id", m.id));
+storing.getRawMessageFileName(m.id).delete();
+return null;
 		});
     }
 
@@ -133,7 +130,6 @@ final class Messages implements MailMessages
 		});
     }
 
-
     @Override public void moveToFolder(MailMessage message, MailFolder folder)
     {
 	NullCheck.notNull(folder, "folder");
@@ -146,27 +142,7 @@ final class Messages implements MailMessages
 	update(m);
     }
 
-public byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders)
-    {
-	NullCheck.notNull(message, "message");
-		try {
-
-	    return toByteArray(message, extraHeaders);
-	}
-	catch(Exception e)
-	{
-	    throw new PimException(e);
-	}
-    }
-
-public     MailMessage fromByteArray(byte[] bytes)
-    {
-	throw new RuntimeException("not implemented");
-    }
-
-
-
-    void loadRawMessage(Message message)
+    private void loadRawMessage(Message message)
     {
 	try {
 	    message.setRawMessage(storing.loadRawMessage(message.id));
@@ -177,7 +153,7 @@ public     MailMessage fromByteArray(byte[] bytes)
 	}
     }
 
-    void saveRawMessage(Message message)
+    private void saveRawMessage(Message message)
     {
 	final byte[] bytes = message.getRawMessage();
 	if (bytes.length == 0)
@@ -190,5 +166,4 @@ public     MailMessage fromByteArray(byte[] bytes)
 	    throw new PimException(e);
 	}
     }
-
 }
