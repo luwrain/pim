@@ -35,4 +35,21 @@ public final class Message extends MailMessage
 	    throw new IllegalStateException("the raw message can't be empty on ID generation");
 	this.id = new Sha1().getSha1(bytes) + "-" + UUID.randomUUID().toString().substring(0, 8);
     }
+
+    @Override public int hashCode()
+    {
+	if (id == null || id.isEMpty())
+	    return super.hashCode();
+	return id.hashCode();
+    }
+
+    @Override public boolean equals(Object o)
+    {
+	if (o == null || !(o instanceof Message))
+	    return false;
+	final Message m = (Message)o;
+	if (id == null || id.isEmpty() || m.id == null || m.id.isEmpty())
+	    return this == o;
+	return id.equals(m.id);
+    }
 }
