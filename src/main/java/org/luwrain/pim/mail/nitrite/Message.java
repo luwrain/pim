@@ -38,7 +38,7 @@ public final class Message extends MailMessage
 
     @Override public int hashCode()
     {
-	if (id == null || id.isEMpty())
+	if (id == null || id.isEmpty())
 	    return super.hashCode();
 	return id.hashCode();
     }
