@@ -1,6 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,10 +16,12 @@
 
 package org.luwrain.pim.mail;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import static org.luwrain.pim.mail.AddressUtils.*;
 
-public class AddressUtilsTest extends Assert
+public class AddressUtilsTest
 {
     @Test public void personal() throws Exception
     {

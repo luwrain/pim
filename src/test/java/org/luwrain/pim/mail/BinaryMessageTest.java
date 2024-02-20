@@ -1,6 +1,5 @@
 /*
-   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -22,14 +21,16 @@ import java.io.*;
 import org.apache.commons.codec.binary.Base64;
 import javax.mail.internet.MimeUtility;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 import org.luwrain.io.json.*;
 
 import static org.luwrain.util.StreamUtils.*;
 import static org.luwrain.pim.mail.BinaryMessage.*;
 
-public class BinaryMessageTest extends Assert
+public class BinaryMessageTest
 {
     private byte[] rawMessage = null;
 
@@ -91,7 +92,7 @@ public class BinaryMessageTest extends Assert
 	assertEquals("Testing text", content);
 	    }
 
-        @Ignore @Test public void contentPlainRu() throws Exception
+        @Disabled @Test public void contentPlainRu() throws Exception
     {
 	final MailMessage m = new MailMessage();
 	m.setFrom("test1@luwrain.org");
@@ -199,7 +200,7 @@ assertEquals("", raw[raw.length - 3]);
 	assertEquals(raw[raw.length - 2].substring(0, checkFirstNChars), encoded.substring(0, checkFirstNChars));
     }
 
-    @Before public void readRawMessage() throws IOException
+    @BeforeEach public void readRawMessage() throws IOException
     {
 	final ByteArrayOutputStream os = new ByteArrayOutputStream();
 	try (final InputStream is = getClass().getResourceAsStream("test.eml")) {
