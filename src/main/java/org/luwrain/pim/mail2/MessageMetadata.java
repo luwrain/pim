@@ -15,17 +15,14 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail2;
 
 import java.util.*;
 import lombok.*;
 
-import org.luwrain.core.*;
-import org.luwrain.pim.*;
-
 @Data
 @NoArgsConstructor
-public class MailMessage
+public class MessageMetadata
 {
     public enum State {NEW, READ, MARKED, DELETED};
     private State state = State.NEW;
@@ -48,28 +45,4 @@ private java.util.Date
     sentDate = new java.util.Date();
     private java.util.Date
 	receivedDate = new java.util.Date();
-
-    transient private byte[] rawMessage = new byte[0];
-
-    public final void copyValues(MailMessage message)
-    {
-	this.messageId = message.messageId;
-	this.subject = message.subject;
-	this.from = message.from;
-		this.to = message.to.clone();
-	this.cc = message.cc.clone();
-		this.bcc = message.bcc.clone();
-		this.state = message.state;
-	this.sentDate = message.sentDate;
-	this.receivedDate = message.receivedDate;
-	this.text = message.text;
-	this.contentType = message.contentType;
-		this.attachments = message.attachments.clone();
-	this.rawMessage = message.rawMessage.clone();
-	this.extInfo = message.extInfo;
-    }
-
-    public void save() throws PimException
-    {
-    }
 }
