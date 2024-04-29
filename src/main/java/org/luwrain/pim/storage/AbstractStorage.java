@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -15,11 +15,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim;
+package org.luwrain.pim.storage;
 
-import java.util.concurrent.*;
+import java.util.*;
 
-public interface ExecQueue
+public interface AbstractStorage<E>
 {
-    Object execInQueue(Callable callable) throws Exception;
+    List<? extends E>     getAll();
+    void add(E e);
+    void remove(E e);
 }

@@ -41,7 +41,7 @@ public final class Storing implements MailStoring
     final Registry registry;
     final NitriteStorage<Message> storage;
         final Object syncObj;
-    private final ExecQueues execQueues;
+    private final org.luwrain.pim.ExecQueues execQueues;
     private final boolean highPriority;
     private final File messagesDir;
 
@@ -52,7 +52,7 @@ public final class Storing implements MailStoring
     public Storing(
 		   Luwrain luwrain,
 		   NitriteStorage<Message> storage,
-		   ExecQueues execQueues,
+		   org.luwrain.pim.ExecQueues execQueues,
 		   Object syncObj,
 		   boolean highPriority,
 		   File messagesDir)

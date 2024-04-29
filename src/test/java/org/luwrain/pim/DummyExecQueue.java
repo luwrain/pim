@@ -20,9 +20,9 @@ import java.util.concurrent.*;
 
 import org.luwrain.core.*;
 
-public class DummyExecQueue implements ExecQueue
+public class DummyExecQueue
 {
-    @Override public Object execInQueue(Callable callable) throws Exception
+    public Object execInQueue(Callable callable) throws Exception
     {
 	NullCheck.notNull(callable, "callable");
 	return callable.call();

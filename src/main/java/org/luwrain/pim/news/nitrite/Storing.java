@@ -28,12 +28,12 @@ public final class Storing implements NewsStoring
 {
     private final Registry registry;
     final NitriteStorage<Article> storage;
-    private final ExecQueues execQueues;
+    private final org.luwrain.pim.ExecQueues execQueues;
     private final boolean highPriority;
     private final Articles articles;
     private final Groups groups;
 
-    public Storing(Registry registry, NitriteStorage<Article> storage, ExecQueues execQueues, boolean highPriority)
+    public Storing(Registry registry, NitriteStorage<Article> storage, org.luwrain.pim.ExecQueues execQueues, boolean highPriority)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(storage, "storage");
