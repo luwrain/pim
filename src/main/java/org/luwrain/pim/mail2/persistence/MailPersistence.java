@@ -47,6 +47,12 @@ public final class MailPersistence
 	    {
 		trans(s -> s.save(message));
 	    }
+	    	        @Override public List<MessageMetadata> getAll()
+	    {
+		final var res = new AtomicReference<List<MessageMetadata>>();
+		trans(s -> res.set(s.createQuery("FROM MessageMetadata", MessageMetadata.class).list()));
+		return res.get();
+	    }
 	};
     }
 
