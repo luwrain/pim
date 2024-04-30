@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -32,7 +32,7 @@ public final class Extension extends EmptyExtension
 
     @Override public String init(Luwrain luwrain)
     {
-	Connections.init(luwrain);
+	//	Connections.init(luwrain);
 	this.newsWorker = new org.luwrain.pim.workers.News(luwrain);
 	this.smtpWorker = new org.luwrain.pim.workers.Smtp(luwrain);
 	this.pop3Worker = new org.luwrain.pim.workers.Pop3(luwrain);
@@ -48,9 +48,15 @@ public final class Extension extends EmptyExtension
     {
 	return new ExtensionObject[]{
 	    objFactory,
-	    newsWorker,
-	    smtpWorker,
-	    pop3Worker
+	    newsWorker, smtpWorker, pop3Worker,
+	    new SimpleShortcut("diary", org.luwrain.app.diary.App.class)
+	};
+    }
+
+    @Override public Command[] getCommands(Luwrain luwrain)
+    {
+	return new Command[]{
+	    new SimpleShortcutCommand("diary")
 	};
     }
 
@@ -69,6 +75,10 @@ public final class Extension extends EmptyExtension
 
 	    i18nExt.addStrings(Lang.EN, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.EN, org.luwrain.settings.mail.Strings.class));
 	    i18nExt.addStrings(Lang.RU, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.RU, org.luwrain.settings.mail.Strings.class));
+
+	    	    i18nExt.addStrings(Lang.EN, org.luwrain.app.diary.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-app-diary.properties").create(Lang.EN, org.luwrain.app.diary.Strings.class));
+	    i18nExt.addStrings(Lang.RU, org.luwrain.app.diary.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-app-diary.properties").create(Lang.RU, org.luwrain.app.diary.Strings.class));
+
 	}
 	catch(java.io.IOException e)
 	{
