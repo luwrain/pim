@@ -15,27 +15,20 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
-package org.luwrain.pim.mail2;
+package org.luwrain.pim.mail2.persistence.model;
 
 import java.util.*;
 
-
 import lombok.*;
 import jakarta.persistence.*;
-
-import org.luwrain.core.*;
-import org.luwrain.pim.*;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table (name = "account")
-class Account
+public class Account
 {
     public enum Type {POP3, SMTP};
-
 
         @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

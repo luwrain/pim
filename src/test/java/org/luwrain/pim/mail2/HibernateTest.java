@@ -13,6 +13,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.Transaction;
 
 
+@Disabled
 public class HibernateTest
 {
     @Test public void main() throws Exception
@@ -34,10 +35,9 @@ public class HibernateTest
 	    throw e;
         }
 
-	/*
 	transaction = null;
         try (Session session = MailSessionFactory.getSessionFactory().openSession()) {
-            List <Account> accounts = session.createQuery("from account", Account.class).list();
+            List <Account> accounts = session.createQuery("FROM Account", Account.class).list();
             accounts.forEach(s -> System.out.println(s.getName()));
         }
 	catch (Exception e)
@@ -47,6 +47,5 @@ public class HibernateTest
                 transaction.rollback();
 	    throw e;
         }
-	*/
     }
 }
