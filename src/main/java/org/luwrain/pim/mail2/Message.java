@@ -23,6 +23,8 @@ import lombok.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 
+import org.luwrain.pim.mail2.persistence.model.*;
+
 @Data
 @NoArgsConstructor
 public class Message

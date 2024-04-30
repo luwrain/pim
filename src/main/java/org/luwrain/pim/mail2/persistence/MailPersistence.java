@@ -40,6 +40,17 @@ public final class MailPersistence
 	};
     }
 
+        static public MessageDAO getMessageDAO()
+    {
+	return new MessageDAO(){
+	    @Override public void add(MessageMetadata message)
+	    {
+		trans(s -> s.save(message));
+	    }
+	};
+    }
+
+
     static void trans(Operation operation)
     {
 	Transaction transaction = null;

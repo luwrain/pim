@@ -1,6 +1,5 @@
 /*
    Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -15,34 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2;
+package org.luwrain.pim.mail2.persistence.dao;
 
 import java.util.*;
-import lombok.*;
+import org.luwrain.pim.mail2.persistence.model.*;
 
-@Data
-@NoArgsConstructor
-public class MessageMetadata
+public interface MessageDAO
 {
-    public enum State {NEW, READ, MARKED, DELETED};
-    private State state = State.NEW;
-
-    private String
-	messageId = "",
-	subject = "",
-	from = "",
-	text = "",
-	contentType = "",
-	extInfo = "";
-
-    private String[]
-	to = new String[0],
-	cc = new String[0],
-	bcc = new String[0],
-	attachments = new String[0];
-
-private java.util.Date
-    sentDate = new java.util.Date();
-    private java.util.Date
-	receivedDate = new java.util.Date();
+    void add(MessageMetadata message);
+    List<MessageMetadata> getAll();
 }
