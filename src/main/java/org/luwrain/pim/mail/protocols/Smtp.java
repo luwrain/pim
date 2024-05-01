@@ -29,6 +29,8 @@ import org.luwrain.pim.mail.*;
 import org.luwrain.pim.fetching.*;
 import org.luwrain.io.json.*;
 
+import org.luwrain.pim.mail2.persistence.model.*;
+
 public final class Smtp extends Base
 {
     static private final String
@@ -60,7 +62,7 @@ public final class Smtp extends Base
 
 
     private final MailStoring storing;
-    private final MailFolder pending, sent;
+    private final Folder pending, sent;
 
     public Smtp(Control control, org.luwrain.pim.fetching.Strings strings)
     {
@@ -68,8 +70,8 @@ public final class Smtp extends Base
 	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
 	if (storing == null)
 	    throw new PimException("Mail storing is unavailable");
-	this.pending = storing.getFolders().findFirstByProperty("defaultOutgoing", "true");
-	this.sent = storing.getFolders().findFirstByProperty("defaultSent", "true");
+	this.pending = null;//FIXME: storing.getFolders().findFirstByProperty("defaultOutgoing", "true");
+	this.sent = null;//FIXME: storing.getFolders().findFirstByProperty("defaultSent", "true");
 	if (this.pending == null || this.sent == null)
 throw new PimException("No default groups for mail sending");
     }

@@ -46,7 +46,6 @@ public final class Storing implements MailStoring
     private final File messagesDir;
 
     private final Accounts accounts;
-    private final Folders folders;
     private final Messages messages;
 
     public Storing(
@@ -69,12 +68,10 @@ public final class Storing implements MailStoring
 	this.highPriority = highPriority;
 	this.messagesDir = messagesDir;
 		this.messages = new Messages(this, messagesDir);
-		this.folders = new Folders(this, messages);
 	this.accounts = new Accounts(this);
 	    }
 
     @Override public MailRules getRules() { return null; }
-    @Override public MailFolders getFolders() { return folders; }
     @Override public MailAccounts getAccounts() { return accounts; }
     @Override public MailMessages getMessages() { return messages; }
 

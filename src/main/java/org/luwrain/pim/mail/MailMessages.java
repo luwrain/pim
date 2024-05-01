@@ -22,14 +22,15 @@ package org.luwrain.pim.mail;
 import java.util.function.*;
 
 import org.luwrain.pim.*;
+import org.luwrain.pim.mail2.persistence.model.*;
 
 public interface MailMessages
 {
-    void save(MailFolder folder, MailMessage message);
-    MailMessage[] load(MailFolder folder);
-    MailMessage[] load(MailFolder folder, Predicate<MailMessage> cond);
+    void save(Folder folder, MailMessage message);
+    MailMessage[] load(Folder folder);
+    MailMessage[] load(Folder folder, Predicate<MailMessage> cond);
     //    MailMessage[] loadNoDeleted(MailFolder folder);
-    void moveToFolder(MailMessage message, MailFolder folder);
+    void moveToFolder(MailMessage message, Folder folder);
     void update(MailMessage message);
     void delete(MailMessage message);
     //    byte[] toByteArray(MailMessage message, Map<String, String> extraHeaders);

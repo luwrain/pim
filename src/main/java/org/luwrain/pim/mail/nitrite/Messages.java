@@ -34,6 +34,8 @@ import org.luwrain.pim.mail.*;
 
 import static org.luwrain.pim.mail.BinaryMessage.*;
 
+import org.luwrain.pim.mail2.persistence.model.*;
+
 final class Messages implements MailMessages
 {
     private final Storing storing;
@@ -49,7 +51,7 @@ final class Messages implements MailMessages
 	this.repo = storing.storage.get();
     }
 
-    @Override public void save(MailFolder folder, MailMessage message)
+    @Override public void save(Folder folder, MailMessage message)
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
@@ -68,7 +70,7 @@ final class Messages implements MailMessages
 	    });
     }
 
-    @Override public MailMessage[] load(MailFolder folder)
+    @Override public MailMessage[] load(Folder folder)
     {
 	NullCheck.notNull(folder, "folder");
 	final Folder f = (Folder)folder;
@@ -84,7 +86,7 @@ final class Messages implements MailMessages
 	    });
     }
 
-    @Override public MailMessage[] load(MailFolder folder, Predicate<MailMessage> cond)
+    @Override public MailMessage[] load(Folder folder, Predicate<MailMessage> cond)
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(cond, "cond");
@@ -130,15 +132,15 @@ final class Messages implements MailMessages
 	    });
     }
 
-    @Override public void moveToFolder(MailMessage message, MailFolder folder)
+    @Override public void moveToFolder(MailMessage message, Folder folder)
     {
 	NullCheck.notNull(folder, "folder");
 	NullCheck.notNull(message, "message");
 	final Folder f = (Folder)folder;
 	final Message m = (Message)message;
-	if (f.id < 0)
+	if (f.getId() < 0)
 	    throw new IllegalArgumentException("The folder ID can't be negative");
-	m.folderId = f.id;
+	m.folderId = f.getId();
 	update(m);
     }
 

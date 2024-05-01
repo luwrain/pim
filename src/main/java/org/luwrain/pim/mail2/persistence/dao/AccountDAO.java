@@ -23,4 +23,5 @@ public interface AccountDAO
 {
     void add(Account account);
     List<Account> getAll();
+    void update(Account account);
 }

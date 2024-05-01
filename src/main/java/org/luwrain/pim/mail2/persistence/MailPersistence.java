@@ -39,6 +39,10 @@ public final class MailPersistence
 		trans(s -> res.set(s.createQuery("FROM Account", Account.class).list()));
 		return res.get();
 	    }
+	    	        @Override public void update(Account account)
+	    {
+		trans(s -> s.merge(account));
+	    }
 	};
     }
 
@@ -47,12 +51,15 @@ public final class MailPersistence
 	return new FolderDAO(){
 	    @Override public void add(Folder folder)
 	    {
+		folder.saveProperties();
 		trans(s -> s.save(folder));
 	    }
 	    	        @Override public List<Folder> getAll()
 	    {
 		final var res = new AtomicReference<List<Folder>>();
 		trans(s -> res.set(s.createQuery("FROM Folder", Folder.class).list()));
+		for(var f: res.get())
+		    f.loadProperties();
 		return res.get();
 	    }
 	    	    	        @Override public List<Folder> getChildFolders(Folder folder)
@@ -60,17 +67,24 @@ public final class MailPersistence
 		notNull(folder, "folder");
 		final var res = new AtomicReference<List<Folder>>();
 		trans(s -> res.set(s.createQuery("FROM Folder WHERE parentFolderId = :parent_id AND parentFolderId <> id", Folder.class).setParameter("parent_id", folder.getId()).list()));
+		for(var f: res.get())
+		    f.loadProperties();
 		return res.get();
 	    }
-
+	    	    @Override public void update(Folder folder)
+	    {
+		folder.saveProperties();
+		trans(s -> s.merge(folder));
+	    }
 	    @Override public Folder getRoot()
 	    {
 		final var res = new AtomicReference<List<Folder>>();
 		trans(s -> res.set(s.createQuery("FROM Folder WHERE id = parentFolderId", Folder.class).list()));
+		for(var f: res.get())
+		    f.loadProperties();
 		return (res.get().size() == 1)?res.get().get(0):null;
 	    }
-
-	    	    	    	        @Override public void makeRoot(Folder folder)
+	    	    	    	        @Override public void setRoot(Folder folder)
 	    {
 		notNull(folder, "folder");
 		trans(s -> s.createQuery("UPDATE Folder SET parentFolderId = :parent_id WHERE id = :id")
@@ -79,10 +93,20 @@ public final class MailPersistence
 				   .executeUpdate());
 		folder.setParentFolderId(folder.getId());
 	    }
-
-	    
-
-	    
+	    @Override public Folder findFirstByProperty(String propName, String propValue)
+	    {
+		notEmpty(propName, "propName");
+		notNull(propValue, "propValue");
+		final var folders = getAll();
+		for(var f: folders)
+		{
+		    final var p = f.getProperties();
+		    final var v = p.getProperty(propName);
+		    if (v != null && v.equals(propValue))
+			return f;
+		}
+		return null;
+	    }
 	};
     }
 
@@ -106,6 +130,12 @@ public final class MailPersistence
     {
 	trans(s -> s.createQuery("DELETE Folder").executeUpdate());
     }
+
+        static void deleteAllAccounts()
+    {
+	trans(s -> s.createQuery("DELETE Account").executeUpdate());
+    }
+
 
 
     static void trans(Operation operation)

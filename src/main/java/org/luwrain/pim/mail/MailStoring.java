@@ -27,7 +27,6 @@ public interface MailStoring extends Cloneable
     static public final String ACCOUNT_UNIREF_PREFIX = "mailaccount";
     
     MailAccounts getAccounts();
-   MailFolders getFolders();
     MailRules getRules();
     MailMessages getMessages();
 

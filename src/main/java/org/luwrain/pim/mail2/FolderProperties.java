@@ -1,5 +1,6 @@
 /*
    Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -14,18 +15,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2.persistence.dao;
+package org.luwrain.pim.mail2;
 
-import java.util.*;
-import org.luwrain.pim.mail2.persistence.model.*;
-
-public interface FolderDAO
+public class FolderProperties
 {
-    void add(Folder folder);
-    List<Folder> getAll();
-    List<Folder> getChildFolders(Folder folder);
-    void update(Folder folder);
-    Folder getRoot();
-    void setRoot(Folder folder);
-    Folder findFirstByProperty(String propName, String propValue);
+    static public final String
+	DEFAULT_INCOMING = "default-incoming",
+	DEFAULT_MAILING_LISTS = "default-mailing-lists",
+	DEFAULT_OUTGOING = "default-outgoing",
+	DEFAULT_SENT = "default-sent";
 }

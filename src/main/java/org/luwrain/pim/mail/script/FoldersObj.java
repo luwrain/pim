@@ -28,13 +28,16 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import org.luwrain.pim.mail2.persistence.dao.*;
+import org.luwrain.pim.mail2.persistence.model.*;
+
 import static org.luwrain.script.ScriptUtils.*;
 import static org.luwrain.pim.mail.script.MailObj.*;
 
 public final class FoldersObj
 {
-    private final MailStoring storing;
-    FoldersObj(MailStoring storing) { this.storing = storing; }
+    private final FolderDAO dao;
+    FoldersObj(FolderDAO dao) { this.dao = dao; }
 
     @HostAccess.Export
     public final ProxyExecutable findByProp = (ProxyExecutable)this::findFirstByPropertyImpl;
@@ -47,8 +50,8 @@ public final class FoldersObj
 	value = asString(args[1]);
 	if (name == null || value == null || name.trim().isEmpty())
 	    return null;
-	final MailFolder res = storing.getFolders().findFirstByProperty(name, value);
-	return res != null?new FolderObj(storing, res):null;
+	final Folder res = dao.findFirstByProperty(name, value);
+	return res != null?new FolderObj(dao, res):null;
     }
 
     /*

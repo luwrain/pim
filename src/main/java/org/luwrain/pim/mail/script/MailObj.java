@@ -25,20 +25,26 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import org.luwrain.pim.mail2.persistence.dao.*;
+
+import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
+
 public final class MailObj
 {
     static final String
 	LOG_COMPONENT = "mail";
 
     private final MailStoring storing;
+    private final FolderDAO folderDAO;
 
     public MailObj(MailStoring storing)
     {
 	NullCheck.notNull(storing, "storing");
 	this.storing = storing;
+	this.folderDAO = getFolderDAO();
     }
 
     @HostAccess.Export
     public final ProxyExecutable getFolders = (ProxyExecutable)this::getFoldersImpl;
-    private Object getFoldersImpl(Value[] args) { return new FoldersObj(storing); };
+    private Object getFoldersImpl(Value[] args) { return new FoldersObj(folderDAO); };
 }

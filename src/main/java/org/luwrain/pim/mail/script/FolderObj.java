@@ -25,23 +25,25 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail2.persistence.dao.*;
 
 import static org.luwrain.script.ScriptUtils.*;
 import static org.luwrain.pim.mail.script.MailObj.*;
 
 public final class FolderObj
 {
-    private final MailStoring storing;
-    private final MailFolder folder;
-    FolderObj(MailStoring storing, MailFolder folder)
+    private final FolderDAO dao;
+    private final Folder folder;
+    FolderObj(FolderDAO dao, Folder folder)
     {
-	this.storing = storing;
+	this.dao = dao;
 	this.folder = folder;
     }
 
     @HostAccess.Export
     public ProxyExecutable getTitle = (ProxyExecutable)this::getTitleImpl;
-    public Object getTitleImpl(Value[] args) { return folder.getTitle(); }
+    public Object getTitleImpl(Value[] args) { return folder.getName(); }
 
     public Object setTitleImpl(Value[] args)
     {
@@ -52,8 +54,8 @@ public final class FolderObj
     public Object getSubfolders()
     {
 			    final List<Object> res = new ArrayList<>();
-		    for(MailFolder f: storing.getFolders().load(folder))
-			res.add(new FolderObj(storing, f));
+		    for(Folder f: dao.getChildFolders(folder))
+			res.add(new FolderObj(dao, f));
 		    return ProxyArray.fromArray(res.toArray(new Object[res.size()]));
     }
 
@@ -61,6 +63,7 @@ public final class FolderObj
     public final ProxyExecutable saveMessage = (ProxyExecutable)this::saveMessageImpl;
     private Object saveMessageImpl(Value[] args)
     {
+	/*
 	if (!notNullAndLen(args, 1))
 	    return Boolean.valueOf(false);
 	final MessageObj message = args[0].asHostObject();
@@ -68,10 +71,13 @@ public final class FolderObj
 	    throw new IllegalArgumentException("The first argument doesn't contain a valid message object");
 	storing.getMessages().save(folder, message.message);
 	return Boolean.valueOf(true);
+	*/
+	return false;
     }
 
     private Object saveProperties()
     {
+	/*
 		    try {
 		folder.save();
 		return new Boolean(true);
@@ -81,17 +87,14 @@ public final class FolderObj
 		    Log.error(LOG_COMPONENT, "unable to save properties of the stored mail folder:" + e.getClass().getName() + ":" + e.getMessage());
 		    return new Boolean(false);
 		}
+	*/
+	return false;
     }
 
     private Object newSubfolder()
     {
-	try {
-	    return new FolderObj(storing, storing.getFolders().save(folder, new MailFolder(), 0));
-	}
-	catch(PimException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to create a mail subfolder:" + e.getClass().getName() + ":" + e.getMessage());
-	    return null;
-	}
+	final var f = new Folder();
+	dao.add(f);
+	return new FolderObj(dao, f);
     }
 }

@@ -39,6 +39,13 @@ public class Folder
     private String propsText;
     private transient Properties properties;
 
+    public Properties getProperties()
+    {
+	if (properties == null)
+	    properties = new Properties();
+	return properties;
+    }
+
     public void saveProperties()
     {
 	if (properties == null)

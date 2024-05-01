@@ -33,7 +33,7 @@ public class FoldersTest
 	final var f1 = new Folder();
 	f1.setName("PARENT");
 	dao.add(f1);
-	dao.makeRoot(f1);
+	dao.setRoot(f1);
 	assertEquals(f1.getId(), f1.getParentFolderId());
 	assertEquals(1, f1.getId());
 	final var f2 = new Folder();
