@@ -43,22 +43,17 @@ public class Account
     private int port = 995;
     private boolean enabled, ssl, tls, def, leaveMessage;
 
-    /*
-    public void copyValues(Account account)
+    @Override public boolean equals(Object o)
     {
-	NullCheck.notNull(account, "account");
-	this.type = account.type;
-	this.name = account.name;
-	this.host = account.host;
-	this.port = account.port;
-	this.login = account.login;
-	this.passwd = account.passwd;
-	this.trustedHosts = account.trustedHosts;
-	this.flags = account.flags;
-	this.substName = account.substName;
-	this.substAddress = account.substAddress;
+	if (o != null && o instanceof Account a)
+	    return id == a.id;
+	return false;
     }
-    */
+
+    @Override public int hashCode()
+    {
+	return id;
+    }
 
     @Override public String toString()    
     {
