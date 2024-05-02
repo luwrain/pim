@@ -34,7 +34,6 @@ static final String
 
     private final Luwrain luwrain;
     private final ExecQueues execQueues = new ExecQueues();
-    private final NitriteStorage<org.luwrain.pim.mail.nitrite.Message> storage;
     private final Object syncObj = new Object();
 
     public Factory(Luwrain luwrain)
@@ -42,21 +41,24 @@ static final String
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
 	this.execQueues.start();
-	this.storage = new NitriteStorage<>(new File(luwrain.getAppDataDir(DATA_DIR).toFile(), DATA_FILE), org.luwrain.pim.mail.nitrite.Message.class);
+	//	this.storage = new NitriteStorage<>(new File(luwrain.getAppDataDir(DATA_DIR).toFile(), DATA_FILE), org.luwrain.pim.mail.nitrite.Message.class);
     }
 
     public MailStoring newMailStoring(boolean highPriority)
     {
+	/*
 	return new org.luwrain.pim.mail.nitrite.Storing(
 							luwrain,
 							storage, execQueues,
 							syncObj, highPriority,
 							luwrain.getAppDataDir(DATA_DIR).toFile());
+	*/
+	return null;
     }
 
     @Override public void close()
     {
-	storage.close();
+	//	storage.close();
 	execQueues.cancel();
     }
 }

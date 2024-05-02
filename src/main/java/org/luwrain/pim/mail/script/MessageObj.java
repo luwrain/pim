@@ -23,17 +23,17 @@ import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail2.*;
 
 import static org.luwrain.util.TextUtils.*;
 
 public final class MessageObj
 {
-    final MailMessage message;
+    final Message message;
     private String[] headers = null;
     private MailingListObj listHookObj = null;
 
-    public MessageObj(MailMessage message)
+    public MessageObj(Message message)
     {
 	NullCheck.notNull(message, "message");
 	this.message = message;
@@ -41,33 +41,33 @@ public final class MessageObj
 
     @HostAccess.Export
     public final ProxyExecutable getSubject = (ProxyExecutable)this::getSubjectImpl;
-    private Object getSubjectImpl(Value[] args) { return message.getSubject(); };
+    private Object getSubjectImpl(Value[] args) { return message.getMetadata().getSubject(); };
 
         @HostAccess.Export
     public final ProxyExecutable getFrom = (ProxyExecutable)this::getFromImpl;
-    private Object getFromImpl(Value[] args) { return new AddressObj(message.getFrom()); }
+    private Object getFromImpl(Value[] args) { return new AddressObj(message.getMetadata().getFromAddr()); }
 
             @HostAccess.Export
     public final ProxyExecutable getTo = (ProxyExecutable)this::getToImpl;
     private Object getToImpl(Value[] args)
     {
-	if (message.getTo() == null || message.getTo().length == 0)
+	if (message.getMetadata().getToAddr() == null || message.getMetadata().getToAddr().isEmpty())
 	    return null;
-	return new AddressObj(message.getTo()[0]);
+	return new AddressObj(message.getMetadata().getToAddr().get(0));
     }
 
 
     @HostAccess.Export
     public final ProxyExecutable getText = (ProxyExecutable)this::getTextImpl;
-    private Object getTextImpl(Value[] args) { return message.getText(); }
+    private Object getTextImpl(Value[] args) { return message.getMetadata().getText(); }
 
         @HostAccess.Export
     public final ProxyExecutable getTextAsArray = (ProxyExecutable)this::getTextAsArrayImpl;
     private Object getTextAsArrayImpl(Value[] args)
     {
-	if (message.getText() == null)
+	if (message.getMetadata().getText() == null)
 	    return ProxyArray.fromArray(new Object[0]);
-	return ProxyArray.fromArray(splitLinesAnySeparator(message.getText()));
+	return ProxyArray.fromArray(splitLinesAnySeparator(message.getMetadata().getText()));
     }
 
 
@@ -75,7 +75,7 @@ public final class MessageObj
     public Object getCc(Value[] args)
     {
 		    final List<Object> res = new ArrayList<>();
-		    for(String s: message.getCc())
+		    for(String s: message.getMetadata().getCcAddr())
 			if (s != null)
 			    res.add(new AddressObj(s));
 		    return ProxyArray.fromArray(res.toArray(new Object[res.size()]));
@@ -121,12 +121,12 @@ public final class MessageObj
 	return res.toArray(new String[res.size()]);
     }
 
-    public MailMessage getNativeMessageObj()
+    public Message getNativeMessageObj()
     {
 	return message;
     }
 
-    public MailMessage getMessage()
+    public Message getMessage()
     {
 	return message;
     }

@@ -25,7 +25,7 @@ import java.util.regex.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail2.*;
 import org.luwrain.pim.fetching.*;
 import org.luwrain.io.json.*;
 
@@ -61,23 +61,28 @@ public final class Smtp extends Base
     }
 
 
-    private final MailStoring storing;
+    //    private final MailStoring storing;
     private final Folder pending, sent;
 
     public Smtp(Control control, org.luwrain.pim.fetching.Strings strings)
     {
 	super(control, strings);
-	this.storing = org.luwrain.pim.Connections.getMailStoring(luwrain, false);
+	//		this.storing = null;//org.luwrain.pim.Connections.getMailStoring(luwrain, false);
+	/*
 	if (storing == null)
 	    throw new PimException("Mail storing is unavailable");
+	*/
 	this.pending = null;//FIXME: storing.getFolders().findFirstByProperty("defaultOutgoing", "true");
 	this.sent = null;//FIXME: storing.getFolders().findFirstByProperty("defaultSent", "true");
+	/*
 	if (this.pending == null || this.sent == null)
 throw new PimException("No default groups for mail sending");
+	*/
     }
 
     public Result send() throws InterruptedException
     {
+	/*
 	final MailMessage[] messages = storing.getMessages().load(pending);
 	Log.debug(LOG_COMPONENT, "loading " + messages.length + " message(s) to send");
 	if (messages.length == 0)
@@ -120,8 +125,12 @@ throw new PimException("No default groups for mail sending");
 	    }
 	}
 	return new Result(messages.length, sentCount, errors);
+	*/
+	return null;
     }
 
+
+    /*
     private int sendQueue(int accountId, List<MailMessage> messages) throws IOException, InterruptedException
     {
 	final MailAccount account = storing.getAccounts().loadById(accountId);
@@ -150,5 +159,5 @@ throw new PimException("No default groups for mail sending");
 	}
 	return count;
     }
-
+    */
 }

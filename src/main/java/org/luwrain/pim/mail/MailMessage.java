@@ -25,7 +25,7 @@ import org.luwrain.pim.*;
 
 @Data
 @NoArgsConstructor
-public class MailMessage
+class MailMessage
 {
     public enum State {NEW, READ, MARKED, DELETED};
     private State state = State.NEW;

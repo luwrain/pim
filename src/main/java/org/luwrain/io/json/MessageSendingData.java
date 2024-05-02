@@ -48,6 +48,7 @@ public final class MessageSendingData
 	return gson.fromJson(str, MessageSendingData.class);
     }
 
+    /*
     static public Integer getAccountId(MailMessage message)
     {
 	if (message == null || message.getExtInfo() == null || message.getExtInfo().isEmpty())
@@ -55,4 +56,5 @@ public final class MessageSendingData
 	final MessageSendingData sendingData = fromString(message.getExtInfo());
 	return sendingData != null?sendingData.getAccountId():null;
     }
+    */
 }

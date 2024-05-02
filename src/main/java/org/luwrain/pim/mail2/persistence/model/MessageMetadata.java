@@ -33,16 +33,22 @@ public class MessageMetadata
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    
     private State state;
 
     private String
-	messageId, subject, fromAddr, text;
+	messageId, subject, fromAddr;
 
+        @Column(columnDefinition="TEXT")
+    private String text;
 
     @ElementCollection
     @CollectionTable(name="to_addr", joinColumns=@JoinColumn(name="message_id"))
     private List<String> toAddr;
+
+        @ElementCollection
+    @CollectionTable(name="cc_addr", joinColumns=@JoinColumn(name="message_id"))
+    private List<String> ccAddr;
+
 
 
     /*
