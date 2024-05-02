@@ -24,8 +24,9 @@ import java.io.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.fetching.*;
-import org.luwrain.pim.mail.*;
+//import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail2.*;
+import org.luwrain.pim.mail2.persistence.model.*;
 
 import static org.luwrain.core.NullCheck.*;
 
@@ -44,9 +45,9 @@ public final class Pop3 implements MessageProvider<Pop3.ExtData>
 	}
     }
 
-    protected final MailAccount account;
+    protected final org.luwrain.pim.mail2.persistence.model.Account account;
 
-    public Pop3(MailAccount account, Control control, org.luwrain.pim.fetching.Strings strings) throws FetchingException, PimException, InterruptedException
+    public Pop3(Account account)
     {
 	notNull(account, "account");
 	this.account = account;
@@ -54,11 +55,11 @@ public final class Pop3 implements MessageProvider<Pop3.ExtData>
 
     @Override public void getMessages(BiConsumer<Message, ExtData> c)
     {
-	final String title = account.getTitle();
-	Log.debug(LOG_COMPONENT, "fetching POP3 mail from the account '" + account.getTitle() + "', flags " + account.getFlags());
-	if (!account.getFlags().contains(MailAccount.Flags.ENABLED))
+	final String name = account.getName();
+	Log.debug(LOG_COMPONENT, "fetching POP3 mail from: " + account.getName());
+	if (!account.isEnabled())
 	{
-	    Log.debug(LOG_COMPONENT, "the account '" + account.getTitle() + "' is disabled");
+	    Log.debug(LOG_COMPONENT, "the account '" + account.getName() + "' is disabled");
 	    return;
 	}
 	Log.debug(LOG_COMPONENT, "connecting to the POP3 server:" + account.getHost() + ":" + account.getPort());
@@ -74,7 +75,7 @@ public final class Pop3 implements MessageProvider<Pop3.ExtData>
 			c.accept(m, new ExtData(num, total));
 			return true;
 		    }},
-		!account.getFlags().contains(MailAccount.Flags.LEAVE_MESSAGES));
+		!account.isLeaveMessages());
 	}
 	catch(InterruptedException e)
 	{
@@ -94,10 +95,11 @@ public final class Pop3 implements MessageProvider<Pop3.ExtData>
 	params.doAuth = !account.getLogin().isEmpty();
 	params.host = account.getHost();
 	params.port = account.getPort();
-	params.ssl = account.getFlags().contains(MailAccount.Flags.SSL);
-	params.tls = account.getFlags().contains(MailAccount.Flags.TLS);
+	params.ssl = account.isSsl();
+	params.tls = account.isTls();
 	params.login = account.getLogin();
 	params.passwd = account.getPasswd();
+	if (account.getTrustedHosts() != null && !account.getTrustedHosts().isEmpty())
 	params.extProps.put( "mail.pop3.ssl.trust", account.getTrustedHosts());
 	return params;
     }

@@ -29,6 +29,6 @@ import org.luwrain.pim.mail2.persistence.model.*;
 @NoArgsConstructor
 public class Message
 {
-    private MessageMetadata metadata;
-    private byte[] rawMessage;
+    MessageMetadata metadata;
+    byte[] rawMessage;
 }

@@ -1,58 +1,66 @@
 
-//LWR_API 1.0
-
 package org.luwrain.pim.workers;
 
 import org.luwrain.core.*;
-import org.luwrain.pim.fetching.*;
+import org.luwrain.pim.mail2.*;
+import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail2.persistence.dao.*;
+
+import static org.luwrain.core.NullCheck.*;
+import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
 
 public class Pop3 implements Worker
 {
-    static protected final String LOG_COMPONENT = "pim";
-    static public String NAME = "luwrain.pim.fetch.pop3";
+    static public String
+	NAME = "luwrain.pim.fetch.pop3";
+
+    static protected final String
+	LOG_COMPONENT = "pim";
 
     protected final Luwrain luwrain;
-    protected final org.luwrain.pim.fetching.Control control;
 
-    public Pop3(Luwrain luwrain)
+        public Pop3(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.control = new DefaultControl(luwrain);
-    }
-
-        public Pop3(org.luwrain.pim.fetching.Control control)
-    {
-	NullCheck.notNull(control, "control");
-	this.control = control;
-	this.luwrain = control.luwrain();
     }
 
     @Override public void run()
     {
-	final org.luwrain.pim.fetching.Strings strings = (org.luwrain.pim.fetching.Strings)luwrain.i18n().getStrings(org.luwrain.pim.fetching.Strings.NAME);
-	if (strings == null)
-	{
-	    Log.error(LOG_COMPONENT, "unable to launch the worker \'" + NAME + "\' since there is no strings object with the name \'" + org.luwrain.pim.fetching.Strings.NAME + "\'");
-	    return;
-	}
 	try {
-	    	final org.luwrain.pim.mail.protocols.Pop3 pop3Fetching = new org.luwrain.pim.mail.protocols.Pop3(control, strings);
-		Log.debug(LOG_COMPONENT, "starting " + NAME);
-		pop3Fetching.fetch();
+	    final var accountDAO = getAccountDAO();
+	    final var accounts = accountDAO.getAll();
+	    log("fetching POP3 mail from " + accounts.size() + " accounts");
+	    for(final var a: accounts)
+	    {
+		log("Fetching from: " + a.getName());
+		final var decoder = new MessageDecoder();
+
+		final var pop3 = new org.luwrain.pim.mail2.proto.Pop3(a);
+		pop3.getMessages((message, extData) -> {
+			//			log("fetching message " + extData.msgNum + " of " + extData.totalMsgCount + " from " + a.getName());
+			decoder.onMessage(message);
+			log(message.getMetadata().getSubject());
+		    });
+	    }
 	}
+	/*
 	catch(InterruptedException e)
 	{
 	    Log.debug(LOG_COMPONENT, "the worker \'" + NAME + "\' has been interrupted");
 	    return;
 	}
+	*/
 	catch(Throwable e)
 	{
-	    Log.error(LOG_COMPONENT, "the worker " + NAME + " failed: " + e.getClass().getName() + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "the worker " + NAME + " failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
 	    e.printStackTrace();
-	    luwrain.message("Произошла ошибка", Luwrain.MessageType.ERROR);
-	    return;
 	}
+    }
+
+    protected void log(String message)
+    {
+	Log.debug(LOG_COMPONENT, message);
     }
 
     @Override public String getExtObjName()

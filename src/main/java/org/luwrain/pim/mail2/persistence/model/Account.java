@@ -41,7 +41,7 @@ public class Account
 	substAddress;
 
     private int port = 995;
-    private boolean enabled, ssl, tls, def, leaveMessage;
+    private boolean enabled, tls, ssl, defaultAccount, leaveMessages;
 
     @Override public boolean equals(Object o)
     {

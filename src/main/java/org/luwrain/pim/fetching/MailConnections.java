@@ -81,7 +81,6 @@ public final class MailConnections
 	    try {
 		this.session = Session.getInstance(props,null);
 		this.store = session.getStore();
-		Log.debug(LOG_COMPONENT, "store.connect(" + params.host + ", " + params.login + ")");
 		store.connect(params.host, params.port, params.login, params.passwd);
 		Log.debug(LOG_COMPONENT, "connected to " + params.host);
 	    }
