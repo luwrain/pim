@@ -8,6 +8,7 @@ import org.luwrain.pim.mail2.persistence.dao.*;
 
 import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
+import static org.luwrain.pim.Hooks.*;
 
 public class Pop3 implements Worker
 {
@@ -35,12 +36,12 @@ public class Pop3 implements Worker
 	    {
 		log("Fetching from: " + a.getName());
 		final var decoder = new MessageDecoder();
-
 		final var pop3 = new org.luwrain.pim.mail2.proto.Pop3(a);
 		pop3.getMessages((message, extData) -> {
 			//			log("fetching message " + extData.msgNum + " of " + extData.totalMsgCount + " from " + a.getName());
 			decoder.onMessage(message);
-			log(message.getMetadata().getSubject());
+			mailIncoming(luwrain, message);
+			//			log(message.getMetadata().getSubject());
 		    });
 	    }
 	}

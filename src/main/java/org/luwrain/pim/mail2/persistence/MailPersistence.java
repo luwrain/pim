@@ -41,6 +41,7 @@ public final class MailPersistence
 	    }
 	    	        @Override public void update(Account account)
 	    {
+		notNull(account, "account");
 		trans(s -> s.merge(account));
 	    }
 	};
@@ -115,13 +116,32 @@ public final class MailPersistence
 	return new MessageDAO(){
 	    @Override public void add(MessageMetadata message)
 	    {
+				notNull(message, "message");
 		trans(s -> s.save(message));
+	    }
+	    	    @Override public void delete(MessageMetadata message)
+	    {
+				notNull(message, "message");
+		trans(s -> s.delete(message));
 	    }
 	    	        @Override public List<MessageMetadata> getAll()
 	    {
 		final var res = new AtomicReference<List<MessageMetadata>>();
 		trans(s -> res.set(s.createQuery("FROM MessageMetadata", MessageMetadata.class).list()));
 		return res.get();
+	    }
+	    	    	        @Override public List<MessageMetadata> getByFolderId(int folderId)
+	    {
+		if (folderId < 0)
+		    throw new IllegalArgumentException("folderId (" + folderId + ") can't be negative");
+		final var res = new AtomicReference<List<MessageMetadata>>();
+		trans(s -> res.set(s.createQuery("FROM MessageMetadata WHERE folderId = :folder_id", MessageMetadata.class).setParameter("folder_id", folderId).list()));
+		return res.get();
+	    }
+	    @Override public void update(MessageMetadata message)
+	    {
+		notNull(message, "message");
+		trans(s -> s.merge(message));
 	    }
 	};
     }

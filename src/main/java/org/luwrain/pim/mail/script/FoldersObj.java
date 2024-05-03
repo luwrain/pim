@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -33,11 +33,12 @@ import org.luwrain.pim.mail2.persistence.model.*;
 
 import static org.luwrain.script.ScriptUtils.*;
 import static org.luwrain.pim.mail.script.MailObj.*;
+import static org.luwrain.pim.mail2.FolderProperties.*;
 
 public final class FoldersObj
 {
-    private final FolderDAO dao;
-    FoldersObj(FolderDAO dao) { this.dao = dao; }
+    private final MailObj mailObj;
+    FoldersObj(MailObj mailObj) { this.mailObj = mailObj; }
 
     @HostAccess.Export
     public final ProxyExecutable findByProp = (ProxyExecutable)this::findFirstByPropertyImpl;
@@ -50,9 +51,18 @@ public final class FoldersObj
 	value = asString(args[1]);
 	if (name == null || value == null || name.trim().isEmpty())
 	    return null;
-	final Folder res = dao.findFirstByProperty(name, value);
-	return res != null?new FolderObj(dao, res):null;
+	final Folder res = mailObj.folderDAO.findFirstByProperty(name, value);
+	return res != null?new FolderObj(mailObj, res):null;
     }
+
+        @HostAccess.Export
+    public final ProxyExecutable getDefaultIncoming = (ProxyExecutable)this::getDefaultIncomingImpl;
+    private Object getDefaultIncomingImpl(Value[] args)
+    {
+	final var f = mailObj.folderDAO.findFirstByProperty(DEFAULT_INCOMING, "true");
+	return f != null?new FolderObj(mailObj, f):null;
+    }
+
 
     /*
 	case "local":

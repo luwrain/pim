@@ -14,16 +14,26 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2.persistence.dao;
+package org.luwrain.pim;
 
-import java.util.*;
-import org.luwrain.pim.mail2.persistence.model.*;
 
-public interface MessageDAO
+import org.luwrain.core.*;
+import org.luwrain.pim.mail2.*;
+import org.luwrain.pim.mail.script.*;
+
+import static org.luwrain.core.NullCheck.*;
+import static org.luwrain.script.Hooks.*;
+
+public final class Hooks
 {
-    void add(MessageMetadata message);
-    void delete(MessageMetadata message);
-    List<MessageMetadata> getAll();
-        List<MessageMetadata> getByFolderId(int folderId);
-    void update(MessageMetadata message);
+    static public final String
+	MAIL_INCOMING = "luwrain.mail.incoming";
+
+    static public void mailIncoming(Luwrain luwrain, Message message)
+    {
+
+	chainOfResponsibilityNoExc(luwrain, MAIL_INCOMING, new Object[]{
+		new MailObj(luwrain)		,
+		new MessageObj(message) });
+    }
 }

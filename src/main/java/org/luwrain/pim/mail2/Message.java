@@ -31,4 +31,10 @@ public class Message
 {
     MessageMetadata metadata;
     byte[] rawMessage;
+
+    public Message(MessageMetadata metadata)
+    {
+	this.metadata = metadata;
+	this.rawMessage = null;
+    }
 }

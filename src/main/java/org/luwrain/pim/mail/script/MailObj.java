@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -27,24 +27,26 @@ import org.luwrain.pim.mail.*;
 
 import org.luwrain.pim.mail2.persistence.dao.*;
 
+import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
+
 
 public final class MailObj
 {
     static final String
 	LOG_COMPONENT = "mail";
 
-    private final MailStoring storing;
-    private final FolderDAO folderDAO;
+    final FolderDAO folderDAO;
+    final MessageDAO messageDAO;
 
-    public MailObj(MailStoring storing)
+    public MailObj(Luwrain luwrain)
     {
-	NullCheck.notNull(storing, "storing");
-	this.storing = storing;
+	notNull(luwrain, "luwrain");
 	this.folderDAO = getFolderDAO();
+	this.messageDAO = getMessageDAO();
     }
 
     @HostAccess.Export
     public final ProxyExecutable getFolders = (ProxyExecutable)this::getFoldersImpl;
-    private Object getFoldersImpl(Value[] args) { return new FoldersObj(folderDAO); };
+    private Object getFoldersImpl(Value[] args) { return new FoldersObj(this); };
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -25,6 +25,7 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail2.*;
 
+import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.util.TextUtils.*;
 
 public final class MessageObj
@@ -35,7 +36,8 @@ public final class MessageObj
 
     public MessageObj(Message message)
     {
-	NullCheck.notNull(message, "message");
+	notNull(message, "message");
+	notNull(message.getMetadata(), "message.metadata");
 	this.message = message;
     }
 

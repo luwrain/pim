@@ -34,6 +34,7 @@ public class MessageMetadata
     private int id;
 
     private State state;
+    private int folderId;
 
     private String
 	messageId, subject, fromAddr;
