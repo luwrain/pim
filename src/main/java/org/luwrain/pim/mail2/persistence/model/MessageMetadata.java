@@ -50,6 +50,8 @@ public class MessageMetadata
     @CollectionTable(name="cc_addr", joinColumns=@JoinColumn(name="message_id"))
     private List<String> ccAddr;
 
+    private transient String title;
+
 
 
     /*

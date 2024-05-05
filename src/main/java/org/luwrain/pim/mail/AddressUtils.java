@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -19,6 +19,7 @@ package org.luwrain.pim.mail;
 
 import java.util.*;
 import java.io.*;
+import org.apache.logging.log4j.*;
 
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -29,18 +30,20 @@ import static org.luwrain.pim.mail.Factory.*;
 
 public final class AddressUtils
 {
+    static private final Logger log = LogManager.getLogger();
+
     static public String getPersonal(String addr)
     {
 	if (addr.trim().isEmpty())
 	    return "";
 	try {
-	    final javax.mail.internet.InternetAddress inetAddr = new javax.mail.internet.InternetAddress(addr, false);
+	    final var inetAddr = new javax.mail.internet.InternetAddress(addr, false);
 	    final String personal = inetAddr.getPersonal();
 	    return personal != null?personal.trim():"";
 	}
-	catch (javax.mail.internet.AddressException e)
+	catch (javax.mail.internet.AddressException ex)
 	{
-	    Log.warning(LOG_COMPONENT, "unable to extract the personal part of the mail address '" + addr + "'");
+	    log.warn("Unable to extract the personal part of the mail address '" + addr + "'", ex);
 	    return "";
 	}
     }

@@ -1,6 +1,8 @@
 
 package org.luwrain.pim.workers;
 
+import org.apache.logging.log4j.*;
+
 import org.luwrain.core.*;
 import org.luwrain.pim.mail2.*;
 import org.luwrain.pim.mail2.persistence.model.*;
@@ -12,11 +14,10 @@ import static org.luwrain.pim.Hooks.*;
 
 public class Pop3 implements Worker
 {
+        static protected final Logger log = LogManager.getLogger();
+
     static public String
 	NAME = "luwrain.pim.fetch.pop3";
-
-    static protected final String
-	LOG_COMPONENT = "pim";
 
     protected final Luwrain luwrain;
 
@@ -31,10 +32,10 @@ public class Pop3 implements Worker
 	try {
 	    final var accountDAO = getAccountDAO();
 	    final var accounts = accountDAO.getAll();
-	    log("fetching POP3 mail from " + accounts.size() + " accounts");
+	    log.debug("fetching POP3 mail from " + accounts.size() + " accounts");
 	    for(final var a: accounts)
 	    {
-		log("Fetching from: " + a.getName());
+		log.debug("Fetching from: " + a.getName());
 		final var decoder = new MessageDecoder();
 		final var pop3 = new org.luwrain.pim.mail2.proto.Pop3(a);
 		pop3.getMessages((message, extData) -> {
@@ -54,14 +55,8 @@ public class Pop3 implements Worker
 	*/
 	catch(Throwable e)
 	{
-	    Log.error(LOG_COMPONENT, "the worker " + NAME + " failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
-	    e.printStackTrace();
+	    log.error(NAME, e);
 	}
-    }
-
-    protected void log(String message)
-    {
-	Log.debug(LOG_COMPONENT, message);
     }
 
     @Override public String getExtObjName()

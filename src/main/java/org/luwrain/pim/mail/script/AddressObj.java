@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -23,6 +23,9 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import static org.luwrain.core.NullCheck.*;
+import static org.luwrain.pim.mail.AddressUtils.*;
+
 public final class AddressObj
 {
     @HostAccess.Export
@@ -30,12 +33,12 @@ public final class AddressObj
 
     AddressObj(String full)
     {
-	NullCheck.notNull(full, "full");
+	notNull(full, "full");
 	this.full = full;
 	if (!this.full.trim().isEmpty())
 	{
-	    this.personal = AddressUtils.getPersonal(full);
-	    this.addr = AddressUtils.getAddress(full);
+	    this.personal = getPersonal(full);
+	    this.addr = getAddress(full);
 	} else
 	{
 	    this.personal = "";

@@ -22,11 +22,11 @@ import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
-import org.luwrain.pim.*;
 import org.luwrain.pim.mail2.*;
 
 import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.util.TextUtils.*;
+import static org.luwrain.script.ScriptUtils.*;
 
 public final class MessageObj
 {
@@ -43,7 +43,21 @@ public final class MessageObj
 
     @HostAccess.Export
     public final ProxyExecutable getSubject = (ProxyExecutable)this::getSubjectImpl;
-    private Object getSubjectImpl(Value[] args) { return message.getMetadata().getSubject(); };
+    private Object getSubjectImpl(Value[] args) { return message.getMetadata().getSubject(); }
+
+        @HostAccess.Export
+    public final ProxyExecutable getTitle = (ProxyExecutable)this::getTitleImpl;
+    private Object getTitleImpl(Value[] args) { return message.getMetadata().getTitle(); }
+
+            @HostAccess.Export
+    public final ProxyExecutable setTitle = (ProxyExecutable)this::setTitleImpl;
+    private Object setTitleImpl(Value[] args)
+    {
+	if (notNullAndLen(args, 1) || !args[0].isString())
+	    throw new IllegalArgumentException("Message.setTitle() takes exactly one string argument");
+	message.getMetadata().setTitle(args[0].asString());
+	return this;
+    }
 
         @HostAccess.Export
     public final ProxyExecutable getFrom = (ProxyExecutable)this::getFromImpl;
