@@ -56,9 +56,9 @@ public final class MailingListObj
 	try {
 	    idValue = BinaryMessage.decodeText(idValue);
 	}
-	catch(IOException e)
+	catch(IOException ex)
 	{
-	    Log.warning(LOG_COMPONENT, "unable to decode the list ID name:" + e.getClass().getName() + ":" + e.getMessage());
+	    log.warn("Unable to decode the list ID name", ex);
 	}
 	final String idStr = AddressUtils.getAddress(idValue).trim();
 	if (!idStr.isEmpty())

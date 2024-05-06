@@ -18,23 +18,30 @@
 package org.luwrain.pim.mail.script;
 
 import java.util.*;
+import java.io.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
+import org.luwrain.pim.*;
 import org.luwrain.pim.mail2.*;
 
 import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.util.TextUtils.*;
 import static org.luwrain.script.ScriptUtils.*;
+import static org.luwrain.pim.mail.script.MailObj.*;
 
 public final class MessageObj
 {
-    final Message message;
-    private String[] headers = null;
+    public final org.luwrain.pim.mail2.Message message;
+    private MimeMessage mimeMessage = null;
+    private List<String> headers = null;
     private MailingListObj listHookObj = null;
 
-    public MessageObj(Message message)
+    public MessageObj(org.luwrain.pim.mail2.Message message)
     {
 	notNull(message, "message");
 	notNull(message.getMetadata(), "message.metadata");
@@ -97,13 +104,31 @@ public final class MessageObj
 		    return ProxyArray.fromArray(res.toArray(new Object[res.size()]));
     }
 
-    public Object getHeaders(Value[] args)
+        @HostAccess.Export
+	    public ProxyExecutable getHeaders = this::getHeadersImpl;
+    private Object getHeadersImpl(Value[] args)
     {
-			if (headers == null)
-		    headers = extractHeaders(message.getRawMessage());
-			return ProxyArray.fromArray((Object[])headers);
+	initMimeMessage();
+	return ProxyArray.fromArray((Object[])headers.toArray(new String[headers.size()]));
     }
 
+            @HostAccess.Export
+	    public ProxyExecutable getHeader = this::getHeaderImpl;
+    private Object getHeaderImpl(Value[] args)
+    {
+	if (!notNullAndLen(args, 1) || !args[0].isString() || args[0].asString().trim().isEmpty())
+	    throw new IllegalArgumentException("Message.getHeader() takes exactly one non-empty string argument");
+	initMimeMessage();
+	final var prefix = args[0].asString().trim() + ":";
+	final var res = new ArrayList<Object>();
+	for (var s: headers)
+	    if (s.startsWith(prefix))
+		res.add(s.substring(prefix.length()).trim());
+	return ProxyArray.fromList(res);
+    }
+
+
+    /*
     public Object getMailingList()
     {
     		if (this.listHookObj == null)
@@ -114,7 +139,9 @@ public final class MessageObj
 		}
 		return listHookObj;
     }
+    */
 
+    /*
     static private String[] extractHeaders(byte[] bytes)
     {
 	NullCheck.notNull(bytes, "bytes");
@@ -136,14 +163,28 @@ public final class MessageObj
 	}
 	return res.toArray(new String[res.size()]);
     }
+    */
 
-    public Message getNativeMessageObj()
+    private void initMimeMessage()
     {
-	return message;
-    }
-
-    public Message getMessage()
-    {
-	return message;
+	if (mimeMessage != null && headers != null)
+	    return;
+		if (message.getRawMessage() == null && message.getRawMessage().length == 0)
+		    throw new IllegalStateException("No raw message, unable to create MIME message");
+	    try {
+	    try (final ByteArrayInputStream byteStream = new ByteArrayInputStream(message.getRawMessage())) {
+this.mimeMessage = new MimeMessage(session, byteStream);
+	}
+	    	    	    headers = new ArrayList<>();
+	    for (String h: Collections.list(mimeMessage.getAllHeaderLines()))
+		headers.add(h);
+	    }
+	    catch(IOException | MessagingException ex)
+	    {
+		log.catching(ex);
+		this.mimeMessage = null;
+		this.headers = null;
+		throw new PimException(ex);
+	    }
     }
 }

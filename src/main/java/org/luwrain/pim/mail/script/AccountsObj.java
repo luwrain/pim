@@ -43,10 +43,9 @@ final class AccountsObj
 	try {
 	    return new AccountObj(storing.getAccounts().save(new MailAccount()));
 	}
-	catch(PimException e)
+	catch(PimException ex)
 	{
-	    Log.error(LOG_COMPONENT, "unable to save newly created mail account: " + e.getClass().getName() + ": " + e.getMessage());
-	    e.printStackTrace();
+	    log.error("Unable to save newly created mail account", ex);
 	    return null;
 	}
     }

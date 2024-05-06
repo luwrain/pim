@@ -19,6 +19,7 @@ package org.luwrain.pim.mail2.persistence.model;
 
 import java.util.*;
 import java.io.*;
+import org.apache.logging.log4j.*;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -28,6 +29,8 @@ import jakarta.persistence.*;
 @Table (name = "folder")
 public class Folder
 {
+    static private final Logger log = LogManager.getLogger();
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -41,6 +44,7 @@ public class Folder
 
     public Properties getProperties()
     {
+	log.debug("requesting properties");
 	if (properties == null)
 	    properties = new Properties();
 	return properties;

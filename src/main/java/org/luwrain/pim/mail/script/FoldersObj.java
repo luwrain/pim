@@ -41,7 +41,7 @@ public final class FoldersObj
     FoldersObj(MailObj mailObj) { this.mailObj = mailObj; }
 
     @HostAccess.Export
-    public final ProxyExecutable findByProp = (ProxyExecutable)this::findFirstByPropertyImpl;
+    public final ProxyExecutable findFirstByProperty = (ProxyExecutable)this::findFirstByPropertyImpl;
     private Object findFirstByPropertyImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 2))
@@ -62,6 +62,15 @@ public final class FoldersObj
 	final var f = mailObj.folderDAO.findFirstByProperty(DEFAULT_INCOMING, "true");
 	return f != null?new FolderObj(mailObj, f):null;
     }
+
+            @HostAccess.Export
+    public final ProxyExecutable getDefaultMailingLists = (ProxyExecutable)this::getDefaultMailingListsImpl;
+    private Object getDefaultMailingListsImpl(Value[] args)
+    {
+	final var f = mailObj.folderDAO.findFirstByProperty(DEFAULT_MAILING_LISTS, "true");
+	return f != null?new FolderObj(mailObj, f):null;
+    }
+
 
 
     /*

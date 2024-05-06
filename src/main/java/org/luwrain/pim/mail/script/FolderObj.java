@@ -22,9 +22,7 @@ import java.util.*;
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
-//import org.luwrain.core.*;
-//import org.luwrain.pim.*;
-//import org.luwrain.pim.mail.*;
+import org.luwrain.script.core.*;
 import org.luwrain.pim.mail2.persistence.model.*;
 import org.luwrain.pim.mail2.persistence.dao.*;
 
@@ -45,31 +43,36 @@ public final class FolderObj
     }
 
     @HostAccess.Export
-    public ProxyExecutable getName = (ProxyExecutable)this::getNameImpl;
+	public ProxyExecutable getName = (ProxyExecutable)this::getNameImpl;
     public Object getNameImpl(Value[] args) { return folder.getName(); }
 
-        @HostAccess.Export
-    public ProxyExecutable setName = (ProxyExecutable)this::setNameImpl;
+    @HostAccess.Export
+	public ProxyExecutable setName = (ProxyExecutable)this::setNameImpl;
     public Object setNameImpl(Value[] args)
     {
-	if (notNullAndLen(args, 1) || !args[0].isString())
+	if (!notNullAndLen(args, 1) || !args[0].isString())
 	    throw new IllegalArgumentException("Folder.setName() takes exactly one string argument");
 	folder.setName(args[0].asString());
 	return this;
     }
 
-            @HostAccess.Export
-    public ProxyExecutable getSubfolders = (ProxyExecutable)this::getSubfoldersImpl;
-private Object getSubfoldersImpl(Value[] args)
+        @HostAccess.Export
+	public ProxyExecutable getProperties = (ProxyExecutable)this::getPropertiesImpl;
+    public Object getPropertiesImpl(Value[] args) { return new PropertiesObj(folder.getProperties()); }
+
+
+    @HostAccess.Export
+	public ProxyExecutable getSubfolders = (ProxyExecutable)this::getSubfoldersImpl;
+    private Object getSubfoldersImpl(Value[] args)
     {
-			    final var res = new ArrayList<>();
-		    for(Folder f: mailObj.folderDAO.getChildFolders(folder))
-			res.add(new FolderObj(mailObj, f));
-		    return ProxyArray.fromArray((Object[])res.toArray(new Object[res.size()]));
+	final var res = new ArrayList<>();
+	for(Folder f: mailObj.folderDAO.getChildFolders(folder))
+	    res.add(new FolderObj(mailObj, f));
+	return ProxyArray.fromArray((Object[])res.toArray(new Object[res.size()]));
     }
 
     @HostAccess.Export
-    public final ProxyExecutable saveMessage = (ProxyExecutable)this::saveMessageImpl;
+	public final ProxyExecutable saveMessage = (ProxyExecutable)this::saveMessageImpl;
     private Object saveMessageImpl(Value[] args)
     {
 	if (!notNullAndLen(args, 1))
@@ -82,19 +85,29 @@ private Object getSubfoldersImpl(Value[] args)
 	return this;
     }
 
-        @HostAccess.Export
-    public final ProxyExecutable update = (ProxyExecutable)this::updateImpl;
+    @HostAccess.Export
+	public final ProxyExecutable update = (ProxyExecutable)this::updateImpl;
     private Object updateImpl(Value[] args)
     {
 	mailObj.folderDAO.update(folder);
 	return this;
     }
 
+    @HostAccess.Export
+	public final ProxyExecutable newSubfolder = (ProxyExecutable)this::newSubfolderImpl;
+    private Object newSubfolderImpl(Value[] args)
+    {
+	final var f = new Folder();
+	f.setParentFolderId(folder.getId());
+	mailObj.folderDAO.add(f);
+	return new FolderObj(mailObj, f);
+    }
+
     private Object saveProperties()
     {
 	/*
-		    try {
-		folder.save();
+	  try {
+	  folder.save();
 		return new Boolean(true);
 		}
 		catch(Exception e)
@@ -105,12 +118,4 @@ private Object getSubfoldersImpl(Value[] args)
 	*/
 	return false;
     }
-
-    private Object newSubfolder()
-    {
-	final var f = new Folder();
-	mailObj.folderDAO.add(f);
-	return new FolderObj(mailObj, f);
-    }
-    
 }
