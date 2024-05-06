@@ -51,9 +51,6 @@ public class MessageMetadata
     private List<String> ccAddr;
 
     private transient String title;
-
-
-
     /*
     private String[]
 	to = new String[0],

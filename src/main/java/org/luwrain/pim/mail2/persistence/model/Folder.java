@@ -44,7 +44,6 @@ public class Folder
 
     public Properties getProperties()
     {
-	log.debug("requesting properties");
 	if (properties == null)
 	    properties = new Properties();
 	return properties;

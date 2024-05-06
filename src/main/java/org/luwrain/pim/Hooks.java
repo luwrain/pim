@@ -31,9 +31,9 @@ public final class Hooks
 
     static public void mailIncoming(Luwrain luwrain, Message message)
     {
-
+	final var mailObj = new MailObj(luwrain);
 	chainOfResponsibilityNoExc(luwrain, MAIL_INCOMING, new Object[]{
-		new MailObj(luwrain)		,
-		new MessageObj(message) });
+		mailObj,
+		new MessageObj(mailObj, message) });
     }
 }

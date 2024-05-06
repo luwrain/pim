@@ -21,7 +21,7 @@ import java.util.*;
 import java.io.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-
+import org.apache.logging.log4j.*;
 import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
@@ -36,15 +36,20 @@ import static org.luwrain.pim.mail.script.MailObj.*;
 
 public final class MessageObj
 {
+    static private final Logger log = LogManager.getLogger();
+
+    private final MailObj mailObj;
     public final org.luwrain.pim.mail2.Message message;
     private MimeMessage mimeMessage = null;
     private List<String> headers = null;
-    private MailingListObj listHookObj = null;
+    //    private MailingListObj listHookObj = null;
 
-    public MessageObj(org.luwrain.pim.mail2.Message message)
+    public MessageObj(MailObj mailObj, org.luwrain.pim.mail2.Message message)
     {
+	notNull(mailObj, "mailObj");
 	notNull(message, "message");
 	notNull(message.getMetadata(), "message.metadata");
+	this.mailObj = mailObj;
 	this.message = message;
     }
 
@@ -60,7 +65,7 @@ public final class MessageObj
     public final ProxyExecutable setTitle = (ProxyExecutable)this::setTitleImpl;
     private Object setTitleImpl(Value[] args)
     {
-	if (notNullAndLen(args, 1) || !args[0].isString())
+	if (!notNullAndLen(args, 1) || !args[0].isString())
 	    throw new IllegalArgumentException("Message.setTitle() takes exactly one string argument");
 	message.getMetadata().setTitle(args[0].asString());
 	return this;
@@ -127,43 +132,16 @@ public final class MessageObj
 	return ProxyArray.fromList(res);
     }
 
-
-    /*
-    public Object getMailingList()
+                @HostAccess.Export
+	    public ProxyExecutable getHeaderupdate = this::updateImpl;
+    private Object updateImpl(Value[] args)
     {
-    		if (this.listHookObj == null)
-		{
-		    if (headers == null)
-			headers = extractHeaders(message.getRawMessage());
-		    this.listHookObj = new MailingListObj(headers);
-		}
-		return listHookObj;
+	mailObj.messageDAO.update(message.getMetadata());
+	return this;
     }
-    */
 
-    /*
-    static private String[] extractHeaders(byte[] bytes)
-    {
-	NullCheck.notNull(bytes, "bytes");
-	final String str;
-	try {
-	    str = new String(bytes, "US-ASCII");
-	}
-	catch(java.io.UnsupportedEncodingException e)
-	{
-	    return new String[0];
-	}
-	final String[] lines = str.split("\n", -1);
-	final List<String> res = new ArrayList<>();
-	for(String s: lines)
-	{
-	    if (s.trim().isEmpty())
-		break;
-	    res.add(s.replaceAll("\r", ""));
-	}
-	return res.toArray(new String[res.size()]);
-    }
-    */
+
+
 
     private void initMimeMessage()
     {
