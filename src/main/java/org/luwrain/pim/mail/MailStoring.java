@@ -27,7 +27,6 @@ public interface MailStoring extends Cloneable
     static public final String ACCOUNT_UNIREF_PREFIX = "mailaccount";
     
     MailAccounts getAccounts();
-    MailRules getRules();
     MailMessages getMessages();
 
     String combinePersonalAndAddr(String personal, String addr);
