@@ -42,6 +42,8 @@ public class MessageMetadata
         @Column(columnDefinition="TEXT")
     private String text;
 
+    private long sentTimestamp;
+
     @ElementCollection
     @CollectionTable(name="to_addr", joinColumns=@JoinColumn(name="message_id"))
     private List<String> toAddr;
