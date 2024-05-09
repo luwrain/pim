@@ -21,79 +21,61 @@ import java.io.*;
 import java.util.*;
 
 import org.apache.logging.log4j.*;
-//import javax.activation.DataHandler;
-//import javax.activation.FileDataSource;
-
 import javax.mail.*;
 import javax.mail.internet.*;
-//import javax.mail.Flags.Flag;
-import javax.mail.Message.RecipientType;
 
-//import org.luwrain.core.*;
-import org.luwrain.pim.*;
-import org.luwrain.pim.mail2.persistence.model.*;
-//import org.luwrain.pim.mail.*;
-//import org.luwrain.util.*;
-//import org.luwrain.io.json.*;
-
-import static org.luwrain.core.NullCheck.*;
+import static javax.mail.internet.MimeUtility.*;
 
 final class MimePartsExtractor
 {
-    final List<String> attachments = new ArrayList<>();
+    static private final Logger log = LogManager.getLogger();
 
-    String run(Object o, String contentType,
-	       String fileName, String disposition) throws PimException, IOException, MessagingException
+    final List<MessageContentItem> items = new ArrayList<>();
+
+        void on(MimePart p) throws IOException, MessagingException
     {
-	if(o instanceof MimeMultipart)
+	on(p, false);
+    }
+
+    void on(MimePart p, boolean alternative) throws IOException, MessagingException
+    {
+	if (p == null || p.getContent() == null)
+	    return;
+			final String
+			contentType = p.getContentType() != null?decodeText(p.getContentType()):null,
+			fileName = p.getFileName() != null?decodeText(p.getFileName()):null,
+		disposition = p.getDisposition();
+			/*
+			log.trace("MIME part contentType=" + contentType + ", disposition=" + disposition + ", fileName=" + fileName);
+			log.trace("Class is " + p.getContent().getClass().getName());
+			if (p.getContent() instanceof String s)
+			    log.trace(s);
+			*/
+	if(p.getContent() instanceof MimeMultipart mm)
 	{
-	    final Multipart content =(Multipart)o;
-	    final boolean alternative = (contentType.toLowerCase().indexOf("alternative") >= 0);
-	    final StringBuilder textRes = new StringBuilder();
-	    final StringBuilder htmlRes = new StringBuilder();
-	    for(int i=0;i<content.getCount();i++)
+	    	    for(int i = 0;i < mm.getCount();i++)
+			on((MimeBodyPart)mm.getBodyPart(i), alternative || contentType.toLowerCase().startsWith("multipart/alternative"));
+		return;
+	    }
+	final var item = new MessageContentItem();
+	item.setContentType(contentType);
+	item.setDisposition(disposition);
+	item.setFileName(fileName);
+	item.setAlternative(alternative);
+	if (p.getContent() instanceof String s)
+	    item.setText(s);
+	items.add(item);
+    }
+
+    private void handle(MimeMultipart mm) throws IOException, MessagingException
+    {
+	    for(int i = 0;i < mm.getCount();i++)
 	    {
-		final MimeBodyPart part = (MimeBodyPart) content.getBodyPart(i);
-		if (part == null || part.getContent() == null)
+		final var p = (MimeBodyPart)mm.getBodyPart(i);
+		if (p == null)
 		    continue;
-		final String partContentType = part.getContentType() != null?part.getContentType():"";
-		final boolean html = (partContentType.toLowerCase().indexOf("html") >= 0);
-		if (html)
-		    htmlRes.append(run(part.getContent(), partContentType, 
-				       part.getFileName() != null?part.getFileName():"", 
-				       part.getDisposition() != null?part.getDisposition():"")); else
-		    textRes.append(run(part.getContent(), partContentType, 
-				       part.getFileName() != null?part.getFileName():"" , 
-				       part.getDisposition() != null?part.getDisposition():""));
+		on(p);
 	    }
-	    final String textStr = textRes.toString();
-	    final String htmlStr = htmlRes.toString();
-	    if (!alternative)
-		return textStr + "\n" + htmlStr;
-	    if (!textStr.trim().isEmpty())
-		return textStr;
-	    return htmlStr;
-	}
-	if ((disposition != null && disposition.toLowerCase().indexOf("attachment") >= 0) ||
-	    contentType.toLowerCase().indexOf("text") < 0)
-	{
-	    if (fileName != null && !fileName.trim().isEmpty())
-	    {
-		attachments.add(MimeUtility.decodeText(fileName));
-		onAttachment(MimeUtility.decodeText(fileName), o);
-	    } else
-	    {
-		attachments.add(contentType);
-		onAttachment(contentType, o);
-	    }
-	    return "";
-	}
-	if (contentType != null && contentType.toLowerCase().indexOf("html") >= 0)
-	    return o.toString();
-	return o.toString();
     }
 
-    protected void onAttachment(String fileName, Object obj) throws IOException
-    {
-    }
 }

@@ -40,7 +40,7 @@ public class MessageMetadata
 	messageId, subject, fromAddr;
 
         @Column(columnDefinition="TEXT")
-    private String text;
+    private String content;
 
     private long sentTimestamp;
 
@@ -51,6 +51,8 @@ public class MessageMetadata
         @ElementCollection
     @CollectionTable(name="cc_addr", joinColumns=@JoinColumn(name="message_id"))
     private List<String> ccAddr;
+
+    
 
     private transient String title;
     /*

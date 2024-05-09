@@ -87,8 +87,12 @@ public final class MessageObj
 
     @HostAccess.Export
     public final ProxyExecutable getText = (ProxyExecutable)this::getTextImpl;
-    private Object getTextImpl(Value[] args) { return message.getMetadata().getText(); }
+    private Object getTextImpl(Value[] args)
+    {
+	return message.getMetadata().getContent();
+    }
 
+    /*
         @HostAccess.Export
     public final ProxyExecutable getTextAsArray = (ProxyExecutable)this::getTextAsArrayImpl;
     private Object getTextAsArrayImpl(Value[] args)
@@ -97,6 +101,7 @@ public final class MessageObj
 	    return ProxyArray.fromArray(new Object[0]);
 	return ProxyArray.fromArray(splitLinesAnySeparator(message.getMetadata().getText()));
     }
+    */
 
 
     @HostAccess.Export

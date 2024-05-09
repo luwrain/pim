@@ -31,10 +31,12 @@ public class Message
 {
     MessageMetadata metadata;
     byte[] rawMessage;
+    List<MessageContentItem> contentItems;
 
     public Message(MessageMetadata metadata)
     {
 	this.metadata = metadata;
 	this.rawMessage = null;
+	this.contentItems = MessageContentItem.fromJson(metadata.getContent());
     }
 }

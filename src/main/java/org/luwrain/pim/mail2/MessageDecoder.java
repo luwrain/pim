@@ -57,6 +57,10 @@ public final class MessageDecoder implements MessageConsumer
 	if (mm.getRecipients(RecipientType.TO) != null)
 	    m.setToAddr(decodeAddrs(mm.getRecipients(RecipientType.TO)));
 	m.setSentTimestamp(mm.getSentDate().getTime());
+	log.trace("Decoding message body");
+	final var e = new MimePartsExtractor();
+	e.on(mm);
+	m.setContent(MessageContentItem.toJson(e.items));
 	/*
 	if (srcMsg.getRecipients(RecipientType.CC) != null)
 	    dest.setCc(decodeAddrs(srcMsg.getRecipients(RecipientType.CC)));
@@ -87,6 +91,4 @@ public final class MessageDecoder implements MessageConsumer
 	//	return res.toArray(new String[res.size()]);
 	return res;
     }
-
-
 }
