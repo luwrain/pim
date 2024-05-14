@@ -55,6 +55,7 @@ public class Connections
 	return newsFactory.newNewsStoring(highPriority);
     }
 
+    /*
     static public org.luwrain.pim.mail.MailStoring getMailStoring(Luwrain luwrain, boolean highPriority)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -62,6 +63,7 @@ public class Connections
 	    return null;
 	return mailFactory.newMailStoring(highPriority);
     }
+    */
 
         static public org.luwrain.pim.contacts.ContactsStoring getContactsStoring(Luwrain luwrain, boolean highPriority)
     {

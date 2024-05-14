@@ -32,7 +32,7 @@ public final class Factory implements org.luwrain.cpanel.Factory
     private final SimpleElement mailElement, accountsElement, commonSettElement;
 
     private Strings strings = null;
-    private MailStoring storing = null;
+    //    private MailStoring storing = null;
     private Accounts accounts = null;
 
     public Factory(Luwrain luwrain)
@@ -53,8 +53,10 @@ public final class Factory implements org.luwrain.cpanel.Factory
 
     @Override public Element[] getOnDemandElements(Element parent)
     {
+	/*
 	if (!initStoring())
 	    return new Element[0];
+	*/
 	if (parent.equals(accountsElement))
 	    return accounts.getAccountsElements(parent);
 	return new Element[0];
@@ -71,6 +73,7 @@ public final class Factory implements org.luwrain.cpanel.Factory
 	return null;
     }
 
+    /*
     private boolean initStoring()
     {
 	if (storing != null)
@@ -81,6 +84,7 @@ public final class Factory implements org.luwrain.cpanel.Factory
 	this.accounts = new Accounts(luwrain, strings);
 	return true;
     }
+    */
 
     private boolean initStrings()
     {

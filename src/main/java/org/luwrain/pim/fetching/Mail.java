@@ -29,7 +29,7 @@ import org.luwrain.pim.mail.*;
 
 public class Mail extends Base
 {
-    private MailStoring storing;
+    //    private MailStoring storing;
 
     public Mail(Luwrain luwrain, Control control, Strings strings)
     {
