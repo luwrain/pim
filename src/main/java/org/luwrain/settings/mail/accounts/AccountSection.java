@@ -20,6 +20,9 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.mail2.persistence.dao.*;
+
+import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
 
 public final class AccountSection implements Section
 {
@@ -39,7 +42,8 @@ public final class AccountSection implements Section
     @Override public SectionArea getSectionArea(ControlPanel controlPanel)
     {
 	final Luwrain luwrain = controlPanel.getCoreInterface();
-	return new Area(controlPanel, accounts.strings, accounts.storing, accounts.storing.getAccounts().loadById(id));
+	final AccountDAO dao = getAccountDAO();
+	return new Area(controlPanel, accounts.strings, dao, dao.getById(id));
     }
 
     @Override public Element getElement()

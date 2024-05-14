@@ -23,17 +23,21 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail2.persistence.dao.*;
 
+import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.pim.mail.script.MailObj.*;
+import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
 
 final class AccountsObj
 {
-    private final MailStoring storing;
+    private final AccountDAO dao;
 
-    AccountsObj(MailStoring storing)
+    AccountsObj(AccountDAO dao)
     {
-	NullCheck.notNull(storing, "storing");
-	this.storing = storing;
+	notNull(dao, "dao");
+	this.dao = dao;
     }
 
     @HostAccess.Export
@@ -41,7 +45,9 @@ final class AccountsObj
     public Object newAccountImpl(Value[] args)
     {
 	try {
-	    return new AccountObj(storing.getAccounts().save(new MailAccount()));
+	    final var a = new Account();
+	    dao.add(a);
+	    return new AccountObj(a);
 	}
 	catch(PimException ex)
 	{

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,35 +16,39 @@
 
 package org.luwrain.settings.mail.accounts;
 
+import java.util.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail2.persistence.dao.*;
 import org.luwrain.settings.mail.*;
+
+import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
 
 public final class Accounts
 {
     final Luwrain luwrain;
     final org.luwrain.settings.mail.Strings strings;
-    final MailStoring storing;
     final Conv conv;
 
-    public Accounts(Luwrain luwrain, org.luwrain.settings.mail.Strings strings, MailStoring storing)
+    public Accounts(Luwrain luwrain, org.luwrain.settings.mail.Strings strings)
     {
 	this.luwrain = luwrain;
 	this.strings = strings;
-	this.storing = storing;
 	this.conv = new Conv(this);
     }
 
     public org.luwrain.cpanel.Element[] getAccountsElements(Element parent)
     {
-	final MailAccount[] accounts = storing.getAccounts().load();
-	final Element[] res = new Element[accounts.length];
-	for(int i = 0;i < accounts.length;++i)
-	    res[i] = new AccountElement(parent, storing.getAccounts().getId(accounts[i]), accounts[i].getTitle());
-	return res;
+	final var accounts = getAccountDAO().getAll();
+	final var res = new ArrayList<Element>();
+	for(var a: accounts)
+	    res.add(new AccountElement(parent, a.getId(), a.getName()));
+	return res.toArray(new Element[res.size()]);
     }
 
     boolean onActionEvent(ControlPanel controlPanel, ActionEvent event, int id)
@@ -58,27 +62,27 @@ public final class Accounts
 
     private boolean onAddAccount(ControlPanel controlPanel)
     {
-	final MailAccount.Type type = conv.newAccountType();
+	final Account.Type type = conv.newAccountType();
 	if (type == null)
 	    return true;
 	final String title = conv.newAccountTitle();
 	if (title == null)
 	    return true;
-	final MailAccount account = new MailAccount();
+	final Account account = new Account();
 	account.setType(type);
-	account.setTitle(title);
+	account.setName(title);
 	switch(type)
 	{
 	case SMTP:
 	    account.setPort(587);
-	    account.getFlags().add(MailAccount.Flags.TLS);
+	    account.setTls(true);
 	    break;
 	case POP3:
 	    account.setPort(995);
-	    account.getFlags().add(MailAccount.Flags.SSL);
+	    account.setSsl(true);
 	    break;
 	}
-	storing.getAccounts().save(account);
+	getAccountDAO().add(account);
 	controlPanel.refreshSectionsTree();
 	return true;
     }
@@ -87,12 +91,12 @@ public final class Accounts
     {
 	if (id < 0)
 	    return false;
-	final MailAccount account = storing.getAccounts().loadById(id);
+	final Account account = getAccountDAO().getById(id);
 	if (account == null)
 	    return false;
-	if (conv.confirmAccountDeleting(account.getTitle()))
+	if (conv.confirmAccountDeleting(account.getName()))
 	{
-	    storing.getAccounts().delete(account);
+	    getAccountDAO().delete(account);
 	    controlPanel.refreshSectionsTree();
 	}
 	return true;

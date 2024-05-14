@@ -29,6 +29,17 @@ public final class MailPersistence
     static public AccountDAO getAccountDAO()
     {
 	return new AccountDAO(){
+	    @Override public Account getById(int id)
+	    {
+				final var res = new AtomicReference<List<Account>>();
+		trans(s -> res.set(s.createQuery("FROM Account WHERE id = :id", Account.class).setParameter("id", id).list()));
+		return res.get().size() == 1?res.get().get(0):null;
+	    }
+	    	    	    @Override public void delete(Account account)
+	    {
+		notNull(account, "account");
+		trans(s -> s.delete(account));
+	    }
 	    @Override public void add(Account account)
 	    {
 		trans(s -> s.save(account));

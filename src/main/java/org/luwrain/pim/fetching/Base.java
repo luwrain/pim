@@ -22,6 +22,7 @@ package org.luwrain.pim.fetching;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail2.persistence.model.*;
 
 public class Base
 {
@@ -59,14 +60,14 @@ public class Base
 	luwrain.crash(e);
     }
 
-    protected MailConnections.Params createMailServerParams(MailAccount account)
+    protected MailConnections.Params createMailServerParams(Account account)
     {
 	final MailConnections.Params params = new MailConnections.Params();
 	params.doAuth = !account.getLogin().isEmpty();
 	params.host = account.getHost();
 	params.port = account.getPort();
-	params.ssl = account.getFlags().contains(MailAccount.Flags.SSL);
-	params.tls = account.getFlags().contains(MailAccount.Flags.TLS);
+	params.ssl = account.isSsl();
+	params.tls = account.isTls();
 	params.login = account.getLogin();
 	params.passwd = account.getPasswd();
 		params.extProps.put( "mail.pop3.ssl.trust", account.getTrustedHosts());

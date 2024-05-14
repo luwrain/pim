@@ -18,6 +18,8 @@ package org.luwrain.settings.mail.accounts;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail2.*;
+import org.luwrain.pim.mail2.persistence.model.*;
 import org.luwrain.settings.mail.*;
 
 import static org.luwrain.popups.Popups.*;
@@ -36,7 +38,7 @@ final class Conv
     String newAccountTitle() { return textNotEmpty(luwrain, strings.newAccountTitlePopupName(), strings.newAccountTitlePopupPrefix(), ""); }
     boolean confirmAccountDeleting(String title) { return confirmDefaultNo(luwrain, "Удаление почтовой учётной записи", "Вы действительно хотите удалить почтовую запись \"" + title + "\"?"); } //FIXME:
 
-    MailAccount.Type newAccountType()
+    Account.Type newAccountType()
     {
 	final String pop3 = "POP3";
 	final String smtp = "SMTP";
@@ -44,9 +46,9 @@ final class Conv
 	if (obj == null)
 	    return null;
 	if (obj == pop3)
-	    return MailAccount.Type.POP3;
+	    return Account.Type.POP3;
 	if (obj == smtp)
-	    return MailAccount.Type.SMTP;
+	    return Account.Type.SMTP;
 	return null;
     }
 }

@@ -78,7 +78,7 @@ public final class Factory implements org.luwrain.cpanel.Factory
 	storing = org.luwrain.pim.Connections.getMailStoring(luwrain, true);
 	if (storing == null)
 	    return false;
-	this.accounts = new Accounts(luwrain, strings, storing);
+	this.accounts = new Accounts(luwrain, strings);
 	return true;
     }
 

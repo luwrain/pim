@@ -29,7 +29,7 @@ import org.luwrain.pim.*;
 
 @Data
 @NoArgsConstructor
-public class MailAccount
+class MailAccount
 {
     public enum Type {POP3, SMTP};
     public enum Flags {ENABLED, SSL, TLS, DEFAULT, LEAVE_MESSAGES};

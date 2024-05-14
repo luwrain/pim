@@ -22,6 +22,8 @@ import org.luwrain.pim.mail2.persistence.model.*;
 public interface AccountDAO
 {
     void add(Account account);
+    void delete(Account account);
+    Account getById(int id);
     List<Account> getAll();
     void update(Account account);
 }

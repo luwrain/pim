@@ -19,7 +19,7 @@
 
 package org.luwrain.pim.mail;
 
-public interface MailAccounts
+interface MailAccounts
 {
     MailAccount[] load();
     MailAccount save(MailAccount account);
