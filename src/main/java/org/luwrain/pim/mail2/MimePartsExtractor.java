@@ -42,7 +42,7 @@ final class MimePartsExtractor
 	if (p == null || p.getContent() == null)
 	    return;
 			final String
-			contentType = p.getContentType() != null?decodeText(p.getContentType()):null,
+			contentType = p.getContentType() != null?decodeText(p.getContentType()):"",
 			fileName = p.getFileName() != null?decodeText(p.getFileName()):null,
 		disposition = p.getDisposition();
 			/*
