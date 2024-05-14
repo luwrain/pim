@@ -17,7 +17,7 @@
 
 //LWR_API 1.0
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.obsolete;
 
 import java.util.function.*;
 

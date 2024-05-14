@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.obsolete;
 
 import java.util.*;
 import java.io.*;
@@ -26,7 +26,6 @@ import javax.mail.internet.*;
 
 import org.luwrain.core.*;
 
-import static org.luwrain.pim.mail.Factory.*;
 
 public final class AddressUtils
 {
@@ -59,7 +58,7 @@ public final class AddressUtils
 	}
 	catch (javax.mail.internet.AddressException e)
 	{
-	    	    Log.warning(LOG_COMPONENT, "unable to extract the address part of the mail address '" + addr + "'");
+	    //	    	    Log.warning(LOG_COMPONENT, "unable to extract the address part of the mail address '" + addr + "'");
 	    return addr;
 	}
     }

@@ -24,7 +24,7 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
 import static org.luwrain.core.NullCheck.*;
-import static org.luwrain.pim.mail.AddressUtils.*;
+import static org.luwrain.pim.mail.obsolete.AddressUtils.*;
 
 public final class AddressObj
 {

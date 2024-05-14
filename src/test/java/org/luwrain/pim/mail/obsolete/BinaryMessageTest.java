@@ -14,7 +14,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.obsolete;
 
 import java.util.*;
 import java.io.*;
@@ -27,8 +27,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.luwrain.io.json.*;
 
+import org.luwrain.pim.mail.obsolete.*;
 import static org.luwrain.util.StreamUtils.*;
-import static org.luwrain.pim.mail.BinaryMessage.*;
+import static org.luwrain.pim.mail.obsolete.BinaryMessage.*;
 
 public class BinaryMessageTest
 {

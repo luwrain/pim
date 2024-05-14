@@ -14,12 +14,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.mail.obsolete;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import static org.luwrain.pim.mail.AddressUtils.*;
+import org.luwrain.pim.mail.obsolete.*;
+import static org.luwrain.pim.mail.obsolete.AddressUtils.*;
 
 public class AddressUtilsTest
 {

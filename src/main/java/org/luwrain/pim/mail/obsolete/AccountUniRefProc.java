@@ -15,18 +15,9 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
+package org.luwrain.pim.mail.obsolete;
 
-package org.luwrain.pim.mail;
-
-interface MailAccounts
+public class AccountUniRefProc
 {
-    MailAccount[] load();
-    MailAccount save(MailAccount account);
-    void delete(MailAccount account);
-    void update(MailAccount account);
-    MailAccount loadById(int id);
-    int getId(MailAccount account);
-    MailAccount getDefault(MailAccount.Type type);
-    void sendDirectly(MailAccount account, MailMessage message);
+    static final String PREFIX = "account";
 }
