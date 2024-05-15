@@ -27,7 +27,7 @@ import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail2.*;
+import org.luwrain.pim.mail.*;
 
 import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.util.TextUtils.*;
@@ -39,12 +39,12 @@ public final class MessageObj
     static private final Logger log = LogManager.getLogger();
 
     private final MailObj mailObj;
-    public final org.luwrain.pim.mail2.Message message;
+    public final org.luwrain.pim.mail.Message message;
     private MimeMessage mimeMessage = null;
     private List<String> headers = null;
     //    private MailingListObj listHookObj = null;
 
-    public MessageObj(MailObj mailObj, org.luwrain.pim.mail2.Message message)
+    public MessageObj(MailObj mailObj, org.luwrain.pim.mail.Message message)
     {
 	notNull(mailObj, "mailObj");
 	notNull(message, "message");

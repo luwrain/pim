@@ -23,11 +23,11 @@ import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail2.persistence.model.*;
-import org.luwrain.pim.mail2.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.dao.*;
 import org.luwrain.settings.mail.*;
 
-import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
+import static org.luwrain.pim.mail.persistence.MailPersistence.*;
 
 public final class Accounts
 {

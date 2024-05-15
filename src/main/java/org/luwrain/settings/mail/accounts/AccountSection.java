@@ -20,9 +20,9 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail2.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.dao.*;
 
-import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
+import static org.luwrain.pim.mail.persistence.MailPersistence.*;
 
 public final class AccountSection implements Section
 {

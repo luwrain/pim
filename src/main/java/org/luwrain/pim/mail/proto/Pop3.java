@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2.proto;
+package org.luwrain.pim.mail.proto;
 
 import java.util.*;
 import java.util.function.*;
@@ -25,8 +25,8 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.fetching.*;
 //import org.luwrain.pim.mail.*;
-import org.luwrain.pim.mail2.*;
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail.persistence.model.*;
 
 import static org.luwrain.core.NullCheck.*;
 
@@ -45,7 +45,7 @@ public final class Pop3 implements MessageProvider<Pop3.ExtData>
 	}
     }
 
-    protected final org.luwrain.pim.mail2.persistence.model.Account account;
+    protected final org.luwrain.pim.mail.persistence.model.Account account;
 
     public Pop3(Account account)
     {

@@ -23,12 +23,12 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.pim.mail2.persistence.model.*;
-import org.luwrain.pim.mail2.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.dao.*;
 
 import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.pim.mail.script.MailObj.*;
-import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
+import static org.luwrain.pim.mail.persistence.MailPersistence.*;
 
 final class AccountsObj
 {

@@ -15,13 +15,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2;
+package org.luwrain.pim.mail;
 
-public class FolderProperties
+import java.util.function.*;
+
+public interface MessageProvider<E>
 {
-    static public final String
-	DEFAULT_INCOMING = "default-incoming",
-	DEFAULT_MAILING_LISTS = "default-mailing-lists",
-	DEFAULT_OUTGOING = "default-outgoing",
-	DEFAULT_SENT = "default-sent";
+    void getMessages(BiConsumer<Message, E> c);
 }

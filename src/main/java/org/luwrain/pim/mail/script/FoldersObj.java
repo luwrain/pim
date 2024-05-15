@@ -28,12 +28,12 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-import org.luwrain.pim.mail2.persistence.dao.*;
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.model.*;
 
 import static org.luwrain.script.ScriptUtils.*;
 import static org.luwrain.pim.mail.script.MailObj.*;
-import static org.luwrain.pim.mail2.FolderProperties.*;
+import static org.luwrain.pim.mail.FolderProperties.*;
 
 public final class FoldersObj
 {

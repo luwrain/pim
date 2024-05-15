@@ -22,7 +22,7 @@ package org.luwrain.pim.mail.obsolete;
 import java.util.function.*;
 
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.persistence.model.*;
 
 public interface MailMessages
 {

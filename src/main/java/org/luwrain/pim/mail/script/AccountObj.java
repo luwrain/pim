@@ -25,7 +25,7 @@ import org.luwrain.core.*;
 import org.luwrain.script.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.persistence.model.*;
 
 import static org.luwrain.script.ScriptUtils.*;
 

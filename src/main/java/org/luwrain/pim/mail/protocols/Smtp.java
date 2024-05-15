@@ -25,11 +25,11 @@ import java.util.regex.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail2.*;
+import org.luwrain.pim.mail.*;
 import org.luwrain.pim.fetching.*;
 import org.luwrain.io.json.*;
 
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.persistence.model.*;
 
 public final class Smtp extends Base
 {

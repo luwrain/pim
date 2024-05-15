@@ -15,11 +15,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2;
+package org.luwrain.pim.mail;
 
-import java.util.function.*;
-
-public interface MessageProvider<E>
+public interface MessageConsumer
 {
-    void getMessages(BiConsumer<Message, E> c);
+    void onMessage(Message message);
 }

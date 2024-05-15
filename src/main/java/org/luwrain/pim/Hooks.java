@@ -18,7 +18,7 @@ package org.luwrain.pim;
 
 
 import org.luwrain.core.*;
-import org.luwrain.pim.mail2.*;
+import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
 
 import static org.luwrain.core.NullCheck.*;

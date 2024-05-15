@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2;
+package org.luwrain.pim.mail;
 
 import java.io.*;
 import java.util.*;

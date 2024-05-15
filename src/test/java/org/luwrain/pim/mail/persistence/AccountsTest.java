@@ -1,11 +1,11 @@
 
-package org.luwrain.pim.mail2.persistence;
+package org.luwrain.pim.mail.persistence;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.luwrain.pim.mail2.persistence.model.*;
-import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
+import org.luwrain.pim.mail.persistence.model.*;
+import static org.luwrain.pim.mail.persistence.MailPersistence.*;
 
 public class AccountsTest
 {

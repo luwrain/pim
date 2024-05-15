@@ -1,5 +1,6 @@
 /*
    Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -14,16 +15,13 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2.persistence.dao;
+package org.luwrain.pim.mail;
 
-import java.util.*;
-import org.luwrain.pim.mail2.persistence.model.*;
-
-public interface AccountDAO
+public class FolderProperties
 {
-    void add(Account account);
-    void delete(Account account);
-    Account getById(int id);
-    List<Account> getAll();
-    void update(Account account);
+    static public final String
+	DEFAULT_INCOMING = "default-incoming",
+	DEFAULT_MAILING_LISTS = "default-mailing-lists",
+	DEFAULT_OUTGOING = "default-outgoing",
+	DEFAULT_SENT = "default-sent";
 }

@@ -32,11 +32,11 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-import org.luwrain.pim.mail2.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.dao.*;
 
 import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.script.ScriptUtils.*;
-import static org.luwrain.pim.mail2.persistence.MailPersistence.*;
+import static org.luwrain.pim.mail.persistence.MailPersistence.*;
 
 public final class MailObj
 {

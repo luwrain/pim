@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2;
+package org.luwrain.pim.mail;
 
 import java.util.*;
 import java.io.*;
@@ -25,7 +25,7 @@ import lombok.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.persistence.model.*;
 import org.luwrain.util.*;
 
 @Data

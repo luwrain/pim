@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2.persistence.model;
+package org.luwrain.pim.mail.persistence.model;
 
 import java.util.*;
 import lombok.*;

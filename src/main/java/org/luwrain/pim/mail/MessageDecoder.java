@@ -15,7 +15,7 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2;
+package org.luwrain.pim.mail;
 
 import java.io.*;
 import java.util.*;
@@ -31,7 +31,7 @@ import javax.mail.Message.RecipientType;
 
 //import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.persistence.model.*;
 //import org.luwrain.pim.mail.*;
 //import org.luwrain.util.*;
 //import org.luwrain.io.json.*;

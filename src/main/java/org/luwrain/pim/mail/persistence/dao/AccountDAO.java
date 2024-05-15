@@ -14,16 +14,16 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2.persistence.dao;
+package org.luwrain.pim.mail.persistence.dao;
 
 import java.util.*;
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.persistence.model.*;
 
-public interface MessageDAO
+public interface AccountDAO
 {
-    void add(MessageMetadata message);
-    void delete(MessageMetadata message);
-    List<MessageMetadata> getAll();
-        List<MessageMetadata> getByFolderId(int folderId);
-    void update(MessageMetadata message);
+    void add(Account account);
+    void delete(Account account);
+    Account getById(int id);
+    List<Account> getAll();
+    void update(Account account);
 }

@@ -14,10 +14,10 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim.mail2.persistence.dao;
+package org.luwrain.pim.mail.persistence.dao;
 
 import java.util.*;
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.persistence.model.*;
 
 public interface FolderDAO
 {

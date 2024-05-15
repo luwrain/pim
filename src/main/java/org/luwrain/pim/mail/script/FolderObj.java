@@ -23,8 +23,8 @@ import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.proxy.*;
 
 import org.luwrain.script.core.*;
-import org.luwrain.pim.mail2.persistence.model.*;
-import org.luwrain.pim.mail2.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.dao.*;
 
 import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.script.ScriptUtils.*;

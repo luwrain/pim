@@ -1,4 +1,4 @@
-package org.luwrain.pim.mail2.persistence;
+package org.luwrain.pim.mail.persistence;
 
 import java.util.*;
 import java.util.concurrent.atomic.*;
@@ -11,8 +11,8 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
-import org.luwrain.pim.mail2.persistence.model.*;
-import org.luwrain.pim.mail2.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.dao.*;
 
 import static org.luwrain.core.NullCheck.*;
 

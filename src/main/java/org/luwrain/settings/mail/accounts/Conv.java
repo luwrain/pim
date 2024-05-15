@@ -18,8 +18,7 @@ package org.luwrain.settings.mail.accounts;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.pim.mail2.*;
-import org.luwrain.pim.mail2.persistence.model.*;
+import org.luwrain.pim.mail.persistence.model.*;
 import org.luwrain.settings.mail.*;
 
 import static org.luwrain.popups.Popups.*;
