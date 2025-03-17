@@ -1,0 +1,59 @@
+/*
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
+
+package org.luwrain.pim.news.persistence.model;
+
+import java.util.*;
+import lombok.*;
+import jakarta.persistence.*;
+
+@Data
+@NoArgsConstructor
+@Entity
+@Table (name = "article")
+public class Article
+{
+    public enum Status { NEW, READ, MARKED };
+
+        @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private Status status;
+    private String sourceUrl, sourceTitle, uri, title, extTitle, url, descr, author, categories;
+
+    private long publishedTimestamp, updatedTimestamp;
+
+            @Column(columnDefinition="TEXT")
+    private String content;
+
+    @Override public boolean equals(Object o)
+    {
+	if (o != null && o instanceof Article a)
+	    return id == a.id;
+	return false;
+    }
+
+    @Override public int hashCode()
+    {
+	return id;
+    }
+
+    @Override public String toString()
+    {
+	return title != null?title:"";
+    }
+}

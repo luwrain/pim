@@ -8,7 +8,7 @@
   </parent>
   <artifactId>luwrain-pim</artifactId>
   <name>LUWRAIN PIM</name>
-  <description>A personal information manager for LUWRAIN</description>
+  <description>A personal information manager</description>
   <url>https://github.com/luwrain/pim/</url>
   <packaging>jar</packaging>
   <dependencies>
@@ -23,30 +23,4 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-            </manifest>
-            <manifestSections>
-              <manifestSection>
-                <name>org/luwrain</name>
-                <manifestEntries>
-                  <Extensions>org.luwrain.pim.Extension</Extensions>
-                </manifestEntries>
-              </manifestSection>
-            </manifestSections>
-          </archive>
-
-
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
