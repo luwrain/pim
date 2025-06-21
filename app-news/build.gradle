@@ -1,0 +1,22 @@
+
+plugins {
+  id 'java'
+}
+
+
+dependencies {
+  implementation libraries.base
+    implementation libraries.apacheBase
+  implementation (project(':luwrain-base'))
+    implementation (project(':luwrain'))
+        implementation (project(':luwrain-pim'))
+	        implementation (project(':luwrain-reader'))
+
+  annotationProcessor("com.google.auto.service:auto-service:1.1.1")
+//  annotationProcessor (project(':luwrain-base'))
+  annotationProcessor files('..base/build/libs/luwrain-base2.jar')
+
+
+  testImplementation libraries.junit
+}
+
