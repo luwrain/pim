@@ -1,8 +1,7 @@
 
 plugins {
-  id 'java'
+  id 'java-library'
 }
-
 
 dependencies {
   implementation libraries.base
@@ -14,17 +13,5 @@ dependencies {
   annotationProcessor("com.google.auto.service:auto-service:1.1.1")
 //  annotationProcessor (project(':luwrain-base'))
   annotationProcessor files('..base/build/libs/luwrain-base2.jar')
-
-
   testImplementation libraries.junit
 }
-
-
-/*
-dependencies {
-  implementation fileTree(dir: '../release/jar', include: ['*.jar'])
-  implementation fileTree(dir: '../release/lib', include: ['*.jar'])
-  annotationProcessor("com.google.auto.service:auto-service:1.1.1")
-  annotationProcessor files('../release/jar/luwrain-base-2.0.0pre2.jar')
-}
-*/

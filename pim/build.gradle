@@ -1,24 +1,37 @@
 
 plugins {
-    id 'java'
-  id 'io.freefair.lombok' version '8.6'
+  id "java-library"
+  id "maven-publish"
+  id "io.freefair.lombok" version "8.6"
 }
-
 
 dependencies {
   implementation libraries.base
     implementation libraries.apacheBase
   implementation libraries.graalvm
   implementation (project(':luwrain-base'))
-    implementation (project(':luwrain'))
-    implementation 'org.languagetool:languagetool-core:5.5'
-        implementation 'org.languagetool:language-ru:5.5'
-    	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-		implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
-			implementation 'org.hibernate:hibernate-core:6.5.0.Final'
-			implementation 'com.rometools:rome:1.14.1'
-    	implementation 'org.dizitart:nitrite:3.4.4'
-	implementation 'com.sun.mail:javax.mail:1.6.2'
-		implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
+  implementation (project(':luwrain'))
+  //FIXME: Must be explicitly added to apachebase
+  implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+  implementation 'org.hibernate:hibernate-core:6.5.0.Final'
+  implementation 'com.rometools:rome:1.14.1'
+  implementation 'org.dizitart:nitrite:3.4.4'
+  implementation 'com.sun.mail:javax.mail:1.6.2'
   testImplementation libraries.junit
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      groupId = 'org.luwrain'
+      artifactId = 'luwrain-pim'
+      version = '2.0.0'
+      from components.java
+    }
+  }
+  repositories {
+    maven {
+      url = uri('file:///x/maven2')
+    }
+  }
 }
