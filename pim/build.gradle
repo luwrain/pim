@@ -31,7 +31,7 @@ publishing {
   }
   repositories {
     maven {
-      url = uri('file:///x/maven2')
+      url = uri('file:///out/_tmp/maven2')
     }
   }
 }
