@@ -49,7 +49,7 @@ public final class App extends AppBase<Strings>
 
     @Override protected AreaLayout onAppInit()
     {
-	this.sett = org.luwrain.pim.mail.Settings.create(getLuwrain().getRegistry());
+	this.sett = null;//FIXME:newreg org.luwrain.pim.mail.Settings.create(getLuwrain().getRegistry());
 //	this.mailStoring = org.luwrain.pim.Connections.getMailStoring(getLuwrain(), true);
 	this.folderDAO = getFolderDAO();
 	this.contactsStoring = org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
@@ -134,7 +134,7 @@ notNull(message, "message");
 
     private String getFromLine(Account account)
     {
-	final org.luwrain.core.Settings.PersonalInfo sett = org.luwrain.core.Settings.createPersonalInfo(getLuwrain().getRegistry());
+	final org.luwrain.core.Settings.PersonalInfo sett = null;//FIXME:newreg org.luwrain.core.Settings.createPersonalInfo(getLuwrain().getRegistry());
 	final String personal;
 	final String addr;
 	if (account != null && account.getSubstName() != null && !account.getSubstName().trim().isEmpty())

@@ -43,7 +43,8 @@ public final class Factory implements AutoCloseable
 
     public NewsStoring newNewsStoring(boolean highPriority)
     {
-	return new org.luwrain.pim.news.nitrite.Storing(luwrain.getRegistry(), storage, execQueues, highPriority);
+	//FIXME:newreg 	return new org.luwrain.pim.news.nitrite.Storing(luwrain.getRegistry(), storage, execQueues, highPriority);
+	return null;
     }
 
     @Override public void close()

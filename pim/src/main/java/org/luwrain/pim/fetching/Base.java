@@ -30,7 +30,7 @@ public class Base
 
     protected final Control control;
     protected final Luwrain luwrain;
-    protected final Registry registry;
+    //    protected final Registry registry;
     protected final Strings strings;
 
     public Base(Control control, Strings strings)
@@ -40,7 +40,7 @@ public class Base
 	this.control = control;
 	this.strings = strings;
 	this.luwrain = control.luwrain();
-	this.registry = luwrain.getRegistry();
+	//FIXME:newreg 	this.registry = luwrain.getRegistry();
     }
 
     protected void message(String text)

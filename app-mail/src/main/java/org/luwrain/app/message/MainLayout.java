@@ -41,7 +41,7 @@ final class MainLayout extends LayoutBase
 	super(app);
 	this.app = app;
 	this.spellChecking =new FormSpellChecking(getLuwrain());
-	final var sett = org.luwrain.core.Settings.createPersonalInfo(app.getLuwrain().getRegistry());
+	final var sett = org.luwrain.core.Settings.createPersonalInfo(null/*FIXME:newreg app.getLuwrain().getRegistry()*/);
 	final List<String> text = new ArrayList<>();
 	if (app.message.getText() != null)
 	    text.addAll(app.message.getText());

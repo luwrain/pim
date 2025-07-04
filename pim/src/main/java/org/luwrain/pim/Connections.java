@@ -32,7 +32,7 @@ public class Connections
 	NullCheck.notNull(luwrain, "luwrain");
 	newsFactory = new org.luwrain.pim.news.Factory(luwrain);
 	contactsFactory = new org.luwrain.pim.contacts.Factory(luwrain);
-	binderFactory = new org.luwrain.pim.binder.Factory(luwrain.getRegistry());
+	binderFactory = new org.luwrain.pim.binder.Factory(null /*FIXME:newreg luwrain.getRegistry()*/);
     }
 
     static void close()
