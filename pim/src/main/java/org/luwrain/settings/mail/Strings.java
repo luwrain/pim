@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,10 +16,11 @@
 
 package org.luwrain.settings.mail;
 
+import org.luwrain.core.annotations.*;
+
+@ResourceStrings(langs = { "ru" })
 public interface Strings
 {
-    static final String NAME = "luwrain.settings.mail";
-
     String accountFormDefaultOutgoing();
     String accountFormEnabled();
     String accountForMessagesAuthorName();

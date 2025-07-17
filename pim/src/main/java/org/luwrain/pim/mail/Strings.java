@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -17,12 +17,11 @@
 
 package org.luwrain.pim.mail;
 
+import org.luwrain.core.annotations.*;
+
+@ResourceStrings(langs = { "ru" })
 public interface Strings
 {
-    static public final String
-	NAME = "luwrain.pim.mail";
-
-
     String mailFoldersRoot();
     String inboxFolder();
     String mailingListsFolder();

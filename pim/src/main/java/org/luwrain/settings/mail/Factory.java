@@ -88,7 +88,7 @@ public final class Factory implements org.luwrain.cpanel.Factory
 
     private boolean initStrings()
     {
-	final Object o = luwrain.i18n().getStrings(Strings.NAME);
+	final Object o = luwrain.i18n().getStrings(Strings.class.getName());
 	if (o != null && (o instanceof Strings))
 	{
 	    this.strings = (Strings)o;

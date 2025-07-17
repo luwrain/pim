@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -17,12 +17,15 @@
 
 package org.luwrain.pim;
 
+import com.google.auto.service.*;
+
 import org.luwrain.core.*;
 import org.luwrain.i18n.*;
 
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.script.*;
 
+@AutoService(org.luwrain.core.Extension.class)
 public final class Extension extends EmptyExtension
 {
     private final PimObjFactory objFactory = new PimObjFactory();
@@ -65,24 +68,5 @@ public final class Extension extends EmptyExtension
 	return new org.luwrain.cpanel.Factory[]{
 	    new org.luwrain.settings.mail.Factory(luwrain),
 	};
-    }
-
-    @Override public void i18nExtension(Luwrain luwrain, org.luwrain.i18n.I18nExtension i18nExt)
-    {
-	try {
-	    i18nExt.addStrings(Lang.EN, org.luwrain.pim.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-mail.properties").create(Lang.EN, org.luwrain.pim.mail.Strings.class));
-	    i18nExt.addStrings(Lang.RU, org.luwrain.pim.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-mail.properties").create(Lang.RU, org.luwrain.pim.mail.Strings.class));
-
-	    i18nExt.addStrings(Lang.EN, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.EN, org.luwrain.settings.mail.Strings.class));
-	    i18nExt.addStrings(Lang.RU, org.luwrain.settings.mail.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-settings-mail.properties").create(Lang.RU, org.luwrain.settings.mail.Strings.class));
-
-	    	    i18nExt.addStrings(Lang.EN, org.luwrain.app.diary.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-app-diary.properties").create(Lang.EN, org.luwrain.app.diary.Strings.class));
-	    i18nExt.addStrings(Lang.RU, org.luwrain.app.diary.Strings.NAME, new ResourceStringsObj(luwrain, getClass().getClassLoader(), getClass(), "strings-app-diary.properties").create(Lang.RU, org.luwrain.app.diary.Strings.class));
-
-	}
-	catch(java.io.IOException e)
-	{
-	    throw new RuntimeException(e);
-	}
     }
 }

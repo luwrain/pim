@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -25,7 +25,7 @@ import org.luwrain.pim.news.*;
 import org.luwrain.app.base.*;
 import org.luwrain.core.annotations.*;
 
-@AppNoArgs(name = "news", i18n = { "en=News", "ru=Новости" })
+@AppNoArgs(name = "news", title = { "en=News", "ru=Новости" })
 public final class App extends AppBase<Strings> implements MonoApp
 {
     private NewsStoring storing = null;
@@ -37,7 +37,7 @@ public final class App extends AppBase<Strings> implements MonoApp
     final List<GroupWrapper> groups = new ArrayList<>();
     final List<NewsArticle> articles = new ArrayList<>();
 
-    public App() { super(Strings.NAME, Strings.class, "luwrain.news"); }
+    public App() { super(Strings.class, "luwrain.news"); }
 
     @Override public AreaLayout onAppInit() throws Exception
     {

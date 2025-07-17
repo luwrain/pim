@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,11 +16,11 @@
 
 package org.luwrain.app.message;
 
+import org.luwrain.core.annotations.*;
+
+@ResourceStrings(langs = { "ru" })
 public interface Strings
 {
-    static public final String
-	NAME = "luwrain.message";
-
     String actionAttachFile();
     String actionChooseCc();
     String actionChooseTo();

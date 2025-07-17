@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -43,7 +43,7 @@ public final class App extends AppBase<Strings>
 
     public App(org.luwrain.io.json.Message message)
     {
-	super(Strings.NAME, Strings.class, "luwrain.message");
+	super(Strings.class, "luwrain.message");
 	this.message = message != null?message:new org.luwrain.io.json.Message();
     }
 

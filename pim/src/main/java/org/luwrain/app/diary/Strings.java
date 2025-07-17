@@ -16,10 +16,11 @@
 
 package org.luwrain.app.diary;
 
+import org.luwrain.core.annotations.*;
+
+@ResourceStrings(langs = {"en", "ru"})
 public interface Strings
 {
-    static final String NAME = "luwrain.diary";
-
     String appName();
     String eventsAreaName();
     }

@@ -42,7 +42,7 @@ public final class App extends AppBase<Strings>
 
     public App()
     {
-	super(Strings.NAME, Strings.class, "luwrain.notepad");
+	super(Strings.class, "luwrain.diary");
     }
 
     @Override protected AreaLayout onAppInit() throws IOException

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-20255 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,11 +19,9 @@ package org.luwrain.app.news;
 import java.util.*;
 import org.luwrain.core.annotations.*;
 
-@ResourceStrings(name = "luwrain.news", resource = "strings.resource", langs = { "en", "ru" })
+@ResourceStrings(langs = { "en", "ru" })
 public interface Strings
 {
-    static final String NAME = "luwrain.news";
-
         String appName();
     
         String groupsAreaName();
