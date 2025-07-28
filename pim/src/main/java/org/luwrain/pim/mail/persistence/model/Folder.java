@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -21,24 +21,18 @@ import java.util.*;
 import java.io.*;
 import org.apache.logging.log4j.*;
 import lombok.*;
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 
 @Data
-@NoArgsConstructor
-@Entity
-@Table (name = "folder")
 public class Folder
 {
     static private final Logger log = LogManager.getLogger();
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
 
+    private int id;
+    
     private String name;
     private int parentFolderId, deleteReadMessagesAfterDays;
 
-    @Column(columnDefinition="TEXT")
     private String propsText;
     private transient Properties properties;
 
@@ -88,14 +82,16 @@ public class Folder
 
     @Override public boolean equals(Object o)
     {
+	/*
 	if (o != null && o instanceof Folder f)
 	    return id == f.id;
+	*/
 	return false;
     }
 
     @Override public int hashCode()
     {
-	return id;
+	return 0;//id;
     }
 
     @Override public String toString()

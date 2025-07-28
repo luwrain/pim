@@ -26,7 +26,7 @@ public class AccountsTest
 {
     @Test public void main() throws Exception
     {
-	deleteAllAccounts();
+	//	deleteAllAccounts();
 	final var dao = getAccountDAO();
 	assertNotNull(dao);
 	var ac = new Account();
@@ -42,7 +42,7 @@ public class AccountsTest
 
     @Test public void update() throws Exception
     {
-	deleteAllAccounts();
+	//	deleteAllAccounts();
 	final var dao = getAccountDAO();
 	assertNotNull(dao);
 	var ac = new Account();

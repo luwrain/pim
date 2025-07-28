@@ -20,8 +20,10 @@ import java.io.*;
 import org.apache.logging.log4j.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.annotations.*;
 import org.luwrain.app.base.*;
 
+@AppNoArgs(name = "mail", title = {"en=Mail", "ru=Почта"} )
 public final class App extends AppBase<Strings> implements MonoApp
 {
     static final Logger log = LogManager.getLogger();

@@ -18,38 +18,33 @@ package org.luwrain.pim.news.persistence.model;
 
 import java.util.*;
 import lombok.*;
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor
-@Entity
-@Table (name = "article")
 public class Article
 {
     public enum Status { NEW, READ, MARKED };
-
-        @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
 
     private Status status;
     private String sourceUrl, sourceTitle, uri, title, extTitle, url, descr, author, categories;
 
     private long publishedTimestamp, updatedTimestamp;
 
-            @Column(columnDefinition="TEXT")
     private String content;
 
     @Override public boolean equals(Object o)
     {
+	/*
 	if (o != null && o instanceof Article a)
 	    return id == a.id;
+	*/
 	return false;
     }
 
     @Override public int hashCode()
     {
-	return id;
+	return 0;//id;
     }
 
     @Override public String toString()

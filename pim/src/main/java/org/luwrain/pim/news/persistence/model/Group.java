@@ -18,31 +18,27 @@ package org.luwrain.pim.news.persistence.model;
 
 import java.util.*;
 import lombok.*;
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor
-@Entity
-@Table (name = "group")
 public class Group
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
     private String name, mediaContentType;
     private int orderIndex, expireAfterDays;
 
     @Override public boolean equals(Object o)
     {
+	/*
 	if (o != null && o instanceof Group g)
 	    return id == g.id;
+	*/
 	return false;
     }
 
     @Override public int hashCode()
     {
-	return id;
+	return 0;//id;
     }
 
     @Override public String toString()

@@ -20,18 +20,12 @@ package org.luwrain.pim.mail.persistence.model;
 import java.util.*;
 
 import lombok.*;
-import jakarta.persistence.*;
 
 @Data
-@NoArgsConstructor
-@Entity
-@Table (name = "account")
 public class Account
 {
     public enum Type {POP3, SMTP};
 
-        @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
         private Type type = Type.POP3;
 

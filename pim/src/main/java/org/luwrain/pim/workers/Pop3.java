@@ -35,7 +35,7 @@ public class Pop3 implements Worker
 	    log.debug("fetching POP3 mail from " + accounts.size() + " accounts");
 	    for(final var a: accounts)
 	    {
-		log.debug("Fetching from: " + a.getName());
+		//		log.debug("Fetching from: " + a.getName());
 		final var decoder = new MessageDecoder();
 		final var pop3 = new org.luwrain.pim.mail.proto.Pop3(a);
 		pop3.getMessages((message, extData) -> {

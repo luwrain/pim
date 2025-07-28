@@ -26,7 +26,7 @@ public class FoldersTest
 {
     @Test public void main() throws Exception
     {
-	deleteAllFolders();
+	//	deleteAllFolders();
 	final var dao = getFolderDAO();
 	assertNotNull(dao);
 	var f = new Folder();
@@ -42,7 +42,7 @@ public class FoldersTest
 
         @Test public void parents() throws Exception
     {
-		deleteAllFolders();
+	//		deleteAllFolders();
 	final var dao = getFolderDAO();
 	assertNotNull(dao);
 	final var f1 = new Folder();

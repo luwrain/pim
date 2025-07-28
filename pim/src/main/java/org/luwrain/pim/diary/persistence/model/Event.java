@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -18,31 +18,27 @@ package org.luwrain.pim.diary.persistence.model;
 
 import java.util.*;
 import lombok.*;
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 
 @Data
-@NoArgsConstructor
-@Entity
-@Table (name = "event")
 public class Event
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     private String title, comment;
     private long dateTime;
     private int durationMin;
 
     @Override public boolean equals(Object o)
     {
+	/*
 	if (o != null && o instanceof Event e)
 	    return id == e.id;
+	*/
 	return false;
     }
 
     @Override public int hashCode()
     {
-	return id;
+	return 0;//id;
     }
 
     @Override public String toString()
