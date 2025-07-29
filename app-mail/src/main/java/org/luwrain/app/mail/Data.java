@@ -19,6 +19,7 @@ package org.luwrain.app.mail;
 import java.util.*;
 import java.io.*;
 
+import org.luwrain.core.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.persistence.dao.*;
 import org.luwrain.pim.mail.persistence.model.*;
@@ -31,15 +32,19 @@ import static org.luwrain.util.TextUtils.*;
 public final class Data
 {
     public final Strings strings;
-    public final FolderDAO folderDAO = MailPersistence.getFolderDAO();
-    public final MessageDAO messageDAO = MailPersistence.getMessageDAO();
-    public final AccountDAO accountDAO = MailPersistence.getAccountDAO();
+    public final FolderDAO folderDAO;
+    public final MessageDAO messageDAO;
+    public final AccountDAO accountDAO;
     final File userSettingsFile;
     final List<String> messageLines = new ArrayList<>();
     final List<MessageContentItem> messageAttachments = new ArrayList<>();
 
-    Data(Strings strings, File userSettingsFile)
+    Data(Luwrain luwrain, Strings strings, File userSettingsFile)
     {
+	final var persist = luwrain.createInstance(MailPersistence.class);
+folderDAO = persist.getFolderDAO();
+messageDAO = persist.getMessageDAO();
+accountDAO = persist.getAccountDAO();
 	this.strings = strings;
 	this.userSettingsFile = userSettingsFile;
 	if (folderDAO.getRoot() == null)

@@ -6,10 +6,12 @@ import org.apache.logging.log4j.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.persistence.model.*;
-import org.luwrain.pim.mail.persistence.dao.*;
+//import org.luwrain.pim.mail.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.*;
 
+import static java.util.Objects.*;
 import static org.luwrain.core.NullCheck.*;
-import static org.luwrain.pim.mail.persistence.MailPersistence.*;
+//import static org.luwrain.pim.mail.persistence.MailPersistence.*;
 import static org.luwrain.pim.Hooks.*;
 
 public class Pop3 implements Worker
@@ -23,14 +25,14 @@ public class Pop3 implements Worker
 
         public Pop3(Luwrain luwrain)
     {
-	notNull(luwrain, "luwrain");
-	this.luwrain = luwrain;
+	this.luwrain = requireNonNull(luwrain, "luwrain can't be null");
     }
 
     @Override public void run()
     {
 	try {
-	    final var accountDAO = getAccountDAO();
+	    final var persist = luwrain.createInstance(MailPersistence.class);
+	    final var accountDAO = persist.getAccountDAO();
 	    final var accounts = accountDAO.getAll();
 	    log.debug("fetching POP3 mail from " + accounts.size() + " accounts");
 	    for(final var a: accounts)

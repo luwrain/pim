@@ -43,7 +43,7 @@ public final class App extends AppBase<Strings> implements MonoApp
     @Override protected AreaLayout onAppInit()
     {
 	this.hooks = new Hooks(getLuwrain());
-	this.data = new Data(getStrings(), new File(getLuwrain().getFileProperty(Luwrain.PROP_DIR_USERHOME), ".luwrain-defaults.conf"));
+	this.data = new Data(getLuwrain(), getStrings(), new File(getLuwrain().getFileProperty(Luwrain.PROP_DIR_USERHOME), ".luwrain-defaults.conf"));
 	this.conv = new Conv(this);
 	this.mainLayout = new MainLayout(this, data);
 	this.startingLayout = new StartingLayout(this);

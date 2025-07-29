@@ -32,8 +32,10 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
+import org.luwrain.pim.mail.persistence.*;
 import org.luwrain.pim.mail.persistence.dao.*;
 
+import static java.util.Objects.*;
 import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.script.ScriptUtils.*;
 import static org.luwrain.pim.mail.persistence.MailPersistence.*;
@@ -48,9 +50,10 @@ public final class MailObj
 
     public MailObj(Luwrain luwrain)
     {
-	notNull(luwrain, "luwrain");
-	this.folderDAO = getFolderDAO();
-	this.messageDAO = getMessageDAO();
+	requireNonNull(luwrain, "luwrain can't be null");
+	final var persist = luwrain.createInstance(MailPersistence.class);
+	this.folderDAO = persist.getFolderDAO();
+	this.messageDAO = persist.getMessageDAO();
     }
 
     @HostAccess.Export

@@ -24,6 +24,7 @@ import org.luwrain.cpanel.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.*;
 import org.luwrain.pim.mail.persistence.dao.*;
 import org.luwrain.settings.mail.*;
 
@@ -44,7 +45,7 @@ public final class Accounts
 
     public org.luwrain.cpanel.Element[] getAccountsElements(Element parent)
     {
-	final var accounts = getAccountDAO().getAll();
+	final var accounts = luwrain.createInstance(MailPersistence.class).getAccountDAO().getAll();
 	final var res = new ArrayList<Element>();
 	for(var a: accounts)
 	    res.add(new AccountElement(parent, a.getId(), a.getName()));
@@ -82,7 +83,7 @@ public final class Accounts
 	    account.setSsl(true);
 	    break;
 	}
-	getAccountDAO().add(account);
+	luwrain.createInstance(MailPersistence.class).getAccountDAO().add(account);
 	controlPanel.refreshSectionsTree();
 	return true;
     }
@@ -91,12 +92,13 @@ public final class Accounts
     {
 	if (id < 0)
 	    return false;
-	final Account account = getAccountDAO().getById(id);
+	final var persist = luwrain.createInstance(MailPersistence.class);
+	final Account account = persist.getAccountDAO().getById(id);
 	if (account == null)
 	    return false;
 	if (conv.confirmAccountDeleting(account.getName()))
 	{
-	    getAccountDAO().delete(account);
+	    persist.getAccountDAO().delete(account);
 	    controlPanel.refreshSectionsTree();
 	}
 	return true;

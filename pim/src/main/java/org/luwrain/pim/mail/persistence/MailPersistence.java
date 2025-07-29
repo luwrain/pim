@@ -1,16 +1,42 @@
+/*
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
+
 package org.luwrain.pim.mail.persistence;
 
 import java.util.*;
-import java.util.concurrent.atomic.*;
 
-import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.storage.*;
 import org.luwrain.pim.mail.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.model.*;
 
-import static org.luwrain.core.NullCheck.*;
+import static java.util.Objects.*;
+import static org.luwrain.pim.storage.ExecQueues.*;
 
 public final class MailPersistence
 {
-    static public AccountDAO getAccountDAO()
+    final ExecQueues queues;
+    private Priority priority = Priority.MEDIUM;
+
+    public MailPersistence(ExecQueues queues)
+    {
+	this.queues = requireNonNull(queues, "queues can't be null");
+    }
+
+public AccountDAO getAccountDAO()
     {
 	return new AccountDAO(){
 	    @Override public Account getById(int id)
@@ -36,7 +62,7 @@ public final class MailPersistence
 	};
     }
 
-            static public FolderDAO getFolderDAO()
+public FolderDAO getFolderDAO()
     {
 	return new FolderDAO(){
 	    @Override public void add(Folder folder)
@@ -73,7 +99,7 @@ public final class MailPersistence
 	};
     }
 
-        static public MessageDAO getMessageDAO()
+public MessageDAO getMessageDAO()
     {
 	return new MessageDAO(){
 	    @Override public void add(MessageMetadata message)
@@ -97,16 +123,23 @@ public final class MailPersistence
 	    {
     }
 
-    static void deleteAllFolders()
+void deleteAllFolders()
     {
 
     }
 
-        static void deleteAllAccounts()
+void deleteAllAccounts()
     {
 }
 	};
 	}
     
-}
 
+
+    
+
+    public void setPriority(Priority priority)
+    {
+	this.priority = requireNonNull(priority, "priority can't be null");
+    }
+}

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2023 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -20,19 +20,22 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.*;
+import org.luwrain.pim.mail.persistence.*;
 import org.luwrain.pim.mail.persistence.dao.*;
 
 import static org.luwrain.pim.mail.persistence.MailPersistence.*;
 
 public final class AccountSection implements Section
 {
+    final Luwrain luwrain;
     final Accounts accounts;
     final AccountElement element;
     final String title;
     final int id;
 
-    public AccountSection(Accounts accounts, AccountElement element)
+    public AccountSection(Luwrain luwrain, Accounts accounts, AccountElement element)
     {
+	this.luwrain = luwrain;
 	this.accounts = accounts;
 	this.element = element;
 	this.title = element.title;
@@ -41,8 +44,9 @@ public final class AccountSection implements Section
 
     @Override public SectionArea getSectionArea(ControlPanel controlPanel)
     {
+	final var persist = luwrain.createInstance(MailPersistence.class);
 	final Luwrain luwrain = controlPanel.getCoreInterface();
-	final AccountDAO dao = getAccountDAO();
+	final AccountDAO dao = persist.getAccountDAO();
 	return new Area(controlPanel, accounts.strings, dao, dao.getById(id));
     }
 

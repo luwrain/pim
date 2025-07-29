@@ -21,6 +21,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.app.base.*;
 import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail.persistence.*;
 import org.luwrain.pim.contacts.*;
 
 import static org.luwrain.pim.mail.persistence.MailPersistence.*;
@@ -50,8 +51,9 @@ public final class App extends AppBase<Strings>
     @Override protected AreaLayout onAppInit()
     {
 	this.sett = null;//FIXME:newreg org.luwrain.pim.mail.Settings.create(getLuwrain().getRegistry());
+	final var persist = getLuwrain().createInstance(MailPersistence.class); 
 //	this.mailStoring = org.luwrain.pim.Connections.getMailStoring(getLuwrain(), true);
-	this.folderDAO = getFolderDAO();
+	this.folderDAO = persist.getFolderDAO();
 	this.contactsStoring = org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
 	if (contactsStoring == null)
 	    return null;

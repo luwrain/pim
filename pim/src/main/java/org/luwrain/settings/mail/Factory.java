@@ -69,7 +69,7 @@ public final class Factory implements org.luwrain.cpanel.Factory
 	if (el.equals(accountsElement))
 	    return new AccountsSection(accounts, el);
 	if (el instanceof AccountElement)
-	    return new AccountSection(accounts, (AccountElement)el);
+	    return new AccountSection(luwrain, accounts, (AccountElement)el);
 	return null;
     }
 

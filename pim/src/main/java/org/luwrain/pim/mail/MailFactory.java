@@ -24,6 +24,7 @@ import org.h2.mvstore.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.storage.*;
+import org.luwrain.pim.mail.persistence.*;
 
 import static java.util.Objects.*;
 
