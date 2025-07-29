@@ -15,20 +15,25 @@
    General Public License for more details.
 */
 
-package org.luwrain.pim;
+package org.luwrain.pim.mail;
 
-import org.luwrain.core.*;
+import org.luwrain.pim.storage.*;
 
-public final class PimObjFactory implements ObjFactory
+import static java.util.Objects.*;
+import static org.luwrain.pim.storage.ExecQueues.*;
+
+public final class MailPersistence
 {
-    @Override public String getExtObjName()
+    final ExecQueues queues;
+    private Priority priority = Priority.MEDIUM;
+
+    MailPersistence(ExecQueues queues)
     {
-	return "luwrain.pim.factory";
+	this.queues = requireNonNull(queues, "queues can't be null");
     }
 
-    
-@Override public Object newObject(String name)
+    public void setPriority(Priority priority)
     {
-	return null;
+	this.priority = requireNonNull(priority, "priority can't be null");
     }
 }

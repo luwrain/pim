@@ -17,6 +17,7 @@
 
 package org.luwrain.pim;
 
+import java.nio.file.*;
 import com.google.auto.service.*;
 
 import org.luwrain.core.*;
@@ -29,12 +30,14 @@ import org.luwrain.pim.mail.script.*;
 public final class Extension extends EmptyExtension
 {
     private final PimObjFactory objFactory = new PimObjFactory();
+    private MailFactory mailFactory = null;
     private org.luwrain.pim.workers.News newsWorker = null;
     private org.luwrain.pim.workers.Smtp smtpWorker = null;
     private org.luwrain.pim.workers.Pop3 pop3Worker = null;
 
     @Override public String init(Luwrain luwrain)
     {
+	mailFactory = new MailFactory(Paths.get(luwrain.getPath("var:luwrain.pim.mail")));
 	//	Connections.init(luwrain);
 	this.newsWorker = new org.luwrain.pim.workers.News(luwrain);
 	this.smtpWorker = new org.luwrain.pim.workers.Smtp(luwrain);

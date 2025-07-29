@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -19,15 +19,15 @@ package org.luwrain.pim.storage;
 
 import java.util.*;
 import java.util.concurrent.*;
+import static java.util.Objects.*;
 
-import org.luwrain.core.*;
-
-import static org.luwrain.core.NullCheck.*;
-
-final class ExecQueues implements Runnable
+public final class ExecQueues implements Runnable, AutoCloseable
 {
-    private final ConcurrentLinkedQueue<FutureTask> lowPriorityQueue = new ConcurrentLinkedQueue<>();
-    private final ConcurrentLinkedQueue<FutureTask> highPriorityQueue = new ConcurrentLinkedQueue<>();
+    public enum Priority {HIGH, MEDIUM};
+
+    private final ConcurrentLinkedQueue<FutureTask>
+	mediumPriorityQueue = new ConcurrentLinkedQueue<>(),
+	highPriorityQueue = new ConcurrentLinkedQueue<>();
     private final Object syncObj = new Object();
     private final Thread thread;
     private volatile boolean cancelling = false;
@@ -39,12 +39,21 @@ final class ExecQueues implements Runnable
 	thread.start();
     }
 
-    public <T> T execHighPriority(FutureTask<T> task) throws Exception
+    public <T> T exec(Priority priority, FutureTask<T> task) throws Exception
     {
-notNull(task, "task");
+	requireNonNull(priority, "priority");
+requireNonNull(task, "task can't be null");
 		synchronized(syncObj)
 	{
-	    lowPriorityQueue.add(task);
+	    switch(priority)
+	    {
+		case MEDIUM:
+	    mediumPriorityQueue.add(task);
+	    break;
+	    case HIGH:
+			    highPriorityQueue.add(task);
+			    break;
+	    }
 	    syncObj.notifyAll();
 	}
 	try {
@@ -63,8 +72,7 @@ notNull(task, "task");
 	}
     }
 
-
-    public void cancel()
+    @Override public void close()
     {
 	synchronized(syncObj)
 	{
@@ -80,7 +88,7 @@ notNull(task, "task");
 	    synchronized(syncObj)
 	    {
 		try {
-		    while (highPriorityQueue.isEmpty() && lowPriorityQueue.isEmpty() && !cancelling)
+		    while (highPriorityQueue.isEmpty() && mediumPriorityQueue.isEmpty() && !cancelling)
 			syncObj.wait();
 		}
 		catch(InterruptedException e)
@@ -91,21 +99,39 @@ notNull(task, "task");
 	    }
 	    if (cancelling)
 		return;
-	    while (!highPriorityQueue.isEmpty() || !lowPriorityQueue.isEmpty())
+	    while (!highPriorityQueue.isEmpty() || !mediumPriorityQueue.isEmpty())
 	    {
 		if (cancelling)
 		    return;
 		while(!highPriorityQueue.isEmpty())
 		{
-		    final FutureTask task = highPriorityQueue.poll();
+		    final var task = highPriorityQueue.poll();
 		    task.run();
 		}
-		if(!lowPriorityQueue.isEmpty())
+		if(!mediumPriorityQueue.isEmpty())
 		{
-		    final FutureTask task = lowPriorityQueue.poll();
+		    final var task = mediumPriorityQueue.poll();
 		    task.run();
 		}
 	    }
+	}
+    }
+
+    static public final class Runner
+    {
+	final ExecQueues queues;
+	final Priority priority;
+
+	public Runner(ExecQueues queues, Priority priority)
+	{
+	    this.queues = requireNonNull(queues, "queues can't be null");
+	    this.priority = requireNonNull(priority, "[priority can't be null");
+	}
+
+	public <T> T run(FutureTask<T> task) throws Exception
+	{
+	    requireNonNull(task, "task can't be null");
+	    return queues.exec(priority, task);
 	}
     }
 }

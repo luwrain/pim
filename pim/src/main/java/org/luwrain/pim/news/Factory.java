@@ -30,7 +30,7 @@ public final class Factory implements AutoCloseable
 	DATA_FILE = "news.nitrite";
 
     private final Luwrain luwrain;
-    private final ExecQueues execQueues = new ExecQueues();
+    private final org.luwrain.pim.ExecQueues execQueues = new org.luwrain.pim.ExecQueues();
     private final NitriteStorage<org.luwrain.pim.news.nitrite.Article> storage;
 
     public Factory(Luwrain luwrain)
