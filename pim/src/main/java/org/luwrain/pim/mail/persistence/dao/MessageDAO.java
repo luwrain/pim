@@ -21,7 +21,7 @@ import org.luwrain.pim.mail.persistence.model.*;
 
 public interface MessageDAO
 {
-    void add(MessageMetadata message);
+    long add(MessageMetadata message);
     void delete(MessageMetadata message);
     List<MessageMetadata> getAll();
         List<MessageMetadata> getByFolderId(int folderId);

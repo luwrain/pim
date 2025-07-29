@@ -25,13 +25,11 @@ public class MessageMetadata
 {
     public enum State {NEW, READ, MARKED, DELETED};
 
+    private long id;
     private State state;
     private int folderId;
-    private String
-	messageId, subject, fromAddr;
-    private String content;
+    private String messageId, subject, fromAddr, content;
     private long sentTimestamp;
-    private List<String> toAddr;
-    private List<String> ccAddr;
+    private List<String> toAddr, ccAddr;
     private transient String title;
-    }
+}

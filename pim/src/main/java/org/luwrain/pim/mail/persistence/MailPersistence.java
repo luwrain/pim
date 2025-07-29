@@ -34,6 +34,7 @@ public final class MailPersistence
     private Priority priority = Priority.MEDIUM;
     private Runner runner = null;
     private final MVMap<Integer, Account> accountsMap = null;
+        private final MVMap<Long, MessageMetadata> messagesMap = null;
 
     public MailPersistence(ExecQueues queues)
     {
@@ -95,30 +96,30 @@ public FolderDAO getFolderDAO()
 	    @Override public void add(Folder folder)
 	    {
 			    }
-	    
+
 	    	        @Override public List<Folder> getAll()
 	    {
 		return null;
 			    }
-	    
+
 	    	    	        @Override public List<Folder> getChildFolders(Folder folder)
 	    {
 		return null;
 	    }
-	    
+
 	    	    @Override public void update(Folder folder)
 	    {
 	    }
-	    
+
 	    @Override public Folder getRoot()
 	    {
 		return null;
 			    }
-	    
+
 	    	    	    	        @Override public void setRoot(Folder folder)
 	    {
 	    }
-	    
+
 	    @Override public Folder findFirstByProperty(String propName, String propValue)
 	    {
 		return null;
@@ -129,25 +130,52 @@ public FolderDAO getFolderDAO()
 public MessageDAO getMessageDAO()
     {
 	return new MessageDAO(){
-	    @Override public void add(MessageMetadata message)
+	    @Override public long add(MessageMetadata message)
 	    {
+		requireNonNull(message, "message can't be null");
+		return runner.run(new FutureTask<>( () -> {
+			    final var maxKey = messagesMap.floorKey(Long.MAX_VALUE);
+			    final long newId = maxKey.longValue() + 1;
+			    message.setId(newId);
+			    messagesMap.put(Long.valueOf(newId), message);
+			    return Long.valueOf(newId);
+		})).longValue();
 			    }
-	    
+
 	    	    @Override public void delete(MessageMetadata message)
 	    {
+		requireNonNull(message, "message can't be null");
+		if (message.getId() < 0)
+		    throw new IllegalArgumentException("A message can't has negative ID");
+		runner.run(new FutureTask<>( () -> messagesMap.remove(Long.valueOf(message.getId())) ));
 	    }
-	    
+
 	    	        @Override public List<MessageMetadata> getAll()
 	    {
-		return null;
+				return runner.run(new FutureTask<>( () -> {
+					    return messagesMap.entrySet().stream()
+					    .map( e -> e.getValue() )
+					    .toList();
+		}));
 			    }
+
 	    	    	        @Override public List<MessageMetadata> getByFolderId(int folderId)
 	    {
-		return null;
+				return runner.run(new FutureTask<>( () -> {
+					    return messagesMap.entrySet().stream()
+					    .map( e -> e.getValue() )
+					    .toList();
+		}));
 			    }
-	    
+
 	    @Override public void update(MessageMetadata message)
 	    {
+		requireNonNull(message, "message can't be null");
+		if (message.getId() < 0)
+		    throw new IllegalArgumentException("A message can't have negative ID");
+runner.run(new FutureTask<Object>( () -> {
+					    messagesMap.put(Long.valueOf(message.getId()), message);
+}, null));
     }
 
 void deleteAllFolders()
@@ -160,10 +188,6 @@ void deleteAllAccounts()
 }
 	};
 	}
-    
-
-
-    
 
     public void setPriority(Priority priority)
     {
