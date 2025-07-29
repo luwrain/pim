@@ -128,10 +128,16 @@ requireNonNull(task, "task can't be null");
 	    this.priority = requireNonNull(priority, "[priority can't be null");
 	}
 
-	public <T> T run(FutureTask<T> task) throws Exception
+	public <T> T run(FutureTask<T> task)
 	{
 	    requireNonNull(task, "task can't be null");
-	    return queues.exec(priority, task);
+	    try {
+		return queues.exec(priority, task);
+	    }
+	    catch(Exception ex)
+	    {
+		throw new RuntimeException(ex);
+	    }
 	}
     }
 }

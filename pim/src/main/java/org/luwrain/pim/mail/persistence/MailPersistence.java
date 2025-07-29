@@ -18,6 +18,8 @@
 package org.luwrain.pim.mail.persistence;
 
 import java.util.*;
+import java.util.concurrent.*;
+import org.h2.mvstore.*;
 
 import org.luwrain.pim.storage.*;
 import org.luwrain.pim.mail.persistence.dao.*;
@@ -30,35 +32,60 @@ public final class MailPersistence
 {
     final ExecQueues queues;
     private Priority priority = Priority.MEDIUM;
+    private Runner runner = null;
+    private final MVMap<Integer, Account> accountsMap = null;
 
     public MailPersistence(ExecQueues queues)
     {
 	this.queues = requireNonNull(queues, "queues can't be null");
+	this.runner = new Runner(queues, priority);
     }
 
-public AccountDAO getAccountDAO()
+    public AccountDAO getAccountDAO()
     {
 	return new AccountDAO(){
 	    @Override public Account getById(int id)
 	    {
-		return null;
-					    }
-	    
-	    	    	    @Override public void delete(Account account)
-	    {
+		if (id < 0)
+		    throw new IllegalArgumentException("id can't be negative");
+		return runner.run(new FutureTask<>(() ->  accountsMap.get(Integer.valueOf(id)) ));
 	    }
-	    
-	    @Override public void add(Account account)
+
+	    @Override public void delete(Account account)
 	    {
+		requireNonNull(account, "account can't be null");
+		if (account.getId() < 0)
+		    throw new IllegalArgumentException("An account can't have negative ID");
+		runner.run(new FutureTask<>(() -> accountsMap.remove(Integer.valueOf(account.getId())) ));
 	    }
-	        @Override public List<Account> getAll()
+
+	    @Override public int add(Account account)
 	    {
-		return null;
-			    }
-	    
-	    	        @Override public void update(Account account)
+		requireNonNull(account, "account can't be null");
+		return runner.run(new FutureTask<>( () -> {
+			    final Integer maxKey = accountsMap.floorKey(Integer.MAX_VALUE);
+			    account.setId(maxKey.intValue() + 1);
+			    accountsMap.put(Integer.valueOf(account.getId()), account);
+			    return Integer.valueOf(account.getId());
+		})).intValue();
+	    }
+
+	    @Override public List<Account> getAll()
 	    {
-			    }
+		return runner.run(new FutureTask<>( () -> {
+			    return accountsMap.entrySet().stream()
+			    .map(e -> e.getValue())
+			    .toList();
+		}));
+	    }
+
+	    @Override public void update(Account account)
+	    {
+		requireNonNull(account, "account can't be null");
+		if (account.getId() < 0)
+		    throw new IllegalArgumentException("An account can't have negative ID");
+		runner.run(new FutureTask<Object>( () ->  accountsMap.put(Integer.valueOf(account.getId()), account), null));
+	    }
 	};
     }
 
@@ -141,5 +168,6 @@ void deleteAllAccounts()
     public void setPriority(Priority priority)
     {
 	this.priority = requireNonNull(priority, "priority can't be null");
+	this.runner = new Runner(queues, priority);
     }
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -21,7 +21,7 @@ import org.luwrain.pim.mail.persistence.model.*;
 
 public interface AccountDAO
 {
-    void add(Account account);
+    int add(Account account);
     void delete(Account account);
     Account getById(int id);
     List<Account> getAll();
