@@ -24,17 +24,21 @@ import org.h2.mvstore.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.storage.*;
 import org.luwrain.pim.mail.persistence.*;
+import org.luwrain.pim.mail.persistence.model.*;
 
 import static java.util.Objects.*;
 
-public final class MailFactory implements ObjFactory
+public final class MailFactory implements ObjFactory, AutoCloseable
 {
     static private final Logger log = LogManager.getLogger();
 
     final Path path;
     final ExecQueues queues = new ExecQueues();
     private final MVStore store;
-    private final MVMap<String, String> messagesMap;
+    private final MVMap<Integer, Account> accountsMap;
+            private final MVMap<Integer, Folder> foldersMap;
+        private final MVMap<Long, MessageMetadata> messagesMap;
+    private final MVMap<String, Long> keysMap;
 
     public MailFactory(Path path)
     {
@@ -43,6 +47,9 @@ public final class MailFactory implements ObjFactory
 	log.trace("Opening the mail database in " + dbFile);
 	this.store = MVStore.open(dbFile);
 	this.messagesMap = store.openMap("messages");
+		this.foldersMap = store.openMap("folders");
+				this.accountsMap = store.openMap("accounts");
+				this.keysMap = store.openMap("keys");
     }
 
     @Override public String getExtObjName()
@@ -52,6 +59,11 @@ public final class MailFactory implements ObjFactory
 
     @Override public Object newObject(String name)
     {
-	return new MailPersistence(queues);
+	return new MailPersistence(queues, accountsMap, foldersMap, messagesMap, keysMap);
+    }
+
+    @Override public void close()
+    {
+	queues.close();
     }
 }

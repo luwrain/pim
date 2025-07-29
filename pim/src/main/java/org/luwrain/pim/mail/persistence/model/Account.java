@@ -18,11 +18,11 @@
 package org.luwrain.pim.mail.persistence.model;
 
 import java.util.*;
-
+import java.io.*;
 import lombok.*;
 
 @Data
-public class Account
+public class Account implements Serializable
 {
     public enum Type {POP3, SMTP};
 

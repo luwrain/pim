@@ -36,7 +36,7 @@ public final class App extends AppBase<Strings> implements MonoApp
     @Override protected AreaLayout onAppInit() throws Exception
     {
 	this.conv = new Conversations(this);
-	this.storing = org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
+	this.storing = null;//org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
 	return mainLayout.getAreaLayout();

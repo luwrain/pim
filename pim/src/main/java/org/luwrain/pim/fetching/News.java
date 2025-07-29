@@ -34,7 +34,7 @@ public final class News extends Base
     public News(Control control, Strings strings)
     {
 	super(control, strings);
-	this.storing = org.luwrain.pim.Connections.getNewsStoring(control.luwrain(), false);
+	this.storing = null; //FIXME:org.luwrain.pim.Connections.getNewsStoring(control.luwrain(), false);
     }
 
     public void fetch() throws InterruptedException

@@ -54,7 +54,7 @@ public final class App extends AppBase<Strings>
 	final var persist = getLuwrain().createInstance(MailPersistence.class); 
 //	this.mailStoring = org.luwrain.pim.Connections.getMailStoring(getLuwrain(), true);
 	this.folderDAO = persist.getFolderDAO();
-	this.contactsStoring = org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
+	this.contactsStoring = null;//org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
 	if (contactsStoring == null)
 	    return null;
 	this.conv = new Conv(this);

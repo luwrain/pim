@@ -21,11 +21,10 @@ import org.luwrain.pim.mail.persistence.model.*;
 
 public interface FolderDAO
 {
-    void add(Folder folder);
+    int add(Folder folder);
     List<Folder> getAll();
     List<Folder> getChildFolders(Folder folder);
     void update(Folder folder);
     Folder getRoot();
-    void setRoot(Folder folder);
     Folder findFirstByProperty(String propName, String propValue);
 }

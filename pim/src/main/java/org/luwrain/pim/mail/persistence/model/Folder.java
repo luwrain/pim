@@ -21,19 +21,14 @@ import java.util.*;
 import java.io.*;
 import org.apache.logging.log4j.*;
 import lombok.*;
-//import jakarta.persistence.*;
 
 @Data
-public class Folder
+public class Folder implements Serializable
 {
     static private final Logger log = LogManager.getLogger();
 
-    private int id;
-    
-    private String name;
-    private int parentFolderId, deleteReadMessagesAfterDays;
-
-    private String propsText;
+    private int id, parentFolderId, deleteReadMessagesAfterDays;
+    private String name, propsText;
     private transient Properties properties;
 
     public Properties getProperties()

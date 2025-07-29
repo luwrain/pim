@@ -41,7 +41,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override public AreaLayout onAppInit() throws Exception
     {
-	this.storing = org.luwrain.pim.Connections.getNewsStoring(getLuwrain(), true);
+	this.storing = null;//org.luwrain.pim.Connections.getNewsStoring(getLuwrain(), true);
 	if (storing == null)
 	    throw new Exception("No news storing");
 		this.conv = new Conv(this);

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -42,14 +42,15 @@ public final class Data
     Data(Luwrain luwrain, Strings strings, File userSettingsFile)
     {
 	final var persist = luwrain.createInstance(MailPersistence.class);
-folderDAO = persist.getFolderDAO();
-messageDAO = persist.getMessageDAO();
-accountDAO = persist.getAccountDAO();
+	folderDAO = persist.getFolderDAO();
+	messageDAO = persist.getMessageDAO();
+	accountDAO = persist.getAccountDAO();
 	this.strings = strings;
 	this.userSettingsFile = userSettingsFile;
 	if (folderDAO.getRoot() == null)
 	    createInitialFolders();
 	/*
+	    createInitialFolders();
 	if (accountDAO.getAll().isEmpty() && userSettingsFile != null )
 	    createInitialAccounts();
 	*/
@@ -98,11 +99,13 @@ accountDAO = persist.getAccountDAO();
 
     private void createInitialFolders()
     {
+
 	final var t = "true";
 	final var root = new Folder();
 	root.setName("Почтовые группы");
+	root.setId(0);
+	root.setParentFolderId(0);
 	folderDAO.add(root);
-	folderDAO.setRoot(root);
 	var f = new Folder();
 	f.setName("Входящие");
 	f.getProperties().setProperty(DEFAULT_INCOMING, t);

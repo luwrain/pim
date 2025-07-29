@@ -33,12 +33,22 @@ public final class MailPersistence
     final ExecQueues queues;
     private Priority priority = Priority.MEDIUM;
     private Runner runner = null;
-    private final MVMap<Integer, Account> accountsMap = null;
-        private final MVMap<Long, MessageMetadata> messagesMap = null;
+    private final MVMap<Integer, Account> accountsMap ;
+            private final MVMap<Integer, Folder> foldersMap;
+        private final MVMap<Long, MessageMetadata> messagesMap;
+    private final MVMap<String, Long> keysMap;
 
-    public MailPersistence(ExecQueues queues)
+    public MailPersistence(ExecQueues queues,
+			   MVMap<Integer, Account> accountsMap,
+			   MVMap<Integer, Folder> foldersMap,
+			   MVMap<Long, MessageMetadata> messagesMap,
+			   MVMap<String, Long> keysMap)
     {
 	this.queues = requireNonNull(queues, "queues can't be null");
+			this.accountsMap = requireNonNull(accountsMap, "accountsMap can't be null");
+		this.foldersMap = requireNonNull(foldersMap, "foldersMap can't be null");
+	this.messagesMap = requireNonNull(messagesMap, "messagesMap can't be null");
+	this.keysMap = requireNonNull(keysMap, "keysMap can't be null");
 	this.runner = new Runner(queues, priority);
     }
 
@@ -73,11 +83,9 @@ public final class MailPersistence
 
 	    @Override public List<Account> getAll()
 	    {
-		return runner.run(new FutureTask<>( () -> {
-			    return accountsMap.entrySet().stream()
+		return runner.run(new FutureTask<>( () -> accountsMap.entrySet().stream()
 			    .map(e -> e.getValue())
-			    .toList();
-		}));
+			    .toList() ));
 	    }
 
 	    @Override public void update(Account account)
@@ -93,37 +101,69 @@ public final class MailPersistence
 public FolderDAO getFolderDAO()
     {
 	return new FolderDAO(){
-	    @Override public void add(Folder folder)
+	    @Override public int add(Folder folder)
 	    {
+		requireNonNull(folder, "folder can't be null");
+		return runner.run(new FutureTask<>( () -> {
+			    final int newId = getNewKey(Folder.class).intValue();
+			folder.setId(newId);
+			foldersMap.put(Integer.valueOf(newId), folder);
+			return Integer.valueOf(newId);
+		})).intValue();
 			    }
 
 	    	        @Override public List<Folder> getAll()
 	    {
-		return null;
+		return runner.run(new FutureTask<>( () -> foldersMap.entrySet().stream()
+			    .map( e -> e.getValue() )
+			    .toList() ));
 			    }
 
-	    	    	        @Override public List<Folder> getChildFolders(Folder folder)
+	    @Override public List<Folder> getChildFolders(Folder folder)
 	    {
-		return null;
+		requireNonNull(folder, "folder can't be null");
+		if (folder.getId() < 0)
+		    throw new IllegalArgumentException("A folder can't have negative ID");
+		final int id = folder.getId();
+				return runner.run(new FutureTask<>( () -> foldersMap.entrySet().stream()
+								    .filter( e -> (e.getValue().getParentFolderId() == id))
+			    .map( e -> e.getValue() )
+			    .toList() ));
+	    }
+
+	    	    @Override public Folder findFirstByProperty(String propName, String propValue)
+	    {
+		requireNonNull(propName, "propName can't be null");
+		requireNonNull(propValue, "propValue can't be null");
+		if (propName.isEmpty())
+		    throw new IllegalArgumentException("propName can't be empty");
+		return runner.run(new FutureTask<Folder>( () -> {
+			    final var res = foldersMap.entrySet().stream()
+										    .filter( e -> e.getValue().getProperties().getProperty(propName).equals(propValue)) //FIXME: no property
+			    .map( e -> e.getValue() )
+			    .findFirst();
+			    return res.isPresent()?res.get():null;
+			    }));
 	    }
 
 	    	    @Override public void update(Folder folder)
 	    {
+		requireNonNull(folder, "folder can't be null");
+		if (folder.getId() < 0)
+		    throw new IllegalArgumentException("A folder can't have negative ID");
+		runner.run(new FutureTask<Object>(() ->  foldersMap.put(Integer.valueOf(folder.getId()), folder), null));
 	    }
 
 	    @Override public Folder getRoot()
 	    {
-		return null;
+				return runner.run(new FutureTask<Folder>( () -> {
+			    final var res = foldersMap.entrySet().stream()
+			    .filter( e -> (e.getValue().getParentFolderId() ==  e.getValue().getId()))
+			    .map( e -> e.getValue() )
+			    .findFirst();
+			    return res.isPresent()?res.get():null;
+			    }));
 			    }
-
-	    	    	    	        @Override public void setRoot(Folder folder)
-	    {
-	    }
-
-	    @Override public Folder findFirstByProperty(String propName, String propValue)
-	    {
-		return null;
-	    }
 	};
     }
 
@@ -152,42 +192,54 @@ public MessageDAO getMessageDAO()
 
 	    	        @Override public List<MessageMetadata> getAll()
 	    {
-				return runner.run(new FutureTask<>( () -> {
-					    return messagesMap.entrySet().stream()
+				return runner.run(new FutureTask<>( () -> messagesMap.entrySet().stream()
 					    .map( e -> e.getValue() )
-					    .toList();
-		}));
+					    .toList() ));
 			    }
 
 	    	    	        @Override public List<MessageMetadata> getByFolderId(int folderId)
 	    {
-				return runner.run(new FutureTask<>( () -> {
-					    return messagesMap.entrySet().stream()
+						return runner.run(new FutureTask<>( () -> messagesMap.entrySet().stream()
+										    								    .filter( e -> e.getValue().getFolderId() == folderId )
 					    .map( e -> e.getValue() )
-					    .toList();
-		}));
-			    }
+					    .toList() ));
+									    }
 
 	    @Override public void update(MessageMetadata message)
 	    {
 		requireNonNull(message, "message can't be null");
 		if (message.getId() < 0)
 		    throw new IllegalArgumentException("A message can't have negative ID");
-runner.run(new FutureTask<Object>( () -> {
-					    messagesMap.put(Long.valueOf(message.getId()), message);
-}, null));
-    }
+		runner.run(new FutureTask<Object>( () -> messagesMap.put(Long.valueOf(message.getId()), message) , null));
+	    }
+	};
+	}
 
-void deleteAllFolders()
+public void deleteAllFolders()
     {
-
+	runner.run(new FutureTask<Object>( () -> foldersMap.clear(), null));
     }
 
 void deleteAllAccounts()
     {
 }
-	};
+
+    Long getNewKey(Class c)
+    {
+	final var res = keysMap.get(c.getName());
+	if (res == null)
+	{
+	    keysMap.put(c.getName(), Long.valueOf(0));
+	    return Long.valueOf(0);
 	}
+	final var newVal = Long.valueOf(res.longValue() + 1);
+	keysMap.put(c.getName(), newVal);
+	return newVal;
+    }
+
+    
+
+
 
     public void setPriority(Priority priority)
     {
