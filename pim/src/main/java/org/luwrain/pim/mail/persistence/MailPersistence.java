@@ -237,10 +237,6 @@ void deleteAllAccounts()
 	return newVal;
     }
 
-    
-
-
-
     public void setPriority(Priority priority)
     {
 	this.priority = requireNonNull(priority, "priority can't be null");

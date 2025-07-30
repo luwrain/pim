@@ -16,9 +16,12 @@
 
 package org.luwrain.pim.news.persistence.dao;
 
-import org.luwrain.pim.*;
+import java.util.*;
 import org.luwrain.pim.news.persistence.model.*;
 
-public interface GroupDAO extends BasicDAO<Group>
+public interface GroupDAO
 {
+    int add(Group group);
+    List<Group> getAll();
+    void update(Group group);
 }

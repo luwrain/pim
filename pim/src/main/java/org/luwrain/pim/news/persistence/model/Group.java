@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,13 +17,14 @@
 package org.luwrain.pim.news.persistence.model;
 
 import java.util.*;
+import java.io.*;
 import lombok.*;
-//import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor
-public class Group
+public class Group implements Serializable
 {
+    private int id;
     private String name, mediaContentType;
     private int orderIndex, expireAfterDays;
 

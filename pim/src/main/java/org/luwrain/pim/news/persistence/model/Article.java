@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,38 +17,32 @@
 package org.luwrain.pim.news.persistence.model;
 
 import java.util.*;
+import java.io.*;
 import lombok.*;
-//import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor
-public class Article
+public class Article implements Serializable
 {
     public enum Status { NEW, READ, MARKED };
 
+    private long id;
     private Status status;
     private String sourceUrl, sourceTitle, uri, title, extTitle, url, descr, author, categories;
-
     private long publishedTimestamp, updatedTimestamp;
 
-    private String content;
+    @ToString.Exclude
+	private String content;
 
     @Override public boolean equals(Object o)
     {
-	/*
 	if (o != null && o instanceof Article a)
 	    return id == a.id;
-	*/
 	return false;
     }
 
     @Override public int hashCode()
     {
-	return 0;//id;
-    }
-
-    @Override public String toString()
-    {
-	return title != null?title:"";
+	return Long.valueOf(id).intValue();
     }
 }
