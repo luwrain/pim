@@ -68,7 +68,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 
 	this.notesArea = new EditArea(editParams((params)->{
 		    params.name = app.getStrings().notesAreaName();
-		    params.appearance = new EditUtils.DefaultEditAreaAppearance(getControlContext());
+		    params.appearance = new DefaultEditAreaAppearance(getControlContext());
 		}));
 	final Actions notesActions = actions();
 
