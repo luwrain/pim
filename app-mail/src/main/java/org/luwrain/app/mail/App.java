@@ -33,7 +33,7 @@ public final class App extends AppBase<Strings> implements MonoApp
     private Data data = null;
     private Conv conv = null;
     private MainLayout mainLayout = null;
-    private StartingLayout startingLayout = null;
+    private GreetingLayout greetingLayout = null;
 
     public App()
     {
@@ -46,10 +46,13 @@ public final class App extends AppBase<Strings> implements MonoApp
 	this.data = new Data(getLuwrain(), getStrings(), new File(getLuwrain().getFileProperty(Luwrain.PROP_DIR_USERHOME), ".luwrain-defaults.conf"));
 	this.conv = new Conv(this);
 	this.mainLayout = new MainLayout(this, data);
-	this.startingLayout = new StartingLayout(this);
+
 	setAppName(getStrings().appName());
 	if (data.accountDAO.getAll().isEmpty())
-	    return startingLayout.getAreaLayout();
+	{
+	    	this.greetingLayout = new GreetingLayout(this);
+	    return greetingLayout.getAreaLayout();
+	}
 	return mainLayout.getAreaLayout();
     }
 
@@ -75,7 +78,6 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
     {
-	NullCheck.notNull(app, "app");
 	return MonoApp.Result.BRING_FOREGROUND;
     }
 

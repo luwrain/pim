@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -97,12 +97,6 @@ final class MainLayout extends LayoutBase implements TreeListArea.LeafClickHandl
 		}
 	    };
 
-	/*
-	final ReaderArea.Params messageParams = new ReaderArea.Params();
-	messageParams.context = getControlContext();
-	messageParams.name = app.getStrings().messageAreaName();
-	this.messageArea = new ReaderArea(messageParams){
-	*/
 	messageArea = new NavigationArea(getControlContext()){
 		@Override public String getAreaName() { return app.getStrings().messageAreaName(); }
 		@Override public String getLine(int index) { return index < data.messageLines.size()?data.messageLines.get(index):""; }
@@ -178,7 +172,6 @@ final class MainLayout extends LayoutBase implements TreeListArea.LeafClickHandl
 	final var m = data.getMessagesInLocalFolder(folder.getId());
 	if (!showDeleted)
 	{
-	    
 	}
 	this.summaryItems.addAll(app.getHooks().organizeSummary(m));
 	summaryArea.refresh();
