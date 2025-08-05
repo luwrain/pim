@@ -40,7 +40,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 	super(Strings.class, "luwrain.mail");
     }
 
-    @Override protected AreaLayout onAppInit()
+    @Override protected AreaLayout onAppInit() throws Exception
     {
 	this.hooks = new Hooks(getLuwrain());
 	this.data = new Data(getLuwrain(), getStrings(), new File(getLuwrain().getFileProperty(Luwrain.PROP_DIR_USERHOME), ".luwrain-defaults.conf"));

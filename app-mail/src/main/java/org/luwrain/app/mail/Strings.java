@@ -63,6 +63,7 @@ public interface Strings
 
     String wizardIntro();
     String wizardContinue();
+    String wizardSkip();
     String wizardMailAddr();
     String wizardMailAddrIsEmpty();
     String wizardMailAddrIsInvalid();

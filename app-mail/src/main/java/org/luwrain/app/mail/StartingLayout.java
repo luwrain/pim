@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
    Copyright 2015-2016 Roman Volovodov <gr.rPman@gmail.com>
 
    This file is part of LUWRAIN.
@@ -18,20 +18,25 @@
 package org.luwrain.app.mail;
 
 import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.io.*;
+//import java.util.concurrent.atomic.*;
 import org.apache.logging.log4j.*;
+import groovy.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
+import org.luwrain.controls.wizard.*;
 import org.luwrain.app.base.*;
 import org.luwrain.pim.mail.persistence.model.*;
 
-import org.luwrain.controls.WizardArea.Frame;
-import org.luwrain.controls.WizardArea.WizardValues;
+//import org.luwrain.controls.WizardArea.Frame;
+//import org.luwrain.controls.WizardArea.WizardValues;
 import org.luwrain.io.json.PopularMailServer;
 
 import static org.luwrain.core.DefaultEventResponse.*;
 import static org.luwrain.pim.mail.PopularServers.*;
+import static org.luwrain.util.ResourceUtils.*;
+
 
 final class StartingLayout extends LayoutBase
 {
@@ -39,17 +44,24 @@ final class StartingLayout extends LayoutBase
 
     final App app;
     final WizardArea wizardArea;
-    final Frame introFrame, passwordFrame;
-
+    //    final Frame introFrame, passwordFrame;
+    //
     private String mail = "", passwd = "";
-    private PopularMailServer preset = null;
+    //    private PopularMailServer preset = null;
+    private final WizardGroovyController controller;
 
-    StartingLayout(App app)
+    StartingLayout(App app) throws IOException
     {
 	super(app);
 	this.app = app;
-	this.wizardArea = new WizardArea(getControlContext()) ;
-	this.introFrame = wizardArea.newFrame()
+wizardArea = new WizardArea(getControlContext()) ;
+controller = new WizardGroovyController(getLuwrain(), wizardArea){
+	public Strings getStrings() { return app.getStrings(); }
+	public void skip() {app.layouts().main(); }
+    };
+	Eval.me("wizard", controller, getStringResource(this.getClass(), "greeting.groovy"));
+/*
+/this.introFrame = wizardArea.newFrame()
 	.addText(app.getStrings().wizardIntro())
 	.addInput(app.getStrings().wizardMailAddr(), "")
 	.addClickable(app.getStrings().wizardContinue(), this::onMailAddress);
@@ -58,8 +70,11 @@ final class StartingLayout extends LayoutBase
 	.addInput(app.getStrings().wizardPassword(), "")
 	.addClickable(app.getStrings().wizardContinue(), this::onPassword);
 	wizardArea.show(introFrame);
+*/
 	setAreaLayout(wizardArea, null);
     }
+
+    /*
 
     private boolean onMailAddress(WizardValues values)
     {
@@ -131,7 +146,6 @@ final class StartingLayout extends LayoutBase
 	    log.trace("Adding account " + a.toString());
 	    app.getData().accountDAO.add(a);
 	}
-	/*
 	this.smtp.setPasswd(password);
 	pop3.setPasswd(password);
 //	NullCheck.notNull(app.getStoring(), "storing");
@@ -139,7 +153,7 @@ final class StartingLayout extends LayoutBase
 //	app.getStoring().getAccounts().save(smtp);
 //	app.getStoring().getAccounts().save(pop3);
 	app.layouts().main();
-	*/
 	return true;
     }
+    */
 }
