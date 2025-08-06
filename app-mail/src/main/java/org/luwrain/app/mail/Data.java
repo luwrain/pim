@@ -89,7 +89,6 @@ public final class Data
 		messageAttachments.add(i);
 	    }
 	}
-	
 	    if (plain == null)
 		plain = plainAlternative;
 	    if (plain != null && plain.getText() != null)

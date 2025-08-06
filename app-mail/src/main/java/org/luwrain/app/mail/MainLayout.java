@@ -52,6 +52,7 @@ final class MainLayout extends LayoutBase implements TreeListArea.LeafClickHandl
 	super(app);
 	this.app = app;
 	this.data = data;
+	final var s = app.getStrings();
 
 	final TreeListArea.Params<Folder> treeParams = new TreeListArea.Params<>();
         treeParams.context = getControlContext();
@@ -126,12 +127,14 @@ final class MainLayout extends LayoutBase implements TreeListArea.LeafClickHandl
 		}
 	    };
 
+
 	final ActionInfo
-	fetchIncomingBkg = action("fetch-incoming-bkg", app.getStrings().actionFetchIncomingBkg(), new InputEvent(InputEvent.Special.F6), ()->{	getLuwrain().runWorker(org.luwrain.pim.workers.Pop3.NAME); return true;});
+	fetchIncomingBkg = action("fetch-incoming-bkg", s.actionFetchIncomingBkg(), new InputEvent(InputEvent.Special.F6), ()->{	getLuwrain().runWorker(org.luwrain.pim.workers.Pop3.NAME); return true;});
 
 	setAreaLayout(AreaLayout.LEFT_TOP_BOTTOM, foldersArea, actions(
-								       action("remove-folder", app.getStrings().actionRemoveFolder(), new InputEvent(InputEvent.Special.DELETE), this::actRemoveFolder),
-								       action("new-folder", app.getStrings().actionNewFolder(), new InputEvent(InputEvent.Special.INSERT), MainLayout.this::actNewFolder),
+								       action("remove-folder", s.actionRemoveFolder(), new InputEvent(InputEvent.Special.DELETE), this::actRemoveFolder),
+								       action("new-folder", s.actionNewFolder(), new InputEvent(InputEvent.Special.INSERT), MainLayout.this::actNewFolder),
+								       action("accounts", s.actionAccounts(), new InputEvent(InputEvent.Special.F11), () -> { app.setAreaLayout(new AccountsLayout(app, getReturnAction())); getLuwrain().announceActiveArea(); return true; })					       ,
 								       fetchIncomingBkg),
 
 		      summaryArea, actions(

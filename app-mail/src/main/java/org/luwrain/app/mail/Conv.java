@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,18 +19,32 @@ package org.luwrain.app.mail;
 import org.luwrain.core.*;
 import static org.luwrain.popups.Popups.*;
 
-final class Conv
+public final class Conv
 {
+    public enum NewAccountType { POP3, SMTP};
+
     final Luwrain luwrain;
-    final Strings strings;
+    final Strings s;
 
     Conv(App app)
     {
 	this.luwrain = app.getLuwrain();
-	this.strings = app.getStrings();
+	this.s = app.getStrings();
     }
 
-    String newFolderName() { return textNotEmpty(luwrain, strings.newFolderNamePopupName(), strings.newFolderNamePopupPrefix(), ""); }
-    boolean removeFolder() { return confirmDefaultNo(luwrain, strings.removeFolderPopupName(), strings.removeFolderPopupText()); }
-    boolean deleteMessageForever() { return confirmDefaultYes(luwrain, strings.deleteMessageForeverPopupName(), strings.deleteMessageForeverPopupText()); }
+    String newFolderName() { return textNotEmpty(luwrain, s.newFolderNamePopupName(), s.newFolderNamePopupPrefix(), ""); }
+    boolean removeFolder() { return confirmDefaultNo(luwrain, s.removeFolderPopupName(), s.removeFolderPopupText()); }
+    boolean deleteMessageForever() { return confirmDefaultYes(luwrain, s.deleteMessageForeverPopupName(), s.deleteMessageForeverPopupText()); }
+
+    public NewAccountType newAccountType()
+    {
+	final var res = (String)fixedList(luwrain, s.newAccountTypePopupName(), new String[] { s.newAccountTypePop3(), s.newAccountTypeSmtp() });
+	if (res == null)
+	    return null;
+	if (res.equals(s.newAccountTypePop3()))
+	    return NewAccountType.POP3;
+	if (res.equals(s.newAccountTypeSmtp()))
+	    return NewAccountType.SMTP;
+	return null;
+    }
 }

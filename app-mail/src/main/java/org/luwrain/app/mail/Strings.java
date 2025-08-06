@@ -25,10 +25,19 @@ public interface Strings
 {
     String appName();
 
+    String accountsAreaName();
+    String actionAccounts();
+    String actionNewAccount();
+    String newAccountTypePopupName();
+    String newAccountTypePop3();
+    String newAccountTypeSmtp();
+    String newAccountName();
+
     String foldersAreaName();
     String actionNewFolder();
     String newFolderNamePopupName();
     String newFolderNamePopupPrefix();
+    
     String actionRemoveFolder();
     String removeFolderPopupName();
     String removeFolderPopupText();
@@ -47,8 +56,8 @@ public interface Strings
     String messageUnmarked();
     String actionDeletedShow();
     String actionDeletedHide();
-    
-    
+
+
 
     String messageAreaAttachment();
     String messageAreaCc();

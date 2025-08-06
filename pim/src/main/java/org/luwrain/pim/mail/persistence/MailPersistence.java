@@ -74,10 +74,10 @@ public final class MailPersistence
 	    {
 		requireNonNull(account, "account can't be null");
 		return runner.run(new FutureTask<>( () -> {
-			    final Integer maxKey = accountsMap.floorKey(Integer.MAX_VALUE);
-			    account.setId(maxKey.intValue() + 1);
-			    accountsMap.put(Integer.valueOf(account.getId()), account);
-			    return Integer.valueOf(account.getId());
+			    final int newId = getNewKey(Account.class).intValue();
+			    account.setId(newId);
+			    accountsMap.put(Integer.valueOf(newId), account);
+			    return Integer.valueOf(newId);
 		})).intValue();
 	    }
 

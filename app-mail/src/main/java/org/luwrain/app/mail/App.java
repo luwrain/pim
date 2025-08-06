@@ -31,7 +31,7 @@ public final class App extends AppBase<Strings> implements MonoApp
     private Hooks hooks = null;
     //    private MailStoring storing = null;
     private Data data = null;
-    private Conv conv = null;
+    public Conv conv = null;
     private MainLayout mainLayout = null;
     private GreetingLayout greetingLayout = null;
 
