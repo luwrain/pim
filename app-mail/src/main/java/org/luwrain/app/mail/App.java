@@ -23,7 +23,9 @@ import org.luwrain.core.*;
 import org.luwrain.core.annotations.*;
 import org.luwrain.app.base.*;
 
-@AppNoArgs(name = "mail", title = {"en=Mail", "ru=Почта"} )
+@AppNoArgs(name = "mail",
+	   title = {"en=Mail", "ru=Почта"} ,
+	   category = StarterCategory.COMMUNICATIONS)
 public final class App extends AppBase<Strings> implements MonoApp
 {
     static final Logger log = LogManager.getLogger();
