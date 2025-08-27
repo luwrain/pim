@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-20255 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -27,6 +27,6 @@ public final class Extension extends EmptyExtension
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	return new Shortcut[]{ new SimpleShortcut("contacts", App.class) };
+	return new Shortcut[]{ new DefaultShortcut("contacts", App.class) };
     }
 }
