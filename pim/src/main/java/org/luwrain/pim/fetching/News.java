@@ -1,21 +1,6 @@
-/*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
-
-//LWR_API 1.0
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
+// Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
 package org.luwrain.pim.fetching;
 
@@ -25,33 +10,32 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.SystemEvent;
 import org.luwrain.pim.*;
-import org.luwrain.pim.news.*;
+import org.luwrain.pim.news.persist.*;
 
 public final class News extends Base
 {
-    private final NewsStoring storing;
+    private final NewsPersistence persist;
 
     public News(Control control, Strings strings)
     {
 	super(control, strings);
-	this.storing = null; //FIXME:org.luwrain.pim.Connections.getNewsStoring(control.luwrain(), false);
+	this.persist = control.luwrain().createInstance(NewsPersistence.class);
     }
 
     public void fetch() throws InterruptedException
     {
-	if (storing == null)
+	if (persist == null)
 	{
 	    message(strings.noNewsGroupsData());
 	    return;
 	}
-	final NewsGroup[] groups;
-	groups = storing.getGroups().load();
-	if (groups == null || groups.length < 1)
+	final var groups = persist.getGroupDAO().load();
+	if (groups.isEmpty())
 	{
 	    message(strings.noNewsGroups());
 	    return;
 	}
-	for(NewsGroup g: groups)
+	for(final var g: groups)
 	{
 	    removeOldArticles(g);
 	    checkInterrupted();
@@ -61,17 +45,17 @@ public final class News extends Base
 	}
     }
 
-    boolean 		fetchGroup(NewsGroup group) throws InterruptedException
+    boolean 		fetchGroup(Group group) throws InterruptedException
     {
-	final List<NewsArticle> freshNews = new ArrayList<>();
+	final var freshNews = new ArrayList<Article>();
 	int totalCount = 0;
-	final List<String> urls = group.getUrls();
+	final var urls = group.getUrls();
 	if (urls != null)
 	    for (String url: urls)
 		if (url != null && !url.trim().isEmpty())
 		{
 		    checkInterrupted();
-		    NewsArticle[] articles = null;
+		    final List<Article> articles;
 		    try {
 			articles = FeedUtils.readFeed(new URL(url.trim()));
 		    }
@@ -80,14 +64,14 @@ public final class News extends Base
 			message(strings.newsFetchingError(group.getName()) + ":" + e.getMessage());
 			return true;
 		    }
-		    totalCount += articles.length;
-		    for(NewsArticle a: articles)
-			if (storing.getArticles().countByUriInGroup(group, a.getUri()) == 0)
+		    totalCount += articles.size();
+		    for(final var a: articles)
+			if (persist.getArticleDAO().countByUriInGroup(group, a.getUri()) == 0)
 			    freshNews.add(a);
 		}
-	for(NewsArticle a: freshNews)
+	for(final var a: freshNews)
 	{
-	    storing.getArticles().save(group, a);
+	    persist.getArticleDAO().add(group, a);
 	    checkInterrupted();
 	}
 	if (freshNews.size() > 0 )
@@ -96,20 +80,19 @@ public final class News extends Base
 	return true;
     }
 
-    void removeOldArticles(NewsGroup group)
+    void removeOldArticles(Group group)
     {
-	final NewsArticle[] articles = storing.getArticles().load(group);
-	for(NewsArticle a: articles)
+	final var articles = persist.getArticleDAO().load(group);
+	for(final var a: articles)
 	if (isOldArticle(a))
-	    storing.getArticles().delete(group, a);
+	    persist.getArticleDAO().delete(group, a);
     }
 
-    boolean isOldArticle(NewsArticle article)
+    boolean isOldArticle(Article article)
     {
-
 	final Calendar cal = Calendar.getInstance();
 cal.add(Calendar.MONTH, -1);
 final Date result = cal.getTime();
-return (article.getPublishedDate().compareTo(result) < 0);
+return article.getPublishedTimestamp() < result.getTime();
     }
 }

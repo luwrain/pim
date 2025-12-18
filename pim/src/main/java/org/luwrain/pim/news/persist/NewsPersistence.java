@@ -1,41 +1,38 @@
-/*
-   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
+// Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
-
-package org.luwrain.pim.news.persistence;
+package org.luwrain.pim.news.persist;
 
 import java.util.*;
 import java.util.concurrent.*;
 import org.h2.mvstore.*;
 
 import org.luwrain.pim.storage.*;
-import org.luwrain.pim.news.persistence.model.*;
-import org.luwrain.pim.news.persistence.dao.*;
 
 import static java.util.Objects.*;
 import static org.luwrain.pim.storage.ExecQueues.*;
 
 public final class NewsPersistence
 {
-        final ExecQueues queues = null;
+    final ExecQueues queues;
     private Priority priority = Priority.MEDIUM;
-    private Runner runner = null;
-        private final MVMap<Integer, Group> groupsMap = null;
-            private final MVMap<Integer, Article> articlesMap = null;
-    private final MVMap<String, Long> keysMap = null;
+    private Runner runner;
+    private final MVMap<Integer, Group> groupsMap;
+    private final MVMap<Long, Article> articlesMap;
+    private final MVMap<String, Long> keysMap;
+    
+    public NewsPersistence(ExecQueues queues,
+			   MVMap<Integer, Group> groupsMap,
+			   MVMap<Long, Article> articlesMap,
+			   MVMap<String, Long> keysMap)
+    {
+	this.queues = requireNonNull(queues, "queues can't be null");
+	this.groupsMap = requireNonNull(groupsMap, "groupsMap can't be null");
+	this.articlesMap = requireNonNull(articlesMap, "articlesMap can't be null");
+	this.keysMap = requireNonNull(keysMap, "keysMap can't be null");
+	this.runner = new Runner(queues, priority);
+    }
 
 public GroupDAO getGroupDAO()
     {
@@ -51,7 +48,12 @@ public GroupDAO getGroupDAO()
 		})).intValue();
 	    }
 
-	    @Override public List<Group> getAll()
+	    @Override public void delete(Group group)
+	    {
+		//FIXME:
+	    }
+
+	    @Override public List<Group> load()
 	    {
 		return runner.run(new FutureTask<>( () -> groupsMap.entrySet().stream()
 						    .map( e -> e.getValue() )
@@ -66,6 +68,11 @@ public GroupDAO getGroupDAO()
 		runner.run(new FutureTask<Object>( () -> groupsMap.put(Integer.valueOf(group.getId()), group) , null));
 	    }
 	};
+    }
+
+    public ArticleDAO getArticleDAO()
+    {
+	return null;
     }
 
 

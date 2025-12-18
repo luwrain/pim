@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.app.message;
 
@@ -28,6 +13,8 @@ import org.luwrain.app.base.*;
 import org.luwrain .util.*;
 import org.luwrain.nlp.*;
 import org.luwrain.io.json.*;
+
+import static org.luwrain.util.TextUtils.*;
 
 final class MainLayout extends LayoutBase
 {
@@ -46,7 +33,7 @@ final class MainLayout extends LayoutBase
 	if (app.message.getText() != null)
 	    text.addAll(app.message.getText());
 	text.add("");
-	text.addAll(Arrays.asList(TextUtils.splitLinesAnySeparator(sett.getSignature(""))));
+	text.addAll(splitLinesAsList(sett.getSignature("")));
 	final MessageArea.Params params = new MessageArea.Params();
 	params.context = getControlContext();
 	params.name = app.getStrings().appName();

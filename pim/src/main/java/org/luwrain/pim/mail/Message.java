@@ -1,25 +1,13 @@
-/*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
+// Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
 package org.luwrain.pim.mail;
 
 import java.util.*;
 import java.io.*;
 import java.util.zip.*;
+import org.apache.commons.io.*;
 import lombok.*;
 
 import org.luwrain.core.*;
@@ -57,7 +45,7 @@ public class Message
 	try (final FileOutputStream fs = new FileOutputStream(messageFile)) {
 	    try (final GZIPOutputStream os = new GZIPOutputStream(fs)) {
 		try (final ByteArrayInputStream is = new ByteArrayInputStream(rawMessage)){
-		    StreamUtils.copyAllBytes(is, os);
+		    IOUtils.copy(is, os);
 		}
 		os.flush();
 	    }
@@ -72,7 +60,7 @@ public class Message
 	final String id = new Sha1().getSha1(rawMessage);
 	try (final InputStream is = new GZIPInputStream(new FileInputStream(getRawMessageFileName(luwrain.getAppDataDir(DATA_DIR).toFile(), id) ))){
 	    final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-	    org.luwrain.util.StreamUtils.copyAllBytes(is, bytes);
+	    IOUtils.copy(is, bytes);
 	    return bytes.toByteArray();
 	}
     }

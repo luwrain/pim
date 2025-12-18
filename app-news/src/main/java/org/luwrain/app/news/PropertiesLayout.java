@@ -1,18 +1,5 @@
-/*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.app.news;
 
@@ -20,7 +7,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
-import org.luwrain.pim.news.*;
+import org.luwrain.pim.news.persist.*;
 import org.luwrain.app.base.*;
 
 final class PropertiesLayout extends LayoutBase
@@ -32,10 +19,9 @@ final class PropertiesLayout extends LayoutBase
     private final App app;
     final FormArea formArea;
 
-    PropertiesLayout(App app, NewsGroup group, ActionHandler closing)
+    PropertiesLayout(App app, Group group, ActionHandler closing)
     {
 	super(app);
-	NullCheck.notNull(group, "group");
 	this.app = app;
 	this.formArea = new FormArea(getControlContext(), app.getStrings().groupPropertiesAreaName(group.getName())) ;
 	final List<String> urls = group.getUrls();
@@ -61,7 +47,7 @@ final class PropertiesLayout extends LayoutBase
 	setAreaLayout(formArea, actions());
     }
 
-    private boolean save(NewsGroup group)
+    private boolean save(Group group)
     {
 	NullCheck.notNull(group, "group");
 	final String name = formArea.getEnteredText(NAME);
@@ -96,7 +82,7 @@ final class PropertiesLayout extends LayoutBase
 	    if (!s.trim().isEmpty())
 		urls.add(s.trim());
 	group.setUrls(urls);
-	group.save();
+	app.persist.getGroupDAO().update(group);
 	return true;
     }
 }

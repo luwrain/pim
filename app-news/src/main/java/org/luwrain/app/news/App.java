@@ -1,18 +1,5 @@
-/*
-   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.app.news;
 
@@ -21,29 +8,31 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.news.*;
+import org.luwrain.pim.news.persist.*;
 import org.luwrain.app.base.*;
 import org.luwrain.core.annotations.*;
 
-@AppNoArgs(name = "news", title = { "en=News", "ru=Новости" })
-public final class App extends AppBase<Strings> implements MonoApp
+@AppNoArgs(
+	   name = "news",
+	   title = { "en=News", "ru=Новости" })
+final class App extends AppBase<Strings> implements MonoApp
 {
-    private NewsStoring storing = null;
+    NewsPersistence persist = null;
     private MainLayout mainLayout = null;
-    private Conv conv = null;
-    private NewsGroup group = null;
+    Conv conv = null;
+    private Group group = null;
     boolean showAllGroups = false;
 
     final List<GroupWrapper> groups = new ArrayList<>();
-    final List<NewsArticle> articles = new ArrayList<>();
+    final List<Article>  articles = new ArrayList<Article>();
 
     public App() { super(Strings.class, "luwrain.news"); }
 
     @Override public AreaLayout onAppInit() throws Exception
     {
-	this.storing = null;//org.luwrain.pim.Connections.getNewsStoring(getLuwrain(), true);
-	if (storing == null)
-	    throw new Exception("No news storing");
+	this.persist = getLuwrain().createInstance(NewsPersistence.class);
+	if (persist == null)
+	    throw new Exception("No news persistence");
 		this.conv = new Conv(this);
 	this.mainLayout = new MainLayout(this );
 	setAppName(getStrings().appName());
@@ -52,7 +41,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 	return this.mainLayout.getAreaLayout();
     }
 
-    boolean openGroup(NewsGroup newGroup)
+    boolean openGroup(Group newGroup)
     {
 	NullCheck.notNull(newGroup, "newGroup");
 	this.group = newGroup;
@@ -62,11 +51,12 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     void loadGroups()
     {
+	/*
 	final List<GroupWrapper> w = new ArrayList<>();
-	final NewsGroup[] g = storing.getGroups().load();
-	Arrays.sort(g);
-	int[] newCounts = storing.getArticles().countNewInGroups(g);
-	int[] markedCounts = storing.getArticles().countMarkedInGroups(g);
+	final var g = persist.getGroupDAO().load();
+		Collections.sort(g);
+	final var newCounts = persist.getArticleDAO().countNewInGroups(g);
+	final var markedCounts = persist.getArticleDAO().countMarkedInGroups(g);
 	for(int i = 0;i < g.length;++i)
 	{
 	    final int newCount = i < newCounts.length?newCounts[i]:0;
@@ -76,6 +66,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 	}
 	this.groups.clear();
 	this.groups.addAll(w);
+	*/
     }
 
     void loadArticles()
@@ -86,11 +77,13 @@ public final class App extends AppBase<Strings> implements MonoApp
 	    return;
 	}
 	this.articles.clear();
-	this.articles.addAll(Arrays.asList(storing.getArticles().loadWithoutRead(group)));
+	this.articles.addAll(persist.getArticleDAO().loadWithoutRead(group));
 	if (articles.isEmpty())
-	    this.articles.addAll(Arrays.asList(storing.getArticles().load(group)));
+	    this.articles.addAll(persist.getArticleDAO().load(group));
+	/*FIXME:
 	if (articles != null)
 	    Collections.sort(articles);
+	*/
     }
 
     @Override public boolean onEscape()
@@ -125,7 +118,4 @@ public final class App extends AppBase<Strings> implements MonoApp
 	runFetching();
 	return MonoApp.Result.BRING_FOREGROUND;
     }
-
-    Conv getConv() { return this.conv; }
-    NewsStoring getStoring() { return this.storing; }
 }

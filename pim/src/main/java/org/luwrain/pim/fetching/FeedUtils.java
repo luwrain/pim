@@ -1,19 +1,4 @@
-/*
-   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
-   Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
+// Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
 package org.luwrain.pim.fetching;
 
@@ -27,15 +12,16 @@ import com.rometools.rome.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.util.*;
-import org.luwrain.pim.news.NewsArticle;
+import org.luwrain.pim.news.persist.*;
+
 import org.luwrain.pim.PimException;
 
 public final class FeedUtils
 {
-    static public NewsArticle[] readFeed(URL url) throws PimException, InterruptedException
+    static public List<Article> readFeed(URL url) throws PimException, InterruptedException
     {
 	NullCheck.notNull(url, "url");
-	final List<NewsArticle> articles = new ArrayList<>();
+	final var articles = new ArrayList<Article>();
 	XmlReader reader = null;
 	try {
 	    URLConnection con = null;
@@ -50,7 +36,7 @@ public final class FeedUtils
 		    if (Thread.currentThread().isInterrupted())
 			throw new InterruptedException();
 		    final SyndEntry entry = (SyndEntry) i.next();
-		    final NewsArticle article = new NewsArticle();
+		    final var article = new Article();
 		    /*
 		    final List<SyndEnclosure> enclosures = entry.getEnclosures();
 		    if (enclosures != null)
@@ -67,9 +53,9 @@ public final class FeedUtils
 		    if (entry.getLink() != null)
 			article.setUrl( entry.getLink());
 		    if (entry.getPublishedDate() != null)
-			article.setPublishedDate(entry.getPublishedDate());
+			article.setPublishedTimestamp(entry.getPublishedDate().getTime());
 		    if (entry.getUpdatedDate() != null)
-			article.setUpdatedDate(entry.getUpdatedDate());
+			article.setUpdatedTimestamp(entry.getUpdatedDate().getTime());
 		    if (entry.getAuthor() != null)
 			article.setAuthor(/*MlTagStrip.run(*/entry.getAuthor());
 		    if (article.getUri() == null || article.getUri().isEmpty())
@@ -109,6 +95,6 @@ public final class FeedUtils
 	{
 	    throw new PimException(e);
 	}
-	return articles.toArray(new NewsArticle[articles.size()]);
+	return articles;
     }
 }

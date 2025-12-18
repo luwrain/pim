@@ -1,18 +1,5 @@
-/*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.app.news;
 
@@ -23,7 +10,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.reader.*;
 import org.luwrain.controls.reader.*;
-import org.luwrain.pim.news.*;
+import org.luwrain.pim.news.persist.*;
 import org.luwrain.pim.*;
 import org.luwrain.app.base.*;
 import org.luwrain.controls.ListUtils.*;
@@ -34,7 +21,7 @@ final class MainLayout extends LayoutBase
 {
     final App app;
     final ListArea<GroupWrapper> groupsArea;
-    final ListArea<NewsArticle> summaryArea;
+    final ListArea<Article> summaryArea;
     final ReaderArea viewArea;
 
     MainLayout(App app)
@@ -76,7 +63,7 @@ final class MainLayout extends LayoutBase
 					      action("delete-group", app.getStrings().actionDeleteGroup(), new InputEvent(InputEvent.Special.DELETE, EnumSet.of(InputEvent.Modifiers.SHIFT)), this::actDeleteGroup),
 					      action("add-group", app.getStrings().actionAddGroup(), new InputEvent(InputEvent.Special.INSERT), this::actNewGroup)
 					      );
-	this.summaryArea = new ListArea<NewsArticle>(listParams((params)->{
+	this.summaryArea = new ListArea<Article>(listParams(params -> {
 		    params.name = app.getStrings().summaryAreaName();
 		    params.model = new ListModel<>(app.articles);
 		    params.appearance = new SummaryAppearance();
@@ -154,15 +141,15 @@ index < 0 || index >= articles.length)
 	final GroupWrapper wrapper = groupsArea.selected();
 	if (wrapper == null)
 	    return false;
-	final NewsGroup group = wrapper.group;
-	final NewsArticle[] articles = app.getStoring().getArticles().loadWithoutRead(group);
+	final Group group = wrapper.group;
+	final var articles = app.persist.getArticleDAO().loadWithoutRead(group);
 	if (articles == null)
 	    return true;
-	for(NewsArticle a: articles)
-	    if (a.getState() == NewsArticle.NEW)
+	for(final var a: articles)
+	    if (a.getStatus() == Article.Status.NEW)
 	    {
-		a.setState(NewsArticle.READ);
-		a.save();
+		a.setStatus(Article.Status.READ);
+		app.persist.getArticleDAO().update(a);
 	    }
 	return true;
     }
@@ -179,12 +166,12 @@ index < 0 || index >= articles.length)
 
     private boolean actNewGroup()
     {
-	final String name = app.getConv().newGroupName();
+	final String name = app.conv.newGroupName();
 	if (name == null)
 	    return false;
-	final NewsGroup group = new NewsGroup();
+	final var group = new Group();
 	group.setName(name);
-	app.getStoring().getGroups().save(group);
+	app.persist.getGroupDAO().add(group);
 	app.showAllGroups = true;
 	app.loadGroups();
 	groupsArea.refresh();
@@ -202,9 +189,9 @@ index < 0 || index >= articles.length)
 	final GroupWrapper wrapper = groupsArea.selected();
 	if (wrapper == null)
 	    return false;
-	if (!app.getConv().confirmGroupDeleting(wrapper))
+	if (!app.conv.confirmGroupDeleting(wrapper))
 	    return true;
-	app.getStoring().getGroups().delete(wrapper.group);
+	app.persist.getGroupDAO().delete(wrapper.group);
 	app.loadGroups();
 	groupsArea.refresh();
 	return true;
@@ -212,7 +199,7 @@ index < 0 || index >= articles.length)
 
     private boolean openArticleUrl()
     {
-	final NewsArticle article = summaryArea.selected();
+	final var article = summaryArea.selected();
 	if (article == null)
 	    return false;
 	markAsRead(article);
@@ -241,7 +228,7 @@ index < 0 || index >= articles.length)
 
     private boolean onSummarySpace()
     {
-	final NewsArticle article = summaryArea.selected();
+	final var article = summaryArea.selected();
 	if (article == null)
 	    return false;
 	if (!markAsRead(article))
@@ -255,7 +242,7 @@ index < 0 || index >= articles.length)
 	return true;
     }
 
-    private boolean onSummaryClick(NewsArticle article)
+    private boolean onSummaryClick(Article article)
     {
 	NullCheck.notNull(article, "article");
 	final DocumentBuilder docBuilder = new DocumentBuilderLoader().newDocumentBuilder(getLuwrain(), ContentTypes.TEXT_HTML_DEFAULT);
@@ -276,13 +263,13 @@ index < 0 || index >= articles.length)
 	return true;
     }
 
-    private boolean markAsRead(NewsArticle article)
+    private boolean markAsRead(Article article)
     {
 	NullCheck.notNull(article, "article");
-	if (article.getState() == NewsArticle.NEW)
+	if (article.getStatus() == Article.Status.NEW)
 	{
-	    article.setState(NewsArticle.READ);
-	    article.save();
+	    article.setStatus(Article.Status.READ);
+	    app.persist.getArticleDAO().update(article);
 	}
 	return true;
     }
@@ -323,9 +310,9 @@ index < 0 || index >= articles.length)
 }
     */
 
-    final class SummaryAppearance implements ListArea.Appearance<NewsArticle>
+    final class SummaryAppearance implements ListArea.Appearance<Article>
     {
-	@Override public void announceItem(NewsArticle article, Set<Flags> flags)
+	@Override public void announceItem(Article article, Set<Flags> flags)
 	{
 	    NullCheck.notNull(article, "article");
 	    NullCheck.notNull(flags, "flags");
@@ -335,37 +322,37 @@ index < 0 || index >= articles.length)
 		app.setEventResponse(DefaultEventResponse.text(Sounds.LIST_ITEM, title));
 		return;
 	    }
-	    switch(article.getState())
+	    switch(article.getStatus())
 	    {
-	    case NewsArticle.READ:
-		app.setEventResponse(text(Sounds.LIST_ITEM, app.getStrings().readPrefix() + " " + title + " " + app.getI18n().getPastTimeBrief(article.getPublishedDate())));
+	    case READ:
+		app.setEventResponse(text(Sounds.LIST_ITEM, app.getStrings().readPrefix() + " " + title + " " + app.getI18n().getPastTimeBrief(new Date(article.getPublishedTimestamp()))));
 		break;
-	    case NewsArticle.MARKED:
-		app.setEventResponse(text(app.getStrings().markedPrefix() + " " + title + " " + app.getI18n().getPastTimeBrief(article.getPublishedDate())));
+	    case MARKED:
+		app.setEventResponse(text(app.getStrings().markedPrefix() + " " + title + " " + app.getI18n().getPastTimeBrief(new Date(article.getPublishedTimestamp()))));
 		break;
 	    default:
-		app.setEventResponse(text(Sounds.LIST_ITEM, title + " " + app.getI18n().getPastTimeBrief(article.getPublishedDate())));
+		app.setEventResponse(text(Sounds.LIST_ITEM, title + " " + app.getI18n().getPastTimeBrief(new Date(article.getPublishedTimestamp()))));
 	    }
 	}
-	@Override public String getScreenAppearance(NewsArticle article, Set<Flags> flags)
+	@Override public String getScreenAppearance(Article article, Set<Flags> flags)
 	{
 	    NullCheck.notNull(article, "article");
 	    NullCheck.notNull(flags, "flags");
-	    switch(article.getState())
+	    switch(article.getStatus())
 	    {
-	    case NewsArticle.NEW:
+	    case NEW:
 		return " [" + article.getTitle() + "]";
-	    case NewsArticle.MARKED:
+	    case MARKED:
 		return "* " + article.getTitle();
 	    default:
 		return "  " + article.getTitle();
 	    }
 	}
-	@Override public int getObservableLeftBound(NewsArticle article)
+	@Override public int getObservableLeftBound(Article article)
 	{
 	    return 2;
 	}
-	@Override public int getObservableRightBound(NewsArticle article)
+	@Override public int getObservableRightBound(Article article)
 	{
 	    return article.getTitle().length() + 2;
 	}

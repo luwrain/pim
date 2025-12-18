@@ -2,7 +2,7 @@
 // Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 // Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
-package org.luwrain.pim.mail;
+package org.luwrain.pim.news;
 
 import java.nio.file.*;
 import org.apache.logging.log4j.*;
@@ -10,43 +10,40 @@ import org.h2.mvstore.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.storage.*;
-import org.luwrain.pim.mail.persistence.*;
-import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.news.persist.*;
 
 import static java.util.Objects.*;
 
-public final class MailFactory implements ObjFactory, AutoCloseable
+public final class NewsFactory implements ObjFactory, AutoCloseable
 {
     static private final Logger log = LogManager.getLogger();
 
     final Path path;
     final ExecQueues queues = new ExecQueues();
     private final MVStore store;
-    private final MVMap<Integer, Account> accountsMap;
-            private final MVMap<Integer, Folder> foldersMap;
-        private final MVMap<Long, MessageMetadata> messagesMap;
+            private final MVMap<Integer, Group> groupsMap;
+        private final MVMap<Long, Article> articlesMap;
     private final MVMap<String, Long> keysMap;
 
-    public MailFactory(Path path)
+    public NewsFactory(Path path)
     {
 	this.path = requireNonNull(path, "path can't be null");
-	final String dbFile = path.resolve("mail.mvdb").toString();
-	log.trace("Opening the mail database in " + dbFile);
+	final String dbFile = path.resolve("news.mvdb").toString();
+	log.trace("Opening the news database in " + dbFile);
 	this.store = MVStore.open(dbFile);
-	this.messagesMap = store.openMap("messages");
-		this.foldersMap = store.openMap("folders");
-				this.accountsMap = store.openMap("accounts");
+	this.articlesMap = store.openMap("articles");
+		this.groupsMap = store.openMap("groups");
 				this.keysMap = store.openMap("keys");
     }
 
     @Override public String getExtObjName()
     {
-	return MailPersistence.class.getName();
+	return NewsPersistence.class.getName();
     }
 
     @Override public Object newObject(String name)
     {
-	return new MailPersistence(queues, accountsMap, foldersMap, messagesMap, keysMap);
+	return new NewsPersistence(queues, groupsMap, articlesMap, keysMap);
     }
 
     @Override public void close()
@@ -54,3 +51,5 @@ public final class MailFactory implements ObjFactory, AutoCloseable
 	queues.close();
     }
 }
+
+

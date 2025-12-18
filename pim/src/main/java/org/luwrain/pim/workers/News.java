@@ -1,5 +1,4 @@
-
-//LWR_API 1.0
+// Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
 package org.luwrain.pim.workers;
 

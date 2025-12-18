@@ -1,3 +1,4 @@
+// Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
 package org.luwrain.pim.workers;
 

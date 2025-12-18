@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.pim.mail.obsolete;
 
@@ -20,6 +5,7 @@ import java.util.*;
 import java.io.*;
 import org.apache.commons.codec.binary.Base64;
 import javax.mail.internet.MimeUtility;
+import org.apache.commons.io.*;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -205,7 +191,7 @@ assertEquals("", raw[raw.length - 3]);
     {
 	final ByteArrayOutputStream os = new ByteArrayOutputStream();
 	try (final InputStream is = getClass().getResourceAsStream("test.eml")) {
-	    copyAllBytes(is, os);
+	    IOUtils.copy(is, os);
 	}
 	this.rawMessage = os.toByteArray();
     }
