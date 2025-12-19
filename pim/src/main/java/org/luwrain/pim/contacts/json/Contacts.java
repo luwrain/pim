@@ -1,4 +1,4 @@
-/*
+
 package org.luwrain.pim.contacts.json;
 
 import java.util.*;

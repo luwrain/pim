@@ -9,7 +9,7 @@ import org.apache.logging.log4j.*;
 import org.h2.mvstore.*;
 
 import org.luwrain.core.*;
-import org.luwrain.pim.storage.*;
+import org.luwrain.pim.*;
 import org.luwrain.pim.mail.persistence.*;
 import org.luwrain.pim.mail.persistence.model.*;
 

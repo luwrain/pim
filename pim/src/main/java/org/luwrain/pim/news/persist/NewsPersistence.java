@@ -5,13 +5,14 @@
 package org.luwrain.pim.news.persist;
 
 import java.util.*;
+import java.util.function.*;
 import java.util.concurrent.*;
 import org.h2.mvstore.*;
 
-import org.luwrain.pim.storage.*;
+import org.luwrain.pim.*;
 
 import static java.util.Objects.*;
-import static org.luwrain.pim.storage.ExecQueues.*;
+import static org.luwrain.pim.ExecQueues.*;
 
 public final class NewsPersistence
 {
@@ -40,12 +41,12 @@ public GroupDAO getGroupDAO()
 	    @Override public int add(Group group)
 	    {
 		requireNonNull(group, "group can't be null");
-		return runner.run(new FutureTask<>( () -> {
+		return runner.run(() -> {
 			    final int newId = getNewKey(Group.class).intValue();
 			    group.setId(newId);
 			    groupsMap.put(Integer.valueOf(newId), group);
 			    return Integer.valueOf(newId);
-		})).intValue();
+		}).intValue();
 	    }
 
 	    @Override public void delete(Group group)
@@ -55,9 +56,9 @@ public GroupDAO getGroupDAO()
 
 	    @Override public List<Group> load()
 	    {
-		return runner.run(new FutureTask<>( () -> groupsMap.entrySet().stream()
+		return runner.run(() -> groupsMap.entrySet().stream()
 						    .map( e -> e.getValue() )
-						    .toList()));
+						    .toList());
 	    }
 
 	    @Override public void update(Group group)
@@ -72,8 +73,83 @@ public GroupDAO getGroupDAO()
 
     public ArticleDAO getArticleDAO()
     {
+	return new ArticleDAO()
+	{
+    @Override public List<Article> load(Group group)
+    {
+	requireNonNull(group, "group");
+			return runner.run(() -> articlesMap.entrySet().stream()
+					  .filter(e -> e.getValue().getGroupId() == group.getId())
+						    .map( e -> e.getValue() )
+						    .toList());
+    }
+
+	        @Override public List<Article> load(Group group, Predicate<Article> filter)
+	    {
+			requireNonNull(group, "group");
+			if (filter == null)
+			    return load(group);
+			return runner.run(() -> articlesMap.entrySet().stream()
+					  .filter(e -> e.getValue().getGroupId() == group.getId())
+					  .filter(e -> filter.test(e.getValue()))
+						    .map( e -> e.getValue() )
+						    .toList());
+	    }
+    
+    @Override public List<Article> loadWithoutRead(Group group)
+    {
+	return load(group, a -> { return a.getStatus() != Article.Status.READ; });
+    }
+    
+    @Override public void update(Article article)
+    {
+    }
+    
+    @Override public long add(Group group, Article article)
+    {
+			requireNonNull(group, "group can't be null");
+			requireNonNull(article, "article");
+		return runner.run(() -> {
+			    final long newId = getNewKey(Article.class).intValue();
+			    article.setId(newId);
+			    article.setGroupId(group.getId());
+			    articlesMap.put(Long.valueOf(newId), article);
+			    return Long.valueOf(newId);
+		}).intValue();
+    }
+    
+    @Override public void delete(Group group, Article article)
+    {
+    }
+    
+        @Override public Set<String> loadUrisInGroup(Group group)
+	{
+	    return new HashSet<>(runner.run(() -> articlesMap.entrySet().parallelStream()
+	.map(e -> e.getValue().getUri())
+				     .toList()));
+	}
+	
+    @Override public List<Integer> countMarkedInGroups(List<Group> groups)
+    {
 	return null;
     }
+    
+    @Override public List<Integer> countNewInGroups(List<Group> groups)
+    {
+	return null;
+    }
+    
+    @Override public int countNewInGroup(Group group)
+    {
+	return 0;
+    }
+    
+    @Override public int countByUriInGroup(Group group, String uri)
+    {
+	return 0;
+    }
+	};
+	    }
 
 
     Long getNewKey(Class c)

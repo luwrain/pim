@@ -1,9 +1,12 @@
-// Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
-package org.luwrain.pim.storage;
+package org.luwrain.pim;
 
 import java.util.*;
 import java.util.concurrent.*;
+import org.luwrain.pim.*;
+
 import static java.util.Objects.*;
 
 public final class ExecQueues implements Runnable, AutoCloseable
@@ -46,8 +49,8 @@ requireNonNull(task, "task can't be null");
 	}
 	catch(ExecutionException e)
 	{
-	    if (e.getCause() instanceof Exception)
-		throw (Exception)e.getCause();
+	    if (e.getCause() instanceof Exception ex)
+		throw ex;
 	    throw e;
 	}
 	catch(InterruptedException e)
@@ -113,6 +116,12 @@ requireNonNull(task, "task can't be null");
 	    this.priority = requireNonNull(priority, "[priority can't be null");
 	}
 
+		public <T> T run(Callable<T> task)
+	{
+	    requireNonNull(task, "task");
+	    return run(new FutureTask<T>(task));
+	}
+
 	public <T> T run(FutureTask<T> task)
 	{
 	    requireNonNull(task, "task can't be null");
@@ -121,7 +130,7 @@ requireNonNull(task, "task can't be null");
 	    }
 	    catch(Exception ex)
 	    {
-		throw new RuntimeException(ex);
+		throw new PimException(ex);
 	    }
 	}
     }

@@ -15,6 +15,7 @@ public class Article implements Serializable
     public enum Status { NEW, READ, MARKED };
 
     private long id;
+    private int groupId;
     private Status status;
     private String sourceUrl, sourceTitle, uri, title, extTitle, url, descr, author, categories;
     private long publishedTimestamp, updatedTimestamp;

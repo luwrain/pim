@@ -10,12 +10,12 @@ import java.util.*;
 import java.util.concurrent.*;
 import org.h2.mvstore.*;
 
-import org.luwrain.pim.storage.*;
+import org.luwrain.pim.*;
 import org.luwrain.pim.mail.persistence.dao.*;
 import org.luwrain.pim.mail.persistence.model.*;
 
 import static java.util.Objects.*;
-import static org.luwrain.pim.storage.ExecQueues.*;
+import static org.luwrain.pim.ExecQueues.*;
 
 public final class MailPersistence
 {
