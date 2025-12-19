@@ -15,7 +15,7 @@ import org.luwrain.core.annotations.*;
 @AppNoArgs(
 	   name = "news",
 	   title = { "en=News", "ru=Новости" })
-final class App extends AppBase<Strings> implements MonoApp
+public final class App extends AppBase<Strings> implements MonoApp
 {
     NewsPersistence persist = null;
     private MainLayout mainLayout = null;

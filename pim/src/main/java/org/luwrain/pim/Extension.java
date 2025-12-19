@@ -14,14 +14,14 @@ import org.luwrain.pim.mail.*;
 @AutoService(org.luwrain.core.Extension.class)
 public final class Extension extends EmptyExtension
 {
-    private MailFactory mailFactory = null;
+    private PimObjFactory factory = null;
     private org.luwrain.pim.workers.News newsWorker = null;
     private org.luwrain.pim.workers.Smtp smtpWorker = null;
     private org.luwrain.pim.workers.Pop3 pop3Worker = null;
 
     @Override public String init(Luwrain luwrain)
     {
-	mailFactory = new MailFactory(Paths.get(luwrain.getPath("var:luwrain.pim.mail")));
+	this.factory = new PimObjFactory(Paths.get(luwrain.getPath("var:luwrain.pim")));
 	this.newsWorker = new org.luwrain.pim.workers.News(luwrain);
 	this.smtpWorker = new org.luwrain.pim.workers.Smtp(luwrain);
 	this.pop3Worker = new org.luwrain.pim.workers.Pop3(luwrain);
@@ -30,13 +30,13 @@ public final class Extension extends EmptyExtension
 
     @Override public void close()
     {
-	mailFactory.close();
+	factory.close();
     }
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
 	return new ExtensionObject[]{
-mailFactory,
+factory,
 newsWorker, smtpWorker, pop3Worker,
 	};
     }

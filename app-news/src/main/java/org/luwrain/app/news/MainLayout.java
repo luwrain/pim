@@ -22,7 +22,7 @@ final class MainLayout extends LayoutBase
     final App app;
     final ListArea<GroupWrapper> groupsArea;
     final ListArea<Article> summaryArea;
-    final ReaderArea viewArea;
+    //    final ReaderArea viewArea;
 
     MainLayout(App app)
     {
@@ -92,6 +92,7 @@ final class MainLayout extends LayoutBase
 		}
 	    };
 	final Actions summaryActions = actions();
+	/*
 	final ReaderArea.Params viewParams = new ReaderArea.Params();
 	viewParams.context = getControlContext();
 	this.viewArea = new ReaderArea(viewParams){
@@ -111,7 +112,8 @@ final class MainLayout extends LayoutBase
 		}
 	    };
 	final Actions viewActions = actions();
-	setAreaLayout(AreaLayout.LEFT_TOP_BOTTOM, groupsArea, groupsActions, summaryArea, summaryActions, viewArea, viewActions);
+	*/
+	setAreaLayout(AreaLayout.LEFT_RIGHT, groupsArea, groupsActions, summaryArea, summaryActions/*, viewArea, viewActions*/);
     }
 
     /*
@@ -257,9 +259,9 @@ index < 0 || index >= articles.length)
 	if (doc != null)
 	{
 	    doc.commit();
-	    viewArea.setDocument(doc, getAreaVisibleWidth(viewArea));
+	    //	    viewArea.setDocument(doc, getAreaVisibleWidth(viewArea));
 	}
-	setActiveArea(viewArea);
+	//	setActiveArea(viewArea);
 	return true;
     }
 

@@ -52,5 +52,6 @@ public final class MailFactory implements ObjFactory, AutoCloseable
     @Override public void close()
     {
 	queues.close();
+	store.close();
     }
 }
