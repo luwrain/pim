@@ -14,6 +14,7 @@ import org.luwrain.pim.news.persist.*;
 import org.luwrain.pim.*;
 import org.luwrain.app.base.*;
 import org.luwrain.controls.ListUtils.*;
+import org.luwrain.app.news.layouts.*;
 
 import static org.luwrain.core.DefaultEventResponse.*;
 
@@ -28,35 +29,20 @@ final class MainLayout extends LayoutBase
     {
 	super(app);
 	this.app = app;
-	this.groupsArea = new ListArea<GroupWrapper>(listParams((params)->{
-		    params.name = app.getStrings().groupsAreaName();
-		    params.model = new ListModel<GroupWrapper>(app.groups){
+groupsArea = new ListArea<GroupWrapper>(listParams(p -> {
+		    p.name = app.getStrings().groupsAreaName();
+		    p.model = new ListModel<GroupWrapper>(app.groups){
 			    @Override public void refresh() { app.loadGroups(); }
 			};
-		    params.appearance = new DefaultAppearance<>(params.context, Suggestions.CLICKABLE_LIST_ITEM);
-		    params.clickHandler = (area, index, group)->onGroupsClick(group);
-		})){
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    if (event.getType() == SystemEvent.Type.BROADCAST)
-			switch(event.getCode())
-			{
-			case REFRESH:
-			if (event.getBroadcastFilterUniRef().startsWith("newsgroup:"))
-			    refresh();
-			return true;
-			default:
-			super.onSystemEvent(event);
-			}
-		    if (event.getType() == SystemEvent.Type.REGULAR)
-			switch(event.getCode())
-			{
-			case PROPERTIES:
-			return editGroupProps();
-			}
-		    return super.onSystemEvent(event);
-		}
-	    };
+		    p.appearance = new DefaultAppearance<>(p.context, Suggestions.CLICKABLE_LIST_ITEM);
+		    p.clickHandler = (area, index, group) -> onGroupsClick(group);
+		}));
+setPropertiesHandler(groupsArea, a -> {
+	final var g = groupsArea.selected();
+	if (g == null)
+	    return null;
+	return new GroupPropertiesLayout(app, g.group, getReturnAction());
+    });
 	final Actions groupsActions = actions(
 					      action("show-read", app.getStrings().actionShowWithReadOnly(), new InputEvent('='), ()->setShowAllGroupsMode(true)),
 					      action("hide-read", app.getStrings().actionHideWithReadOnly(), new InputEvent('-'),()->setShowAllGroupsMode(false)),
@@ -158,7 +144,6 @@ index < 0 || index >= articles.length)
 
     private boolean onGroupsClick(GroupWrapper group)
     {
-	NullCheck.notNull(group, "group");
 	app.openGroup(group.group);
 	summaryArea.reset(false);
 	summaryArea.refresh();
@@ -212,12 +197,13 @@ index < 0 || index >= articles.length)
 		return true;
     }
 
+    /*
     private boolean editGroupProps()
     {
 	final GroupWrapper wrapper = groupsArea.selected();
 	if (wrapper == null)
 	    return false;
-	final PropertiesLayout propLayout = new PropertiesLayout(app, wrapper.group, ()->{
+	final GroupPropertiesLayout propLayout = new PropertiesLayout(app, wrapper.group, ()->{
 		app.setAreaLayout(MainLayout.this);
 		app.getLuwrain().announceActiveArea();
 		groupsArea.refresh();
@@ -227,6 +213,7 @@ index < 0 || index >= articles.length)
 	app.getLuwrain().announceActiveArea();
 	return true;
     }
+    */
 
     private boolean onSummarySpace()
     {
@@ -246,7 +233,6 @@ index < 0 || index >= articles.length)
 
     private boolean onSummaryClick(Article article)
     {
-	NullCheck.notNull(article, "article");
 	final DocumentBuilder docBuilder = new DocumentBuilderLoader().newDocumentBuilder(getLuwrain(), ContentTypes.TEXT_HTML_DEFAULT);
 	if (docBuilder == null)
 	    return false;
@@ -267,7 +253,6 @@ index < 0 || index >= articles.length)
 
     private boolean markAsRead(Article article)
     {
-	NullCheck.notNull(article, "article");
 	if (article.getStatus() == Article.Status.NEW)
 	{
 	    article.setStatus(Article.Status.READ);
@@ -287,9 +272,6 @@ index < 0 || index >= articles.length)
     /*
     boolean markAsReadWholeGroup(ListArea groupsArea, ListArea summaryArea, GroupWrapper group)
     {
-	NullCheck.notNull(groupsArea, "groupsArea");
-	NullCheck.notNull(summaryArea, "summaryArea");
-	NullCheck.notNull(group, "group");
 	if (base.markAsReadWholeGroup(group.group))
 	{
 	    groupsArea.refresh();
@@ -302,7 +284,6 @@ index < 0 || index >= articles.length)
 
     boolean onOpenUrl(ReaderArea area)
     {
-	NullCheck.notNull(area, "area");
 	final Document doc = area.getDocument();
 	if (doc == null || doc.getUrl() == null)
 	    return false;
@@ -316,8 +297,6 @@ index < 0 || index >= articles.length)
     {
 	@Override public void announceItem(Article article, Set<Flags> flags)
 	{
-	    NullCheck.notNull(article, "article");
-	    NullCheck.notNull(flags, "flags");
 	    final String title = getLuwrain().getSpeakableText(article.getTitle(), Luwrain.SpeakableTextType.NATURAL);
 	    if (flags.contains(Flags.BRIEF))
 	    {
@@ -338,8 +317,6 @@ index < 0 || index >= articles.length)
 	}
 	@Override public String getScreenAppearance(Article article, Set<Flags> flags)
 	{
-	    NullCheck.notNull(article, "article");
-	    NullCheck.notNull(flags, "flags");
 	    switch(article.getStatus())
 	    {
 	    case NEW:

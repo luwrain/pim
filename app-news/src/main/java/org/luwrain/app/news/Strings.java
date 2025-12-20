@@ -26,15 +26,15 @@ public interface Strings
 
     String articleTitle(String title);
     String articleUrl(String url);
-    String groupAddingNameMayNotBeEmpty();
-    String groupAddingPopupName();
-    String groupAddingPopupPrefix();
+    String groupNameCannotBeEmpty();
+    String newGroupPopupName();
+    String newGroupPopupPrefix();
     String groupDeletingPopupName();
     String groupDeletingPopupText(String groupName);
     String groupPropertiesAreaName(String groupName);
     String groupPropertiesInvalidOrderIndex();
     String groupPropertiesName();
-    String groupPropertiesNameMayNotBeEmpty();
+    String groupPropertiesNameCannotBeEmpty();
     String groupPropertiesOrderIndex();
     String groupPropertiesUrls();
 

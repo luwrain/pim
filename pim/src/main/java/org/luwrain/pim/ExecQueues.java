@@ -16,13 +16,15 @@ public final class ExecQueues implements Runnable, AutoCloseable
     private final ConcurrentLinkedQueue<FutureTask>
 	mediumPriorityQueue = new ConcurrentLinkedQueue<>(),
 	highPriorityQueue = new ConcurrentLinkedQueue<>();
-    private final Object syncObj = new Object();
+    private final Object syncObj = new Object(), finishedObj = new Object();
     private final Thread thread;
     private volatile boolean cancelling = false;
+    private volatile boolean finished = false;
 
     public ExecQueues()
     {
 	cancelling = false;
+	finished = false;
 	thread = new Thread(this);
 	thread.start();
     }
@@ -67,6 +69,17 @@ requireNonNull(task, "task can't be null");
 	    cancelling = true;
 	    syncObj.notifyAll();
 	}
+	synchronized(finishedObj) {
+	    while(!finished)
+		try {
+		finishedObj.wait();
+		}
+		catch(InterruptedException ex)
+		{
+		    Thread.currentThread().interrupt();
+		    return;
+		}
+	}
     }
 
     @Override public void run()
@@ -86,7 +99,7 @@ requireNonNull(task, "task can't be null");
 		}
 	    }
 	    if (cancelling)
-		return;
+		break;
 	    while (!highPriorityQueue.isEmpty() || !mediumPriorityQueue.isEmpty())
 	    {
 		if (cancelling)
@@ -102,6 +115,10 @@ requireNonNull(task, "task can't be null");
 		    task.run();
 		}
 	    }
+	}
+	synchronized(finishedObj) {
+	    finished = true;
+	    finishedObj.notifyAll();
 	}
     }
 

@@ -48,7 +48,6 @@ public final class NewsFactory implements AutoCloseable
     {
 	queues.close();
 	store.close();
+	log.trace("The news database closed");
     }
 }
-
-

@@ -26,10 +26,10 @@ final class Conv
 
     String newGroupName()
     {
-	final String res = Popups.text(luwrain, strings.groupAddingPopupName(), strings.groupAddingPopupPrefix(), "", (line)->{
+	final String res = Popups.text(luwrain, strings.newGroupPopupName(), strings.newGroupPopupPrefix(), "", line -> {
 		if (line.trim().isEmpty())
 		{
-		    luwrain.message(strings.groupAddingNameMayNotBeEmpty(), Luwrain.MessageType.ERROR);
+		    luwrain.message(strings.groupNameCannotBeEmpty(), Luwrain.MessageType.ERROR);
 		    return false;
 		}
 		return true;

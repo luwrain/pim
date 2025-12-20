@@ -16,23 +16,17 @@ public class Group implements Serializable
     private String name, mediaContentType;
     private int orderIndex, expireAfterDays;
     private List<String> urls;
+    private boolean alwaysShow = false;
 
     @Override public boolean equals(Object o)
     {
-	/*
 	if (o != null && o instanceof Group g)
 	    return id == g.id;
-	*/
 	return false;
     }
 
     @Override public int hashCode()
     {
-	return 0;//id;
-    }
-
-    @Override public String toString()
-    {
-	return name != null?name:"";
+	return id;
     }
 }

@@ -17,7 +17,7 @@ import org.luwrain.core.annotations.*;
 	   title = { "en=News", "ru=Новости" })
 public final class App extends AppBase<Strings> implements MonoApp
 {
-    NewsPersistence persist = null;
+    public NewsPersistence persist = null;
     private MainLayout mainLayout = null;
     Conv conv = null;
     private Group group = null;
@@ -43,7 +43,6 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     boolean openGroup(Group newGroup)
     {
-	NullCheck.notNull(newGroup, "newGroup");
 	this.group = newGroup;
 	loadArticles();
 	return true;
@@ -51,10 +50,10 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     void loadGroups()
     {
-	/*
-	final List<GroupWrapper> w = new ArrayList<>();
+	//	final List<GroupWrapper> w = new ArrayList<>();
 	final var g = persist.getGroupDAO().load();
-		Collections.sort(g);
+	/*
+			Collections.sort(g);
 	final var newCounts = persist.getArticleDAO().countNewInGroups(g);
 	final var markedCounts = persist.getArticleDAO().countMarkedInGroups(g);
 	for(int i = 0;i < g.length;++i)
@@ -64,9 +63,9 @@ public final class App extends AppBase<Strings> implements MonoApp
 	    if (showAllGroups || newCount > 0 || markedCount > 0)
 		w.add(new GroupWrapper(g[i], newCount));
 	}
-	this.groups.clear();
-	this.groups.addAll(w);
 	*/
+groups.clear();
+groups.addAll(g.stream().map(e -> new GroupWrapper(e, 0)).toList());
     }
 
     void loadArticles()
@@ -94,8 +93,6 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override public boolean onSystemEvent(Area area, SystemEvent event)
     {
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(event, "event");
 	if (event.getType() != SystemEvent.Type.REGULAR)
 	    return super.onSystemEvent(area, event);
 	switch(event.getCode())
@@ -114,7 +111,6 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
     {
-	NullCheck.notNull(app, "app");
 	runFetching();
 	return MonoApp.Result.BRING_FOREGROUND;
     }

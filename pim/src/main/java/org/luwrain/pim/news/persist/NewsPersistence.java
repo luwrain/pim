@@ -7,6 +7,7 @@ package org.luwrain.pim.news.persist;
 import java.util.*;
 import java.util.function.*;
 import java.util.concurrent.*;
+import org.apache.logging.log4j.*;
 import org.h2.mvstore.*;
 
 import org.luwrain.pim.*;
@@ -16,6 +17,8 @@ import static org.luwrain.pim.ExecQueues.*;
 
 public final class NewsPersistence
 {
+    static private final Logger log = LogManager.getLogger();
+    
     final ExecQueues queues;
     private Priority priority = Priority.MEDIUM;
     private Runner runner;
@@ -44,6 +47,7 @@ public GroupDAO getGroupDAO()
 		return runner.run(() -> {
 			    final int newId = getNewKey(Group.class).intValue();
 			    group.setId(newId);
+			    		log.trace("Adding " + group);
 			    groupsMap.put(Integer.valueOf(newId), group);
 			    return Integer.valueOf(newId);
 		}).intValue();
@@ -66,6 +70,7 @@ public GroupDAO getGroupDAO()
 		requireNonNull(group, "group can't be null");
 		if (group.getId() < 0)
 		    throw new IllegalArgumentException("A group can't have negative ID");
+					    		log.trace("Updating " + group);
 		runner.run(new FutureTask<Object>( () -> groupsMap.put(Integer.valueOf(group.getId()), group) , null));
 	    }
 	};
