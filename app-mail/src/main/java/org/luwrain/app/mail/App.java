@@ -1,18 +1,5 @@
-/*
-   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.app.mail;
 
@@ -31,7 +18,6 @@ public final class App extends AppBase<Strings> implements MonoApp
     static final Logger log = LogManager.getLogger();
 
     private Hooks hooks = null;
-    //    private MailStoring storing = null;
     private Data data = null;
     public Conv conv = null;
     private MainLayout mainLayout = null;
@@ -44,10 +30,10 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override protected AreaLayout onAppInit() throws Exception
     {
-	this.hooks = new Hooks(getLuwrain());
-	this.data = new Data(getLuwrain(), getStrings(), new File(getLuwrain().getFileProperty(Luwrain.PROP_DIR_USERHOME), ".luwrain-defaults.conf"));
-	this.conv = new Conv(this);
-	this.mainLayout = new MainLayout(this, data);
+hooks = new Hooks(getLuwrain());
+data = new Data(getLuwrain(), getStrings(), new File(getLuwrain().getFileProperty(Luwrain.PROP_DIR_USERHOME), ".luwrain-defaults.conf"));
+conv = new Conv(this);
+mainLayout = new MainLayout(this, data);
 
 	setAppName(getStrings().appName());
 	if (data.accountDAO.getAll().isEmpty())

@@ -1,18 +1,5 @@
-/*
-   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.app.mail.layouts;
 
@@ -24,7 +11,7 @@ import org.luwrain.controls.*;
 import org.luwrain.controls.list.*;
 import org.luwrain.app.base.*;
 import org.luwrain.app.mail.*;
-import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.*;
 
 import static org.luwrain.core.DefaultEventResponse.*;
 import static org.luwrain.core.events.InputEvent.*;
@@ -47,13 +34,26 @@ public final class AccountsLayout extends LayoutBase
 	this.accountsArea = new ListArea<Account>(listParams( p -> {
 		    p.name = s.accountsAreaName();
 		    p.model = new ListUtils.ListModel(accounts);
-		    p.appearance = new Appearance();		    
+		    p.appearance = new Appearance();
+		    p.clickHandler = (area, index, account) -> onClick(account);
 		}));
 	setCloseHandler(closing);
 		setOkHandler(closing);
 		setAreaLayout(accountsArea, actions(
 						    action("insert", s.actionNewAccount(), new InputEvent(Special.INSERT), this::newAccount)
 ));
+    }
+
+    boolean onClick(Account account)
+    {
+	app.setAreaLayout(new Pop3AccountLayout(app, account, () -> {
+		    app.setAreaLayout(AccountsLayout.this);
+		    getLuwrain().announceActiveArea();
+		    accountsArea.redraw();
+		    return true;
+	}));
+	getLuwrain().announceActiveArea();
+	return true;
     }
 
     boolean newAccount()

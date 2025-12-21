@@ -13,7 +13,7 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.fetching.*;
 //import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.*;
 
 import static org.luwrain.core.NullCheck.*;
 
@@ -32,7 +32,7 @@ public final class Pop3 implements MessageProvider<Pop3.ExtData>
 	}
     }
 
-    protected final org.luwrain.pim.mail.persistence.model.Account account;
+    protected final org.luwrain.pim.mail.persistence.Account account;
 
     public Pop3(Account account)
     {

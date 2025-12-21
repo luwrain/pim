@@ -15,8 +15,8 @@ import org.luwrain.script.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
-import org.luwrain.pim.mail.persistence.dao.*;
-import org.luwrain.pim.mail.persistence.model.*;
+//import org.luwrain.pim.mail.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.*;
 
 import static org.luwrain.script.ScriptUtils.*;
 import static org.luwrain.pim.mail.script.MailObj.*;

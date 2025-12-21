@@ -10,6 +10,8 @@ import org.apache.logging.log4j.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.news.*;
 import org.luwrain.pim.news.persist.*;
+import org.luwrain.pim.mail.*;
+import org.luwrain.pim.mail.persistence.*;
 
 import static java.util.Objects.*;
 
@@ -19,6 +21,7 @@ public final class PimObjFactory implements ObjFactory, AutoCloseable
     
     private final Path baseDir;
     private NewsFactory newsFactory = null;
+    private MailFactory mailFactory = null;
 
     PimObjFactory(Path baseDir)
     {
@@ -39,6 +42,12 @@ public final class PimObjFactory implements ObjFactory, AutoCloseable
 		if (newsFactory == null)
 		    newsFactory = new NewsFactory(baseDir.resolve("news"));
 		return newsFactory.newInstance();
+	    }
+	    	    if (name.equals(MailPersistence.class.getName()))
+	    {
+		if (mailFactory == null)
+		    mailFactory = new MailFactory(baseDir.resolve("mail"));
+		return mailFactory.newInstance();
 	    }
 	    return null;
 	}

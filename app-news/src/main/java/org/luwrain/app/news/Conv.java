@@ -21,7 +21,7 @@ final class Conv
 
     boolean confirmGroupDeleting(GroupWrapper wrapper)
     {
-	return Popups.confirmDefaultNo(luwrain, strings.groupDeletingPopupName(), strings.groupDeletingPopupText(wrapper.group.getName()));
+	return Popups.confirmDefaultNo(luwrain, strings.groupDeletePopupName(), strings.groupDeletePopupText(wrapper.group.getName()));
     }
 
     String newGroupName()

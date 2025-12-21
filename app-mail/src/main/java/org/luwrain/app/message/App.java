@@ -23,10 +23,11 @@ import org.luwrain.app.base.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.persistence.*;
 import org.luwrain.pim.contacts.*;
+import org.luwrain.pim.mail.persistence.*;
 
 import static org.luwrain.pim.mail.persistence.MailPersistence.*;
-import org.luwrain.pim.mail.persistence.model.*;
-import org.luwrain.pim.mail.persistence.dao.*;
+
+//import org.luwrain.pim.mail.persistence.dao.*;
 
 public final class App extends AppBase<Strings>
 {

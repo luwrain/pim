@@ -41,6 +41,13 @@ public final class NewsPersistence
 public GroupDAO getGroupDAO()
     {
 	return new GroupDAO(){
+	    	    @Override public List<Group> load()
+	    {
+		return runner.run(() -> groupsMap.entrySet().stream()
+						    .map( e -> e.getValue() )
+						    .toList());
+	    }
+
 	    @Override public int add(Group group)
 	    {
 		requireNonNull(group, "group can't be null");
@@ -55,15 +62,13 @@ public GroupDAO getGroupDAO()
 
 	    @Override public void delete(Group group)
 	    {
-		//FIXME:
+				requireNonNull(group, "group can't be null");
+		if (group.getId() < 0)
+		    throw new IllegalArgumentException("A group can't have negative ID");
+					    		log.trace("Removing " + group);
+		runner.run(new FutureTask<Object>( () -> groupsMap.remove(Integer.valueOf(group.getId())) , null));
 	    }
 
-	    @Override public List<Group> load()
-	    {
-		return runner.run(() -> groupsMap.entrySet().stream()
-						    .map( e -> e.getValue() )
-						    .toList());
-	    }
 
 	    @Override public void update(Group group)
 	    {
@@ -100,14 +105,14 @@ public GroupDAO getGroupDAO()
 						    .map( e -> e.getValue() )
 						    .toList());
 	    }
-    
-    @Override public List<Article> loadWithoutRead(Group group)
-    {
-	return load(group, a -> { return a.getStatus() != Article.Status.READ; });
-    }
-    
+
     @Override public void update(Article article)
     {
+			requireNonNull(article, "article can't be null");
+		if (article.getId() < 0)
+		    throw new IllegalArgumentException("An article can't have negative ID");
+					    		log.trace("Updating " + article);
+		runner.run(new FutureTask<Object>( () -> articlesMap.put(Long.valueOf(article.getId()), article) , null));
     }
     
     @Override public long add(Group group, Article article)
@@ -125,6 +130,12 @@ public GroupDAO getGroupDAO()
     
     @Override public void delete(Group group, Article article)
     {
+					requireNonNull(article, "article can't be null");
+		if (article.getId() < 0)
+		    throw new IllegalArgumentException("An article can't have negative ID");
+					    		log.trace("Removing " + article);
+		runner.run(new FutureTask<Object>( () -> articlesMap.remove(Long.valueOf(article.getId())) , null));
+
     }
     
         @Override public Set<String> loadUrisInGroup(Group group)

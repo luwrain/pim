@@ -18,7 +18,7 @@ import javax.mail.Message.RecipientType;
 
 //import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.*;
 //import org.luwrain.pim.mail.*;
 //import org.luwrain.util.*;
 //import org.luwrain.io.json.*;

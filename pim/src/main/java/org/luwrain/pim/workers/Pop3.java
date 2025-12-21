@@ -6,7 +6,7 @@ import org.apache.logging.log4j.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.*;
 //import org.luwrain.pim.mail.persistence.dao.*;
 import org.luwrain.pim.mail.persistence.*;
 

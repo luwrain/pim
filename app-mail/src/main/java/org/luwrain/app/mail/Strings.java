@@ -1,18 +1,5 @@
-/*
-   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
-
-i   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.app.mail;
 
@@ -20,7 +7,7 @@ import java.util.Date;
 
 import org.luwrain.core.annotations.*;
 
-@ResourceStrings(langs = { "ru" })
+@ResourceStrings(langs = { "en", "ru" })
 public interface Strings
 {
     String appName();
@@ -80,4 +67,15 @@ public interface Strings
     String wizardPasswordIntro();
     String wizardPassword();
     String wizardPasswordIsEmpty();
+
+    String pop3AccountAreaName(String accountName);
+    String accountPropertiesName();
+    String accountPropertiesHost();
+    String accountPropertiesPasswd();
+    String accountPropertiesPort();
+    String accountPropertiesSsl();
+    String accountPropertiesTls();
+    String accountPropertiesLeaveMessages();
+    String accountPropertiesNameCannotBeEmpty();
+    String accountPropertiesInvalidPortValue();
 }

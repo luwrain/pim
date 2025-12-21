@@ -2,7 +2,7 @@
 // Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 // Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
-package org.luwrain.pim.mail.persistence.model;
+package org.luwrain.pim.mail.persistence;
 
 import java.util.*;
 import java.io.*;

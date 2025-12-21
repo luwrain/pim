@@ -18,7 +18,7 @@ public final class GroupPropertiesLayout extends LayoutBase
     static private final String
 	NAME = "name",
 	ORDER_INDEX = "order-index",
-	EXPIRE_AFTER_DAYS = "expire-after-days"
+	EXPIRE_AFTER_DAYS = "expire-after-days",
     ALWAYS_SHOW = "always-show";
 
     private final App app;

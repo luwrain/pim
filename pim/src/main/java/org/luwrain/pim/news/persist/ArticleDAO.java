@@ -7,18 +7,14 @@ package org.luwrain.pim.news.persist;
 import java.util.*;
 import java.util.function.*;
 
-//import org.luwrain.pim.*;
-//import org.luwrain.pim.news.*;
-
 public interface ArticleDAO
 {
     List<Article> load(Group group);
     List<Article> load(Group group, Predicate<Article> filter);
-    List<Article> loadWithoutRead(Group group);
     void update(Article article);
     long add(Group group, Article article);
     void delete(Group group, Article article);
-        Set<String> loadUrisInGroup(Group group);
+    Set<String> loadUrisInGroup(Group group);
     List<Integer> countMarkedInGroups(List<Group> groups);
     List<Integer> countNewInGroups(List<Group> groups);
     int countNewInGroup(Group group);

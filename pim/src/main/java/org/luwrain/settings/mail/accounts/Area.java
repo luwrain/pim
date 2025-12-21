@@ -24,8 +24,8 @@ import org.luwrain.controls.*;
 import org.luwrain.cpanel.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.settings.mail.*;
-import org.luwrain.pim.mail.persistence.model.*;
-import org.luwrain.pim.mail.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.*;
+//import org.luwrain.pim.mail.persistence.dao.*;
 
 public final class Area extends FormArea implements SectionArea
 {

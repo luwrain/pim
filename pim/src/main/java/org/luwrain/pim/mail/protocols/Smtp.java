@@ -14,7 +14,7 @@ import org.luwrain.pim.mail.*;
 import org.luwrain.pim.fetching.*;
 import org.luwrain.io.json.*;
 
-import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.*;
 
 public final class Smtp extends Base
 {

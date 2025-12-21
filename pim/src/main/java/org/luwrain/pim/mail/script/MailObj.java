@@ -20,7 +20,7 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 
 import org.luwrain.pim.mail.persistence.*;
-import org.luwrain.pim.mail.persistence.dao.*;
+//import org.luwrain.pim.mail.persistence.dao.*;
 
 import static java.util.Objects.*;
 import static org.luwrain.core.NullCheck.*;

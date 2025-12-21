@@ -1,5 +1,3 @@
-
-
 // SPDX-License-Identifier: BUSL-1.1
 // Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 // Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
@@ -8,17 +6,18 @@ package org.luwrain.pim.mail.persistence;
 
 import java.util.*;
 import java.util.concurrent.*;
+import org.apache.logging.log4j.*;
 import org.h2.mvstore.*;
 
 import org.luwrain.pim.*;
-import org.luwrain.pim.mail.persistence.dao.*;
-import org.luwrain.pim.mail.persistence.model.*;
 
 import static java.util.Objects.*;
 import static org.luwrain.pim.ExecQueues.*;
 
 public final class MailPersistence
 {
+    static private final Logger log = LogManager.getLogger();
+    
     final ExecQueues queues;
     private Priority priority = Priority.MEDIUM;
     private Runner runner = null;
@@ -48,7 +47,7 @@ public final class MailPersistence
 	    {
 		if (id < 0)
 		    throw new IllegalArgumentException("id can't be negative");
-		return runner.run(new FutureTask<>(() ->  accountsMap.get(Integer.valueOf(id)) ));
+		return runner.run(() -> accountsMap.get(Integer.valueOf(id)) );
 	    }
 
 	    @Override public void delete(Account account)
@@ -56,25 +55,27 @@ public final class MailPersistence
 		requireNonNull(account, "account can't be null");
 		if (account.getId() < 0)
 		    throw new IllegalArgumentException("An account can't have negative ID");
+		log.trace("Deleting " + account);
 		runner.run(new FutureTask<>(() -> accountsMap.remove(Integer.valueOf(account.getId())) ));
 	    }
 
 	    @Override public int add(Account account)
 	    {
 		requireNonNull(account, "account can't be null");
-		return runner.run(new FutureTask<>( () -> {
+		return runner.run(() -> {
 			    final int newId = getNewKey(Account.class).intValue();
 			    account.setId(newId);
+			    log.trace("Adding " + account);
 			    accountsMap.put(Integer.valueOf(newId), account);
 			    return Integer.valueOf(newId);
-		})).intValue();
+		    }).intValue();
 	    }
 
 	    @Override public List<Account> getAll()
 	    {
-		return runner.run(new FutureTask<>( () -> accountsMap.entrySet().stream()
+		return runner.run(() -> accountsMap.entrySet().stream()
 			    .map(e -> e.getValue())
-			    .toList() ));
+			    .toList() );
 	    }
 
 	    @Override public void update(Account account)
@@ -82,6 +83,7 @@ public final class MailPersistence
 		requireNonNull(account, "account can't be null");
 		if (account.getId() < 0)
 		    throw new IllegalArgumentException("An account can't have negative ID");
+		log.trace("Updating " + account);
 		runner.run(new FutureTask<Object>( () ->  accountsMap.put(Integer.valueOf(account.getId()), account), null));
 	    }
 	};

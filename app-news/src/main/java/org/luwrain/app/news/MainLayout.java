@@ -130,7 +130,7 @@ index < 0 || index >= articles.length)
 	if (wrapper == null)
 	    return false;
 	final Group group = wrapper.group;
-	final var articles = app.persist.getArticleDAO().loadWithoutRead(group);
+	final var articles = app.persist.getArticleDAO().load(group, a -> (a.getStatus() != Article.Status.READ));
 	if (articles == null)
 	    return true;
 	for(final var a: articles)

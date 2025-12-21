@@ -70,13 +70,10 @@ groups.addAll(g.stream().map(e -> new GroupWrapper(e, 0)).toList());
 
     void loadArticles()
     {
+		    this.articles.clear();
 	if (group == null)
-	{
-	    this.articles.clear();
 	    return;
-	}
-	this.articles.clear();
-	this.articles.addAll(persist.getArticleDAO().loadWithoutRead(group));
+	this.articles.addAll(persist.getArticleDAO().load(group, a -> (a.getStatus() != Article.Status.READ)));
 	if (articles.isEmpty())
 	    this.articles.addAll(persist.getArticleDAO().load(group));
 	/*FIXME:

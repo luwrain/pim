@@ -4,7 +4,6 @@
 
 package org.luwrain.pim.news.persist;
 
-import java.util.*;
 import java.io.*;
 import lombok.*;
 

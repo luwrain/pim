@@ -10,8 +10,8 @@ import org.graalvm.polyglot.proxy.*;
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.pim.mail.persistence.model.*;
-import org.luwrain.pim.mail.persistence.dao.*;
+import org.luwrain.pim.mail.persistence.*;
+//import org.luwrain.pim.mail.persistence.*;
 
 import static org.luwrain.core.NullCheck.*;
 import static org.luwrain.pim.mail.script.MailObj.*;

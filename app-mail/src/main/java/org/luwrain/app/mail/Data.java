@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.app.mail;
 
@@ -6,8 +8,7 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.mail.*;
-import org.luwrain.pim.mail.persistence.dao.*;
-import org.luwrain.pim.mail.persistence.model.*;
+import org.luwrain.pim.mail.persistence.*;
 import org.luwrain.pim.mail.persistence.*;
 
 import static org.luwrain.pim.mail.FolderProperties.*;
