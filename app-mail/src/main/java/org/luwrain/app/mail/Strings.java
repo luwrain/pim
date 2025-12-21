@@ -76,6 +76,8 @@ public interface Strings
     String accountPropertiesSsl();
     String accountPropertiesTls();
     String accountPropertiesLeaveMessages();
+    String accountPropertiesDefault();
+    String accountPropertiesEnabled();
     String accountPropertiesNameCannotBeEmpty();
     String accountPropertiesInvalidPortValue();
 }

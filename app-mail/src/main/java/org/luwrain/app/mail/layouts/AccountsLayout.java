@@ -46,6 +46,11 @@ public final class AccountsLayout extends LayoutBase
 
     boolean onClick(Account account)
     {
+	if (account.getType() == null)
+	    account.setType(Account.Type.SMTP);
+	switch(account.getType())
+	{
+	case POP3:
 	app.setAreaLayout(new Pop3AccountLayout(app, account, () -> {
 		    app.setAreaLayout(AccountsLayout.this);
 		    getLuwrain().announceActiveArea();
@@ -54,6 +59,18 @@ public final class AccountsLayout extends LayoutBase
 	}));
 	getLuwrain().announceActiveArea();
 	return true;
+	case SMTP:
+	    	app.setAreaLayout(new SmtpAccountLayout(app, account, () -> {
+		    app.setAreaLayout(AccountsLayout.this);
+		    getLuwrain().announceActiveArea();
+		    accountsArea.redraw();
+		    return true;
+	}));
+	getLuwrain().announceActiveArea();
+	return true;
+	default:
+	    throw new IllegalArgumentException("Unknown account type: " + account.getType());
+	}
     }
 
     boolean newAccount()

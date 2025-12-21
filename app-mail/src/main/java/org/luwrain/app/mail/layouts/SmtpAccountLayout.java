@@ -13,21 +13,21 @@ import org.luwrain.app.mail.*;
 
 import static java.util.Objects.*;
 
-final class Pop3AccountLayout extends LayoutBase
+final class SmtpAccountLayout extends LayoutBase
 {
     static private final String
 	NAME = "name",
 	HOST = "host",
 	PASSWD = "passwd",
 	PORT = "port",
-	SSL = "ssl",
-	LEAVE_MESSAGES = "leave-messages",
+	TLS = "tls",
+	DEFAULT = "default",
 	ENABLED = "enabled";
 
     private final App app;
     final FormArea formArea;
     
-    public Pop3AccountLayout(App app, Account account, ActionHandler closing)
+    public SmtpAccountLayout(App app, Account account, ActionHandler closing)
     {
 	super(app);
 	this.app = app;
@@ -37,8 +37,8 @@ final class Pop3AccountLayout extends LayoutBase
 	formArea.addEdit(HOST, s.accountPropertiesHost(), requireNonNullElse(account.getHost(), "").trim());
 	formArea.addEdit(PORT, s.accountPropertiesPort(), String.valueOf(account.getPort()));
 	formArea.addPasswd(PASSWD, s.accountPropertiesPasswd(), requireNonNullElse(account.getPasswd(), ""), null, true);
-	formArea.addCheckbox(SSL, s.accountPropertiesSsl(), account.isSsl());
-					formArea.addCheckbox(LEAVE_MESSAGES, s.accountPropertiesLeaveMessages(), account.isLeaveMessages());
+	formArea.addCheckbox(TLS, s.accountPropertiesTls(), account.isTls());
+					formArea.addCheckbox(DEFAULT, s.accountPropertiesDefault(), account.isDefaultAccount());
 										formArea.addCheckbox(ENABLED, s.accountPropertiesEnabled(), account.isEnabled());
 	setCloseHandler(closing);
 	setOkHandler(() -> {
@@ -79,9 +79,9 @@ final class Pop3AccountLayout extends LayoutBase
 	account.setHost(host);
 	account.setPort(portValue);
 	account.setPasswd(passwd);
-	account.setSsl(formArea.getCheckboxState(SSL));
-		account.setLeaveMessages(formArea.getCheckboxState(LEAVE_MESSAGES));
-		account.setEnabled(formArea.getCheckboxState(ENABLED));
+	account.setTls(formArea.getCheckboxState(TLS));
+		account.setDefaultAccount(formArea.getCheckboxState(DEFAULT));
+				account.setEnabled(formArea.getCheckboxState(ENABLED));
 	app.getData().accountDAO.update(account);
 	return true;
     }

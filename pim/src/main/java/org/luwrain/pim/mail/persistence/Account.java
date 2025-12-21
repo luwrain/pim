@@ -17,8 +17,11 @@ public class Account implements Serializable
         private Type type = Type.POP3;
 
     private String
-	name, host, login, passwd,
+	name, host, login, 
 	trustedHosts, substName, substAddress;
+
+    @ToString.Exclude
+    private String passwd;
 
     private int port = 995;
     private boolean enabled, tls, ssl, defaultAccount, leaveMessages;
