@@ -19,23 +19,22 @@ dependencies {
   testImplementation libraries.junit
 }
 
+tasks.named('test') {
+  useJUnitPlatform()
+}
+
 publishing {
   publications {
     mavenJava(MavenPublication) {
       groupId = 'org.luwrain'
       artifactId = 'luwrain-pim'
-      version = '2.0.0'
+      version = ver.lwr
       from components.java
     }
   }
   repositories {
     maven {
-      url = uri('file:///out/_tmp/maven2')
+      url = uri(mavenDestRepo)
     }
   }
 }
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-
