@@ -4,7 +4,7 @@ package org.luwrain.pim.diary.persistence;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.luwrain.pim.diary.persistence.model.*;
+//import org.luwrain.pim.diary.persistence.model.*;
 import static org.luwrain.pim.diary.persistence.DiaryPersistence.*;
 
 @Disabled

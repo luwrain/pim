@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: BUSL-1.1
 // Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
-package org.luwrain.pim.diary.persistence.model;
+package org.luwrain.pim.diary.persistence;
 
 import java.util.*;
 import lombok.*;
-//import jakarta.persistence.*;
 
 @Data
 public class Event
@@ -13,6 +12,7 @@ public class Event
     private String title, comment;
     private long dateTime;
     private int durationMin;
+        private List<String> references;
 
     @Override public boolean equals(Object o)
     {
@@ -25,7 +25,7 @@ public class Event
 
     @Override public int hashCode()
     {
-	return 0;//id;
+	return Long.valueOf(dateTime).hashCode();
     }
 
     @Override public String toString()
