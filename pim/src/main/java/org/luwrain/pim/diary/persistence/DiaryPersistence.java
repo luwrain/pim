@@ -21,12 +21,15 @@ public final class DiaryPersistence
     private Priority priority = Priority.MEDIUM;
     private Runner runner = null;
     private final MVMap<Long, Event> eventsMap;
+    private final MVMap<String, Long> keysMap;
 
     public DiaryPersistence(ExecQueues queues,
-			    MVMap<Long, Event> eventsMap)
+			    MVMap<Long, Event> eventsMap,
+			    MVMap<String, Long> keysMap)
     {
 	this.queues = requireNonNull(queues, "queues can't be null");
 	this.eventsMap = requireNonNull(eventsMap, "eventsMap can't be null");
+	this.keysMap = requireNonNull(keysMap, "keysMap can't be null");
 	this.runner = new Runner(queues, priority);
     }
 
@@ -37,8 +40,7 @@ public final class DiaryPersistence
 	    {
 		requireNonNull(event, "event can't be null");
 		return runner.run(() -> {
-		    final var maxKey = eventsMap.floorKey(Long.MAX_VALUE);
-		    final long newId = maxKey != null ? maxKey.longValue() + 1 : 1;
+		    final long newId = getNewKey(Event.class).longValue();
 		    event.setId(newId);
 		    log.trace("Adding " + event);
 		    eventsMap.put(Long.valueOf(newId), event);
@@ -74,6 +76,19 @@ public final class DiaryPersistence
 		});
 	    }
 	};
+    }
+
+    Long getNewKey(Class c)
+    {
+	final var res = keysMap.get(c.getName());
+	if (res == null)
+	{
+	    keysMap.put(c.getName(), Long.valueOf(0));
+	    return Long.valueOf(0);
+	}
+	final var newVal = Long.valueOf(res.longValue() + 1);
+	keysMap.put(c.getName(), newVal);
+	return newVal;
     }
 
     public void setPriority(Priority priority)
