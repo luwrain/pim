@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.app.message;
 
@@ -22,7 +7,7 @@ import org.luwrain.core.*;
 import org.luwrain.app.base.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.persistence.*;
-import org.luwrain.pim.contacts.*;
+import org.luwrain.pim.contacts.persistence.*;
 import org.luwrain.pim.mail.persistence.*;
 
 import static org.luwrain.pim.mail.persistence.MailPersistence.*;
@@ -34,7 +19,7 @@ public final class App extends AppBase<Strings>
     final org.luwrain.io.json.Message message;
     private org.luwrain.pim.mail.Settings sett = null;
     private FolderDAO folderDAO = null;
-    private ContactsStoring contactsStoring = null;
+    private ContactsPersistence contactsPersist;
     private Conv conv = null;
     private MainLayout mainLayout = null;
 
@@ -55,8 +40,8 @@ public final class App extends AppBase<Strings>
 	final var persist = getLuwrain().createInstance(MailPersistence.class); 
 //	this.mailStoring = org.luwrain.pim.Connections.getMailStoring(getLuwrain(), true);
 	this.folderDAO = persist.getFolderDAO();
-	this.contactsStoring = null;//org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
-	if (contactsStoring == null)
+	this.contactsPersist = null;//org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
+	if (contactsPersist == null)
 	    return null;
 	this.conv = new Conv(this);
 	this.mainLayout = new MainLayout(this);
@@ -132,7 +117,7 @@ notNull(message, "message");
     }
 
     Conv getConv() { return this.conv; }
-    ContactsStoring getContactsStoring() { return this.contactsStoring; }
+    //    ContactsStoring getContactsStoring() { return this.contactsStoring; }
 //    MailStoring getMailStoring() { return this.mailStoring; }
 
     private String getFromLine(Account account)

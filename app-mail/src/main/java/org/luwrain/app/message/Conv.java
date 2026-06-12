@@ -38,6 +38,7 @@ final class Conv
 
     String editCc(String initial)
     {
+	/*
 	NullCheck.notNull(initial, "initial");
 	final String[] items = App.splitAddrs(initial);
 	final CcEditPopup popup;
@@ -61,10 +62,13 @@ final class Conv
 	for(int i = 1;i < newItems.length;++i)
 	    b.append("," + (String)newItems[i]);
 	return b.toString();
+	*/
+	return "";
     }
 
     String editTo()
     {
+	/*
 	final ChooseMailPopup popup;
 	try {
 	    popup = new ChooseMailPopup(luwrain, org.luwrain.popups.pim.Strings.create(luwrain), app.getContactsStoring(), app.getContactsStoring().getFolders().getRoot());
@@ -78,6 +82,8 @@ final class Conv
 	if (popup.wasCancelled())
 	    return null;
 	return popup.result();
+	*/
+	return "";
     }
 
     boolean confirmLaunchingAccountWizard()

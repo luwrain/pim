@@ -21,14 +21,17 @@ public final class ContactsPersistence
     private Priority priority = Priority.MEDIUM;
     private Runner runner = null;
     private final MVMap<Long, Contact> contactsMap;
+    private final MVMap<Long, ContactsFolder> foldersMap;
     private final MVMap<String, Long> keysMap;
 
     public ContactsPersistence(ExecQueues queues,
 			       MVMap<Long, Contact> contactsMap,
+			       MVMap<Long, ContactsFolder> foldersMap,
 			       MVMap<String, Long> keysMap)
     {
 	this.queues = requireNonNull(queues, "queues can't be null");
 	this.contactsMap = requireNonNull(contactsMap, "contactsMap can't be null");
+	this.foldersMap = requireNonNull(foldersMap, "foldersMap can't be null");
 	this.keysMap = requireNonNull(keysMap, "keysMap can't be null");
 	this.runner = new Runner(queues, priority);
     }
@@ -73,6 +76,80 @@ public final class ContactsPersistence
 		runner.run(() -> {
 		    contactsMap.put(Long.valueOf(contact.getId()), contact);
 		    return null;
+		});
+	    }
+
+	        @Override public List<Contact> getByFolderId(long folderId)
+	    {
+		//FIXME:
+		return Collections.emptyList();
+	    }
+	};
+    }
+
+    public ContactsFolderDAO getContactsFolderDAO()
+    {
+	return new ContactsFolderDAO(){
+	    @Override public long add(ContactsFolder folder)
+	    {
+		requireNonNull(folder, "folder can't be null");
+		return runner.run(() -> {
+		    final long newId = getNewKey(ContactsFolder.class).longValue();
+		    folder.setId(newId);
+		    log.trace("Adding folder " + folder);
+		    foldersMap.put(Long.valueOf(newId), folder);
+		    return Long.valueOf(newId);
+		}).longValue();
+	    }
+
+	    @Override public void delete(ContactsFolder folder)
+	    {
+		requireNonNull(folder, "folder can't be null");
+		if (folder.getId() < 0)
+		    throw new IllegalArgumentException("A folder can't have negative ID");
+		log.trace("Deleting folder " + folder);
+		runner.run(() -> foldersMap.remove(Long.valueOf(folder.getId())));
+	    }
+
+	    @Override public List<ContactsFolder> getAll()
+	    {
+		return runner.run(() -> foldersMap.entrySet().stream()
+				  .map(e -> e.getValue())
+				  .toList());
+	    }
+
+	    @Override public List<ContactsFolder> getChildFolders(ContactsFolder folder)
+	    {
+		requireNonNull(folder, "folder can't be null");
+		if (folder.getId() < 0)
+		    throw new IllegalArgumentException("A folder can't have negative ID");
+		final long id = folder.getId();
+		return runner.run(() -> foldersMap.entrySet().stream()
+				  .filter(e -> e.getValue().getParentFolderId() == id)
+				  .map(e -> e.getValue())
+				  .toList());
+	    }
+
+	    @Override public void update(ContactsFolder folder)
+	    {
+		requireNonNull(folder, "folder can't be null");
+		if (folder.getId() < 0)
+		    throw new IllegalArgumentException("A folder can't have negative ID");
+		log.trace("Updating folder " + folder);
+		runner.run(() -> {
+		    foldersMap.put(Long.valueOf(folder.getId()), folder);
+		    return null;
+		});
+	    }
+
+	    @Override public ContactsFolder getRoot()
+	    {
+		return runner.run(() -> {
+		    final var res = foldersMap.entrySet().stream()
+		    .filter(e -> (e.getValue().getParentFolderId() == e.getValue().getId()))
+		    .map(e -> e.getValue())
+		    .findFirst();
+		    return res.isPresent() ? res.get() : null;
 		});
 	    }
 	};

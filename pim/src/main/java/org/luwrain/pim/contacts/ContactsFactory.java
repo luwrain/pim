@@ -23,6 +23,7 @@ public final class ContactsFactory implements AutoCloseable
     final ExecQueues queues = new ExecQueues();
     private final MVStore store;
     private final MVMap<Long, Contact> contactsMap;
+    private final MVMap<Long, ContactsFolder> foldersMap;
     private final MVMap<String, Long> keysMap;
 
     public ContactsFactory(Path path) throws IOException
@@ -33,12 +34,13 @@ public final class ContactsFactory implements AutoCloseable
 	log.trace("Opening the contacts database in " + dbFile);
 	this.store = MVStore.open(dbFile);
 	this.contactsMap = store.openMap("contacts");
+	this.foldersMap = store.openMap("contactsFolders");
 	this.keysMap = store.openMap("keys");
     }
 
     public Object newInstance()
     {
-	return new ContactsPersistence(queues, contactsMap, keysMap);
+	return new ContactsPersistence(queues, contactsMap, foldersMap, keysMap);
     }
 
     @Override public void close()

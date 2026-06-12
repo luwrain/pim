@@ -42,6 +42,9 @@ public class Contact implements Serializable
 
     private long id;
 
+    // ID of the parent ContactsFolder, -1 if this contact is in the root
+    private long parentFolderId = -1;
+
     // FN
     private String formattedName;
 

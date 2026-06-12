@@ -34,6 +34,7 @@ final class FoldersAppearance implements ListArea.Appearance<Object>
 
     @Override public void announceItem(Object item, Set<Flags> flags)
     {
+	/*
 		NullCheck.notNull(item, "item");
 	NullCheck.notNull(flags, "flags");
 
@@ -51,7 +52,7 @@ final class FoldersAppearance implements ListArea.Appearance<Object>
 	    return;
 	}
 
-		
+	*/
     }
 
     @Override public String getScreenAppearance(Object item, Set<Flags> flags)
@@ -63,13 +64,16 @@ final class FoldersAppearance implements ListArea.Appearance<Object>
 
     @Override public int getObservableLeftBound(Object item)
     {
+	/*
 		NullCheck.notNull(item, "item");
 		return (item instanceof ContactsFolder)?2:0;
+	*/return 0;
     }
 
     @Override public int getObservableRightBound(Object item)
     {
 	NullCheck.notNull(item, "item");
-	return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length() + ((item instanceof ContactsFolder)?2:0);
+	//	return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length() + ((item instanceof ContactsFolder)?2:0);
+	return 0;
     }
 }

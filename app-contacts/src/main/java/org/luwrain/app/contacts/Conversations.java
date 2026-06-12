@@ -46,6 +46,7 @@ final class Conversations
 	return Popups.textNotEmpty(luwrain, "Новая группа", "Имя новой группы контактов:", "");
     }
 
+    /*
     ContactValue.Type newContactValueType()
     {
 	final String mailTitle = "Электронная почта";
@@ -67,4 +68,5 @@ final class Conversations
 	    return ContactValue.Type.SKYPE;
 	return null;//Should never happen
     }
+    */
 }

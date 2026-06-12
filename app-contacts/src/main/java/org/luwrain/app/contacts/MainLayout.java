@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.app.contacts;
 
@@ -22,7 +7,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.controls.edit.*;
-import org.luwrain.pim.contacts.*;
+import org.luwrain.pim.contacts.persistence.*;
 import org.luwrain.pim.contacts.*;
 import org.luwrain.app.base.*;
 import org.luwrain.popups.*;
@@ -30,8 +15,6 @@ import org.luwrain.popups.*;
 final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 {
     private final App app;
-    private final ContactsFolders folders;
-    private final Contacts contacts;
 
     final ListArea foldersArea;
     final FormArea valuesArea;
@@ -45,9 +28,9 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
     {
 	super(app);
 	this.app = app;
-	this.openedFolder = app.getStoring().getFolders().getRoot();
-	this.folders = app.getStoring().getFolders();
-	this.contacts = app.getStoring().getContacts();
+	this.openedFolder = null;//app.getStoring().getFolders().getRoot();
+	//	this.folders = app.getStoring().getFolders();
+	//	this.contacts = app.getStoring().getContacts();
 	updateItems();
 
 	this.foldersArea = new ListArea(listParams((params)->{
@@ -93,8 +76,8 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	if (name == null || name.trim().isEmpty())
 	    return true;
 	final ContactsFolder f = new ContactsFolder();
-	f.setTitle(name.trim());
-	folders.save(openedFolder, f);
+	//	f.setTitle(name.trim());
+	//	folders.save(openedFolder, f);
 	updateItems();
 	return true;
     }
@@ -106,16 +89,17 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	    return true;
 	final Contact c = new Contact();
 	c.setTitle(name);
-	contacts.save(openedFolder, c);
+	//	contacts.save(openedFolder, c);
 	updateItems();
 	return true;
     }
 
     private boolean actNewValue()
     {
+	/*
 	if (openedContact == null)
 	    return false;
-	final ContactValue.Type type = app.getConv().newContactValueType();
+	//	final ContactValue.Type type = app.getConv().newContactValueType();
 	if (type == null)
 	    return true;
 	final ContactValue newValue = new ContactValue();
@@ -124,18 +108,21 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	final ContactValue[] newValues = Arrays.copyOf(oldValues, oldValues.length + 1);
 	newValues[newValues.length - 1] = newValue;
 	openedContact.setValues(newValues);
+	*/
 	return true;
+
     }
 
     private void updateItems()
     {
 	items.clear();
-	items.addAll(Arrays.asList(folders.load(openedFolder)));
-	items.addAll(Arrays.asList(contacts.load(openedFolder)));
+	//	items.addAll(Arrays.asList(folders.load(openedFolder)));
+	//	items.addAll(Arrays.asList(contacts.load(openedFolder)));
     }
 
     private void fillValuesArea(FormArea area)
     {
+	/*
 	NullCheck.notNull(area, "area");
 	area.clear();
 	if (openedContact == null)
@@ -157,10 +144,12 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	for(ContactValue v: openedContact.getValues())
 	    if (v.getType() == ContactValue.Type.SKYPE)
 		area.addEdit("skype" + (counter++), "Skype:", v.getValue(), v, true);
+	*/
     }
 
     private void saveForm(FormArea area)
     {
+	/*
 	if (openedContact == null)
 	    return;
 	final List<ContactValue> values = new ArrayList<ContactValue>();
@@ -176,18 +165,23 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	}
 	openedContact.setValues(values.toArray(new ContactValue[values.size()]));
 	return;
+	*/
     }
 
     private boolean fillNotesArea(EditArea area)
     {
+	/*
 	String value;
 	value = openedContact.getNotes();
 	area.setText(value.split("\n", -1));
-	return true;
+
+	*/
+		return true;
     }
 
     private boolean saveNotes(EditArea area)
     {
+	/*
 	if (openedContact == null)
 	    return true;
 	final StringBuilder b = new StringBuilder();
@@ -199,11 +193,13 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 		b.append("\n" + area.getLine(i));
 	}
 	openedContact.setNotes(b.toString());
+	*/
 	return true;
     }
 
     private boolean deleteFolder(ContactsFolder folder)
     {
+	/*
 	if (folder.isRoot())
 	{
 	    app.getLuwrain().message("Корневая группа контактов не может быть удалена", Luwrain.MessageType.ERROR);
@@ -226,17 +222,21 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler
 	if (popup.wasCancelled() || !popup.result())
 	    return false;
 	app.getStoring().getFolders().delete(folder);
+	*/
 	return true;
+
     }
 
     private boolean deleteContact(Contact contact)
     {
+	/*
 	final YesNoPopup popup = new YesNoPopup(app.getLuwrain(), "Удаление группы контактов", "Вы действительно хотите удалить контакт \"" + contact.getTitle() + "\"?", false, Popups.DEFAULT_POPUP_FLAGS);
 	app.getLuwrain().popup(popup);
 	if (popup.wasCancelled() || !popup.result())
 	    return false;
 	app.getStoring().getContacts().delete(contact);
 	openedContact = null;//FIXME:maybe only if currentContact == contact
+	*/
 	return true;
     }
 

@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.popups.pim;
 
@@ -23,20 +8,20 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.contacts.*;
+import org.luwrain.pim.contacts.persistence.*;
 
 public class ChooseMailPopup extends ListPopup2
 {
-protected final ContactsStoring storing;
+protected final ContactsPersistence persist;
 protected final Strings strings;
 
-    public ChooseMailPopup(Luwrain luwrain, Strings strings, ContactsStoring storing, ContactsFolder folder) throws PimException
+    public ChooseMailPopup(Luwrain luwrain, Strings strings, ContactsPersistence persist, ContactsFolder folder) throws PimException
     {
 	super(luwrain, 
-	      createParams(luwrain, strings.chooseMailPopupName(folder.toString()), strings, storing, folder),Popups.DEFAULT_POPUP_FLAGS);
-	NullCheck.notNull(storing, "storing");
+	      createParams(luwrain, strings.chooseMailPopupName(folder.toString()), strings, persist, folder),Popups.DEFAULT_POPUP_FLAGS);
+	NullCheck.notNull(persist, "persist");
 	NullCheck.notNull(strings, "strings");
-	this.storing = storing;
+	this.persist = persist;
 	this.strings = strings;
     }
 
@@ -68,7 +53,7 @@ protected boolean openSubfolder()
 	    return false;
 	final ContactsFolder folder = (ContactsFolder)sel;
 	try {
-	    final ChooseMailPopup popup = new ChooseMailPopup(luwrain, strings, storing, folder);
+	    final ChooseMailPopup popup = new ChooseMailPopup(luwrain, strings, persist , folder);
 	    luwrain.popup(popup);
 	    if (popup.closing.cancelled())
 		return true;
@@ -95,6 +80,7 @@ protected boolean openSubfolder()
 
 protected void onContactEntry(Contact contact)
     {
+	/*
 	try {
 	    final LinkedList<String> addrs = new LinkedList<String>();
 	    final ContactValue values[] = contact.getValues();
@@ -126,34 +112,35 @@ protected void onContactEntry(Contact contact)
 	    luwrain.crash(e);
 	    return;
 	}
+	*/
     }
 
     static protected ListArea.Params<Object> createParams(Luwrain luwrain, String name, Strings strings,
-						     ContactsStoring storing, ContactsFolder folder)
+						     ContactsPersistence persist, ContactsFolder folder)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	NullCheck.notNull(strings, "strings");
-	NullCheck.notNull(storing, "storing");
+	NullCheck.notNull(persist, "persist");
 	NullCheck.notNull(folder, "folder");
 	final ListArea.Params<Object> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
-params.model = new Model(storing, folder);
+params.model = new Model(persist, folder);
 params.appearance = new Appearance(luwrain, strings);
 	return params;
     }
 
     static protected class Model implements ListArea.Model<Object>
     {
-protected final ContactsStoring storing;
+protected final ContactsPersistence persist;
 protected final ContactsFolder folder;
 protected Object[] items;
-	Model(ContactsStoring storing, ContactsFolder folder)
+	Model(ContactsPersistence persist, ContactsFolder folder)
 	{
-	    NullCheck.notNull(storing, "storing");
+	    NullCheck.notNull(persist, "persist");
 	    NullCheck.notNull(folder, "folder");
-	    this.storing = storing;
+	    this.persist = persist;
 	    this.folder = folder;
 	    refresh();
 	}
@@ -168,8 +155,8 @@ protected Object[] items;
 	@Override public void refresh()
 	{
 	    try {
-		final ContactsFolder[] folders = storing.getFolders().load(folder);
-		final Contact[] contacts = storing.getContacts().load(folder);
+		final ContactsFolder[] folders = null;//storing.getFolders().load(folder);
+		final Contact[] contacts = null;//storing.getContacts().load(folder);
 		final List<Object> res = new ArrayList<>();
 		for(ContactsFolder f: folders)
 		    res.add(f);
@@ -205,7 +192,7 @@ protected final Strings strings;
 	    {
 		final ContactsFolder folder = (ContactsFolder)item;
 		try {
-		    final String title = folder.getTitle();
+		    final String title = "";//folder.getTitle();
 		    luwrain.speak(title + " группа");
 		    return;
 		}

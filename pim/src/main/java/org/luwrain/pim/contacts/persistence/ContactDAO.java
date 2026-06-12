@@ -10,5 +10,6 @@ public interface ContactDAO
     long add(Contact contact);
     void delete(Contact contact);
     List<Contact> getAll();
+    List<Contact> getByFolderId(long folderId);
     void update(Contact contact);
 }
