@@ -1,0 +1,22 @@
+@startuml
+class org.luwrain.app.diary.App {
+  - mainLayout: org.luwrain.app.diary.MainLayout
+  - regularEventsLayout: org.luwrain.app.diary.RegularEventsLayout
+}
+
+class org.luwrain.app.diary.MainLayout {
+- events: java.util.List
+  - eventsArea: org.luwrain.controls.ListArea
+  - notesArea: org.luwrain.controls.edit.EditArea
+  - calendarArea: org.luwrain.controls.CalendarArea
+}
+
+class org.luwrain.app.diary.RegularEventsLayout {
+
+}
+
+
+org.luwrain.app.diary.App *-- org.luwrain.app.diary.MainLayout : содержит >
+org.luwrain.app.diary.App *-- org.luwrain.app.diary.RegularEventsLayout : содержит >
+App *-- MainLayout : содержит >
+@enduml
