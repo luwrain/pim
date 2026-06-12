@@ -14,6 +14,8 @@ import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.persistence.*;
 import org.luwrain.pim.diary.*;
 import org.luwrain.pim.diary.persistence.*;
+import org.luwrain.pim.contacts.*;
+import org.luwrain.pim.contacts.persistence.*;
 
 import static java.util.Objects.*;
 
@@ -25,6 +27,7 @@ public final class PimObjFactory implements ObjFactory, AutoCloseable
     private NewsFactory newsFactory = null;
     private MailFactory mailFactory = null;
     private DiaryFactory diaryFactory = null;
+    private ContactsFactory contactsFactory = null;
 
     PimObjFactory(Path baseDir)
     {
@@ -58,6 +61,12 @@ public final class PimObjFactory implements ObjFactory, AutoCloseable
 		    diaryFactory = new DiaryFactory(baseDir.resolve("diary"));
 		return diaryFactory.newInstance();
 	    }
+	    if (name.equals(ContactsPersistence.class.getName()))
+	    {
+		if (contactsFactory == null)
+		    contactsFactory = new ContactsFactory(baseDir.resolve("contacts"));
+		return contactsFactory.newInstance();
+	    }
 	    return null;
 	}
 	catch(IOException ex)
@@ -78,5 +87,8 @@ public final class PimObjFactory implements ObjFactory, AutoCloseable
 	if (diaryFactory != null)
 	    diaryFactory.close();
 	diaryFactory = null;
+	if (contactsFactory != null)
+	    contactsFactory.close();
+	contactsFactory = null;
     }
 }
