@@ -10,36 +10,6 @@ import lombok.*;
 @Data
 public class Contact implements Serializable
 {
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Phone implements Serializable
-    {
-	public enum Type {CELL, HOME, WORK, FAX, PAGER, VOICE, VIDEO, TEXT};
-	private Type type = Type.CELL;
-	private String number;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Email implements Serializable
-    {
-	public enum Type {INTERNET, HOME, WORK};
-	private Type type = Type.INTERNET;
-	private String address;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Address implements Serializable
-    {
-	public enum Type {HOME, WORK};
-	private Type type = Type.HOME;
-	private String poBox, extendedAddress, street, locality, region, postalCode, country;
-    }
-
     private long id;
 
     // ID of the parent ContactsFolder, -1 if this contact is in the root
