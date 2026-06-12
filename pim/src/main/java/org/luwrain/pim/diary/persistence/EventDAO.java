@@ -9,6 +9,8 @@ import java.util.*;
 
 public interface EventDAO
 {
-    void add(Event event);
+        long add(Event event);
+    void delete(Event event);
     List<Event> getAll();
+    void update(Event event);
 }
