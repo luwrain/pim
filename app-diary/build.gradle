@@ -1,0 +1,14 @@
+plugins {
+  id 'java-library'
+  id 'io.freefair.lombok' version '8.6'
+}
+
+dependencies {
+  implementation libraries.base
+  implementation libraries.apacheBase
+  implementation project(':luwrain-base')
+  implementation project(':luwrain')
+  implementation project(':luwrain-io')
+  annotationProcessor project(':luwrain-base')
+  testImplementation libraries.junit
+}
