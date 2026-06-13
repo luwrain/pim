@@ -11,7 +11,6 @@ import org.luwrain.core.events.*;
 import org.luwrain.app.base.*;
 import org.luwrain.controls.*;
 import org.luwrain.controls.list.*;
-import org.luwrain.popups.*;
 
 import org.luwrain.pim.diary.persistence.Event;
 
@@ -62,22 +61,11 @@ public class RegularEventsLayout extends LayoutBase implements ListArea.ClickHan
 
     boolean onCreateRegularEvent()
     {
-	final var s = app.getStrings();
-	final var popup = new SimpleEditPopup(
-	    app.getLuwrain(),
-	    s.createEventPopupName(),
-	    s.createEventPopupPrefix(),
-	    "",
-	    EnumSet.noneOf(Popup.Flags.class)
-	);
-	app.getLuwrain().popup(popup);
-	if (popup.wasCancelled())
-	    return true;
-	final var title = popup.text();
-	if (title == null || title.trim().isEmpty())
+	final var title = app.conv.newEventTitle();
+	if (title == null || title.isEmpty())
 	    return true;
 	final var event = new Event();
-	event.setTitle(title.trim());
+	event.setTitle(title);
 	// A regular event has no specific date; use rrule or leave dtStart as now
 	event.setDtStart(System.currentTimeMillis());
 	app.persist.getEventDAO().add(event);
@@ -91,17 +79,8 @@ public class RegularEventsLayout extends LayoutBase implements ListArea.ClickHan
 	final var selected = regularEventsArea.selected();
 	if (selected == null)
 	    return false;
-	final var s = app.getStrings();
 	final var title = requireNonNullElse(selected.getTitle(), "");
-	final var popup = new YesNoPopup(
-	    app.getLuwrain(),
-	    s.deleteEventPopupName(),
-	    s.deleteEventPopupText() + " " + title,
-	    false,
-	    EnumSet.noneOf(Popup.Flags.class)
-	);
-	app.getLuwrain().popup(popup);
-	if (!popup.result() || popup.wasCancelled())
+	if (!app.conv.confirmDeleteEvent(title))
 	    return true;
 	app.persist.getEventDAO().delete(selected);
 	loadRegularEvents();

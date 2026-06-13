@@ -18,6 +18,7 @@ public final class App extends AppBase<Strings>
 {
     private MainLayout mainLayout;
     private RegularEventsLayout regularEventsLayout;
+    Conv conv;
     public DiaryPersistence persist;
 
     public App() { super(Strings.class, "luwrain.diary"); }
@@ -27,6 +28,7 @@ public final class App extends AppBase<Strings>
 	persist = getLuwrain().createInstance(DiaryPersistence.class);
 	if (persist == null)
 	    throw new IllegalStateException("No diary persistence");
+	this.conv = new Conv(this);
 	mainLayout = new MainLayout(this);
 	regularEventsLayout = new RegularEventsLayout(this);
 	setAppName(getStrings().appName());
