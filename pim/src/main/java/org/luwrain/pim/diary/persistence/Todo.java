@@ -8,48 +8,55 @@ import java.io.*;
 import lombok.*;
 
 @Data
-public class Event implements Serializable
+public class Todo implements Serializable
 {
     private long id;
 
-    // VEVENT core identification
+    // VTODO core identification
     private String uid;
     private long dtStamp;
     private int seq;
 
-    // VEVENT timing
+    // VTODO content
     private String title;       // corresponds to SUMMARY
     private String comment;     // corresponds to DESCRIPTION
-    private long dateTime;      // corresponds to DTSTART
-    private int durationMin;    // corresponds to DURATION (in minutes)
-    private Long dtEnd;         // corresponds to DTEND, nullable when DURATION is used
+
+    // VTODO timing
+    private Long dtStart;       // corresponds to DTSTART, nullable
+    private Long due;           // corresponds to DUE, nullable
+    private Integer durationMin; // corresponds to DURATION (in minutes), nullable
+    private Long completed;     // corresponds to COMPLETED, nullable
     private Long created;       // corresponds to CREATED
     private Long lastModified;  // corresponds to LAST-MODIFIED
 
-    // VEVENT location and geo
+    // VTODO progress
+    private Integer percentComplete; // corresponds to PERCENT-COMPLETE (0-100)
+
+    // VTODO location and geo
     private String location;    // corresponds to LOCATION
     private String geo;         // corresponds to GEO ("lat;lon")
 
-    // VEVENT classification
+    // VTODO classification
     private String clazz;       // corresponds to CLASS (PUBLIC/PRIVATE/CONFIDENTIAL)
-    private String transp;      // corresponds to TRANSP (OPAQUE/TRANSPARENT)
-    private String status;      // corresponds to STATUS (TENTATIVE/CONFIRMED/CANCELLED)
+    private String status;      // corresponds to STATUS (NEEDS-ACTION/COMPLETED/IN-PROCESS/CANCELLED)
     private Integer priority;   // corresponds to PRIORITY (0=undefined, 1=highest, 9=lowest)
 
-    // VEVENT organizer and attendees
+    // VTODO organizer and attendees
     private String organizer;   // corresponds to ORGANIZER (mailto URI or CN)
     private String contact;     // corresponds to CONTACT
 
-    // VEVENT URL and resources
+    // VTODO URL and resources
     private String url;         // corresponds to URL
     private List<String> references; // corresponds to ATTACH (references to attachments)
     private List<String> categories; // corresponds to CATEGORIES
+    private List<String> resources;  // corresponds to RESOURCES
     private String rrule;       // corresponds to RRULE (recurrence rule)
+    private String relatedTo;   // corresponds to RELATED-TO
 
     @Override public boolean equals(Object o)
     {
-	if (o != null && o instanceof Event e)
-	    return id == e.id;
+	if (o != null && o instanceof Todo t)
+	    return id == t.id;
 	return false;
     }
 

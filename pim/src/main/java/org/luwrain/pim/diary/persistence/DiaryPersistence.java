@@ -21,14 +21,17 @@ public final class DiaryPersistence
     private Priority priority = Priority.MEDIUM;
     private Runner runner = null;
     private final MVMap<Long, Event> eventsMap;
+    private final MVMap<Long, Todo> todosMap;
     private final MVMap<String, Long> keysMap;
 
     public DiaryPersistence(ExecQueues queues,
 			    MVMap<Long, Event> eventsMap,
+			    MVMap<Long, Todo> todosMap,
 			    MVMap<String, Long> keysMap)
     {
 	this.queues = requireNonNull(queues, "queues can't be null");
 	this.eventsMap = requireNonNull(eventsMap, "eventsMap can't be null");
+	this.todosMap = requireNonNull(todosMap, "todosMap can't be null");
 	this.keysMap = requireNonNull(keysMap, "keysMap can't be null");
 	this.runner = new Runner(queues, priority);
     }
@@ -72,6 +75,51 @@ public final class DiaryPersistence
 		log.trace("Updating " + event);
 		runner.run(() -> {
 		    eventsMap.put(Long.valueOf(event.getId()), event);
+		    return null;
+		});
+	    }
+	};
+    }
+
+    public TodoDAO getTodoDAO()
+    {
+	return new TodoDAO(){
+	    @Override public long add(Todo todo)
+	    {
+		requireNonNull(todo, "todo can't be null");
+		return runner.run(() -> {
+		    final long newId = getNewKey(Todo.class).longValue();
+		    todo.setId(newId);
+		    log.trace("Adding " + todo);
+		    todosMap.put(Long.valueOf(newId), todo);
+		    return Long.valueOf(newId);
+		}).longValue();
+	    }
+
+	    @Override public void delete(Todo todo)
+	    {
+		requireNonNull(todo, "todo can't be null");
+		if (todo.getId() < 0)
+		    throw new IllegalArgumentException("A todo can't have negative ID");
+		log.trace("Deleting " + todo);
+		runner.run(() -> todosMap.remove(Long.valueOf(todo.getId())));
+	    }
+
+	    @Override public List<Todo> getAll()
+	    {
+		return runner.run(() -> todosMap.entrySet().stream()
+				  .map(e -> e.getValue())
+				  .toList());
+	    }
+
+	    @Override public void update(Todo todo)
+	    {
+		requireNonNull(todo, "todo can't be null");
+		if (todo.getId() < 0)
+		    throw new IllegalArgumentException("A todo can't have negative ID");
+		log.trace("Updating " + todo);
+		runner.run(() -> {
+		    todosMap.put(Long.valueOf(todo.getId()), todo);
 		    return null;
 		});
 	    }
