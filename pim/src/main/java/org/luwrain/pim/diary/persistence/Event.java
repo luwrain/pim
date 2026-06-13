@@ -8,14 +8,15 @@ import java.io.*;
 import lombok.*;
 
 /**
- * Модель события календаря, соответствующая компоненту VEVENT стандарта
- * iCalendar (<a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a>).
- * Каждое событие обладает уникальным идентификатором {@link #id},
- * присваиваемым при сохранении. Все временные поля хранятся в виде
- * {@code long} — количество миллисекунд с начала эпохи Unix.
+ * Calendar event model corresponding to the VEVENT component of the
+ * iCalendar standard
+ * (<a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a>).
+ * Each event has a unique {@link #id} assigned upon saving. All time
+ * fields are stored as {@code long} — the number of milliseconds since
+ * the Unix epoch.
  *
- * <p>Сравнение двух событий через {@link #equals(Object)} и
- * {@link #hashCode()} основано исключительно на {@link #id}.</p>
+ * <p>Equality comparison via {@link #equals(Object)} and
+ * {@link #hashCode()} is based solely on {@link #id}.</p>
  *
  * @see Todo
  * @see EventDAO
@@ -25,8 +26,8 @@ import lombok.*;
 public class Event implements Serializable
 {
     /**
-     * Внутренний числовой идентификатор события.
-     * Присваивается автоматически при добавлении в хранилище через
+     * Internal numeric identifier of the event.
+     * Assigned automatically when added to storage via
      * {@link EventDAO#add(Event)}.
      */
     private long id;
@@ -34,152 +35,153 @@ public class Event implements Serializable
     // VEVENT core identification
 
     /**
-     * Глобально уникальный идентификатор компонента (свойство UID
-     * стандарта iCalendar). Должен быть уникальным в рамках всей
-     * календарной системы.
+     * Globally unique component identifier (UID property of the
+     * iCalendar standard). Must be unique within the entire calendar
+     * system.
      */
     private String uid;
 
     /**
-     * Дата-время создания iCalendar-представления события (свойство DTSTAMP).
-     * В миллисекундах с начала эпохи Unix.
+     * Date-time when the iCalendar representation of the event was
+     * created (DTSTAMP property). In milliseconds since the Unix epoch.
      */
     private long dtStamp;
 
     /**
-     * Номер ревизии компонента (свойство SEQUENCE). Начинается с 0 и
-     * увеличивается при каждом значимом изменении, требующем уведомления
-     * участников.
+     * Component revision number (SEQUENCE property). Starts at 0 and
+     * increments on each significant change that requires notifying
+     * attendees.
      */
     private int seq;
 
     // VEVENT timing
 
     /**
-     * Краткий заголовок события (свойство SUMMARY).
+     * Short title of the event (SUMMARY property).
      */
     private String title;
 
     /**
-     * Полное описание события (свойство DESCRIPTION).
-     * Может содержать многострочный текст.
+     * Full description of the event (DESCRIPTION property).
+     * May contain multiline text.
      */
     private String comment;
 
     /**
-     * Дата и время начала события (свойство DTSTART).
-     * В миллисекундах с начала эпохи Unix.
+     * Start date and time of the event (DTSTART property).
+     * In milliseconds since the Unix epoch.
      */
     private long dateTime;
 
     /**
-     * Продолжительность события в минутах (свойство DURATION).
+     * Duration of the event in minutes (DURATION property).
      */
     private int durationMin;
 
     /**
-     * Дата и время окончания события (свойство DTEND).
-     * В миллисекундах с начала эпохи Unix. Может быть {@code null},
-     * если вместо этого используется {@link #durationMin}.
+     * End date and time of the event (DTEND property).
+     * In milliseconds since the Unix epoch. May be {@code null}
+     * if {@link #durationMin} is used instead.
      */
     private Long dtEnd;
 
     /**
-     * Дата и время создания события в календарной системе (свойство CREATED).
-     * В миллисекундах с начала эпохи Unix. Может быть {@code null}.
+     * Date and time when the event was created in the calendar system
+     * (CREATED property). In milliseconds since the Unix epoch.
+     * May be {@code null}.
      */
     private Long created;
 
     /**
-     * Дата и время последнего изменения (свойство LAST-MODIFIED).
-     * В миллисекундах с начала эпохи Unix. Может быть {@code null}.
+     * Date and time of the last modification (LAST-MODIFIED property).
+     * In milliseconds since the Unix epoch. May be {@code null}.
      */
     private Long lastModified;
 
     // VEVENT location and geo
 
     /**
-     * Текстовое описание места проведения события (свойство LOCATION).
+     * Textual description of the event venue (LOCATION property).
      */
     private String location;
 
     /**
-     * Географические координаты в виде строки {@code "широта;долгота"}
-     * (свойство GEO). Широта и долгота задаются в градусах.
+     * Geographic coordinates as a {@code "latitude;longitude"} string
+     * (GEO property). Latitude and longitude are specified in degrees.
      */
     private String geo;
 
     // VEVENT classification
 
     /**
-     * Класс доступа к событию (свойство CLASS).
-     * Допустимые значения: {@code "PUBLIC"}, {@code "PRIVATE"},
+     * Access classification of the event (CLASS property).
+     * Allowed values: {@code "PUBLIC"}, {@code "PRIVATE"},
      * {@code "CONFIDENTIAL"}.
      */
     private String clazz;
 
     /**
-     * Признак прозрачности события для поиска свободного времени
-     * (свойство TRANSP). Значение {@code "OPAQUE"} означает, что событие
-     * блокирует время, {@code "TRANSPARENT"} — что время остаётся доступным.
+     * Time transparency indicator for free/busy searches (TRANSP property).
+     * {@code "OPAQUE"} means the event blocks time,
+     * {@code "TRANSPARENT"} means the time remains available.
      */
     private String transp;
 
     /**
-     * Статус события (свойство STATUS). Допустимые значения:
+     * Event status (STATUS property). Allowed values:
      * {@code "TENTATIVE"}, {@code "CONFIRMED"}, {@code "CANCELLED"}.
      */
     private String status;
 
     /**
-     * Приоритет события (свойство PRIORITY). Значение от 1 (наивысший)
-     * до 9 (низший); 0 означает неопределённый приоритет.
-     * {@code null} — приоритет не задан.
+     * Event priority (PRIORITY property). Value from 1 (highest)
+     * to 9 (lowest); 0 indicates undefined priority.
+     * {@code null} — priority is not set.
      */
     private Integer priority;
 
     // VEVENT organizer and attendees
 
     /**
-     * Организатор события (свойство ORGANIZER). Обычно указывается в виде
-     * URI {@code mailto:user@example.com} либо в виде общего имени CN.
+     * Event organizer (ORGANIZER property). Typically specified as a
+     * {@code mailto:user@example.com} URI or as a common name (CN).
      */
     private String organizer;
 
     /**
-     * Контактная информация, связанная с событием (свойство CONTACT).
+     * Contact information associated with the event (CONTACT property).
      */
     private String contact;
 
     // VEVENT URL and resources
 
     /**
-     * URL, связанный с событием (свойство URL).
+     * URL associated with the event (URL property).
      */
     private String url;
 
     /**
-     * Список ссылок на вложения (свойство ATTACH). Каждый элемент —
-     * идентификатор или путь к связанному ресурсу.
+     * List of attachment references (ATTACH property). Each element is
+     * an identifier or path to a linked resource.
      */
     private List<String> references;
 
     /**
-     * Список категорий события (свойство CATEGORIES).
+     * List of event categories (CATEGORIES property).
      */
     private List<String> categories;
 
     /**
-     * Правило повторения события (свойство RRULE).
-     * Строка в формате RRULE согласно RFC 5545.
+     * Event recurrence rule (RRULE property).
+     * A string in RRULE format as defined by RFC 5545.
      */
     private String rrule;
 
     /**
-     * Сравнивает два события по идентификатору {@link #id}.
+     * Compares two events by {@link #id}.
      *
-     * @param o объект для сравнения
-     * @return {@code true}, если {@code o} является событием с тем же id
+     * @param o object to compare with
+     * @return {@code true} if {@code o} is an event with the same id
      */
     @Override public boolean equals(Object o)
     {
@@ -189,9 +191,9 @@ public class Event implements Serializable
     }
 
     /**
-     * Возвращает хеш-код, основанный на {@link #id}.
+     * Returns a hash code based on {@link #id}.
      *
-     * @return хеш-код события
+     * @return hash code of the event
      */
     @Override public int hashCode()
     {
@@ -199,10 +201,10 @@ public class Event implements Serializable
     }
 
     /**
-     * Возвращает строковое представление события — его заголовок,
-     * либо пустую строку, если заголовок не задан.
+     * Returns a string representation of the event — its title,
+     * or an empty string if the title is not set.
      *
-     * @return заголовок события или пустая строка
+     * @return event title or an empty string
      */
     @Override public String toString()
     {

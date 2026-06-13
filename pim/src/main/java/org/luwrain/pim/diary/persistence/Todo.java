@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
+// Copyright 2012-2026 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.pim.diary.persistence;
 
@@ -8,15 +8,16 @@ import java.io.*;
 import lombok.*;
 
 /**
- * Модель задачи (to-do), соответствующая компоненту VTODO стандарта
- * iCalendar (<a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a>).
- * Каждая задача обладает уникальным идентификатором {@link #id},
- * присваиваемым при сохранении. Все временные поля, кроме {@link #dtStamp},
- * хранятся как {@link Long} — количество миллисекунд с начала эпохи Unix
- * — и могут быть {@code null}, если значение не задано.
+ * To-do item model corresponding to the VTODO component of the
+ * iCalendar standard
+ * (<a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a>).
+ * Each to-do has a unique {@link #id} assigned upon saving. All time
+ * fields except {@link #dtStamp} are stored as {@link Long} — the
+ * number of milliseconds since the Unix epoch — and may be {@code null}
+ * when the value is not set.
  *
- * <p>Сравнение двух задач через {@link #equals(Object)} и
- * {@link #hashCode()} основано исключительно на {@link #id}.</p>
+ * <p>Equality comparison via {@link #equals(Object)} and
+ * {@link #hashCode()} is based solely on {@link #id}.</p>
  *
  * @see Event
  * @see TodoDAO
@@ -26,8 +27,8 @@ import lombok.*;
 public class Todo implements Serializable
 {
     /**
-     * Внутренний числовой идентификатор задачи.
-     * Присваивается автоматически при добавлении в хранилище через
+     * Internal numeric identifier of the to-do item.
+     * Assigned automatically when added to storage via
      * {@link TodoDAO#add(Todo)}.
      */
     private long id;
@@ -35,178 +36,179 @@ public class Todo implements Serializable
     // VTODO core identification
 
     /**
-     * Глобально уникальный идентификатор компонента (свойство UID
-     * стандарта iCalendar). Должен быть уникальным в рамках всей
-     * календарной системы.
+     * Globally unique component identifier (UID property of the
+     * iCalendar standard). Must be unique within the entire calendar
+     * system.
      */
     private String uid;
 
     /**
-     * Дата-время создания iCalendar-представления задачи (свойство DTSTAMP).
-     * В миллисекундах с начала эпохи Unix.
+     * Date-time when the iCalendar representation of the to-do was
+     * created (DTSTAMP property). In milliseconds since the Unix epoch.
      */
-    private long dtStamp;
+    private long timestamp;
 
     /**
-     * Номер ревизии компонента (свойство SEQUENCE). Начинается с 0 и
-     * увеличивается при каждом значимом изменении.
+     * Component revision number (SEQUENCE property). Starts at 0 and
+     * increments on each significant change.
      */
     private int seq;
 
     // VTODO content
 
     /**
-     * Краткий заголовок задачи (свойство SUMMARY).
+     * Short title of the to-do (SUMMARY property).
      */
     private String title;
 
     /**
-     * Полное описание задачи (свойство DESCRIPTION).
-     * Может содержать многострочный текст.
+     * Full description of the to-do (DESCRIPTION property).
+     * May contain multiline text.
      */
     private String comment;
 
     // VTODO timing
 
     /**
-     * Дата и время начала задачи (свойство DTSTART).
-     * В миллисекундах с начала эпохи Unix. Может быть {@code null},
-     * если время начала не задано.
+     * Start date and time of the to-do (DTSTART property).
+     * In milliseconds since the Unix epoch. May be {@code null}
+     * if the start time is not set.
      */
-    private Long dtStart;
+    private Long startTimestamp;
 
     /**
-     * Крайний срок выполнения задачи (свойство DUE).
-     * В миллисекундах с начала эпохи Unix. Может быть {@code null},
-     * если срок не задан.
+     * Due date of the to-do (DUE property).
+     * In milliseconds since the Unix epoch. May be {@code null}
+     * if no due date is set.
      */
     private Long due;
 
     /**
-     * Продолжительность задачи в минутах (свойство DURATION).
-     * Может быть {@code null}, если продолжительность не задана.
+     * Duration of the to-do in minutes (DURATION property).
+     * May be {@code null} if the duration is not set.
      */
     private Integer durationMin;
 
     /**
-     * Дата и время завершения задачи (свойство COMPLETED).
-     * В миллисекундах с начала эпохи Unix. Может быть {@code null},
-     * если задача ещё не завершена.
+     * Date and time when the to-do was completed (COMPLETED property).
+     * In milliseconds since the Unix epoch. May be {@code null}
+     * if the to-do is not yet completed.
      */
-    private Long completed;
+    private Long completedTimestamp;
 
     /**
-     * Дата и время создания задачи в календарной системе (свойство CREATED).
-     * В миллисекундах с начала эпохи Unix. Может быть {@code null}.
+     * Date and time when the to-do was created in the calendar system
+     * (CREATED property). In milliseconds since the Unix epoch.
+     * May be {@code null}.
      */
-    private Long created;
+    private Long createdTimestamp;
 
     /**
-     * Дата и время последнего изменения (свойство LAST-MODIFIED).
-     * В миллисекундах с начала эпохи Unix. Может быть {@code null}.
+     * Date and time of the last modification (LAST-MODIFIED property).
+     * In milliseconds since the Unix epoch. May be {@code null}.
      */
-    private Long lastModified;
+    private Long modificationTimestamp;
 
     // VTODO progress
 
     /**
-     * Процент завершения задачи (свойство PERCENT-COMPLETE).
-     * Целое число от 0 до 100. Может быть {@code null}, если не задан.
+     * Completion percentage of the to-do (PERCENT-COMPLETE property).
+     * An integer from 0 to 100. May be {@code null} if not set.
      */
     private Integer percentComplete;
 
     // VTODO location and geo
 
     /**
-     * Текстовое описание места выполнения задачи (свойство LOCATION).
+     * Textual description of the to-do location (LOCATION property).
      */
     private String location;
 
     /**
-     * Географические координаты в виде строки {@code "широта;долгота"}
-     * (свойство GEO). Широта и долгота задаются в градусах.
+     * Geographic coordinates as a {@code "latitude;longitude"} string
+     * (GEO property). Latitude and longitude are specified in degrees.
      */
     private String geo;
 
     // VTODO classification
 
     /**
-     * Класс доступа к задаче (свойство CLASS).
-     * Допустимые значения: {@code "PUBLIC"}, {@code "PRIVATE"},
+     * Access classification of the to-do (CLASS property).
+     * Allowed values: {@code "PUBLIC"}, {@code "PRIVATE"},
      * {@code "CONFIDENTIAL"}.
      */
     private String clazz;
 
     /**
-     * Статус задачи (свойство STATUS). Допустимые значения:
-     * {@code "NEEDS-ACTION"} (требует действия),
-     * {@code "COMPLETED"} (завершена),
-     * {@code "IN-PROCESS"} (в процессе выполнения),
-     * {@code "CANCELLED"} (отменена).
+     * To-do status (STATUS property). Allowed values:
+     * {@code "NEEDS-ACTION"} (requires action),
+     * {@code "COMPLETED"} (finished),
+     * {@code "IN-PROCESS"} (in progress),
+     * {@code "CANCELLED"} (cancelled).
      */
     private String status;
 
     /**
-     * Приоритет задачи (свойство PRIORITY). Значение от 1 (наивысший)
-     * до 9 (низший); 0 означает неопределённый приоритет.
-     * {@code null} — приоритет не задан.
+     * To-do priority (PRIORITY property). Value from 1 (highest)
+     * to 9 (lowest); 0 indicates undefined priority.
+     * {@code null} — priority is not set.
      */
     private Integer priority;
 
     // VTODO organizer and attendees
 
     /**
-     * Организатор задачи (свойство ORGANIZER). Обычно указывается в виде
-     * URI {@code mailto:user@example.com} либо в виде общего имени CN.
+     * To-do organizer (ORGANIZER property). Typically specified as a
+     * {@code mailto:user@example.com} URI or as a common name (CN).
      */
     private String organizer;
 
     /**
-     * Контактная информация, связанная с задачей (свойство CONTACT).
+     * Contact information associated with the to-do (CONTACT property).
      */
     private String contact;
 
     // VTODO URL and resources
 
     /**
-     * URL, связанный с задачей (свойство URL).
+     * URL associated with the to-do (URL property).
      */
     private String url;
 
     /**
-     * Список ссылок на вложения (свойство ATTACH). Каждый элемент —
-     * идентификатор или путь к связанному ресурсу.
+     * List of attachment references (ATTACH property). Each element is
+     * an identifier or path to a linked resource.
      */
     private List<String> references;
 
     /**
-     * Список категорий задачи (свойство CATEGORIES).
+     * List of to-do categories (CATEGORIES property).
      */
     private List<String> categories;
 
     /**
-     * Список ресурсов, задействованных в задаче (свойство RESOURCES).
-     * Например, оборудование, помещения и т.п.
+     * List of resources involved in the to-do (RESOURCES property).
+     * For example, equipment, rooms, etc.
      */
     private List<String> resources;
 
     /**
-     * Правило повторения задачи (свойство RRULE).
-     * Строка в формате RRULE согласно RFC 5545.
+     * To-do recurrence rule (RRULE property).
+     * A string in RRULE format as defined by RFC 5545.
      */
     private String rrule;
 
     /**
-     * Идентификатор связанного родительского компонента (свойство RELATED-TO).
-     * Используется для построения иерархии задач.
+     * Identifier of a related parent component (RELATED-TO property).
+     * Used to build a hierarchy of to-do items.
      */
     private String relatedTo;
 
     /**
-     * Сравнивает две задачи по идентификатору {@link #id}.
+     * Compares two to-do items by {@link #id}.
      *
-     * @param o объект для сравнения
-     * @return {@code true}, если {@code o} является задачей с тем же id
+     * @param o object to compare with
+     * @return {@code true} if {@code o} is a to-do with the same id
      */
     @Override public boolean equals(Object o)
     {
@@ -216,9 +218,9 @@ public class Todo implements Serializable
     }
 
     /**
-     * Возвращает хеш-код, основанный на {@link #id}.
+     * Returns a hash code based on {@link #id}.
      *
-     * @return хеш-код задачи
+     * @return hash code of the to-do
      */
     @Override public int hashCode()
     {
@@ -226,10 +228,10 @@ public class Todo implements Serializable
     }
 
     /**
-     * Возвращает строковое представление задачи — её заголовок,
-     * либо пустую строку, если заголовок не задан.
+     * Returns a string representation of the to-do — its title,
+     * or an empty string if the title is not set.
      *
-     * @return заголовок задачи или пустая строка
+     * @return to-do title or an empty string
      */
     @Override public String toString()
     {

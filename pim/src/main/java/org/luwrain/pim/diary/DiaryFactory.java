@@ -16,20 +16,20 @@ import static java.util.Objects.*;
 import static java.nio.file.Files.*;
 
 /**
- * Фабрика для доступа к базе данных дневника. Управляет жизненным циклом
- * MVStore-хранилища, открывая и закрывая файл базы данных {@code diary.mvdb}
- * в указанном каталоге. Предоставляет методы для получения экземпляра
- * {@link DiaryPersistence}, через который выполняется вся работа с событиями
- * ({@link org.luwrain.pim.diary.persistence.Event}) и задачами
- * ({@link org.luwrain.pim.diary.persistence.Todo}).
+ * Factory for accessing the diary database. Manages the lifecycle of
+ * an MVStore storage, opening and closing the {@code diary.mvdb} database
+ * file in the specified directory. Provides methods to obtain an instance
+ * of {@link DiaryPersistence}, through which all work with events
+ * ({@link org.luwrain.pim.diary.persistence.Event}) and to-do items
+ * ({@link org.luwrain.pim.diary.persistence.Todo}) is performed.
  *
- * <p>Типичное использование:</p>
+ * <p>Typical usage:</p>
  * <pre>{@code
  * try (var factory = new DiaryFactory(Paths.get("/home/user/luwrain/diary"))) {
  *     var persistence = (DiaryPersistence) factory.newInstance();
  *     var eventDao = persistence.getEventDAO();
  *     var todoDao = persistence.getTodoDAO();
- *     // работа с DAO...
+ *     // work with DAOs...
  * }
  * }</pre>
  *
@@ -41,10 +41,10 @@ public final class DiaryFactory implements AutoCloseable
 {
     static private final Logger log = LogManager.getLogger();
 
-    /** Путь к каталогу, содержащему файл базы данных дневника. */
+    /** Path to the directory containing the diary database file. */
     public final Path path;
 
-    /** Очереди исполнения для асинхронных операций. */
+    /** Execution queues for asynchronous operations. */
     final ExecQueues queues = new ExecQueues();
 
     private final MVStore store;
@@ -53,15 +53,16 @@ public final class DiaryFactory implements AutoCloseable
     private final MVMap<String, Long> keysMap;
 
     /**
-     * Создаёт новую фабрику дневника. Если каталог {@code path} не существует,
-     * он будет создан вместе со всеми промежуточными каталогами. Файл базы
-     * данных {@code diary.mvdb} открывается (или создаётся, если отсутствует)
-     * внутри указанного каталога.
+     * Creates a new diary factory. If the {@code path} directory does not
+     * exist, it will be created along with all intermediate directories.
+     * The database file {@code diary.mvdb} is opened (or created if missing)
+     * inside the specified directory.
      *
-     * @param path путь к каталогу, в котором хранится (или будет создан)
-     *             файл {@code diary.mvdb}
-     * @throws IOException если не удалось создать каталог или открыть базу данных
-     * @throws NullPointerException если {@code path} равен {@code null}
+     * @param path path to the directory where the {@code diary.mvdb} file
+     *             is stored (or will be created)
+     * @throws IOException if the directory could not be created or the
+     *                     database could not be opened
+     * @throws NullPointerException if {@code path} is {@code null}
      */
     public DiaryFactory(Path path) throws IOException
     {
@@ -76,11 +77,11 @@ public final class DiaryFactory implements AutoCloseable
     }
 
     /**
-     * Создаёт новый экземпляр {@link DiaryPersistence}, связанный с текущим
-     * хранилищем. Каждый вызов возвращает новый объект, но все они работают
-     * с одним и тем же файлом базы данных и очередями исполнения.
+     * Creates a new {@link DiaryPersistence} instance bound to the current
+     * storage. Each call returns a new object, but all of them operate on
+     * the same database file and execution queues.
      *
-     * @return новый экземпляр {@link DiaryPersistence}
+     * @return a new {@link DiaryPersistence} instance
      */
     public Object newInstance()
     {
@@ -88,9 +89,9 @@ public final class DiaryFactory implements AutoCloseable
     }
 
     /**
-     * Закрывает очереди исполнения и файл базы данных. После вызова этого
-     * метода дальнейшая работа с экземплярами {@link DiaryPersistence},
-     * полученными от этой фабрики, невозможна.
+     * Closes the execution queues and the database file. After this method
+     * is called, further work with {@link DiaryPersistence} instances
+     * obtained from this factory is no longer possible.
      */
     @Override public void close()
     {

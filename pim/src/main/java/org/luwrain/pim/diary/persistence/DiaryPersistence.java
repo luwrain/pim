@@ -14,14 +14,14 @@ import static java.util.Objects.*;
 import static org.luwrain.pim.ExecQueues.*;
 
 /**
- * Ядро хранения данных дневника. Управляет MVStore-картами событий
- * и задач, а также предоставляет реализации {@link EventDAO} и
- * {@link TodoDAO}, выполняющие все операции через очереди исполнения
- * {@link ExecQueues}. Генерация новых числовых идентификаторов
- * для событий и задач ведётся раздельно через общую карту ключей.
+ * Core storage engine for the diary. Manages MVStore maps for events
+ * and to-do items, and provides implementations of {@link EventDAO} and
+ * {@link TodoDAO} that perform all operations via {@link ExecQueues}
+ * execution queues. Generation of new numeric identifiers for events
+ * and to-do items is done independently through a shared key map.
  *
- * <p>Экземпляры этого класса создаются фабрикой
- * {@link org.luwrain.pim.diary.DiaryFactory}.</p>
+ * <p>Instances of this class are created by the
+ * {@link org.luwrain.pim.diary.DiaryFactory} factory.</p>
  *
  * @see Event
  * @see EventDAO
@@ -33,36 +33,36 @@ public final class DiaryPersistence
 {
     static private final Logger log = LogManager.getLogger();
 
-    /** Очереди исполнения для асинхронных операций. */
+    /** Execution queues for asynchronous operations. */
     final ExecQueues queues;
 
-    /** Текущий приоритет операций с хранилищем. */
+    /** Current priority for storage operations. */
     private Priority priority = Priority.MEDIUM;
 
-    /** Исполнитель, оборачивающий операции в раннер с приоритетом. */
+    /** Runner wrapping operations with the current priority. */
     private Runner runner = null;
 
-    /** Карта событий: идентификатор → {@link Event}. */
+    /** Event map: identifier → {@link Event}. */
     private final MVMap<Long, Event> eventsMap;
 
-    /** Карта задач: идентификатор → {@link Todo}. */
+    /** To-do map: identifier → {@link Todo}. */
     private final MVMap<Long, Todo> todosMap;
 
     /**
-     * Карта ключей: полное имя класса → последний выданный числовой
-     * идентификатор. Используется для генерации новых id через
+     * Key map: fully qualified class name → last issued numeric
+     * identifier. Used to generate new IDs via
      * {@link #getNewKey(Class)}.
      */
     private final MVMap<String, Long> keysMap;
 
     /**
-     * Создаёт экземпляр хранилища дневника.
+     * Creates a diary storage instance.
      *
-     * @param queues    очереди исполнения для выполнения операций с картами
-     * @param eventsMap карта MVStore для хранения событий
-     * @param todosMap  карта MVStore для хранения задач
-     * @param keysMap   карта MVStore для генерации идентификаторов
-     * @throws NullPointerException если любой из параметров равен {@code null}
+     * @param queues    execution queues for performing map operations
+     * @param eventsMap MVStore map for storing events
+     * @param todosMap  MVStore map for storing to-do items
+     * @param keysMap   MVStore map for generating identifiers
+     * @throws NullPointerException if any parameter is {@code null}
      */
     public DiaryPersistence(ExecQueues queues,
 			    MVMap<Long, Event> eventsMap,
@@ -77,11 +77,12 @@ public final class DiaryPersistence
     }
 
     /**
-     * Возвращает реализацию {@link EventDAO} для работы с событиями.
-     * Все операции (добавление, удаление, выборка, обновление) выполняются
-     * асинхронно через очереди исполнения с текущим приоритетом.
+     * Returns an {@link EventDAO} implementation for working with events.
+     * All operations (add, delete, list, update) are executed
+     * asynchronously through the execution queues with the current
+     * priority.
      *
-     * @return объект доступа к данным событий
+     * @return data access object for events
      */
     public EventDAO getEventDAO()
     {
@@ -129,11 +130,12 @@ public final class DiaryPersistence
     }
 
     /**
-     * Возвращает реализацию {@link TodoDAO} для работы с задачами.
-     * Все операции (добавление, удаление, выборка, обновление) выполняются
-     * асинхронно через очереди исполнения с текущим приоритетом.
+     * Returns a {@link TodoDAO} implementation for working with to-do items.
+     * All operations (add, delete, list, update) are executed
+     * asynchronously through the execution queues with the current
+     * priority.
      *
-     * @return объект доступа к данным задач
+     * @return data access object for to-do items
      */
     public TodoDAO getTodoDAO()
     {
@@ -181,13 +183,13 @@ public final class DiaryPersistence
     }
 
     /**
-     * Выдаёт новый уникальный числовой идентификатор для указанного класса.
-     * Идентификаторы независимы для каждого класса: {@code Event} и
-     * {@code Todo} имеют собственные последовательности.
+     * Issues a new unique numeric identifier for the specified class.
+     * Identifiers are independent per class: {@code Event} and
+     * {@code Todo} each have their own sequences.
      *
-     * @param c класс, для которого требуется новый идентификатор
-     * @return новый идентификатор, начинающийся с 0 и увеличивающийся на 1
-     *         при каждом вызове
+     * @param c the class for which a new identifier is required
+     * @return a new identifier, starting from 0 and incrementing by 1
+     *         on each call
      */
     Long getNewKey(Class c)
     {
@@ -203,12 +205,12 @@ public final class DiaryPersistence
     }
 
     /**
-     * Устанавливает приоритет выполнения операций с хранилищем.
-     * При изменении приоритета создаётся новый {@link Runner},
-     * так что все последующие операции будут выполняться с новым приоритетом.
+     * Sets the execution priority for storage operations.
+     * When the priority is changed, a new {@link Runner} is created,
+     * so all subsequent operations will run with the new priority.
      *
-     * @param priority новый приоритет; не может быть {@code null}
-     * @throws NullPointerException если {@code priority} равен {@code null}
+     * @param priority the new priority; must not be {@code null}
+     * @throws NullPointerException if {@code priority} is {@code null}
      */
     public void setPriority(Priority priority)
     {

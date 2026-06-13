@@ -6,10 +6,10 @@ package org.luwrain.pim.diary.persistence;
 import java.util.*;
 
 /**
- * Интерфейс доступа к данным событий (Data Access Object).
- * Предоставляет базовые CRUD-операции для объектов {@link Event}.
+ * Data Access Object interface for events.
+ * Provides basic CRUD operations for {@link Event} objects.
  *
- * <p>Реализация этого интерфейса создаётся через
+ * <p>An implementation of this interface is obtained via
  * {@link DiaryPersistence#getEventDAO()}.</p>
  *
  * @see Event
@@ -19,40 +19,39 @@ import java.util.*;
 public interface EventDAO
 {
     /**
-     * Добавляет новое событие в хранилище. Идентификатор {@link Event#id}
-     * присваивается автоматически перед сохранением.
+     * Adds a new event to storage. The {@link Event#id} is assigned
+     * automatically before saving.
      *
-     * @param event событие для добавления; не может быть {@code null}
-     * @return присвоенный идентификатор нового события
-     * @throws NullPointerException если {@code event} равен {@code null}
+     * @param event the event to add; must not be {@code null}
+     * @return the assigned identifier of the new event
+     * @throws NullPointerException if {@code event} is {@code null}
      */
     long add(Event event);
 
     /**
-     * Удаляет событие из хранилища. Сравнение происходит по идентификатору
+     * Deletes an event from storage. Matching is done by
      * {@link Event#id}.
      *
-     * @param event событие для удаления; не может быть {@code null}
-     * @throws NullPointerException если {@code event} равен {@code null}
-     * @throws IllegalArgumentException если {@link Event#id} отрицательный
+     * @param event the event to delete; must not be {@code null}
+     * @throws NullPointerException if {@code event} is {@code null}
+     * @throws IllegalArgumentException if {@link Event#id} is negative
      */
     void delete(Event event);
 
     /**
-     * Возвращает список всех событий, хранящихся в базе.
+     * Returns the list of all events stored in the database.
      *
-     * @return список всех событий; никогда не {@code null},
-     *         но может быть пустым
+     * @return list of all events; never {@code null}, but may be empty
      */
     List<Event> getAll();
 
     /**
-     * Обновляет существующее событие. Поиск обновляемой записи происходит
-     * по идентификатору {@link Event#id}.
+     * Updates an existing event. The record to update is found by
+     * {@link Event#id}.
      *
-     * @param event событие с новыми данными; не может быть {@code null}
-     * @throws NullPointerException если {@code event} равен {@code null}
-     * @throws IllegalArgumentException если {@link Event#id} отрицательный
+     * @param event the event with new data; must not be {@code null}
+     * @throws NullPointerException if {@code event} is {@code null}
+     * @throws IllegalArgumentException if {@link Event#id} is negative
      */
     void update(Event event);
 }

@@ -7,10 +7,9 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Тест операций с событиями через {@link EventDAO}.
- * В настоящее время отключён ({@code @Disabled}), так как требует
- * запущенного MVStore-окружения, которое настраивается в
- * {@link DiaryPersistence}.
+ * Test for event operations via {@link EventDAO}.
+ * Currently disabled ({@code @Disabled}) because it requires a running
+ * MVStore environment which is set up in {@link DiaryPersistence}.
  *
  * @see Event
  * @see EventDAO
@@ -20,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EventsTest
 {
     /**
-     * Основной тест добавления и чтения события.
-     * Создаёт событие с заголовком и комментарием, сохраняет через
-     * {@link EventDAO#add(Event)}, затем проверяет, что оно корректно
-     * читается обратно.
+     * Main test for adding and reading an event.
+     * Creates an event with a title and comment, saves it via
+     * {@link EventDAO#add(Event)}, then verifies that it is read back
+     * correctly.
      *
-     * @throws Exception если тест завершается с ошибкой
+     * @throws Exception if the test fails
      */
     @Test public void main() throws Exception
     {

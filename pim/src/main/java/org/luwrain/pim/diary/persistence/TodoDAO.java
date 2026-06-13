@@ -6,10 +6,10 @@ package org.luwrain.pim.diary.persistence;
 import java.util.*;
 
 /**
- * Интерфейс доступа к данным задач (Data Access Object).
- * Предоставляет базовые CRUD-операции для объектов {@link Todo}.
+ * Data Access Object interface for to-do items.
+ * Provides basic CRUD operations for {@link Todo} objects.
  *
- * <p>Реализация этого интерфейса создаётся через
+ * <p>An implementation of this interface is obtained via
  * {@link DiaryPersistence#getTodoDAO()}.</p>
  *
  * @see Todo
@@ -19,40 +19,39 @@ import java.util.*;
 public interface TodoDAO
 {
     /**
-     * Добавляет новую задачу в хранилище. Идентификатор {@link Todo#id}
-     * присваивается автоматически перед сохранением.
+     * Adds a new to-do item to storage. The {@link Todo#id} is assigned
+     * automatically before saving.
      *
-     * @param todo задача для добавления; не может быть {@code null}
-     * @return присвоенный идентификатор новой задачи
-     * @throws NullPointerException если {@code todo} равен {@code null}
+     * @param todo the to-do to add; must not be {@code null}
+     * @return the assigned identifier of the new to-do
+     * @throws NullPointerException if {@code todo} is {@code null}
      */
     long add(Todo todo);
 
     /**
-     * Удаляет задачу из хранилища. Сравнение происходит по идентификатору
+     * Deletes a to-do item from storage. Matching is done by
      * {@link Todo#id}.
      *
-     * @param todo задача для удаления; не может быть {@code null}
-     * @throws NullPointerException если {@code todo} равен {@code null}
-     * @throws IllegalArgumentException если {@link Todo#id} отрицательный
+     * @param todo the to-do to delete; must not be {@code null}
+     * @throws NullPointerException if {@code todo} is {@code null}
+     * @throws IllegalArgumentException if {@link Todo#id} is negative
      */
     void delete(Todo todo);
 
     /**
-     * Возвращает список всех задач, хранящихся в базе.
+     * Returns the list of all to-do items stored in the database.
      *
-     * @return список всех задач; никогда не {@code null},
-     *         но может быть пустым
+     * @return list of all to-do items; never {@code null}, but may be empty
      */
     List<Todo> getAll();
 
     /**
-     * Обновляет существующую задачу. Поиск обновляемой записи происходит
-     * по идентификатору {@link Todo#id}.
+     * Updates an existing to-do item. The record to update is found by
+     * {@link Todo#id}.
      *
-     * @param todo задача с новыми данными; не может быть {@code null}
-     * @throws NullPointerException если {@code todo} равен {@code null}
-     * @throws IllegalArgumentException если {@link Todo#id} отрицательный
+     * @param todo the to-do with new data; must not be {@code null}
+     * @throws NullPointerException if {@code todo} is {@code null}
+     * @throws IllegalArgumentException if {@link Todo#id} is negative
      */
     void update(Todo todo);
 }
