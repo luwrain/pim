@@ -18,7 +18,7 @@ public final class App extends AppBase<Strings>
 {
     private MainLayout mainLayout;
     private RegularEventsLayout regularEventsLayout;
-    DiaryPersistence persist;
+    public DiaryPersistence persist;
 
     public App() { super(Strings.class, "luwrain.diary"); }
 

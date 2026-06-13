@@ -14,6 +14,7 @@ import org.luwrain.controls.*;
 import org.luwrain.controls.list.*;
 import org.luwrain.controls.edit.*;
 import org.luwrain.popups.*;
+import org.luwrain.app.diary.layouts.*;
 
 import static java.util.Objects.*;
 import static org.luwrain.core.DefaultEventResponse.*;
@@ -43,6 +44,13 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 		    p.appearance = new EventListAppearance(getControlContext());
 		    p.clickHandler = this;
 		}));
+
+	setPropertiesHandler(eventsArea, a -> {
+		final var ss = eventsArea.selected();
+		if (ss == null)
+		    return null;
+		return new EventPropertiesLayout(app, ss, getReturnAction());
+	    });
 
 	final var eventsActions = actions(
 	    action("create", s.create(), new InputEvent(Special.INSERT),

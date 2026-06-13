@@ -21,4 +21,13 @@ public interface Strings
     String createEventPopupPrefix();
     String deleteEventPopupName();
     String deleteEventPopupText();
+
+    // Event properties form
+    String eventPropertiesAreaName();
+    String titleEdit();
+    String commentEdit();
+    String locationEdit();
+    String dateEdit();
+    String timeEdit();
+    String rruleEdit();
 }
