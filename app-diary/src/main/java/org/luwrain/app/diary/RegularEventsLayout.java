@@ -12,6 +12,8 @@ import org.luwrain.app.base.*;
 import org.luwrain.controls.*;
 import org.luwrain.controls.list.*;
 
+import org.luwrain.pim.diary.persistence.Event;
+
 import static org.luwrain.core.DefaultEventResponse.*;
 import static org.luwrain.core.events.InputEvent.*;
 
@@ -88,8 +90,8 @@ public class RegularEventsLayout extends LayoutBase implements ListArea.ClickHan
 	    }
 	    final var sb = new StringBuilder();
 	    sb.append(requireNonNullElse(event.getTitle(), ""));
-	    if (event.getDescr() != null && !event.getDescr().isEmpty())
-		sb.append(": ").append(event.getDescr());
+	    if (event.getComment() != null && !event.getComment().isEmpty())
+		sb.append(": ").append(event.getComment());
 	    app.setEventResponse(listItem(sb.toString()));
 	}
 

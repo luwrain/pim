@@ -6,9 +6,9 @@ package org.luwrain.app.diary;
 import java.util.*;
 
 import org.luwrain.core.*;
-import org.luwrain.core.events.*;
 import org.luwrain.app.base.*;
 import org.luwrain.core.annotations.*;
+import org.luwrain.pim.diary.persistence.*;
 
 @AppNoArgs(
 	   name = "diary",
@@ -16,13 +16,17 @@ import org.luwrain.core.annotations.*;
 	   category = StarterCategory.PIM)
 public final class App extends AppBase<Strings>
 {
-    private MainLayout mainLayout = null;
-    private RegularEventsLayout regularEventsLayout = null;
+    private MainLayout mainLayout;
+    private RegularEventsLayout regularEventsLayout;
+    DiaryPersistence persist;
 
-    public App() { super(Strings.class, "luwrain.commander"); }
+    public App() { super(Strings.class, "luwrain.diary"); }
 
     @Override public AreaLayout onAppInit()
     {
+	persist = getLuwrain().createInstance(DiaryPersistence.class);
+	if (persist == null)
+	    throw new IllegalStateException("No diary persistence");
 	mainLayout = new MainLayout(this);
 	regularEventsLayout = new RegularEventsLayout(this);
 	setAppName(getStrings().appName());
@@ -34,7 +38,4 @@ public final class App extends AppBase<Strings>
 	closeApp();
 	return true;
     }
-
-    MainLayout getMainLayout() { return mainLayout; }
-    RegularEventsLayout getRegularEventsLayout() { return regularEventsLayout; }
 }

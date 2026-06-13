@@ -18,7 +18,9 @@ import static java.util.Objects.*;
 import static org.luwrain.core.DefaultEventResponse.*;
 import static org.luwrain.core.events.InputEvent.*;
 
-public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Event>
+import org.luwrain.pim.diary.persistence.Event;
+
+public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Event>, CalendarArea.ChangeListener
 {
     static private final Logger log = LogManager.getLogger();
 
@@ -26,7 +28,6 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
     public final ListArea<Event> eventsArea;
     public final EditArea notesArea;
     public final CalendarArea calendarArea;
-    final Actions eventsActions;
     final App app;
 
     MainLayout(App app) 
@@ -37,12 +38,12 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 
 	eventsArea = new ListArea<Event>(listParams(p -> {
 		    p.name = s.eventsAreaName();
-		    p.model = new ListModel<Event>(events);
+		    p.model = new ListModel<>(events);
 		    p.appearance = new EventListAppearance(getControlContext());
 		    p.clickHandler = this;
 		}));
 
-	eventsActions = actions(
+	final var eventsActions = actions(
 	    action("create", s.create(), new InputEvent(Special.INSERT),
 		   () -> { onCreateEvent(); return true; }),
 	    action("delete", s.delete(), new InputEvent(Special.DELETE),
@@ -64,20 +65,25 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 			};
 		}));
 
-	calendarArea = new CalendarArea(getControlContext(), Calendar.getInstance());
+	final var calendarParams = new CalendarArea.Params();
+	calendarParams.context = getControlContext();
+	calendarParams.changeListener = this;
+	calendarParams.calendar = Calendar.getInstance();
 
-	setAreaLayout(AreaLayout.LEFT_RIGHT_BOTTOM,
+	calendarArea = new CalendarArea(calendarParams);
+
+	setAreaLayout(AreaLayout.LEFT_TOP_BOTTOM,
 		      eventsArea, eventsActions,
 		      notesArea, null,
 		      calendarArea, null);
     }
 
-    @Override public boolean onListClick(ListArea<Event> area, int index, Event event)
+    @Override public boolean onListClick(ListArea<Event> area, int index, org.luwrain.pim.diary.persistence.Event event)
     {
 	if (event == null)
 	    return false;
 	app.setEventResponse(listItem(event.getTitle() + " " + app.getStrings().eventListSuffix()));
-	notesArea.setText(new String[]{ requireNonNullElse(event.getNotes(), "") });
+	notesArea.setText(new String[]{ requireNonNullElse(event.getComment(), "") });
 	//calendarArea.setDate(event.getDateTime() != null
 	//			     ? event.getDateTime().toLocalDate()
 	//			     : LocalDate.now());
@@ -102,10 +108,10 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 	return true;
     }
 
-    @Override public AreaLayout getAreaLayout()
+    @Override public void onCalendarChange(Date date)
     {
-	return super.getAreaLayout();
     }
+    
 
     final class EventListAppearance extends AbstractAppearance<Event>
     {
@@ -123,9 +129,9 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 		return;
 	    }
 	    final var sb = new StringBuilder();
-	    final var dt = event.getDateTime();
+	    final var dt = new Date(event.getDateTime());
 	    if (dt != null)
-		sb.append(String.format("%02d:%02d ", dt.getHour(), dt.getMinute()));
+		sb.append(String.format("%02d:%02d ", dt.getHours(), dt.getMinutes()));
 	    sb.append(requireNonNullElse(event.getTitle(), ""));
 	    if (event.getLocation() != null && !event.getLocation().isEmpty())
 		sb.append(", ").append(event.getLocation());
@@ -137,12 +143,13 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 	    if (event == null)
 		return "";
 	    final var sb = new StringBuilder();
-	    final var dt = event.getDateTime();
-	    if (dt != null)
-		sb.append(String.format("%02d:%02d ", dt.getHour(), dt.getMinute()));
+	    final var dt = new Date(event.getDateTime());
+		sb.append(String.format("%02d:%02d ", dt.getHours(), dt.getMinutes()));
 	    sb.append(requireNonNullElse(event.getTitle(), ""));
+	    /*
 	    if (event.isCompleted())
 		sb.insert(0, "\u2713 ");
+	    */
 	    return sb.toString();
 	}
     }

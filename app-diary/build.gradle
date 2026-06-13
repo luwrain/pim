@@ -8,7 +8,7 @@ dependencies {
   implementation libraries.apacheBase
   implementation project(':luwrain-base')
   implementation project(':luwrain')
-  implementation project(':luwrain-io')
+  implementation project(':luwrain-pim')
   annotationProcessor project(':luwrain-base')
   testImplementation libraries.junit
 }
