@@ -13,17 +13,57 @@ import org.luwrain.pim.*;
 import static java.util.Objects.*;
 import static org.luwrain.pim.ExecQueues.*;
 
+/**
+ * Ядро хранения данных дневника. Управляет MVStore-картами событий
+ * и задач, а также предоставляет реализации {@link EventDAO} и
+ * {@link TodoDAO}, выполняющие все операции через очереди исполнения
+ * {@link ExecQueues}. Генерация новых числовых идентификаторов
+ * для событий и задач ведётся раздельно через общую карту ключей.
+ *
+ * <p>Экземпляры этого класса создаются фабрикой
+ * {@link org.luwrain.pim.diary.DiaryFactory}.</p>
+ *
+ * @see Event
+ * @see EventDAO
+ * @see Todo
+ * @see TodoDAO
+ * @see org.luwrain.pim.diary.DiaryFactory
+ */
 public final class DiaryPersistence
 {
     static private final Logger log = LogManager.getLogger();
 
+    /** Очереди исполнения для асинхронных операций. */
     final ExecQueues queues;
+
+    /** Текущий приоритет операций с хранилищем. */
     private Priority priority = Priority.MEDIUM;
+
+    /** Исполнитель, оборачивающий операции в раннер с приоритетом. */
     private Runner runner = null;
+
+    /** Карта событий: идентификатор → {@link Event}. */
     private final MVMap<Long, Event> eventsMap;
+
+    /** Карта задач: идентификатор → {@link Todo}. */
     private final MVMap<Long, Todo> todosMap;
+
+    /**
+     * Карта ключей: полное имя класса → последний выданный числовой
+     * идентификатор. Используется для генерации новых id через
+     * {@link #getNewKey(Class)}.
+     */
     private final MVMap<String, Long> keysMap;
 
+    /**
+     * Создаёт экземпляр хранилища дневника.
+     *
+     * @param queues    очереди исполнения для выполнения операций с картами
+     * @param eventsMap карта MVStore для хранения событий
+     * @param todosMap  карта MVStore для хранения задач
+     * @param keysMap   карта MVStore для генерации идентификаторов
+     * @throws NullPointerException если любой из параметров равен {@code null}
+     */
     public DiaryPersistence(ExecQueues queues,
 			    MVMap<Long, Event> eventsMap,
 			    MVMap<Long, Todo> todosMap,
@@ -36,6 +76,13 @@ public final class DiaryPersistence
 	this.runner = new Runner(queues, priority);
     }
 
+    /**
+     * Возвращает реализацию {@link EventDAO} для работы с событиями.
+     * Все операции (добавление, удаление, выборка, обновление) выполняются
+     * асинхронно через очереди исполнения с текущим приоритетом.
+     *
+     * @return объект доступа к данным событий
+     */
     public EventDAO getEventDAO()
     {
 	return new EventDAO(){
@@ -81,6 +128,13 @@ public final class DiaryPersistence
 	};
     }
 
+    /**
+     * Возвращает реализацию {@link TodoDAO} для работы с задачами.
+     * Все операции (добавление, удаление, выборка, обновление) выполняются
+     * асинхронно через очереди исполнения с текущим приоритетом.
+     *
+     * @return объект доступа к данным задач
+     */
     public TodoDAO getTodoDAO()
     {
 	return new TodoDAO(){
@@ -126,6 +180,15 @@ public final class DiaryPersistence
 	};
     }
 
+    /**
+     * Выдаёт новый уникальный числовой идентификатор для указанного класса.
+     * Идентификаторы независимы для каждого класса: {@code Event} и
+     * {@code Todo} имеют собственные последовательности.
+     *
+     * @param c класс, для которого требуется новый идентификатор
+     * @return новый идентификатор, начинающийся с 0 и увеличивающийся на 1
+     *         при каждом вызове
+     */
     Long getNewKey(Class c)
     {
 	final var res = keysMap.get(c.getName());
@@ -139,6 +202,14 @@ public final class DiaryPersistence
 	return newVal;
     }
 
+    /**
+     * Устанавливает приоритет выполнения операций с хранилищем.
+     * При изменении приоритета создаётся новый {@link Runner},
+     * так что все последующие операции будут выполняться с новым приоритетом.
+     *
+     * @param priority новый приоритет; не может быть {@code null}
+     * @throws NullPointerException если {@code priority} равен {@code null}
+     */
     public void setPriority(Priority priority)
     {
 	this.priority = requireNonNull(priority, "priority can't be null");

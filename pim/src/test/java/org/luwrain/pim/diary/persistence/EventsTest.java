@@ -1,15 +1,32 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.pim.diary.persistence;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-//import org.luwrain.pim.diary.persistence.model.*;
-import static org.luwrain.pim.diary.persistence.DiaryPersistence.*;
-
+/**
+ * Тест операций с событиями через {@link EventDAO}.
+ * В настоящее время отключён ({@code @Disabled}), так как требует
+ * запущенного MVStore-окружения, которое настраивается в
+ * {@link DiaryPersistence}.
+ *
+ * @see Event
+ * @see EventDAO
+ * @see DiaryPersistence
+ */
 @Disabled
 public class EventsTest
 {
+    /**
+     * Основной тест добавления и чтения события.
+     * Создаёт событие с заголовком и комментарием, сохраняет через
+     * {@link EventDAO#add(Event)}, затем проверяет, что оно корректно
+     * читается обратно.
+     *
+     * @throws Exception если тест завершается с ошибкой
+     */
     @Test public void main() throws Exception
     {
 	/*
