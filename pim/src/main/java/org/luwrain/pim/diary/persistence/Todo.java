@@ -12,7 +12,7 @@ import lombok.*;
  * iCalendar standard
  * (<a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a>).
  * Each to-do has a unique {@link #id} assigned upon saving. All time
- * fields except {@link #dtStamp} are stored as {@link Long} — the
+ * fields except {@link #timestamp} are stored as {@link Long} — the
  * number of milliseconds since the Unix epoch — and may be {@code null}
  * when the value is not set.
  *

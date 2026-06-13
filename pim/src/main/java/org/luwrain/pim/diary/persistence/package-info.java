@@ -34,7 +34,7 @@
  *   ({@code RELATED-TO}), categories, resources, and attachments.</li>
  * </ul>
  *
- * <p>Both model classes use {@link lombok.Data @Data} for automatic
+ * <p>Both model classes use {@code lombok.Data @Data} for automatic
  * generation of getters, setters, {@code toString()}, and
  * {@code equals()}/{@code hashCode()} (the latter two are overridden
  * to compare solely by {@code id}).</p>
