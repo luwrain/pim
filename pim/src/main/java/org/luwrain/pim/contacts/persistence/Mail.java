@@ -9,7 +9,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Email implements Serializable
+public class Mail implements Serializable
 {
     public enum Type {INTERNET};
     private Type type = Type.INTERNET;

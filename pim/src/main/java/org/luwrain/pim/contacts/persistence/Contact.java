@@ -13,7 +13,7 @@ public class Contact implements Serializable
     private long id;
 
     // ID of the parent ContactsFolder, -1 if this contact is in the root
-    private long parentFolderId = -1;
+    private long folderId = -1;
 
     // FN
     private String formattedName;
@@ -28,7 +28,7 @@ public class Contact implements Serializable
     private List<Phone> phones;
 
     // EMAIL
-    private List<Email> emails;
+    private List<Mail> mails;
 
     // ADR
     private List<Address> addresses;

@@ -56,7 +56,7 @@ public final class ContactsPersistence
 		requireNonNull(contact, "contact can't be null");
 		if (contact.getId() < 0)
 		    throw new IllegalArgumentException("A contact can't have negative ID");
-		log.trace("Deleting " + contact);
+		log.trace("Deleting {}", contact.toString());
 		runner.run(() -> contactsMap.remove(Long.valueOf(contact.getId())));
 	    }
 
@@ -72,7 +72,7 @@ public final class ContactsPersistence
 		requireNonNull(contact, "contact can't be null");
 		if (contact.getId() < 0)
 		    throw new IllegalArgumentException("A contact can't have negative ID");
-		log.trace("Updating " + contact);
+		log.trace("Updating ", contact.toString());
 		runner.run(() -> {
 		    contactsMap.put(Long.valueOf(contact.getId()), contact);
 		    return null;
@@ -81,8 +81,14 @@ public final class ContactsPersistence
 
 	        @Override public List<Contact> getByFolderId(long folderId)
 	    {
-		//FIXME:
-		return Collections.emptyList();
+		if (folderId < 0)
+		    throw new IllegalArgumentException("folderId can't be negative (" + folderId + ")");
+		return runner.run(() -> contactsMap.entrySet().stream()
+				  .filter(e -> e.getValue().getFolderId() == folderId)
+				  .map(e -> e.getValue())
+				  .toList());
+
+
 	    }
 	};
     }
@@ -96,7 +102,7 @@ public final class ContactsPersistence
 		return runner.run(() -> {
 		    final long newId = getNewKey(ContactsFolder.class).longValue();
 		    folder.setId(newId);
-		    log.trace("Adding folder " + folder);
+		    log.trace("Adding {}", folder.toString());
 		    foldersMap.put(Long.valueOf(newId), folder);
 		    return Long.valueOf(newId);
 		}).longValue();
@@ -107,7 +113,7 @@ public final class ContactsPersistence
 		requireNonNull(folder, "folder can't be null");
 		if (folder.getId() < 0)
 		    throw new IllegalArgumentException("A folder can't have negative ID");
-		log.trace("Deleting folder " + folder);
+		log.trace("Deleting folder {}", folder);
 		runner.run(() -> foldersMap.remove(Long.valueOf(folder.getId())));
 	    }
 
