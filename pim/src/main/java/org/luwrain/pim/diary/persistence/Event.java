@@ -71,7 +71,7 @@ public class Event implements Serializable
      * Start date and time of the event (DTSTART property).
      * In milliseconds since the Unix epoch.
      */
-    private long dateTime;
+    private long dtStart;
 
     /**
      * Duration of the event in minutes (DURATION property).

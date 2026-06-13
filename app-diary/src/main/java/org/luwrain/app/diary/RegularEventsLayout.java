@@ -11,6 +11,7 @@ import org.luwrain.core.events.*;
 import org.luwrain.app.base.*;
 import org.luwrain.controls.*;
 import org.luwrain.controls.list.*;
+import org.luwrain.popups.*;
 
 import org.luwrain.pim.diary.persistence.Event;
 
@@ -47,6 +48,8 @@ public class RegularEventsLayout extends LayoutBase implements ListArea.ClickHan
 	    );
 
 	setAreaLayout(regularEventsArea, regularEventsActions);
+
+	loadRegularEvents();
     }
 
     @Override public boolean onListClick(ListArea<Event> area, int index, Event event)
@@ -59,7 +62,27 @@ public class RegularEventsLayout extends LayoutBase implements ListArea.ClickHan
 
     boolean onCreateRegularEvent()
     {
-	// TODO: open regular event creation form
+	final var s = app.getStrings();
+	final var popup = new SimpleEditPopup(
+	    app.getLuwrain(),
+	    s.createEventPopupName(),
+	    s.createEventPopupPrefix(),
+	    "",
+	    EnumSet.noneOf(Popup.Flags.class)
+	);
+	app.getLuwrain().popup(popup);
+	if (popup.wasCancelled())
+	    return true;
+	final var title = popup.text();
+	if (title == null || title.trim().isEmpty())
+	    return true;
+	final var event = new Event();
+	event.setTitle(title.trim());
+	// A regular event has no specific date; use rrule or leave dtStart as now
+	event.setDtStart(System.currentTimeMillis());
+	app.persist.getEventDAO().add(event);
+	loadRegularEvents();
+	app.getLuwrain().playSound(Sounds.DONE);
 	return true;
     }
 
@@ -68,10 +91,40 @@ public class RegularEventsLayout extends LayoutBase implements ListArea.ClickHan
 	final var selected = regularEventsArea.selected();
 	if (selected == null)
 	    return false;
-	regularEvents.remove(selected);
-	regularEventsArea.refresh();
+	final var s = app.getStrings();
+	final var title = requireNonNullElse(selected.getTitle(), "");
+	final var popup = new YesNoPopup(
+	    app.getLuwrain(),
+	    s.deleteEventPopupName(),
+	    s.deleteEventPopupText() + " " + title,
+	    false,
+	    EnumSet.noneOf(Popup.Flags.class)
+	);
+	app.getLuwrain().popup(popup);
+	if (!popup.result() || popup.wasCancelled())
+	    return true;
+	app.persist.getEventDAO().delete(selected);
+	loadRegularEvents();
 	app.getLuwrain().playSound(Sounds.DONE);
 	return true;
+    }
+
+    void loadRegularEvents()
+    {
+	regularEvents.clear();
+	final var allEvents = app.persist.getEventDAO().getAll();
+	if (allEvents == null || allEvents.isEmpty())
+	{
+	    regularEventsArea.refresh();
+	    return;
+	}
+	// Regular events are those with an rrule set (recurring events)
+	for (var ev : allEvents)
+	{
+	    if (ev.getRrule() != null && !ev.getRrule().isEmpty())
+		regularEvents.add(ev);
+	}
+	regularEventsArea.refresh();
     }
 
     final class RegularEventListAppearance extends AbstractAppearance<Event>

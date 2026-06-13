@@ -13,6 +13,7 @@ import org.luwrain.app.base.*;
 import org.luwrain.controls.*;
 import org.luwrain.controls.list.*;
 import org.luwrain.controls.edit.*;
+import org.luwrain.popups.*;
 
 import static java.util.Objects.*;
 import static org.luwrain.core.DefaultEventResponse.*;
@@ -76,6 +77,9 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 		      eventsArea, eventsActions,
 		      notesArea, null,
 		      calendarArea, null);
+
+	// Load initial events for today
+	loadEventsForDate(calendarParams.calendar.getTime());
     }
 
     @Override public boolean onListClick(ListArea<Event> area, int index, org.luwrain.pim.diary.persistence.Event event)
@@ -84,15 +88,31 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 	    return false;
 	app.setEventResponse(listItem(event.getTitle() + " " + app.getStrings().eventListSuffix()));
 	notesArea.setText(new String[]{ requireNonNullElse(event.getComment(), "") });
-	//calendarArea.setDate(event.getDateTime() != null
-	//			     ? event.getDateTime().toLocalDate()
-	//			     : LocalDate.now());
 	return true;
     }
 
     boolean onCreateEvent()
     {
-	// TODO: open event creation form
+	final var s = app.getStrings();
+	final var popup = new SimpleEditPopup(
+	    app.getLuwrain(),
+	    s.createEventPopupName(),
+	    s.createEventPopupPrefix(),
+	    "",
+	    EnumSet.noneOf(Popup.Flags.class)
+	);
+	app.getLuwrain().popup(popup);
+	if (popup.wasCancelled())
+	    return true;
+	final var title = popup.text();
+	if (title == null || title.trim().isEmpty())
+	    return true;
+	final var event = new Event();
+	event.setTitle(title.trim());
+	event.setDtStart(calendarArea.getCalendar().getTime().getTime());
+	app.persist.getEventDAO().add(event);
+	loadEventsForDate(calendarArea.getCalendar().getTime());
+	app.getLuwrain().playSound(Sounds.DONE);
 	return true;
     }
 
@@ -101,17 +121,57 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 	final var selected = eventsArea.selected();
 	if (selected == null)
 	    return false;
-	// TODO: confirm and delete
-	events.remove(selected);
-	eventsArea.refresh();
+	final var s = app.getStrings();
+	final var title = requireNonNullElse(selected.getTitle(), "");
+	final var popup = new YesNoPopup(
+	    app.getLuwrain(),
+	    s.deleteEventPopupName(),
+	    s.deleteEventPopupText() + " " + title,
+	    false,
+	    EnumSet.noneOf(Popup.Flags.class)
+	);
+	app.getLuwrain().popup(popup);
+	if (!popup.result() || popup.wasCancelled())
+	    return true;
+	app.persist.getEventDAO().delete(selected);
+	loadEventsForDate(calendarArea.getCalendar().getTime());
 	app.getLuwrain().playSound(Sounds.DONE);
 	return true;
     }
 
     @Override public void onCalendarChange(Date date)
     {
+	loadEventsForDate(date);
     }
-    
+
+    void loadEventsForDate(Date date)
+    {
+	requireNonNull(date, "date can't be null");
+	final var allEvents = app.persist.getEventDAO().getAll();
+	events.clear();
+	if (allEvents == null || allEvents.isEmpty())
+	{
+	    eventsArea.refresh();
+	    return;
+	}
+	final var cal = Calendar.getInstance();
+	cal.setTime(date);
+	final int targetDay = cal.get(Calendar.DAY_OF_MONTH);
+	final int targetMonth = cal.get(Calendar.MONTH);
+	final int targetYear = cal.get(Calendar.YEAR);
+	final var tmpCal = Calendar.getInstance();
+	for (var ev : allEvents)
+	{
+	    tmpCal.setTime(new Date(ev.getDtStart()));
+	    if (tmpCal.get(Calendar.DAY_OF_MONTH) == targetDay
+		&& tmpCal.get(Calendar.MONTH) == targetMonth
+		&& tmpCal.get(Calendar.YEAR) == targetYear)
+	    {
+		events.add(ev);
+	    }
+	}
+	eventsArea.refresh();
+    }
 
     final class EventListAppearance extends AbstractAppearance<Event>
     {
@@ -129,7 +189,7 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 		return;
 	    }
 	    final var sb = new StringBuilder();
-	    final var dt = new Date(event.getDateTime());
+	    final var dt = new Date(event.getDtStart());
 	    if (dt != null)
 		sb.append(String.format("%02d:%02d ", dt.getHours(), dt.getMinutes()));
 	    sb.append(requireNonNullElse(event.getTitle(), ""));
@@ -143,13 +203,9 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Even
 	    if (event == null)
 		return "";
 	    final var sb = new StringBuilder();
-	    final var dt = new Date(event.getDateTime());
+	    final var dt = new Date(event.getDtStart());
 		sb.append(String.format("%02d:%02d ", dt.getHours(), dt.getMinutes()));
 	    sb.append(requireNonNullElse(event.getTitle(), ""));
-	    /*
-	    if (event.isCompleted())
-		sb.insert(0, "\u2713 ");
-	    */
 	    return sb.toString();
 	}
     }

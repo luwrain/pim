@@ -17,4 +17,8 @@ public interface Strings
     String delete();
     String eventListSuffix();
     String noteHintEmpty();
+    String createEventPopupName();
+    String createEventPopupPrefix();
+    String deleteEventPopupName();
+    String deleteEventPopupText();
 }
