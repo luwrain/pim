@@ -16,7 +16,7 @@ import org.luwrain.core.*;
 import org.luwrain.util.*;
 import org.luwrain.pim.PimException;
 
-public final class MailConnections
+final class MailConnections
 {
     static private final String LOG_COMPONENT = Base.LOG_COMPONENT;
     static final int LIMIT_MESSAGES_LOAD = 500;

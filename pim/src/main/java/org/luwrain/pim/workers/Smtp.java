@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
+// Copyright 2012-2026 Michael Pozhidaev <msp@luwrain.org>
 // Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
 package org.luwrain.pim.workers;
@@ -10,6 +10,8 @@ import org.luwrain.core.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.proto.*;
 import org.luwrain.pim.mail.persistence.*;
+
+import static java.util.Objects.*;
 
 /**
  * Worker that sends outgoing mail via SMTP.
@@ -30,7 +32,7 @@ public class Smtp implements Worker
 
     public Smtp(Luwrain luwrain)
     {
-	this.luwrain = luwrain;
+	this.luwrain = requireNonNull(luwrain, "luwrain can't be null");
     }
 
     @Override public void run()
@@ -60,26 +62,24 @@ public class Smtp implements Worker
 		}
 		log.debug("Processing SMTP account: " + account.getName());
 		try {
-		    final var smtp = new org.luwrain.pim.mail.proto.Smtp(account);
-		    final var messageDAO = persist.getMessageDAO();
-		    final var allMessages = messageDAO.getAll();
-		    for (final var msg : allMessages)
+		    final var smtp = new org.luwrain.pim.mail.proto.Smtp(account, persist, luwrain);
+		    final var result = smtp.send();
+		    log.debug("SMTP account \"" + account.getName() + "\": sent " + result.sent + " of " + result.total + " messages");
+		    if (!result.errors.isEmpty())
 		    {
-			if (msg.getState() != MessageMetadata.State.NEW)
-			    continue;
-			log.trace("Sending message via " + account.getName() + ": " + msg.getSubject());
-			try {
-			    smtp.send(new byte[0]);
-			}
-			catch (PimException e)
-			{
-			    log.error("Failed to send message " + msg.getId() + " via " + account.getName() + ": " + e.getMessage());
-			}
+			for (final var entry : result.errors.entrySet())
+			    log.error("Failed to send message " + entry.getKey() + " via " + account.getName() + ": " + entry.getValue().getMessage());
 		    }
 		}
 		catch (PimException e)
 		{
-		    log.error("Unable to connect to SMTP server " + account.getHost() + ":" + account.getPort() + ": " + e.getMessage());
+		    log.error("Unable to send messages via SMTP account " + account.getHost() + ":" + account.getPort() + ": " + e.getMessage());
+		}
+		catch (InterruptedException e)
+		{
+		    log.debug("SMTP worker interrupted");
+		    Thread.currentThread().interrupt();
+		    return;
 		}
 	    }
 	}

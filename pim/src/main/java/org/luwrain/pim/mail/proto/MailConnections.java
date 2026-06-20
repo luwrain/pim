@@ -18,6 +18,8 @@ import org.luwrain.core.*;
 import org.luwrain.util.*;
 import org.luwrain.pim.PimException;
 
+import static java.util.Objects.*;
+
 public final class MailConnections
 {
     static private final String LOG_COMPONENT = "mail";
@@ -48,7 +50,7 @@ public final class MailConnections
 
     public MailConnections(Params params, boolean pop3) throws PimException
     {
-	NullCheck.notNull(params, "params");
+	requireNonNull(params, "params can't be null");
 	NullCheck.notEmpty(params.host, "params.host");
 	NullCheck.notNull(params.login, "params.login");
 	NullCheck.notNull(params.passwd, "params.passwd");
@@ -116,7 +118,7 @@ public final class MailConnections
     public boolean fetchPop3(String folderName, Listener listener, boolean deleteMessagesOnServer) throws IOException, InterruptedException
     {
 	NullCheck.notEmpty(folderName, "folderName");
-	NullCheck.notNull(listener, "listener");
+	requireNonNull(listener, "listener can't be null");
 	try {
 	    Folder folder = null;
 	    try {
@@ -168,7 +170,7 @@ public final class MailConnections
      */
     public void send(byte[] bytes) throws PimException
     {
-	NullCheck.notNull(smtpTransport, "smtpTransport");
+	requireNonNull(smtpTransport, "smtpTransport can't be null");
 	try {
 	    final Message message = loadFromByteArray(bytes);
 	    smtpTransport.sendMessage(message, message.getRecipients(RecipientType.TO));
@@ -190,7 +192,7 @@ public final class MailConnections
 
     public byte[] saveToByteArray(Message message) throws MessagingException, IOException
     {
-	NullCheck.notNull(message, "message");
+	requireNonNull(message, "message can't be null");
 	final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 	try {
 	    message.writeTo(byteStream);
@@ -209,7 +211,7 @@ public final class MailConnections
 
     Message loadFromByteArray(byte[] bytes) throws MessagingException, IOException
     {
-	NullCheck.notNull(bytes, "bytes");
+	requireNonNull(bytes, "bytes can't be null");
 	final InputStream is = new ByteArrayInputStream(bytes);
 	try {
 	    return new javax.mail.internet.MimeMessage(session, is);

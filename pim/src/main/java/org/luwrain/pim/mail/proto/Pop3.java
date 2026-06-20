@@ -13,7 +13,8 @@ import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.persistence.*;
 
-import static org.luwrain.core.NullCheck.*;
+//import static org.luwrain.core.NullCheck.*;
+import static java.util.Objects.*;
 
 public final class Pop3 implements MessageProvider<Pop3.ExtData>
 {
@@ -34,7 +35,7 @@ public final class Pop3 implements MessageProvider<Pop3.ExtData>
 
     public Pop3(Account account)
     {
-	notNull(account, "account");
+	requireNonNull(account, "account can't be null");
 	this.account = account;
     }
 
