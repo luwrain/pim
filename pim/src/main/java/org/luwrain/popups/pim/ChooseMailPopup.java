@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2026 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.popups.pim;
 
@@ -10,6 +12,8 @@ import org.luwrain.popups.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.contacts.persistence.*;
 
+import static java.util.Objects.*;
+
 public class ChooseMailPopup extends ListPopup2
 {
 protected final ContactsPersistence persist;
@@ -19,15 +23,15 @@ protected final Strings strings;
     {
 	super(luwrain, 
 	      createParams(luwrain, strings.chooseMailPopupName(folder.toString()), strings, persist, folder),Popups.DEFAULT_POPUP_FLAGS);
-	NullCheck.notNull(persist, "persist");
-	NullCheck.notNull(strings, "strings");
+	requireNonNull(persist, "persist can't be null");
+	requireNonNull(strings, "strings can't be null");
 	this.persist = persist;
 	this.strings = strings;
     }
 
     @Override public boolean onInputEvent(InputEvent event)
     {
-	NullCheck.notNull(event, "event");
+	requireNonNull(event, "event can't be null");
 	if (event.isSpecial() && !event.isModified())
 	    switch(event.getSpecial())
 	    {
@@ -118,11 +122,11 @@ protected void onContactEntry(Contact contact)
     static protected ListArea.Params<Object> createParams(Luwrain luwrain, String name, Strings strings,
 						     ContactsPersistence persist, ContactsFolder folder)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(name, "name");
-	NullCheck.notNull(strings, "strings");
-	NullCheck.notNull(persist, "persist");
-	NullCheck.notNull(folder, "folder");
+	requireNonNull(luwrain, "luwrain can't be null");
+	requireNonNull(name, "name can't be null");
+	requireNonNull(strings, "strings can't be null");
+	requireNonNull(persist, "persist can't be null");
+	requireNonNull(folder, "folder can't be null");
 	final ListArea.Params<Object> params = new ListArea.Params<>();
 	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
@@ -138,8 +142,8 @@ protected final ContactsFolder folder;
 protected Object[] items;
 	Model(ContactsPersistence persist, ContactsFolder folder)
 	{
-	    NullCheck.notNull(persist, "persist");
-	    NullCheck.notNull(folder, "folder");
+	    requireNonNull(persist, "persist can't be null");
+	    requireNonNull(folder, "folder can't be null");
 	    this.persist = persist;
 	    this.folder = folder;
 	    refresh();
@@ -178,15 +182,15 @@ protected final Luwrain luwrain;
 protected final Strings strings;
 	Appearance(Luwrain luwrain, Strings strings)
 	{
-	    NullCheck.notNull(luwrain, "luwrain");
-	    NullCheck.notNull(strings, "strings");
+	    requireNonNull(luwrain, "luwrain can't be null");
+	    requireNonNull(strings, "strings can't be null");
 	    this.luwrain = luwrain;
 	    this.strings = strings;
 	}
 	@Override public void announceItem(Object item, Set<Flags> flags)
 	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
+	    requireNonNull(item, "item can't be null");
+	    requireNonNull(flags, "flags can't be null");
 	    luwrain.playSound(Sounds.LIST_ITEM);
 	    if (item instanceof ContactsFolder)
 	    {

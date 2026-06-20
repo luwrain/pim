@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
+// Copyright 2012-2026 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.popups.pim;
 
@@ -12,6 +12,8 @@ import org.luwrain.popups.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.contacts.persistence.*;
 
+import static java.util.Objects.*;
+
 public class CcEditPopup extends EditableListPopup<Object>
 {
     protected final ContactDAO contactDAO;
@@ -23,15 +25,15 @@ public class CcEditPopup extends EditableListPopup<Object>
         super(luwrain,
               makeParams(luwrain, strings.ccEditPopupName(), strings, contactDAO, initialList),
               Popups.DEFAULT_POPUP_FLAGS);
-        NullCheck.notNull(contactDAO, "contactDAO");
-        NullCheck.notNull(strings, "strings");
+        requireNonNull(contactDAO, "contactDAO can't be null");
+        requireNonNull(strings, "strings can't be null");
         this.contactDAO = contactDAO;
         this.strings = strings;
     }
 
     @Override public boolean onInputEvent(InputEvent event)
     {
-        NullCheck.notNull(event, "event");
+        requireNonNull(event, "event can't be null");
         if (event.isSpecial() && !event.isModified())
             switch(event.getSpecial())
             {
@@ -60,10 +62,10 @@ public class CcEditPopup extends EditableListPopup<Object>
                                                                  ContactDAO contactDAO,
                                                                  String[] initialList)
     {
-        NullCheck.notNull(luwrain, "luwrain");
-        NullCheck.notNull(name, "name");
-        NullCheck.notNull(strings, "strings");
-        NullCheck.notNull(contactDAO, "contactDAO");
+        requireNonNull(luwrain, "luwrain can't be null");
+        requireNonNull(name, "name can't be null");
+        requireNonNull(strings, "strings can't be null");
+        requireNonNull(contactDAO, "contactDAO can't be null");
         NullCheck.notNullItems(initialList, "initialList");
         final EditableListArea.Params<Object> params = new EditableListArea.Params<>();
         params.context = new DefaultControlContext(luwrain);

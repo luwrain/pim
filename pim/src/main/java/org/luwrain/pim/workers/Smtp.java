@@ -1,61 +1,91 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 // Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
 package org.luwrain.pim.workers;
 
-import org.luwrain.core.*;
-import org.luwrain.pim.fetching.*;
+import org.apache.logging.log4j.*;
 
+import org.luwrain.core.*;
+import org.luwrain.pim.*;
+import org.luwrain.pim.mail.proto.*;
+import org.luwrain.pim.mail.persistence.*;
+
+/**
+ * Worker that sends outgoing mail via SMTP.
+ *
+ * Iterates over all SMTP accounts in the persistence layer,
+ * locates messages that are pending to be sent,
+ * and delivers them using the SMTP protocol implementation from
+ * {@link org.luwrain.pim.mail.proto.Smtp}.
+ */
 public class Smtp implements Worker
 {
-    static protected final String LOG_COMPONENT = "pim-workers";
-    static public String NAME = "luwrain.pim.fetch.smtp";
+    static private final Logger log = LogManager.getLogger();
 
-    protected final Luwrain luwrain;
-    protected final org.luwrain.pim.fetching.Control control;
+    static public final String
+	NAME = "luwrain.pim.fetch.smtp";
+
+    private final Luwrain luwrain;
 
     public Smtp(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
-	this.control = new DefaultControl(luwrain);
-    }
-
-        public Smtp(org.luwrain.pim.fetching.Control control)
-    {
-	NullCheck.notNull(control, "control");
-	this.control = control;
-	this.luwrain = control.luwrain();
     }
 
     @Override public void run()
     {
-	final org.luwrain.pim.fetching.Strings strings = (org.luwrain.pim.fetching.Strings)luwrain.i18n().getStrings(org.luwrain.pim.fetching.Strings.NAME);
-	if (strings == null)
-	{
-	    Log.error(LOG_COMPONENT, "unable to launch the worker \'" + NAME + "\' since there is no strings object with the name \'" + org.luwrain.pim.fetching.Strings.NAME + "\'");
-	    return;
-	}
 	try {
-	    	final org.luwrain.pim.mail.protocols.Smtp smtpFetching = new org.luwrain.pim.mail.protocols.Smtp(control, strings);
-	    final org.luwrain.pim.mail.protocols.Smtp.Result res = smtpFetching.send();
-	    if (res.total > 0)
+	    final var persist = luwrain.createInstance(MailPersistence.class);
+	    if (persist == null)
 	    {
-		if (res.total == res.sent)
-	    luwrain.message("Отправлено сообщений: " + res.sent, Luwrain.MessageType.DONE); else
-		    luwrain.message("Произошла ошибка при отправке сообщений", Luwrain.MessageType.ERROR);
+		log.error("No MailPersistence available, unable to send messages");
+		return;
+	    }
+	    final var accountDAO = persist.getAccountDAO();
+	    final var allAccounts = accountDAO.getAll();
+	    if (allAccounts.isEmpty())
+	    {
+		log.debug("No mail accounts configured");
+		return;
+	    }
+	    for (final var account : allAccounts)
+	    {
+		if (account.getType() != Account.Type.SMTP)
+		    continue;
+		if (!account.isEnabled())
+		{
+		    log.debug("SMTP account \"" + account.getName() + "\" is disabled, skipping");
+		    continue;
+		}
+		log.debug("Processing SMTP account: " + account.getName());
+		try {
+		    final var smtp = new org.luwrain.pim.mail.proto.Smtp(account);
+		    final var messageDAO = persist.getMessageDAO();
+		    final var allMessages = messageDAO.getAll();
+		    for (final var msg : allMessages)
+		    {
+			if (msg.getState() != MessageMetadata.State.NEW)
+			    continue;
+			log.trace("Sending message via " + account.getName() + ": " + msg.getSubject());
+			try {
+			    smtp.send(new byte[0]);
+			}
+			catch (PimException e)
+			{
+			    log.error("Failed to send message " + msg.getId() + " via " + account.getName() + ": " + e.getMessage());
+			}
+		    }
+		}
+		catch (PimException e)
+		{
+		    log.error("Unable to connect to SMTP server " + account.getHost() + ":" + account.getPort() + ": " + e.getMessage());
+		}
 	    }
 	}
-	catch(InterruptedException e)
+	catch (Throwable e)
 	{
-	    Log.debug(LOG_COMPONENT, "the worker \'" + NAME + "\' has been interrupted");
-	    return;
-	}
-	catch(Throwable e)
-	{
-	    Log.error(LOG_COMPONENT, "the worker " + NAME + " failed:" + e.getClass().getName() + ":" + e.getMessage());
-	    e.printStackTrace();
-	    luwrain.message("Произошла ошибка при отправке сообщений", Luwrain.MessageType.ERROR);
-	    return;
+	    log.error(NAME, e);
 	}
     }
 

@@ -1,22 +1,11 @@
-/*
-   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2026 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.popups.pim;
 
 import org.luwrain.core.*;
+
+import static java.util.Objects.*;
 
 public interface Strings
 {
@@ -29,7 +18,7 @@ public interface Strings
 
     static public Strings create(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
+	requireNonNull(luwrain, "luwrain can't be null");
 	final Object obj = luwrain.i18n().getStrings(NAME);
 	if (obj == null || !(obj instanceof Strings))
 	    return null;

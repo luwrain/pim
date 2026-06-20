@@ -10,8 +10,6 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.*;
-import org.luwrain.pim.fetching.*;
-//import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.persistence.*;
 
