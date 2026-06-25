@@ -14,6 +14,8 @@ import org.luwrain .util.*;
 import org.luwrain.nlp.*;
 import org.luwrain.io.json.*;
 
+import static java.util.Objects.*;
+
 import static org.luwrain.util.TextUtils.*;
 
 final class MainLayout extends LayoutBase
@@ -28,12 +30,12 @@ final class MainLayout extends LayoutBase
 	super(app);
 	this.app = app;
 	this.spellChecking =new FormSpellChecking(getLuwrain());
-	final var sett = org.luwrain.core.Settings.createPersonalInfo(null/*FIXME:newreg app.getLuwrain().getRegistry()*/);
+	final var conf = requireNonNullElse(getLuwrain().loadConf(org.luwrain.io.json.PersonalInfo.class), new org.luwrain.io.json.PersonalInfo());
 	final List<String> text = new ArrayList<>();
 	if (app.message.getText() != null)
 	    text.addAll(app.message.getText());
 	text.add("");
-	text.addAll(splitLinesAsList(sett.getSignature("")));
+	text.addAll(conf.getSignature());
 	final MessageArea.Params params = new MessageArea.Params();
 	params.context = getControlContext();
 	params.name = app.getStrings().appName();

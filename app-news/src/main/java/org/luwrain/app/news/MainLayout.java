@@ -233,7 +233,7 @@ index < 0 || index >= articles.length)
 
     private boolean onSummaryClick(Article article)
     {
-	final DocumentBuilder docBuilder = new DocumentBuilderLoader().newDocumentBuilder(getLuwrain(), ContentTypes.TEXT_HTML_DEFAULT);
+	final DocumentBuilder docBuilder = new DocumentBuilderLoader().newDocumentBuilder(getLuwrain(), "text/html");
 	if (docBuilder == null)
 	    return false;
 	markAsRead(article);

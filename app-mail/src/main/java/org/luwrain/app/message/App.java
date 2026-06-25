@@ -17,7 +17,7 @@ import static org.luwrain.pim.mail.persistence.MailPersistence.*;
 public final class App extends AppBase<Strings>
 {
     final org.luwrain.io.json.Message message;
-    private org.luwrain.pim.mail.Settings sett = null;
+    //    private org.luwrain.pim.mail.Settings sett = null;
     private FolderDAO folderDAO = null;
     private ContactsPersistence contactsPersist;
     private Conv conv = null;
@@ -36,7 +36,7 @@ public final class App extends AppBase<Strings>
 
     @Override protected AreaLayout onAppInit()
     {
-	this.sett = null;//FIXME:newreg org.luwrain.pim.mail.Settings.create(getLuwrain().getRegistry());
+	//	this.sett = null;//FIXME:newreg org.luwrain.pim.mail.Settings.create(getLuwrain().getRegistry());
 	final var persist = getLuwrain().createInstance(MailPersistence.class); 
 //	this.mailStoring = org.luwrain.pim.Connections.getMailStoring(getLuwrain(), true);
 	this.folderDAO = persist.getFolderDAO();

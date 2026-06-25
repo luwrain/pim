@@ -44,6 +44,7 @@ public class Base
 	luwrain.crash(e);
     }
 
+    /*
     protected MailConnections.Params createMailServerParams(Account account)
     {
 	final MailConnections.Params params = new MailConnections.Params();
@@ -57,4 +58,5 @@ public class Base
 		params.extProps.put( "mail.pop3.ssl.trust", account.getTrustedHosts());
 	return params;
     }
+    */
 }
