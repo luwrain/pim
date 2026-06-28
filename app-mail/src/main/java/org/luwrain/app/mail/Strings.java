@@ -15,10 +15,13 @@ public interface Strings
     String accountsAreaName();
     String actionAccounts();
     String actionNewAccount();
+    String actionDeleteAccount();
     String newAccountTypePopupName();
     String newAccountTypePop3();
     String newAccountTypeSmtp();
     String newAccountName();
+    String accountDeletingPopupName();
+    String accountDeletingPopupText(String accountName);
 
     String foldersAreaName();
     String actionNewFolder();

@@ -34,4 +34,9 @@ public final class Conv
 	    return NewAccountType.SMTP;
 	return null;
     }
+
+    public boolean confirmAccountDeleting(org.luwrain.pim.mail.persistence.Account account)
+    {
+	return confirmDefaultNo(luwrain, s.accountDeletingPopupName(), s.accountDeletingPopupText(account.getName()));
+    }
 }

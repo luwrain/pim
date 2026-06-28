@@ -40,7 +40,8 @@ public final class AccountsLayout extends LayoutBase
 	setCloseHandler(closing);
 		setOkHandler(closing);
 		setAreaLayout(accountsArea, actions(
-						    action("insert", s.actionNewAccount(), new InputEvent(Special.INSERT), this::newAccount)
+						    action("insert", s.actionNewAccount(), new InputEvent(Special.INSERT), this::newAccount),
+						    action("delete", s.actionDeleteAccount(), new InputEvent(Special.DELETE), this::deleteAccount)
 ));
     }
 
@@ -94,6 +95,20 @@ public final class AccountsLayout extends LayoutBase
 	accounts.addAll(data.accountDAO.getAll());
 	accountsArea.refresh();
 	accountsArea.select(a, false);
+	return true;
+    }
+
+    boolean deleteAccount()
+    {
+	final Account account = accountsArea.selected();
+	if (account == null)
+	    return false;
+	if (!app.conv.confirmAccountDeleting(account))
+	    return true;
+	data.accountDAO.delete(account);
+	accounts.clear();
+	accounts.addAll(data.accountDAO.getAll());
+	accountsArea.refresh();
 	return true;
     }
 

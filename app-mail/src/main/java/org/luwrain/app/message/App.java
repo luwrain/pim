@@ -4,6 +4,7 @@ package org.luwrain.app.message;
 import java.util.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.annotations.*;
 import org.luwrain.app.base.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.persistence.*;
@@ -12,15 +13,14 @@ import org.luwrain.pim.mail.persistence.*;
 
 import static org.luwrain.pim.mail.persistence.MailPersistence.*;
 
-//import org.luwrain.pim.mail.persistence.dao.*;
-
+@AppNoArgs(name = "mail-message",
+	   title = {"en=ЬMail message", "ru=Почтовое сообщение"} )
 public final class App extends AppBase<Strings>
 {
     final org.luwrain.io.json.Message message;
-    //    private org.luwrain.pim.mail.Settings sett = null;
-    private FolderDAO folderDAO = null;
-    private ContactsPersistence contactsPersist;
-    private Conv conv = null;
+    private MailPersistence mail;
+    private ContactsPersistence contacts;
+    private Conv conv;
     private MainLayout mainLayout = null;
 
     public App()
@@ -36,12 +36,9 @@ public final class App extends AppBase<Strings>
 
     @Override protected AreaLayout onAppInit()
     {
-	//	this.sett = null;//FIXME:newreg org.luwrain.pim.mail.Settings.create(getLuwrain().getRegistry());
-	final var persist = getLuwrain().createInstance(MailPersistence.class); 
-//	this.mailStoring = org.luwrain.pim.Connections.getMailStoring(getLuwrain(), true);
-	this.folderDAO = persist.getFolderDAO();
-	this.contactsPersist = null;//org.luwrain.pim.Connections.getContactsStoring(getLuwrain(), true);
-	if (contactsPersist == null)
+mail = getLuwrain().createInstance(MailPersistence.class); 
+contacts = getLuwrain().createInstance(ContactsPersistence.class);
+	if (mail == null || contacts == null)
 	    return null;
 	this.conv = new Conv(this);
 	this.mainLayout = new MainLayout(this);

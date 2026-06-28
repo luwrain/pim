@@ -32,10 +32,10 @@ final class MainLayout extends LayoutBase
 	this.spellChecking =new FormSpellChecking(getLuwrain());
 	final var conf = requireNonNullElse(getLuwrain().loadConf(org.luwrain.io.json.PersonalInfo.class), new org.luwrain.io.json.PersonalInfo());
 	final List<String> text = new ArrayList<>();
-	if (app.message.getText() != null)
-	    text.addAll(app.message.getText());
+	if (app.message != null)
+	    text.addAll(requireNonNullElse(app.message.getText(), Collections.emptyList()));
 	text.add("");
-	text.addAll(conf.getSignature());
+	text.addAll(requireNonNullElse(conf.getSignature(), Collections.emptyList()));
 	final MessageArea.Params params = new MessageArea.Params();
 	params.context = getControlContext();
 	params.name = app.getStrings().appName();
