@@ -8,7 +8,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-import org.luwrain.reader.*;
+//import org.luwrain.reader.*;
 import org.luwrain.controls.reader.*;
 import org.luwrain.pim.news.persist.*;
 import org.luwrain.pim.*;
@@ -233,6 +233,7 @@ index < 0 || index >= articles.length)
 
     private boolean onSummaryClick(Article article)
     {
+	/*
 	final DocumentBuilder docBuilder = new DocumentBuilderLoader().newDocumentBuilder(getLuwrain(), "text/html");
 	if (docBuilder == null)
 	    return false;
@@ -248,6 +249,8 @@ index < 0 || index >= articles.length)
 	    //	    viewArea.setDocument(doc, getAreaVisibleWidth(viewArea));
 	}
 	//	setActiveArea(viewArea);
+	return true;
+	*/
 	return true;
     }
 

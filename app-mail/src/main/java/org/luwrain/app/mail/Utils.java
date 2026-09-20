@@ -7,7 +7,7 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
-import org.luwrain.reader.*;
+//import org.luwrain.reader.*;
 import org.luwrain.pim.*;
 import org.luwrain.pim.mail.*;
 import org.luwrain.pim.mail.*;
@@ -17,8 +17,9 @@ import static org.luwrain.util.TextUtils.*;
 
 final class Utils
 {
-    static Document createDocForMessage(Message message, Strings strings) throws PimException
+    static Object createDocForMessage(Message message, Strings strings) throws PimException
     {
+	/*
 	final NodeBuilder builder = new NodeBuilder();
 	/*
 	builder.addParagraph(strings.messageAreaFrom() + " " + message.getFrom());
@@ -38,10 +39,11 @@ final class Utils
 	    if (!line.trim().isEmpty())
 		builder.addParagraph(line); else
 		builder.addEmptyLine();
-	*/
 	final Document doc = new Document(builder.newRoot());
 	doc.commit();
 	return doc;
+	*/
+	return new Object();
     }
 
     static private String listToString(String[] items)
