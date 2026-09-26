@@ -43,20 +43,20 @@ class BinderStoringSql implements BinderStoring
 	{
 	    final long caseId = rs.getLong(1);
 	    final String value = rs.getString(2).trim();
-	    if (!treeMap.containsKey(new Long(caseId)))
+	    if (!treeMap.containsKey(Long.valueOf(caseId)))
 	    {
 		LinkedList<String> newList = new LinkedList<String>();
 		newList.add(value);
-		treeMap.put(new Long(caseId), newList);
+		treeMap.put(Long.valueOf(caseId), newList);
 	    } else
-		treeMap.get(new Long(caseId)).add(value);
+		treeMap.get(Long.valueOf(caseId)).add(value);
 	}
 	for(StoredCase sc: res)
 	{
 	    final StoredCaseSql c = (StoredCaseSql)sc;
-	    if (!treeMap.containsKey(new Long(c.id)))
+	    if (!treeMap.containsKey(Long.valueOf(c.id)))
 		continue;
-	    final LinkedList<String> tagsList = treeMap.get(new Long(c.id));
+	    final LinkedList<String> tagsList = treeMap.get(Long.valueOf(c.id));
 	    c.tags = tagsList.toArray(new String[tagsList.size()]);
 	}
 
@@ -68,20 +68,20 @@ treeMap = new TreeMap<Long, LinkedList<String>>();
 	{
 	    final long caseId = rs.getLong(1);
 	    final String value = rs.getString(2).trim();
-	    if (!treeMap.containsKey(new Long(caseId)))
+	    if (!treeMap.containsKey(Long.valueOf(caseId)))
 	    {
 		LinkedList<String> newList = new LinkedList<String>();
 		newList.add(value);
-		treeMap.put(new Long(caseId), newList);
+		treeMap.put(Long.valueOf(caseId), newList);
 	    } else
-		treeMap.get(new Long(caseId)).add(value);
+		treeMap.get(Long.valueOf(caseId)).add(value);
 	}
 	for(StoredCase sc: res)
 	{
 	    final StoredCaseSql c = (StoredCaseSql)sc;
-	    if (!treeMap.containsKey(new Long(c.id)))
+	    if (!treeMap.containsKey(Long.valueOf(c.id)))
 		continue;
-	    final LinkedList<String> uniRefsList = treeMap.get(new Long(c.id));
+	    final LinkedList<String> uniRefsList = treeMap.get(Long.valueOf(c.id));
 	    c.uniRefs = uniRefsList.toArray(new String[uniRefsList.size()]);
 	}
 

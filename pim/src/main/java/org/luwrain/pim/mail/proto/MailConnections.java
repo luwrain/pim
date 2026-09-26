@@ -58,13 +58,13 @@ public final class MailConnections
 	if (pop3)
 	{
 	    props.put("mail.store.protocol", "pop3");
-	    props.put( "mail.pop3.auth", new Boolean(params.doAuth).toString());
+	    props.put( "mail.pop3.auth", Boolean.valueOf(params.doAuth).toString());
 	    props.put( "mail.pop3.host", params.host);
 	    props.put( "mail.pop3.user", params.login);
 	    props.put( "mail.pop3.password", params.passwd);
 	    props.put( "mail.pop3.port", String.valueOf(params.port));
-	    props.put( "mail.pop3.ssl.enable", new Boolean(params.ssl).toString());
-	    props.put("mail.pop3.starttls.enable", new Boolean(params.tls).toString());
+	    props.put( "mail.pop3.ssl.enable", Boolean.valueOf(params.ssl).toString());
+	    props.put("mail.pop3.starttls.enable", Boolean.valueOf(params.tls).toString());
 	    for(Map.Entry<String,String> p: params.extProps.entrySet())
 		props.put(p.getKey(), p.getValue());
 	    try {
@@ -81,11 +81,11 @@ public final class MailConnections
 	    this.smtpTransport = null;
 	} else
 	{
-	    props.put("mail.smtp.auth", new Boolean(params.doAuth));
+	    props.put("mail.smtp.auth", Boolean.valueOf(params.doAuth));
 	    props.put("mail.smtp.host", params.host);
-	    props.put("mail.smtp.port", new Integer(params.port).toString());
-		      props.put("mail.smtp.ssl.enable", new Boolean(params.ssl).toString());
-		      props.put("mail.smtp.starttls.enable", new Boolean(params.tls).toString());
+	    props.put("mail.smtp.port", Integer.valueOf(params.port).toString());
+		      props.put("mail.smtp.ssl.enable", Boolean.valueOf(params.ssl).toString());
+		      props.put("mail.smtp.starttls.enable", Boolean.valueOf(params.tls).toString());
 	    try {
 		this.session = Session.getInstance(props,
 						   new Authenticator(){
