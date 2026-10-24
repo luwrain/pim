@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: BUSL-1.1
-// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
+// Copyright 2012-2026 Michael Pozhidaev <msp@luwrain.org>
 // Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
 package org.luwrain.pim.fetching;
 
 import java.net.*;
 import java.util.*;
+import org.apache.logging.log4j.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.SystemEvent;
@@ -14,6 +15,8 @@ import org.luwrain.pim.news.persist.*;
 
 public final class News extends Base
 {
+    static private final Logger log = LogManager.getLogger();
+    
     private final NewsPersistence persist;
 
     public News(Control control, Strings strings)
@@ -26,17 +29,20 @@ public final class News extends Base
     {
 	if (persist == null)
 	{
+	    log.error("No news persistence");
 	    message(strings.noNewsGroupsData());
 	    return;
 	}
 	final var groups = persist.getGroupDAO().load();
 	if (groups.isEmpty())
 	{
+	    log.trace("No news group");
 	    message(strings.noNewsGroups());
 	    return;
 	}
 	for(final var g: groups)
 	{
+	    log.trace("Fetching news from ", g.toString());
 	    removeOldArticles(g);
 	    checkInterrupted();
 	    if (!fetchGroup(g))
@@ -52,8 +58,9 @@ public final class News extends Base
 	final var urls = group.getUrls();
 	if (urls != null)
 	    for (String url: urls)
-		if (url != null && !url.trim().isEmpty())
+		if (url != null && !url.isBlank())
 		{
+		    log.trace("Getting news from {}", url);
 		    checkInterrupted();
 		    final List<Article> articles;
 		    try {
@@ -61,14 +68,17 @@ public final class News extends Base
 		    }
 		    catch(PimException  | MalformedURLException e)
 		    {
+			log.error("Unable to get news from {}", url, e);
 			message(strings.newsFetchingError(group.getName()) + ":" + e.getMessage());
 			return true;
 		    }
+		    log.trace("Obtained {} articles", articles.size());
 		    totalCount += articles.size();
 		    for(final var a: articles)
 			if (persist.getArticleDAO().countByUriInGroup(group, a.getUri()) == 0)
 			    freshNews.add(a);
 		}
+	log.trace("{} fresh articles", freshNews.size());
 	for(final var a: freshNews)
 	{
 	    persist.getArticleDAO().add(group, a);

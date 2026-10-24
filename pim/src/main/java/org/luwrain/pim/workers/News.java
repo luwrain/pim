@@ -1,39 +1,42 @@
-// Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright 2012-2026 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.pim.workers;
+
+import org.apache.logging.log4j.*;
 
 import org.luwrain.core.*;
 import org.luwrain.pim.fetching.*;
 
+import static java.util.Objects.*;
+
 public class News implements Worker
 {
-    static public String NAME = "luwrain.pim.fetch.news";
-
-    static protected final String LOG_COMPONENT = "pim-workers";
+    static public String NAME = "luwrain.pim.news.fetch";
+    static private final Logger log = LogManager.getLogger();
 
     protected final Luwrain luwrain;
     protected final org.luwrain.pim.fetching.Control control;
 
     public News(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	this.luwrain = luwrain;
+	this.luwrain = requireNonNull(luwrain, "luwrain can't be null");
 	this.control = new DefaultControl(luwrain);
     }
 
         public News(org.luwrain.pim.fetching.Control control)
     {
-	NullCheck.notNull(control, "control");
-	this.control = control;
+	this.control = requireNonNull(control, "control can't be null");
 	this.luwrain = control.luwrain();
     }
 
     @Override public void run()
     {
-	final org.luwrain.pim.fetching.Strings strings = (org.luwrain.pim.fetching.Strings)luwrain.i18n().getStrings(org.luwrain.pim.fetching.Strings.NAME);
+	log.trace("Starting fetching news ( the {} worker)", NAME);
+	final var strings = luwrain.i18n().getStrings(org.luwrain.pim.fetching.Strings.class);
 	if (strings == null)
 	{
-	    Log.error(LOG_COMPONENT, "unable to launch the worker \'" + NAME + "\' since there is no strings object with the name \'" + org.luwrain.pim.fetching.Strings.NAME + "\'");
+	    log.error("Unable to launch the {} worker: there is no strings object {}", NAME, org.luwrain.pim.fetching.Strings.class.getName());
 	    return;
 	}
 	try {
@@ -42,12 +45,13 @@ public class News implements Worker
 	}
 	catch(InterruptedException e)
 	{
-	    Log.debug(LOG_COMPONENT, "the worker \'" + NAME + "\' has been interrupted");
+	    log.debug("The worker {} has been interrupted", NAME);
+	    Thread.currentThread().interrupt();
 	    return;
 	}
 		catch(Throwable e)
 	{
-	    Log.error(LOG_COMPONENT, "the worker \'" + NAME + "\' failed:" + e.getClass().getName() + ":" + e.getMessage());
+	    log.error("The worker {} failed", NAME, e);
 	    return;
 	}
     }

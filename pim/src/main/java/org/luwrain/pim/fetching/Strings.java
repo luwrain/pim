@@ -2,10 +2,11 @@
 
 package org.luwrain.pim.fetching;
 
+import org.luwrain.core.annotations.*;
+
+@ResourceStrings(langs = { "en", "ru" })
 public interface Strings
 {
-    static public final String NAME = "luwrain.fetching";
-
     String connectingTo(String hostPort);
     String connectionEstablished(String hostPort);
     String errorLoadingMailAccounts(String errorMsg);
