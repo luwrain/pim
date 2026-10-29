@@ -68,6 +68,6 @@ public class News implements Worker
 
     @Override public int getLaunchPeriod()
     {
-	return 0;
+	return 60;
     }
 }

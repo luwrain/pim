@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-// Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
+// Copyright 2012-2026 Michael Pozhidaev <msp@luwrain.org>
 
 package org.luwrain.app.news;
 
@@ -8,14 +8,13 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-//import org.luwrain.reader.*;
 import org.luwrain.controls.reader.*;
 import org.luwrain.pim.news.persist.*;
-import org.luwrain.pim.*;
 import org.luwrain.app.base.*;
 import org.luwrain.controls.ListUtils.*;
 import org.luwrain.app.news.layouts.*;
 
+import static java.util.Objects.*;
 import static org.luwrain.core.DefaultEventResponse.*;
 
 final class MainLayout extends LayoutBase
@@ -29,7 +28,7 @@ final class MainLayout extends LayoutBase
     {
 	super(app);
 	this.app = app;
-groupsArea = new ListArea<GroupWrapper>(listParams(p -> {
+	groupsArea = new ListArea<GroupWrapper>(listParams(p -> {
 		    p.name = app.getStrings().groupsAreaName();
 		    p.model = new ListModel<GroupWrapper>(app.groups){
 			    @Override public void refresh() { app.loadGroups(); }
@@ -49,6 +48,7 @@ setPropertiesHandler(groupsArea, a -> {
 					      action("delete-group", app.getStrings().actionDeleteGroup(), new InputEvent(InputEvent.Special.DELETE, EnumSet.of(InputEvent.Modifiers.SHIFT)), this::actDeleteGroup),
 					      action("add-group", app.getStrings().actionAddGroup(), new InputEvent(InputEvent.Special.INSERT), this::actNewGroup)
 					      );
+	
 	this.summaryArea = new ListArea<Article>(listParams(params -> {
 		    params.name = app.getStrings().summaryAreaName();
 		    params.model = new ListModel<>(app.articles);
@@ -256,7 +256,7 @@ index < 0 || index >= articles.length)
 
     private boolean markAsRead(Article article)
     {
-	if (article.getStatus() == Article.Status.NEW)
+	if (article.getStatus() == null || article.getStatus() == Article.Status.NEW)
 	{
 	    article.setStatus(Article.Status.READ);
 	    app.persist.getArticleDAO().update(article);
@@ -300,13 +300,13 @@ index < 0 || index >= articles.length)
     {
 	@Override public void announceItem(Article article, Set<Flags> flags)
 	{
-	    final String title = getLuwrain().getSpeakableText(article.getTitle(), Luwrain.SpeakableTextType.NATURAL);
+	    final String title = getLuwrain().getSpeakableText(requireNonNullElse(article.getTitle(), ""), Luwrain.SpeakableTextType.NATURAL);
 	    if (flags.contains(Flags.BRIEF))
 	    {
 		app.setEventResponse(DefaultEventResponse.text(Sounds.LIST_ITEM, title));
 		return;
 	    }
-	    switch(article.getStatus())
+	    switch(requireNonNullElse(article.getStatus(), Article.Status.NEW))
 	    {
 	    case READ:
 		app.setEventResponse(text(Sounds.LIST_ITEM, app.getStrings().readPrefix() + " " + title + " " + app.getI18n().getPastTimeBrief(new Date(article.getPublishedTimestamp()))));
@@ -318,9 +318,10 @@ index < 0 || index >= articles.length)
 		app.setEventResponse(text(Sounds.LIST_ITEM, title + " " + app.getI18n().getPastTimeBrief(new Date(article.getPublishedTimestamp()))));
 	    }
 	}
+	
 	@Override public String getScreenAppearance(Article article, Set<Flags> flags)
 	{
-	    switch(article.getStatus())
+	    switch(requireNonNullElse(article.getStatus(), Article.Status.NEW))
 	    {
 	    case NEW:
 		return " [" + article.getTitle() + "]";
@@ -330,13 +331,15 @@ index < 0 || index >= articles.length)
 		return "  " + article.getTitle();
 	    }
 	}
+	
 	@Override public int getObservableLeftBound(Article article)
 	{
 	    return 2;
 	}
+	
 	@Override public int getObservableRightBound(Article article)
 	{
-	    return article.getTitle().length() + 2;
+	    return requireNonNullElse(article.getTitle(), "").length() + 2;
 	}
     }
 }

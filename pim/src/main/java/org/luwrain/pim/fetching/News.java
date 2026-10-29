@@ -72,15 +72,20 @@ public final class News extends Base
 			message(strings.newsFetchingError(group.getName()) + ":" + e.getMessage());
 			return true;
 		    }
-		    log.trace("Obtained {} articles", articles.size());
+		    log.trace("Fetched {} articles", articles.size());
 		    totalCount += articles.size();
 		    for(final var a: articles)
-			if (persist.getArticleDAO().countByUriInGroup(group, a.getUri()) == 0)
+		    {
+			final int freshCount = persist.getArticleDAO().countByUriInGroup(group, a.getUri());
+			log.trace("Fresh count {} for {}", freshCount, a.getUri());
+			if (freshCount == 0)
 			    freshNews.add(a);
+		    }
 		}
 	log.trace("{} fresh articles", freshNews.size());
 	for(final var a: freshNews)
 	{
+	    a.setStatus(Article.Status.NEW);
 	    persist.getArticleDAO().add(group, a);
 	    checkInterrupted();
 	}
