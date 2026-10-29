@@ -147,22 +147,71 @@ public GroupDAO getGroupDAO()
 	
     @Override public List<Integer> countMarkedInGroups(List<Group> groups)
     {
-	return null;
+	requireNonNull(groups, "groups can't be null");
+	return runner.run(() -> {
+	    final var counts = new HashMap<Integer, Integer>();
+	    for (final var e : articlesMap.entrySet())
+	    {
+		final var a = e.getValue();
+		if (a.getStatus() != Article.Status.MARKED)
+		    continue;
+		counts.merge(Integer.valueOf(a.getGroupId()), Integer.valueOf(1), Integer::sum);
+	    }
+	    final var res = new ArrayList<Integer>(groups.size());
+	    for (final var g : groups)
+		res.add(counts.getOrDefault(Integer.valueOf(g.getId()), Integer.valueOf(0)));
+	    return res;
+	});
     }
     
     @Override public List<Integer> countNewInGroups(List<Group> groups)
     {
-	return null;
+	requireNonNull(groups, "groups can't be null");
+	return runner.run(() -> {
+	    final var counts = new HashMap<Integer, Integer>();
+	    for (final var e : articlesMap.entrySet())
+	    {
+		final var a = e.getValue();
+		if (a.getStatus() != Article.Status.NEW)
+		    continue;
+		counts.merge(Integer.valueOf(a.getGroupId()), Integer.valueOf(1), Integer::sum);
+	    }
+	    final var res = new ArrayList<Integer>(groups.size());
+	    for (final var g : groups)
+		res.add(counts.getOrDefault(Integer.valueOf(g.getId()), Integer.valueOf(0)));
+	    return res;
+	});
     }
     
     @Override public int countNewInGroup(Group group)
     {
-	return 0;
+	requireNonNull(group, "group can't be null");
+	return runner.run(() -> {
+	    int count = 0;
+	    for (final var e : articlesMap.entrySet())
+	    {
+		final var a = e.getValue();
+		if (a.getGroupId() == group.getId() && a.getStatus() == Article.Status.NEW)
+		    count++;
+	    }
+	    return Integer.valueOf(count);
+	}).intValue();
     }
     
     @Override public int countByUriInGroup(Group group, String uri)
     {
-	return 0;
+	requireNonNull(group, "group can't be null");
+	requireNonNull(uri, "uri can't be null");
+	return runner.run(() -> {
+	    int count = 0;
+	    for (final var e : articlesMap.entrySet())
+	    {
+		final var a = e.getValue();
+		if (a.getGroupId() == group.getId() && uri.equals(a.getUri()))
+		    count++;
+	    }
+	    return Integer.valueOf(count);
+	}).intValue();
     }
 	};
 	    }
