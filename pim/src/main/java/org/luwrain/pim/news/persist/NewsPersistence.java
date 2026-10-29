@@ -15,17 +15,47 @@ import org.luwrain.pim.*;
 import static java.util.Objects.*;
 import static org.luwrain.pim.ExecQueues.*;
 
+/**
+ * Persistent storage for news groups and articles.
+ *
+ * <p>This class provides access to the underlying H2 MVStore maps that hold
+ * {@link Group} and {@link Article} instances, as well as the map used to
+ * generate unique identifiers. All data access is performed through the
+ * {@link #getGroupDAO()} and {@link #getArticleDAO()} methods, which return
+ * data access objects whose operations are executed on the configured
+ * {@link ExecQueues} runner to preserve thread safety.</p>
+ */
 public final class NewsPersistence
 {
     static private final Logger log = LogManager.getLogger();
-    
+
+    /** The execution queues used to run data access operations. */
     final ExecQueues queues;
+
+    /** The priority used when scheduling data access operations. */
     private Priority priority = Priority.MEDIUM;
+
+    /** The runner that executes data access operations on the queues. */
     private Runner runner;
+
+    /** The map storing groups, keyed by group identifier. */
     private final MVMap<Integer, Group> groupsMap;
+
+    /** The map storing articles, keyed by article identifier. */
     private final MVMap<Long, Article> articlesMap;
+
+    /** The map storing the last assigned identifiers, keyed by class name. */
     private final MVMap<String, Long> keysMap;
-    
+
+    /**
+     * Creates a new persistence instance backed by the specified maps.
+     *
+     * @param queues the execution queues used to run data access operations
+     * @param groupsMap the map storing groups
+     * @param articlesMap the map storing articles
+     * @param keysMap the map storing the last assigned identifiers
+     * @throws NullPointerException if any argument is {@code null}
+     */
     public NewsPersistence(ExecQueues queues,
 			   MVMap<Integer, Group> groupsMap,
 			   MVMap<Long, Article> articlesMap,
@@ -38,7 +68,12 @@ public final class NewsPersistence
 	this.runner = new Runner(queues, priority);
     }
 
-public GroupDAO getGroupDAO()
+    /**
+     * Returns the data access object for {@link Group} instances.
+     *
+     * @return the group data access object
+     */
+    public GroupDAO getGroupDAO()
     {
 	return new GroupDAO(){
 	    	    @Override public List<Group> load()
@@ -81,6 +116,11 @@ public GroupDAO getGroupDAO()
 	};
     }
 
+    /**
+     * Returns the data access object for {@link Article} instances.
+     *
+     * @return the article data access object
+     */
     public ArticleDAO getArticleDAO()
     {
 	return new ArticleDAO()
@@ -216,7 +256,12 @@ public GroupDAO getGroupDAO()
 	};
 	    }
 
-
+    /**
+     * Generates and returns the next unique identifier for the given class.
+     *
+     * @param c the class for which an identifier is requested
+     * @return the newly assigned identifier
+     */
     Long getNewKey(Class c)
     {
 	final var res = keysMap.get(c.getName());
@@ -230,6 +275,12 @@ public GroupDAO getGroupDAO()
 	return newVal;
     }
 
+    /**
+     * Sets the priority used when scheduling data access operations.
+     *
+     * @param priority the new priority
+     * @throws NullPointerException if {@code priority} is {@code null}
+     */
     public void setPriority(Priority priority)
     {
 	this.priority = requireNonNull(priority, "priority can't be null");
