@@ -16,6 +16,8 @@ import org.luwrain.pim.diary.*;
 import org.luwrain.pim.diary.persistence.*;
 import org.luwrain.pim.contacts.*;
 import org.luwrain.pim.contacts.persistence.*;
+import org.luwrain.pim.tasks.*;
+import org.luwrain.pim.tasks.persist.*;
 
 import static java.util.Objects.*;
 
@@ -28,6 +30,7 @@ public final class PimObjFactory implements ObjFactory, AutoCloseable
     private MailFactory mailFactory = null;
     private DiaryFactory diaryFactory = null;
     private ContactsFactory contactsFactory = null;
+    private TasksFactory tasksFactory = null;
 
     PimObjFactory(Path baseDir)
     {
@@ -43,30 +46,42 @@ public final class PimObjFactory implements ObjFactory, AutoCloseable
     {
 	requireNonNull(name, "name can't be null");
 	try {
+
+	    	    if (name.equals(MailPersistence.class.getName()))
+	    {
+		if (mailFactory == null)
+		    mailFactory = new MailFactory(baseDir.resolve("mail"));
+		return mailFactory.newInstance();
+	    }
+
+	    if (name.equals(TasksPersistence.class.getName()))
+	    {
+		if (tasksFactory == null)
+		    tasksFactory = new TasksFactory(baseDir.resolve("tasks"));
+		return tasksFactory.newInstance();
+	    }
+
 	    if (name.equals(NewsPersistence.class.getName()))
 	    {
 		if (newsFactory == null)
 		    newsFactory = new NewsFactory(baseDir.resolve("news"));
 		return newsFactory.newInstance();
 	    }
-	    if (name.equals(MailPersistence.class.getName()))
-	    {
-		if (mailFactory == null)
-		    mailFactory = new MailFactory(baseDir.resolve("mail"));
-		return mailFactory.newInstance();
-	    }
-	    if (name.equals(DiaryPersistence.class.getName()))
-	    {
-		if (diaryFactory == null)
-		    diaryFactory = new DiaryFactory(baseDir.resolve("diary"));
-		return diaryFactory.newInstance();
-	    }
+	    
 	    if (name.equals(ContactsPersistence.class.getName()))
 	    {
 		if (contactsFactory == null)
 		    contactsFactory = new ContactsFactory(baseDir.resolve("contacts"));
 		return contactsFactory.newInstance();
 	    }
+
+	    	    if (name.equals(DiaryPersistence.class.getName()))
+	    {
+		if (diaryFactory == null)
+		    diaryFactory = new DiaryFactory(baseDir.resolve("diary"));
+		return diaryFactory.newInstance();
+	    }
+
 	    return null;
 	}
 	catch(IOException ex)
