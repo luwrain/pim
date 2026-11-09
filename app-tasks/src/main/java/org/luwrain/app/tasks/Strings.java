@@ -18,4 +18,17 @@ public interface Strings
     String deleteTaskPopupName();
     String deleteTaskPopupText();
     String defaultTaskListName();
+
+    // Task properties form
+    String taskPropertiesAreaName(String title);
+    String taskPropertiesTitle();
+    String taskPropertiesDescr();
+    String taskPropertiesDueDate();
+    String taskPropertiesStatus();
+    String taskPropertiesPriority();
+    String taskPropertiesTags();
+    String taskPropertiesContent();
+    String taskPropertiesTitleCannotBeEmpty();
+    String taskPropertiesInvalidDueDate();
 }
+
