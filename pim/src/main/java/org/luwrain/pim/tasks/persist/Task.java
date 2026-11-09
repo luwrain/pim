@@ -22,6 +22,8 @@ import lombok.*;
 @NoArgsConstructor
 public class Task implements Serializable
 {
+private static final long serialVersionUID = 1L;
+    
     /**
      * The lifecycle state of a task.
      */

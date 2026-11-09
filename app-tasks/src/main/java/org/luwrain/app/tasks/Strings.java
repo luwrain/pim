@@ -17,4 +17,5 @@ public interface Strings
     String createTaskPopupPrefix();
     String deleteTaskPopupName();
     String deleteTaskPopupText();
+    String defaultTaskListName();
 }

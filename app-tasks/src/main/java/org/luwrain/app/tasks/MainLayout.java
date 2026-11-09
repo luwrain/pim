@@ -23,12 +23,13 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
     public final ListArea<Task> tasksArea;
     final App app;
 
-    private TaskList currentList = null;
+    private final TaskList defaultTaskList;
 
-    MainLayout(App app)
+    MainLayout(App app, TaskList defaultTaskList)
     {
 	super(app);
 	this.app = app;
+	this.defaultTaskList = defaultTaskList;
 	final var s = app.getStrings();
 
 	tasksArea = new ListArea<Task>(listParams(p -> {
@@ -39,15 +40,10 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 		}));
 
 	final var tasksActions = actions(
-	    action("create", s.create(), new InputEvent(Special.INSERT),
-		   () -> { onCreateTask(); return true; }),
-	    action("delete", s.delete(), new InputEvent(Special.DELETE),
-		   () -> { onDeleteTask(); return true; })
+					 actCreateTask(), actDeleteTask()
 	    );
 
 	setAreaLayout(tasksArea, tasksActions);
-
-	ensureCurrentList();
 	loadTasks();
     }
 
@@ -59,8 +55,9 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 	return true;
     }
 
-    boolean onCreateTask()
+    ActionInfo actCreateTask()
     {
+	return action("create", app.getStrings().create(), new InputEvent(Special.INSERT), () -> {
 	final var title = app.conv.newTaskTitle();
 	if (title == null || title.isEmpty())
 	    return true;
@@ -69,50 +66,33 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 	task.setStatus(Task.Status.NEW);
 	task.setPriority(Task.Priority.NORMAL);
 	task.setCreatedTimestamp(System.currentTimeMillis());
-	app.persist.getTaskDAO().add(currentList, task);
+	app.persist.getTaskDAO().add(defaultTaskList, task);
 	loadTasks();
 	app.getLuwrain().playSound(Sounds.DONE);
 	return true;
+	    });
     }
 
-    boolean onDeleteTask()
+    ActionInfo actDeleteTask()
     {
+	return action("delete", app.getStrings().delete(), new InputEvent(Special.DELETE), () -> {
 	final var selected = tasksArea.selected();
 	if (selected == null)
 	    return false;
 	final var title = requireNonNullElse(selected.getTitle(), "");
 	if (!app.conv.confirmDeleteTask(title))
 	    return true;
-	app.persist.getTaskDAO().delete(currentList, selected);
+	app.persist.getTaskDAO().delete(defaultTaskList, selected);
 	loadTasks();
 	app.getLuwrain().playSound(Sounds.DONE);
 	return true;
-    }
-
-    private void ensureCurrentList()
-    {
-	final var lists = app.persist.getTaskListDAO().load();
-	if (lists != null && !lists.isEmpty())
-	{
-	    currentList = lists.get(0);
-	    return;
-	}
-	final var list = new TaskList();
-	list.setName("Default");
-	list.setOrderIndex(0);
-	app.persist.getTaskListDAO().add(list);
-	currentList = list;
+	    });
     }
 
     void loadTasks()
     {
 	tasks.clear();
-	if (currentList == null)
-	{
-	    tasksArea.refresh();
-	    return;
-	}
-	final var loaded = app.persist.getTaskDAO().load(currentList);
+	final var loaded = app.persist.getTaskDAO().load(defaultTaskList);
 	if (loaded != null)
 	    tasks.addAll(loaded);
 	tasksArea.refresh();

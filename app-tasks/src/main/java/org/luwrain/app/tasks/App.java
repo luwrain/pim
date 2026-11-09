@@ -26,7 +26,7 @@ public final class App extends AppBase<Strings>
 	if (persist == null)
 	    throw new IllegalStateException("No tasks persistence");
 	this.conv = new Conv(this);
-	mainLayout = new MainLayout(this);
+	mainLayout = new MainLayout(this, getDefaultTaskList());
 	setAppName(getStrings().appName());
 	return mainLayout.getAreaLayout();
     }
@@ -35,5 +35,18 @@ public final class App extends AppBase<Strings>
     {
 	closeApp();
 	return true;
+    }
+
+    private TaskList getDefaultTaskList()
+    {
+var t = persist.getTaskListDAO().load().stream()
+	.filter(e -> e.isDefaultList()).findFirst();
+if (t.isPresent())
+return t.get();
+var l = new TaskList();
+l.setName(getStrings().defaultTaskListName());
+l.setDefaultList(true);
+persist.getTaskListDAO().add(l);
+return l;
     }
 }

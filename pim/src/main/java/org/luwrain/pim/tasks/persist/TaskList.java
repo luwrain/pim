@@ -19,11 +19,16 @@ import lombok.*;
 @NoArgsConstructor
 public class TaskList implements Serializable
 {
+private static final long serialVersionUID = 1L;
+    
     /** The unique identifier of the task list. */
     private int id;
 
     /** The human-readable name of the task list. */
     private String name;
+
+    //TODO: Javadoc
+    private boolean defaultList;
 
     /** The position of the task list when it is displayed in an ordered list. */
     private int orderIndex;
