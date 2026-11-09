@@ -10,8 +10,8 @@ import org.luwrain.core.events.*;
 import org.luwrain.app.base.*;
 import org.luwrain.controls.*;
 import org.luwrain.controls.list.*;
-
 import org.luwrain.pim.tasks.persist.*;
+import org.luwrain.app.tasks.layouts.*;
 
 import static java.util.Objects.*;
 import static org.luwrain.core.DefaultEventResponse.*;
@@ -38,6 +38,13 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 		    p.appearance = new TaskListAppearance(getControlContext());
 		    p.clickHandler = this;
 		}));
+
+	setPropertiesHandler(tasksArea, a -> {
+	final var t = tasksArea.selected();
+	if (t == null)
+	    return null;
+	return new TaskPropertiesLayout(app, t, getReturnAction());
+    });
 
 	final var tasksActions = actions(
 					 actCreateTask(), actDeleteTask()
