@@ -30,11 +30,12 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override public AreaLayout onAppInit() throws Exception
     {
-	this.persist = getLuwrain().createInstance(NewsPersistence.class);
+	persist = getLuwrain().createInstance(NewsPersistence.class);
 	if (persist == null)
 	    throw new Exception("No news persistence");
-		this.conv = new Conv(this);
-	this.mainLayout = new MainLayout(this );
+	persist.setPriority(ExecQueues.Priority.HIGH);
+	conv = new Conv(this);
+	mainLayout = new MainLayout(this );
 	setAppName(getStrings().appName());
 	loadGroups();
 	runFetching();

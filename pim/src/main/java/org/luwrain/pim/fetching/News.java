@@ -77,7 +77,6 @@ public final class News extends Base
 		    for(final var a: articles)
 		    {
 			final int freshCount = persist.getArticleDAO().countByUriInGroup(group, a.getUri());
-			log.trace("Fresh count {} for {}", freshCount, a.getUri());
 			if (freshCount == 0)
 			    freshNews.add(a);
 		    }
