@@ -29,7 +29,7 @@ public class TaskList implements Serializable
     private int orderIndex;
 
     /** The color associated with the task list, if any. */
-    private String color;
+    // private String color;
 
     /** Whether the task list should always be shown even when it has no tasks. */
     private boolean alwaysShow = false;
