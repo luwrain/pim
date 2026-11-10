@@ -9,6 +9,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.app.base.*;
 import org.luwrain.controls.*;
+import org.luwrain.controls.edit.*;
 import org.luwrain.controls.list.*;
 import org.luwrain.pim.tasks.persist.*;
 import org.luwrain.app.tasks.layouts.*;
@@ -21,10 +22,15 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 {
     public final List<Task> tasks = new ArrayList<>();
     public final ListArea<Task> tasksArea;
+    public final EditArea contentEdit;
     final App app;
 
     private final TaskList defaultTaskList;
+    private Task currentTask = null;
 
+    private final EditArea.ChangeListener contentChangeListener;
+
+    
     MainLayout(App app, TaskList defaultTaskList)
     {
 	super(app);
@@ -32,11 +38,24 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 	this.defaultTaskList = defaultTaskList;
 	final var s = app.getStrings();
 
+	contentChangeListener = (area, lines, hotPoint) -> {
+	if (currentTask == null)
+	    return;
+	currentTask.setContent(String.join("\n", area.getTextAsList()));
+	app.persist.getTaskDAO().update(currentTask);
+    };
+
+
 	tasksArea = new ListArea<Task>(listParams(p -> {
 		    p.name = s.tasksAreaName();
 		    p.model = new ListModel<>(tasks);
 		    p.appearance = new TaskListAppearance(getControlContext());
 		    p.clickHandler = this;
+		}));
+
+	contentEdit = new EditArea(editParams(p -> {
+		    p.name = s.taskContentAreaName();
+		    p.changeListeners = List.of(contentChangeListener);
 		}));
 
 	setPropertiesHandler(tasksArea, a -> {
@@ -50,7 +69,7 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 					 actCreateTask(), actDeleteTask()
 	    );
 
-	setAreaLayout(tasksArea, tasksActions);
+	setAreaLayout(AreaLayout.LEFT_RIGHT, tasksArea, tasksActions, contentEdit, null);
 	loadTasks();
     }
 
@@ -58,6 +77,8 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
     {
 	if (task == null)
 	    return false;
+	currentTask = task;
+	loadTaskContent(task);
 	app.setEventResponse(listItem(requireNonNullElse(task.getTitle(), "") + " " + app.getStrings().taskListSuffix()));
 	return true;
     }
@@ -90,6 +111,11 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 	if (!app.conv.confirmDeleteTask(title))
 	    return true;
 	app.persist.getTaskDAO().delete(defaultTaskList, selected);
+	if (currentTask == selected)
+	{
+	    currentTask = null;
+	    clearTaskContent();
+	}
 	loadTasks();
 	app.getLuwrain().playSound(Sounds.DONE);
 	return true;
@@ -103,6 +129,30 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 	if (loaded != null)
 	    tasks.addAll(loaded);
 	tasksArea.refresh();
+    }
+
+    private void loadTaskContent(Task task)
+    {
+	final String content = task.getContent();
+	final String[] lines = content != null?content.split("\n", -1):new String[]{""};
+	contentEdit.update((mutableLines, hotPoint) -> {
+		mutableLines.setLines(lines);
+		hotPoint.setHotPointX(0);
+		hotPoint.setHotPointY(0);
+		return false;
+	    });
+	contentEdit.refresh();
+    }
+
+    private void clearTaskContent()
+    {
+	contentEdit.update((mutableLines, hotPoint) -> {
+		mutableLines.setLines(new String[]{""});
+		hotPoint.setHotPointX(0);
+		hotPoint.setHotPointY(0);
+		return false;
+	    });
+	contentEdit.refresh();
     }
 
     final class TaskListAppearance extends AbstractAppearance<Task>

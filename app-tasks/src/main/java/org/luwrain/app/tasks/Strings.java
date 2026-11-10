@@ -10,6 +10,7 @@ public interface Strings
 {
     String appName();
     String tasksAreaName();
+    String taskContentAreaName();
     String create();
     String delete();
     String taskListSuffix();
