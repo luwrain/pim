@@ -50,7 +50,6 @@ public final class TaskPropertiesLayout extends LayoutBase
 			 (area, itemName, current) -> choosePriority(),
 			 null, true);
 	formArea.addEdit(TAGS, s.taskPropertiesTags(), joinTags(task.getTags()));
-	formArea.addMultilineEdit(s.taskPropertiesContent(), splitContent(task.getContent()), true);
 	setCloseHandler(closing);
 	setOkHandler(() -> {
 		if (!save())
@@ -85,7 +84,6 @@ public final class TaskPropertiesLayout extends LayoutBase
 	task.setStatus((Task.Status)formArea.getSelectedListItem(STATUS));
 	task.setPriority((Task.Priority)formArea.getSelectedListItem(PRIORITY));
 	task.setTags(parseTags(formArea.getEnteredText(TAGS)));
-	task.setContent(String.join("\n", formArea.getMultilineEditText()));
 	app.persist.getTaskDAO().update(task);
 	return true;
     }

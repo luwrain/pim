@@ -73,13 +73,23 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 	loadTasks();
     }
 
+    void onActivateTask(Task task)
+    {
+		currentTask = task;
+	loadTaskContent(task);
+
+    }
+
+    void onDeactivateTask()
+    {
+    }
+
     @Override public boolean onListClick(ListArea<Task> area, int index, Task task)
     {
 	if (task == null)
 	    return false;
-	currentTask = task;
-	loadTaskContent(task);
-	app.setEventResponse(listItem(requireNonNullElse(task.getTitle(), "") + " " + app.getStrings().taskListSuffix()));
+	onActivateTask(task);
+	setActiveArea(contentEdit);
 	return true;
     }
 
@@ -128,6 +138,17 @@ public class MainLayout extends LayoutBase implements ListArea.ClickHandler<Task
 	final var loaded = app.persist.getTaskDAO().load(defaultTaskList);
 	if (loaded != null)
 	    tasks.addAll(loaded);
+	Collections.sort(tasks, (v1, v2) -> {
+		if (v1.getPriority() == Task.Priority.URGENT && v2.getPriority() != Task.Priority.URGENT)
+		    return -1;
+		if (v2.getPriority() == Task.Priority.URGENT && v1.getPriority() != Task.Priority.URGENT)
+		    return 1;
+				if (v1.getPriority() == Task.Priority.HIGH && v2.getPriority() != Task.Priority.HIGH)
+		    return -1;
+		if (v2.getPriority() == Task.Priority.HIGH && v1.getPriority() != Task.Priority.HIGH)
+		    return 1;
+		return 0;
+	    });
 	tasksArea.refresh();
     }
 

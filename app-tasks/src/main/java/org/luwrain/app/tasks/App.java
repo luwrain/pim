@@ -33,6 +33,7 @@ public final class App extends AppBase<Strings>
 
     @Override public boolean onEscape()
     {
+	mainLayout.onDeactivateTask();
 	closeApp();
 	return true;
     }
